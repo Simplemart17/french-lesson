@@ -105,7 +105,7 @@ export default function DashboardPage() {
               {recentLessons.map((lesson) => (
                 <Card key={lesson.id} className="p-4 transition-shadow hover:shadow-md">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-800">{lesson.title}</h3>
+                    <h5 className="font-medium text-gray-800">{lesson.title}</h5>
                     <span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(lesson.category)}`}>
                       {lesson.category.charAt(0).toUpperCase() + lesson.category.slice(1)}
                     </span>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
               {recommendedLessons.map((lesson) => (
                 <Card key={lesson.id} className="p-4 transition-shadow hover:shadow-md">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-800">{lesson.title}</h3>
+                    <h5 className="font-medium text-gray-800">{lesson.title}</h5>
                     <div className="flex space-x-2">
                       <span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(lesson.category)}`}>
                         {lesson.category.charAt(0).toUpperCase() + lesson.category.slice(1)}
@@ -174,8 +174,8 @@ export default function DashboardPage() {
           </Card>
           
           <Card variant="secondary" className="p-6">
-            <h3 className="mb-2 font-medium text-secondary-800">Writing Exercises</h3>
-            <p className="mb-4 text-gray-700">Get feedback on your written French with our writing correction tool.</p>
+            <h3 className="mb-2 font-medium text-gray-300">Writing Exercises</h3>
+            <p className="mb-4 text-gray-300">Get feedback on your written French with our writing correction tool.</p>
             <Link href="/writing">
               <Button variant="secondary" size="sm" className="w-full">Start Writing</Button>
             </Link>
