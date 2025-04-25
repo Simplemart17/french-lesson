@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -11,8 +11,19 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const { register, isLoading } = useAuth();
+  const { register, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
+  const { redirect } = router.query;
+
+  // If already authenticated, redirect to dashboard or the redirect URL
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirectPath = redirect && typeof redirect === 'string' 
+        ? redirect 
+        : '/dashboard';
+      router.push(redirectPath);
+    }
+  }, [isAuthenticated, redirect, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +36,12 @@ export default function RegisterPage() {
     
     try {
       await register(name, email, password);
-      router.push('/dashboard');
+      
+      // After successful registration, redirect to the specified page or dashboard
+      const redirectPath = redirect && typeof redirect === 'string' 
+        ? redirect 
+        : '/dashboard';
+      router.push(redirectPath);
     } catch (err) {
       setError('Registration failed. Please try again.');
     }
@@ -148,7 +164,7 @@ export default function RegisterPage() {
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Already have an account?{' '}
-              <Link href="/login" className="font-medium text-primary-600 hover:text-primary-700">
+              <Link href={`/login${redirect ? `?redirect=${redirect}` : ''}`} className="font-medium text-primary-600 hover:text-primary-700">
                 Log in
               </Link>
             </p>

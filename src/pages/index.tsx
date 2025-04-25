@@ -15,6 +15,25 @@ import {
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
+// Helper component for authenticated links
+const AuthLink = ({ href, children, className = '' }: { href: string, children: React.ReactNode, className?: string }) => {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      router.push(`/login?redirect=${encodeURIComponent(href)}`);
+    }
+  };
+
+  return (
+    <Link href={href} onClick={handleClick} className={className}>
+      {children}
+    </Link>
+  );
+};
+
 export default function Home() {
   const [selectedLevel, setSelectedLevel] = useState('beginner');
   const { isAuthenticated, user } = useAuth();
@@ -85,7 +104,7 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Link href={`/lessons?level=${selectedLevel}`}>
+                  <Link href={`/login?redirect=/lessons?level=${selectedLevel}`}>
                     <Button size="lg" variant="outline" className="animate-fadeIn animation-delay-100">
                       Start Learning
                     </Button>
@@ -108,7 +127,7 @@ export default function Home() {
         </p>
 
         <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2">
-          <Link href="/practice" className="block group animate-fadeIn">
+          <AuthLink href="/practice" className="block group animate-fadeIn">
             <Card
               variant="primary"
               title="Voice Recognition"
@@ -122,9 +141,9 @@ export default function Home() {
                 </svg>
               </div>
             </Card>
-          </Link>
+          </AuthLink>
 
-          <Link href="/writing" className="block group animate-fadeIn animation-delay-100">
+          <AuthLink href="/writing" className="block group animate-fadeIn animation-delay-100">
             <Card
               variant="secondary"
               title="Writing Correction"
@@ -138,9 +157,9 @@ export default function Home() {
                 </svg>
               </div>
             </Card>
-          </Link>
+          </AuthLink>
 
-          <Link href="/lessons" className="block group animate-fadeIn animation-delay-200">
+          <AuthLink href="/lessons" className="block group animate-fadeIn animation-delay-200">
             <Card
               variant="success"
               title="Interactive Lessons"
@@ -154,9 +173,9 @@ export default function Home() {
                 </svg>
               </div>
             </Card>
-          </Link>
+          </AuthLink>
 
-          <Link href="/progress" className="block group animate-fadeIn animation-delay-300">
+          <AuthLink href="/progress" className="block group animate-fadeIn animation-delay-300">
             <Card
               variant="warning"
               title="Progress Tracking"
@@ -170,20 +189,20 @@ export default function Home() {
                 </svg>
               </div>
             </Card>
-          </Link>
+          </AuthLink>
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/lessons" className="inline-block mr-4">
+          <AuthLink href="/lessons" className="inline-block mr-4">
             <Button size="lg" className="animate-fadeIn animation-delay-300">
               Get Started
             </Button>
-          </Link>
-          <Link href="/exam-practice" className="inline-block">
+          </AuthLink>
+          <AuthLink href="/exam-practice" className="inline-block">
             <Button size="lg" variant="outline" className="animate-fadeIn animation-delay-400">
               Prepare for TCF/TEF
             </Button>
-          </Link>
+          </AuthLink>
         </div>
       </div>
 

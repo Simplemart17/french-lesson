@@ -19,16 +19,16 @@ export default function WritingPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3">
-          <Card title="Grammar" variant="primary">
-            <p>Our AI checks your grammar, including verb conjugations, gender agreement, and sentence structure.</p>
+          <Card title="Grammar" variant="primary" className="px-5 pt-5 pb-0">
+            <p className='text-gray-300'>Our AI checks your grammar, including verb conjugations, gender agreement, and sentence structure.</p>
           </Card>
           
-          <Card title="Vocabulary" variant="secondary">
-            <p>Get suggestions for more natural word choices and idiomatic expressions.</p>
+          <Card title="Vocabulary" variant="secondary" className="px-5 pt-5 pb-0">
+            <p className='text-gray-300'>Get suggestions for more natural word choices and idiomatic expressions.</p>
           </Card>
           
-          <Card title="Style" variant="success">
-            <p>Receive feedback on your writing style and formality level appropriate to different contexts.</p>
+          <Card title="Style" variant="success" className="px-5 pt-5 pb-0">
+            <p className='text-gray-900'>Receive feedback on your writing style and formality level appropriate to different contexts.</p>
           </Card>
         </div>
 

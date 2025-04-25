@@ -1,124 +1,94 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  level: number;
-  xp: number;
-}
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { authService, userService } from '@/services/api';
+import { User } from '@/types/api';
 
 interface AuthContextType {
   user: User | null;
-  isLoading: boolean;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
   register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {}
+});
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in on mount
   useEffect(() => {
-    const checkAuth = async () => {
+    // Check if the user is already logged in
+    const checkAuthStatus = async () => {
+      setIsLoading(true);
+      
       try {
-        // In a real app, this would be an API call to validate the token
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
+        if (authService.isAuthenticated()) {
+          // Fetch user profile data
+          const userData = await userService.getProfile();
+          setUser(userData);
         }
       } catch (error) {
-        console.error('Authentication error:', error);
+        // If there's an error (e.g., token expired), log the user out
+        console.error('Auth status check error:', error);
+        authService.logout();
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuth();
+    checkAuthStatus();
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
+    
     try {
-      // In a real app, this would be an API call
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      const mockUser: User = {
-        id: '1',
-        name: 'Test User',
-        email,
-        level: 3,
-        xp: 1250
-      };
-      
-      // Store user in localStorage
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      setUser(mockUser);
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      const response = await authService.login(email, password);
+      setUser(response.user);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (name: string, email: string, password: string) => {
+    setIsLoading(true);
+    
+    try {
+      const response = await authService.register(name, email, password);
+      setUser(response.user);
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
+    authService.logout();
     setUser(null);
-  };
-
-  const register = async (name: string, email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      // In a real app, this would be an API call
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      const mockUser: User = {
-        id: '1',
-        name,
-        email,
-        level: 1,
-        xp: 0
-      };
-      
-      // Store user in localStorage
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      setUser(mockUser);
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const value = {
     user,
-    isLoading,
     isAuthenticated: !!user,
+    isLoading,
     login,
-    logout,
-    register
+    register,
+    logout
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export default AuthContext;

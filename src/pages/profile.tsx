@@ -54,7 +54,7 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 gap-8 mb-12 lg:grid-cols-3">
           {/* Profile Summary Card */}
           <div className="lg:col-span-1">
-            <Card className="h-full">
+            <Card className="h-full p-5">
               <div className="flex flex-col items-center mb-6 text-center">
                 <div className="flex items-center justify-center w-24 h-24 mb-4 text-3xl font-bold rounded-full bg-primary-100 text-primary-700">
                   {user.name.split(' ').map(n => n[0]).join('')}
@@ -99,7 +99,7 @@ export default function ProfilePage() {
 
           {/* Language Skills Card */}
           <div className="lg:col-span-2">
-            <Card title="Language Skills" className="h-full">
+            <Card title="Language Skills" className="h-full p-5">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {languageSkills.map((skill, index) => (
                   <div key={index} className="mb-4">
@@ -279,10 +279,10 @@ export default function ProfilePage() {
               <Card 
                 variant="primary" 
                 title="Intermediate Grammar" 
-                className="h-full transition-transform group-hover:scale-105"
+                className="h-full p-5 transition-transform group-hover:scale-105"
               >
-                <p className="text-gray-600">Master complex verb tenses and sentence structures.</p>
-                <div className="flex items-center mt-4 font-medium text-primary-600">
+                <p className="text-gray-300">Master complex verb tenses and sentence structures.</p>
+                <div className="flex items-center mt-4 font-medium text-gray-200">
                   Start Learning
                   <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -295,9 +295,9 @@ export default function ProfilePage() {
               <Card 
                 variant="secondary" 
                 title="Business Vocabulary" 
-                className="h-full transition-transform group-hover:scale-105"
+                className="h-full p-5 transition-transform group-hover:scale-105"
               >
-                <p className="text-gray-600">Learn essential terms for professional environments.</p>
+                <p className="text-gray-300">Learn essential terms for professional environments.</p>
                 <div className="flex items-center mt-4 font-medium text-secondary-600">
                   Explore Words
                   <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -311,7 +311,7 @@ export default function ProfilePage() {
               <Card 
                 variant="success" 
                 title="B1 Exam Preparation" 
-                className="h-full transition-transform group-hover:scale-105"
+                className="h-full p-5 transition-transform group-hover:scale-105"
               >
                 <p className="text-gray-600">Practice tests and exercises to prepare for your B1 exam.</p>
                 <div className="flex items-center mt-4 font-medium text-green-600">

@@ -169,15 +169,15 @@ export default function PracticePage() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3">
-          <Card title="Pronunciation" variant="primary">
-            <p>Our AI analyzes your pronunciation and provides specific feedback to help you sound more natural.</p>
+          <Card title="Pronunciation" variant="primary" className="px-5 pt-5 pb-0">
+            <p className='text-gray-300'>Our AI analyzes your pronunciation and provides specific feedback to help you sound more natural.</p>
           </Card>
           
-          <Card title="Fluency" variant="secondary">
-            <p>Practice speaking at a natural pace to build confidence and fluency in conversation.</p>
+          <Card title="Fluency" variant="secondary" className="px-5 pt-5 pb-0">
+            <p className='text-gray-300'>Practice speaking at a natural pace to build confidence and fluency in conversation.</p>
           </Card>
           
-          <Card title="Comprehension" variant="success">
+          <Card title="Comprehension" variant="success" className="px-5 pt-5 pb-0">
             <p>Respond to prompts to demonstrate your understanding of French in real-world contexts.</p>
           </Card>
         </div>
