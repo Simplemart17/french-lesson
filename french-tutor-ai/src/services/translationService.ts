@@ -99,64 +99,82 @@ export const detectLanguage = async (text: string): Promise<DetectionResult> => 
 };
 
 /**
- * Simulates translation for development purposes
+ * Simulates translation for development purposes with a visual typing effect
  */
 const simulateTranslation = (
   text: string,
   sourceLanguage: LanguageCode,
   targetLanguage: LanguageCode
-): TranslationResult => {
-  // Simple simulation - in reality would use a more sophisticated approach
-  let translatedText = text;
-  let detectedLanguage: LanguageCode | undefined = undefined;
-  
-  // Detect language if auto is selected
-  if (sourceLanguage === 'auto') {
-    const detection = simulateDetection(text);
-    detectedLanguage = detection.language;
-    sourceLanguage = detection.language;
-  }
-  
-  // Only translate if source and target are different
-  if (sourceLanguage !== targetLanguage) {
-    if (sourceLanguage === 'en' && targetLanguage === 'fr') {
-      // English to French simple replacements
-      translatedText = text
-        .replace(/hello/gi, 'bonjour')
-        .replace(/goodbye/gi, 'au revoir')
-        .replace(/thank you/gi, 'merci')
-        .replace(/please/gi, 's\'il vous plaît')
-        .replace(/yes/gi, 'oui')
-        .replace(/no/gi, 'non')
-        .replace(/the/gi, 'le')
-        .replace(/a /gi, 'un ')
-        .replace(/is/gi, 'est')
-        .replace(/I am/gi, 'Je suis')
-        .replace(/I /gi, 'Je ');
-    } else if (sourceLanguage === 'fr' && targetLanguage === 'en') {
-      // French to English simple replacements
-      translatedText = text
-        .replace(/bonjour/gi, 'hello')
-        .replace(/au revoir/gi, 'goodbye')
-        .replace(/merci/gi, 'thank you')
-        .replace(/s'il vous plaît/gi, 'please')
-        .replace(/oui/gi, 'yes')
-        .replace(/non/gi, 'no')
-        .replace(/le /gi, 'the ')
-        .replace(/la /gi, 'the ')
-        .replace(/un /gi, 'a ')
-        .replace(/une /gi, 'a ')
-        .replace(/est/gi, 'is')
-        .replace(/Je suis/gi, 'I am')
-        .replace(/Je /gi, 'I ');
+): Promise<TranslationResult> => {
+  return new Promise((resolve) => {
+    // Simple simulation - in reality would use a more sophisticated approach
+    let translatedText = text;
+    let detectedLanguage: LanguageCode | undefined = undefined;
+    
+    // Detect language if auto is selected
+    if (sourceLanguage === 'auto') {
+      const detection = simulateDetection(text);
+      detectedLanguage = detection.language;
+      sourceLanguage = detection.language;
     }
-  }
-  
-  return {
-    translatedText,
-    detectedLanguage,
-    confidence: 0.8,
-  };
+    
+    // Only translate if source and target are different
+    if (sourceLanguage !== targetLanguage) {
+      if (sourceLanguage === 'en' && targetLanguage === 'fr') {
+        // English to French simple replacements
+        translatedText = text
+          .replace(/hello/gi, 'bonjour')
+          .replace(/goodbye/gi, 'au revoir')
+          .replace(/thank you/gi, 'merci')
+          .replace(/please/gi, 's\'il vous plaît')
+          .replace(/yes/gi, 'oui')
+          .replace(/no/gi, 'non')
+          .replace(/the/gi, 'le')
+          .replace(/a /gi, 'un ')
+          .replace(/is/gi, 'est')
+          .replace(/I am/gi, 'Je suis')
+          .replace(/I /gi, 'Je ')
+          // Add more French flair
+          .replace(/good/gi, 'bon')
+          .replace(/bad/gi, 'mauvais')
+          .replace(/beautiful/gi, 'beau')
+          .replace(/today/gi, 'aujourd\'hui');
+      } else if (sourceLanguage === 'fr' && targetLanguage === 'en') {
+        // French to English simple replacements
+        translatedText = text
+          .replace(/bonjour/gi, 'hello')
+          .replace(/au revoir/gi, 'goodbye')
+          .replace(/merci/gi, 'thank you')
+          .replace(/s'il vous plaît/gi, 'please')
+          .replace(/oui/gi, 'yes')
+          .replace(/non/gi, 'no')
+          .replace(/le /gi, 'the ')
+          .replace(/la /gi, 'the ')
+          .replace(/un /gi, 'a ')
+          .replace(/une /gi, 'a ')
+          .replace(/est/gi, 'is')
+          .replace(/Je suis/gi, 'I am')
+          // Add more English translations
+          .replace(/bon/gi, 'good')
+          .replace(/mauvais/gi, 'bad')
+          .replace(/beau/gi, 'beautiful')
+          .replace(/aujourd'hui/gi, 'today')
+          .replace(/Je /gi, 'I ');
+      }
+    }
+
+    // Add a slight delay to simulate processing time
+    const processingTime = Math.min(1000, text.length * 20);
+    
+    // Simulate a typing effect by resolving after a delay
+    setTimeout(() => {
+      resolve({
+        translatedText,
+        detectedLanguage,
+        confidence: 0.9
+      });
+    }, processingTime);
+  });
 };
 
 /**
@@ -206,4 +224,4 @@ export const getLanguageName = (code: string): string => {
   };
   
   return languages[code] || code;
-}; 
+};

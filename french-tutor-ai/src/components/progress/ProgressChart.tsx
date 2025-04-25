@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import '../../styles/animations.css';
 
 interface ProgressChartProps {
   data: {
@@ -193,9 +194,12 @@ const ProgressChart = ({
   }, [data, color, height, showLabels]);
 
   return (
-    <div className="relative">
-      <h3 className="text-lg font-medium text-gray-800 mb-2">{title}</h3>
-      <div className="relative" style={{ height: `${height}px` }}>
+    <div className="relative animate-fade-in">
+      <h3 className="flex items-center mb-2 text-lg font-medium text-gray-800">
+        <span className="inline-block mr-2 w-3 h-3 rounded-full" style={{ backgroundColor: color }}></span>
+        {title}
+      </h3>
+      <div className="relative p-4 bg-white rounded-lg shadow-sm transition-all hover-lift" style={{ height: `${height + 30}px` }}>
         <canvas 
           ref={canvasRef} 
           className="w-full h-full"
@@ -206,14 +210,20 @@ const ProgressChart = ({
         
         {tooltipData && (
           <div 
-            className="absolute bg-white shadow-lg rounded-md p-2 text-sm pointer-events-none z-10 transform -translate-x-1/2 -translate-y-full"
+            className="absolute z-10 p-3 text-sm bg-white rounded-md border border-gray-100 shadow-lg transform -translate-x-1/2 -translate-y-full pointer-events-none animate-fade-in"
             style={{ 
               left: `${tooltipData.x}px`, 
               top: `${tooltipData.y - 5}px`,
             }}
           >
             <div className="font-medium">{new Date(tooltipData.date).toLocaleDateString()}</div>
-            <div className="text-gray-600">{tooltipData.value}</div>
+            <div className="font-bold text-gray-600">{tooltipData.value}</div>
+          </div>
+        )}
+        
+        {data.length === 0 && (
+          <div className="flex absolute inset-0 justify-center items-center text-gray-500">
+            No data available
           </div>
         )}
       </div>
