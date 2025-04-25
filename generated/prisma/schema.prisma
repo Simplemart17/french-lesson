@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id               Int      @id @default(autoincrement())
+  email            String   @unique
+  name             String
+  password         String? // Hashed password
+  level            String   @default("A1")
+  points           Int      @default(0)
+  streakDays       Int      @default(0)
+  joinedAt         DateTime @default(now())
+  learningGoals    String[] @default([])
+  completedLessons Int      @default(0)
+  lastActive       DateTime @default(now())
+  dailyGoal        Int      @default(15)
+  notifications    Boolean  @default(true)
+  theme            String   @default("light")
+
+  // Relations
+  lessonProgress LessonProgress[]
+  vocabulary     UserVocabulary[]
+  examResults    ExamResult[]
+  conversations  Conversation[]
+}
+
+// Lesson model
+model Lesson {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  level       String
+  duration    Int // minutes
+  topics      String[]
+  content     Json // JSON object containing sections and exercises
+
+  // Relations
+  progress LessonProgress[]
+}
+
+// LessonProgress model
+model LessonProgress {
+  id          Int       @id @default(autoincrement())
+  lessonId    Int
+  userId      Int
+  completed   Boolean   @default(false)
+  score       Int       @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  answers     Json? // JSON object storing user answers
+
+  // Relations
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, lessonId])
+}
+
+// Vocabulary model
+model Vocabulary {
+  id          Int    @id @default(autoincrement())
+  word        String @unique
+  translation String
+  example     String
+  level       String
+
+  // Relations
+  userVocabulary UserVocabulary[]
+}
+
+// UserVocabulary model for tracking user's vocabulary progress
+model UserVocabulary {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  vocabularyId  Int
+  learned       Boolean   @default(false)
+  lastPracticed DateTime?
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id])
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id])
+
+  @@unique([userId, vocabularyId])
+}
+
+// Conversation model
+model Conversation {
+  id            String   @id @default(uuid())
+  userId        Int
+  title         String
+  context       String
+  startedAt     DateTime @default(now())
+  lastMessageAt DateTime @default(now())
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id])
+  messages Message[]
+}
+
+// Message model
+model Message {
+  id             Int      @id @default(autoincrement())
+  conversationId String
+  role           String // 'user' or 'assistant'
+  content        String   @db.Text
+  timestamp      DateTime @default(now())
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+}
+
+// Exam result model
+model ExamResult {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  examId      String
+  section     String
+  level       String
+  score       Int
+  details     Json // JSON object containing details about answers
+  completedAt DateTime
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+}

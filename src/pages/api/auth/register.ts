@@ -1,56 +1,90 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { findUserByEmail, createUser } from '@/lib/db';
+import { RegisterRequest, AuthResponse, ApiResponse } from '@/types/api';
+import { sign } from 'jsonwebtoken';
 
-// Mock user database - in production this would be a real database
-const users = [
-  { id: 1, email: 'user@example.com', password: 'password123', name: 'John Doe' },
-];
+// Secret key for JWT signing - in production, use environment variables
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ApiResponse<AuthResponse>>
 ) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false, 
+      error: {
+        message: 'Method not allowed'
+      }
+    });
   }
 
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name } = req.body as RegisterRequest;
 
     if (!email || !password || !name) {
-      return res.status(400).json({ message: 'Email, password, and name are required' });
+      return res.status(400).json({ 
+        success: false, 
+        error: {
+          message: 'Email, password, and name are required'
+        }
+      });
     }
 
     // Check if user already exists
-    const existingUser = users.find(u => u.email === email);
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
-      return res.status(409).json({ message: 'User with this email already exists' });
+      return res.status(409).json({ 
+        success: false, 
+        error: {
+          message: 'User with this email already exists'
+        }
+      });
     }
 
-    // In a real application:
-    // 1. Hash the password
-    // 2. Store the user in a database
-    // 3. Generate authentication tokens
-
-    // Create new user (mock implementation)
-    const newUser = {
-      id: users.length + 1,
-      email,
-      password, // In a real app, this would be hashed
+    // Create new user using our database service
+    const newUser = await createUser({
       name,
-    };
+      email,
+      password,
+      level: 'A1', // Starting level for new users
+      points: 0,
+      streakDays: 0,
+      joinedAt: new Date().toISOString(),
+      learningGoals: [],
+      completedLessons: 0,
+      lastActive: new Date().toISOString(),
+      preferences: {
+        dailyGoal: 15, // Default 15 minutes per day
+        notifications: true,
+        theme: 'light'
+      }
+    });
 
-    // Add user to our mock database
-    users.push(newUser);
-
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = newUser;
+    // Create JWT token
+    const token = sign(
+      { 
+        userId: newUser.id,
+        email: newUser.email 
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
     
     return res.status(201).json({
-      user: userWithoutPassword,
-      token: 'mock-jwt-token' // In a real app, generate a JWT token
+      success: true,
+      data: {
+        user: newUser,
+        token
+      }
     });
   } catch (error) {
     console.error('Registration error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ 
+      success: false, 
+      error: {
+        message: 'Internal server error'
+      }
+    });
   }
 } 

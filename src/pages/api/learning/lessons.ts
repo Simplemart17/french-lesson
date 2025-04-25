@@ -1,123 +1,131 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { 
+  getAllLessons, 
+  getLessonsByLevel, 
+  getLessonsByTopic, 
+  getLessonById,
+  updateLessonProgress,
+  getLessonProgress
+} from '@/utils/mockDb';
+import { ApiResponse, Lesson, LessonProgress } from '@/types/api';
+import { isAuthenticated, getUserId } from '@/utils/auth';
 
-// Mock middleware to verify authentication token
-function isAuthenticated(req: NextApiRequest): boolean {
-  const token = req.headers.authorization?.split(' ')[1];
-  return token === 'mock-jwt-token';
-}
-
-// Mock lessons data
-const lessons = [
-  {
-    id: 1,
-    title: 'Introduction to French Basics',
-    description: 'Learn the fundamentals of French pronunciation and greetings.',
-    level: 'A1',
-    duration: 15, // minutes
-    topics: ['Greetings', 'Pronunciation'],
-    content: {
-      sections: [
-        {
-          type: 'text',
-          title: 'Basic Greetings',
-          content: 'In French, "Hello" is "Bonjour" and "Goodbye" is "Au revoir".'
-        },
-        {
-          type: 'audio',
-          title: 'Pronunciation Practice',
-          audioUrl: '/api/audio/greetings.mp3',
-          transcript: 'Bonjour! Comment allez-vous?'
-        }
-      ],
-      exercises: [
-        {
-          type: 'multiple-choice',
-          question: 'How do you say "Hello" in French?',
-          options: ['Bonjour', 'Au revoir', 'Merci', 'S\'il vous plaît'],
-          correctAnswer: 'Bonjour'
-        }
-      ]
-    }
-  },
-  {
-    id: 2,
-    title: 'Common French Phrases',
-    description: 'Learn everyday phrases used in conversation.',
-    level: 'A1',
-    duration: 20,
-    topics: ['Conversation', 'Vocabulary'],
-    content: {
-      sections: [
-        {
-          type: 'text',
-          title: 'Useful Phrases',
-          content: 'Some useful phrases include "S\'il vous plaît" (Please) and "Merci" (Thank you).'
-        }
-      ],
-      exercises: [
-        {
-          type: 'fill-in-blank',
-          question: 'Please fill in: "_____, je voudrais un café."',
-          correctAnswer: 'S\'il vous plaît'
-        }
-      ]
-    }
-  }
-];
-
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   // Check authentication
   if (!isAuthenticated(req)) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ 
+      success: false, 
+      error: {
+        message: 'Unauthorized'
+      }
+    });
   }
 
+  const userId = getUserId(req);
+
   if (req.method === 'GET') {
-    // Handle query parameters for filtering
-    const { level, topic } = req.query;
+    const { level, topic, id } = req.query;
     
-    let filteredLessons = [...lessons];
-    
-    if (level) {
-      filteredLessons = filteredLessons.filter(lesson => 
-        lesson.level === level
-      );
+    // Get a specific lesson by ID
+    if (id) {
+      const lessonId = parseInt(id as string, 10);
+      const lesson = getLessonById(lessonId);
+      
+      if (!lesson) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            message: 'Lesson not found'
+          }
+        });
+      }
+      
+      // Get user's progress for this lesson, if any
+      const progress = getLessonProgress(userId, lessonId) as LessonProgress | undefined;
+      
+      return res.status(200).json({
+        success: true,
+        data: {
+          ...lesson,
+          progress: progress || null
+        }
+      });
     }
     
-    if (topic) {
-      filteredLessons = filteredLessons.filter(lesson => 
-        lesson.topics.includes(topic as string)
-      );
+    // Filter lessons based on query parameters
+    let lessons: Lesson[] = [];
+    
+    if (level && topic) {
+      // First filter by level, then by topic
+      lessons = getLessonsByLevel(level as string)
+        .filter(lesson => lesson.topics.includes(topic as string));
+    } else if (level) {
+      lessons = getLessonsByLevel(level as string);
+    } else if (topic) {
+      lessons = getLessonsByTopic(topic as string);
+    } else {
+      lessons = getAllLessons();
     }
     
     // Return list of lessons (without full content)
-    return res.status(200).json(
-      filteredLessons.map(({ content, ...lesson }) => lesson)
-    );
+    return res.status(200).json({
+      success: true,
+      data: lessons.map(({ content, ...lesson }) => lesson)
+    });
   } else if (req.method === 'POST') {
     // For tracking lesson progress/completion
     try {
-      const { lessonId, completed, score } = req.body;
+      const { lessonId, completed, score, startedAt, completedAt, answers } = req.body;
       
       if (!lessonId) {
-        return res.status(400).json({ message: 'Lesson ID is required' });
+        return res.status(400).json({ 
+          success: false, 
+          error: {
+            message: 'Lesson ID is required'
+          }
+        });
       }
       
-      // In a real app, update the user's progress in the database
+      // Update the user's progress in the database
+      const progress = updateLessonProgress(userId, lessonId, {
+        completed: completed || false,
+        score: score || 0,
+        startedAt,
+        completedAt,
+        answers
+      });
+      
+      if (!progress) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            message: 'Failed to update lesson progress'
+          }
+        });
+      }
       
       return res.status(200).json({
-        message: 'Lesson progress updated',
-        lessonId,
-        completed: completed || false,
-        score: score || 0
+        success: true,
+        data: progress
       });
     } catch (error) {
       console.error('Lesson progress update error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ 
+        success: false, 
+        error: {
+          message: 'Internal server error'
+        }
+      });
     }
   } else {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false, 
+      error: {
+        message: 'Method not allowed'
+      }
+    });
   }
 } 

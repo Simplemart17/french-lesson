@@ -1,64 +1,98 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { findUserById, updateUser } from '@/lib/db';
+import { ApiResponse, User } from '@/types/api';
+import { isAuthenticated, getUserId } from '@/utils/auth';
 
-// Mock middleware to verify authentication token
-// In a real app, you would use a proper auth middleware
-function isAuthenticated(req: NextApiRequest): boolean {
-  const token = req.headers.authorization?.split(' ')[1];
-  return token === 'mock-jwt-token';
-}
-
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   // Check authentication
   if (!isAuthenticated(req)) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
-  if (req.method === 'GET') {
-    // Return mock profile data
-    return res.status(200).json({
-      id: 1,
-      name: 'John Doe',
-      email: 'user@example.com',
-      level: 'Intermediate',
-      points: 750,
-      streakDays: 12,
-      joinedAt: '2023-01-15',
-      learningGoals: ['Conversation', 'Vocabulary', 'Grammar'],
-      completedLessons: 32,
-      lastActive: '2023-06-10',
-      preferences: {
-        dailyGoal: 20, // minutes
-        notifications: true,
-        theme: 'light'
+    return res.status(401).json({ 
+      success: false, 
+      error: {
+        message: 'Unauthorized'
       }
     });
-  } else if (req.method === 'PUT') {
-    // Update user profile (mock implementation)
+  }
+
+  const userId = getUserId(req);
+
+  if (req.method === 'GET') {
+    // Get user profile
+    const user = await findUserById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: {
+          message: 'User not found'
+        }
+      });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      data: user
+    });
+  } else if (req.method === 'PUT' || req.method === 'PATCH') {
+    // Update user profile
     try {
-      const updatedData = req.body;
+      const { 
+        name, 
+        level, 
+        learningGoals,
+        preferences
+      } = req.body;
       
-      // Validate required fields if needed
-      if (!updatedData) {
-        return res.status(400).json({ message: 'No data provided for update' });
+      // Only allow certain fields to be updated
+      const updates: Partial<User> = {};
+      
+      if (name) updates.name = name;
+      if (level) updates.level = level;
+      if (learningGoals) updates.learningGoals = learningGoals;
+      
+      if (preferences) {
+        updates.preferences = {
+          ...(await findUserById(userId))?.preferences || {},
+          ...preferences
+        };
       }
       
-      // In a real app, you would update the user in the database
+      // Always update lastActive time
+      updates.lastActive = new Date().toISOString();
+      
+      const updatedUser = await updateUser(userId, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ 
+          success: false, 
+          error: {
+            message: 'User not found'
+          }
+        });
+      }
       
       return res.status(200).json({
-        message: 'Profile updated successfully',
-        user: {
-          id: 1,
-          ...updatedData
-        }
+        success: true,
+        data: updatedUser
       });
     } catch (error) {
       console.error('Profile update error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ 
+        success: false, 
+        error: {
+          message: 'Internal server error'
+        }
+      });
     }
   } else {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false, 
+      error: {
+        message: 'Method not allowed'
+      }
+    });
   }
 } 

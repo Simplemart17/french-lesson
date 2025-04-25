@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verify } from 'jsonwebtoken';
 
 // Paths that are public (accessible without authentication)
 const publicPaths = ['/', '/login', '/register'];
 
 // Auth paths that should redirect to dashboard if already authenticated
 const authPaths = ['/login', '/register'];
+
+// JWT Secret - in production, use environment variables
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,7 +22,17 @@ export function middleware(request: NextRequest) {
   
   // Get authentication token from cookies
   const token = request.cookies.get('token')?.value;
-  const isAuthenticated = !!token;
+  
+  // Verify the token is valid
+  let isAuthenticated = false;
+  if (token) {
+    try {
+      verify(token, JWT_SECRET);
+      isAuthenticated = true;
+    } catch (error) {
+      isAuthenticated = false;
+    }
+  }
   
   // Case 1: Non-public route but not authenticated
   if (!isPublicPath && !isAuthenticated) {

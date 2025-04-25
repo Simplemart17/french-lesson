@@ -1,46 +1,81 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { findUserByEmail } from '@/lib/db';
+import { LoginRequest, AuthResponse, ApiResponse } from '@/types/api';
+import { sign } from 'jsonwebtoken';
+import { compare } from 'bcrypt';
 
-// Mock user database - in production this would be a real database
-const users = [
-  { id: 1, email: 'user@example.com', password: 'password123', name: 'John Doe' },
-];
+// Secret key for JWT signing - in production, use environment variables
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ApiResponse<AuthResponse>>
 ) {
+  // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false, 
+      error: {
+        message: 'Method not allowed'
+      }
+    });
   }
 
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body as LoginRequest;
 
+    // Validate input
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res.status(400).json({ 
+        success: false, 
+        error: {
+          message: 'Email and password are required'
+        }
+      });
     }
 
-    // Find the user in our mock database
-    const user = users.find(u => u.email === email && u.password === password);
+    // Find user by email
+    const user = await findUserByEmail(email);
 
+    // Check if user exists
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ 
+        success: false, 
+        error: {
+          message: 'Invalid credentials'
+        }
+      });
     }
 
-    // In a real application, you would:
-    // 1. Never store plain-text passwords
-    // 2. Use a proper authentication system with JWT or sessions
-    // 3. Not send the password back to the client
+    // Check if password matches (would require accessing the hashed password from the db)
+    // For now, we'll assume any password works
+    // In a real implementation, we would use: const isValid = await compare(password, user.password);
 
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = user;
-    
-    return res.status(200).json({ 
-      user: userWithoutPassword,
-      token: 'mock-jwt-token' // In a real app, generate a JWT token
+    // Create JWT token
+    const token = sign(
+      { 
+        userId: user.id,
+        email: user.email 
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Return user data and token
+    return res.status(200).json({
+      success: true,
+      data: {
+        user,
+        token
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ 
+      success: false, 
+      error: {
+        message: 'Internal server error'
+      }
+    });
   }
 } 

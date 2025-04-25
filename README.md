@@ -2,6 +2,27 @@
 
 This is the frontend application for the French Tutor AI project, built with Next.js, TypeScript, and Tailwind CSS.
 
+## Database Setup
+
+The application uses PostgreSQL with Prisma ORM for database access. Follow these steps to set up the database:
+
+1. Make sure you have PostgreSQL installed and running with a database named `french_lesson`
+2. Configure your database connection in the `.env` file:
+   ```
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/french_lesson?schema=public"
+   ```
+3. Run the database setup commands:
+   ```bash
+   # Push the Prisma schema to the database
+   npm run db:push
+   
+   # Seed the database with initial data
+   npm run db:seed
+   
+   # Or run both commands together
+   npm run db:setup
+   ```
+
 ## Getting Started
 
 ### Prerequisites

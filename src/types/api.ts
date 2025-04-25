@@ -3,20 +3,30 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  level?: string;
-  points?: number;
-  streakDays?: number;
-  joinedAt?: string;
-  learningGoals?: string[];
-  completedLessons?: number;
-  lastActive?: string;
-  preferences?: UserPreferences;
+  level: string;
+  points: number;
+  streakDays: number;
+  joinedAt: string;
+  learningGoals: string[];
+  completedLessons: number;
+  lastActive: string;
+  preferences: {
+    dailyGoal: number;
+    notifications: boolean;
+    theme: 'light' | 'dark';
+  };
 }
 
-export interface UserPreferences {
-  dailyGoal?: number; // minutes
-  notifications?: boolean;
-  theme?: 'light' | 'dark';
+// Auth-related types
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
 }
 
 export interface AuthResponse {
@@ -25,21 +35,6 @@ export interface AuthResponse {
 }
 
 // Lesson-related types
-export interface Lesson {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  duration: number; // minutes
-  topics: string[];
-  content?: LessonContent;
-}
-
-export interface LessonContent {
-  sections: LessonSection[];
-  exercises: Exercise[];
-}
-
 export interface LessonSection {
   type: 'text' | 'audio' | 'video' | 'image';
   title: string;
@@ -50,18 +45,107 @@ export interface LessonSection {
   transcript?: string;
 }
 
-export interface Exercise {
-  type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'speaking';
+export interface LessonExercise {
+  type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking';
   question: string;
   options?: string[];
   correctAnswer: string | string[];
+  hint?: string;
+}
+
+export interface Lesson {
+  id: number;
+  title: string;
+  description: string;
+  level: string;
+  duration: number; // in minutes
+  topics: string[];
+  content: {
+    sections: LessonSection[];
+    exercises: LessonExercise[];
+  };
 }
 
 export interface LessonProgress {
   lessonId: number;
   completed: boolean;
   score: number;
+  startedAt?: string;
+  completedAt?: string;
+  answers?: Record<number, string | string[]>; // exerciseIndex -> answer
 }
+
+// Vocabulary and Practice types
+export interface VocabularyItem {
+  word: string;
+  translation: string;
+  example: string;
+  level: string;
+  learned: boolean;
+  lastPracticed?: string;
+}
+
+export interface PracticeSession {
+  id: string;
+  userId: number;
+  type: 'vocabulary' | 'grammar' | 'listening' | 'speaking';
+  items: Array<VocabularyItem | LessonExercise>; 
+  startedAt: string;
+  completedAt?: string;
+  score?: number;
+}
+
+// Conversation types
+export interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+export interface Conversation {
+  id: string;
+  userId: number;
+  title: string;
+  context: string;
+  messages: Message[];
+  startedAt: string;
+  lastMessageAt: string;
+}
+
+// Exam types
+export interface ExamSection {
+  name: string;
+  level: string;
+  questions: LessonExercise[];
+  duration: number; // in minutes
+}
+
+export interface ExamResult {
+  userId: number;
+  examId: string;
+  section: string;
+  level: string;
+  score: number;
+  details: Array<{
+    questionIndex: number;
+    correct: boolean;
+    userAnswer: string | string[];
+  }>;
+  completedAt: string;
+}
+
+// API response types
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: {
+    message: string;
+    code?: string;
+  };
+}
+
+// HTTP request method types
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 // Assessment-related types
 export interface AssessmentResponse {
