@@ -29,7 +29,7 @@ export default function Home() {
       </Head>
 
       {/* Hero Section with Background */}
-      <div className="relative py-16 mb-12 overflow-hidden text-white bg-gradient-to-r from-primary-600 to-primary-800">
+      <div className="overflow-hidden relative py-16 mb-12 text-white bg-gradient-to-r from-primary-600 to-primary-800">
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <defs>
@@ -42,7 +42,7 @@ export default function Home() {
         </div>
 
         <div className="container relative z-10 px-4 mx-auto">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="mx-auto max-w-4xl text-center">
             <h1 className="mb-6 text-4xl font-bold md:text-6xl animate-fadeIn">
               Master French with AI
             </h1>
@@ -51,9 +51,9 @@ export default function Home() {
             </p>
 
             {/* Language Level Selector */}
-            <div className="inline-block p-4 mb-8 rounded-lg bg-white/10 backdrop-blur-sm">
+            <div className="inline-block p-4 mb-8 rounded-lg backdrop-blur-sm bg-white/10">
               <p className="mb-3 text-white">Select your proficiency level:</p>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap gap-2 justify-center">
                 {['beginner', 'intermediate', 'advanced'].map((level) => (
                   <button
                     key={level}
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap gap-4 justify-center">
               {isAuthenticated ? (
                 <>
                   <Link href="/dashboard">
@@ -78,7 +78,7 @@ export default function Home() {
                     </Button>
                   </Link>
                   <Link href={`/lessons?level=${selectedLevel}`}>
-                    <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 animate-fadeIn animation-delay-200">
+                    <Button size="lg" variant="outline" className="text-white border-white bg-white/10 animate-fadeIn animation-delay-200">
                       Continue Learning
                     </Button>
                   </Link>
@@ -102,7 +102,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="p-8 mx-auto mb-12 bg-white rounded-lg shadow-md ">
+      <div className="p-8 mx-auto mb-12 bg-white rounded-lg shadow-md">
         <p className="mb-6 text-lg text-gray-700">
           Welcome to French Tutor AI, an intelligent platform designed to help you master the French language through personalized learning experiences, interactive exercises, and real-time feedback.
         </p>
@@ -112,12 +112,12 @@ export default function Home() {
             <Card
               variant="primary"
               title="Voice Recognition"
-              className="h-full p-5 transition-transform group-hover:scale-105"
+              className="p-5 h-full transition-transform group-hover:scale-105"
             >
               <p className="text-white">Practice your pronunciation with our advanced speech recognition technology.</p>
               <div className="flex items-center mt-4 font-medium text-black">
                 Try it now
-                <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -128,12 +128,12 @@ export default function Home() {
             <Card
               variant="secondary"
               title="Writing Correction"
-              className="h-full p-5 transition-transform group-hover:scale-105"
+              className="p-5 h-full transition-transform group-hover:scale-105"
             >
               <p className="text-white">Get instant feedback on your written French with AI-powered corrections.</p>
               <div className="flex items-center mt-4 font-medium text-gray-400">
                 Try it now
-                <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -144,12 +144,12 @@ export default function Home() {
             <Card
               variant="success"
               title="Interactive Lessons"
-              className="h-full p-5 transition-transform group-hover:scale-105"
+              className="p-5 h-full transition-transform group-hover:scale-105"
             >
               <p className="text-gray-600">Explore our comprehensive library of lessons tailored to your proficiency level.</p>
               <div className="flex items-center mt-4 font-medium text-green-600">
                 Browse lessons
-                <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -160,12 +160,12 @@ export default function Home() {
             <Card
               variant="warning"
               title="Progress Tracking"
-              className="h-full p-5 transition-transform group-hover:scale-105"
+              className="p-5 h-full transition-transform group-hover:scale-105"
             >
               <p className="text-gray-600">Monitor your learning journey with detailed statistics and personalized insights.</p>
               <div className="flex items-center mt-4 font-medium text-yellow-600">
                 View progress
-                <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -223,7 +223,7 @@ export default function Home() {
               animation-delay: 0.4s;
             }
           `}</style>
-          <div className="p-6 transition-shadow bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md animate-fadeIn">
+          <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm transition-shadow hover:shadow-md animate-fadeIn">
             <div className="mb-4 text-primary-600">
               <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -233,7 +233,7 @@ export default function Home() {
             <p className="text-gray-600">Our AI adapts to your learning style and pace, creating a customized experience.</p>
           </div>
 
-          <div className="p-6 transition-shadow bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md animate-fadeIn animation-delay-100">
+          <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm transition-shadow hover:shadow-md animate-fadeIn animation-delay-100">
             <div className="mb-4 text-secondary-600">
               <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -243,7 +243,7 @@ export default function Home() {
             <p className="text-gray-600">Get instant corrections and suggestions to improve your French skills faster.</p>
           </div>
 
-          <div className="p-6 transition-shadow bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md animate-fadeIn animation-delay-200">
+          <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm transition-shadow hover:shadow-md animate-fadeIn animation-delay-200">
             <div className="mb-4 text-green-600">
               <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -261,9 +261,9 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* Testimonial 1 */}
-          <div className="p-6 transition-shadow bg-white border border-gray-100 rounded-lg shadow-md hover:shadow-lg animate-fadeIn">
+          <div className="p-6 bg-white rounded-lg border border-gray-100 shadow-md transition-shadow hover:shadow-lg animate-fadeIn">
             <div className="flex items-center mb-4">
-              <div className="flex items-center justify-center w-12 h-12 mr-4 text-xl font-bold rounded-full bg-primary-100 text-primary-700">
+              <div className="flex justify-center items-center mr-4 w-12 h-12 text-xl font-bold rounded-full bg-primary-100 text-primary-700">
                 SL
               </div>
               <div>
@@ -284,9 +284,9 @@ export default function Home() {
           </div>
 
           {/* Testimonial 2 */}
-          <div className="p-6 transition-shadow bg-white border border-gray-100 rounded-lg shadow-md hover:shadow-lg animate-fadeIn animation-delay-100">
+          <div className="p-6 bg-white rounded-lg border border-gray-100 shadow-md transition-shadow hover:shadow-lg animate-fadeIn animation-delay-100">
             <div className="flex items-center mb-4">
-              <div className="flex items-center justify-center w-12 h-12 mr-4 text-xl font-bold rounded-full bg-secondary-100 text-secondary-700">
+              <div className="flex justify-center items-center mr-4 w-12 h-12 text-xl font-bold rounded-full bg-secondary-100 text-secondary-700">
                 JM
               </div>
               <div>
@@ -307,9 +307,9 @@ export default function Home() {
           </div>
 
           {/* Testimonial 3 */}
-          <div className="p-6 transition-shadow bg-white border border-gray-100 rounded-lg shadow-md hover:shadow-lg animate-fadeIn animation-delay-200">
+          <div className="p-6 bg-white rounded-lg border border-gray-100 shadow-md transition-shadow hover:shadow-lg animate-fadeIn animation-delay-200">
             <div className="flex items-center mb-4">
-              <div className="flex items-center justify-center w-12 h-12 mr-4 text-xl font-bold text-green-700 bg-green-100 rounded-full">
+              <div className="flex justify-center items-center mr-4 w-12 h-12 text-xl font-bold text-green-700 bg-green-100 rounded-full">
                 AR
               </div>
               <div>
@@ -334,7 +334,7 @@ export default function Home() {
           <Link href="/testimonials">
             <Button variant="link" className="text-primary-600 hover:text-primary-800 animate-fadeIn animation-delay-300">
               Read More Success Stories
-              <svg className="inline w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="inline ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </Button>
@@ -343,8 +343,8 @@ export default function Home() {
       </div>
 
       {/* Language Proficiency Test CTA */}
-      <div className="max-w-4xl px-4 mx-auto mb-16">
-        <div className="overflow-hidden shadow-lg bg-gradient-to-r from-secondary-500 to-secondary-700 rounded-xl">
+      <div className="px-4 mx-auto mb-16 max-w-4xl">
+        <div className="overflow-hidden bg-gradient-to-r rounded-xl shadow-lg from-secondary-500 to-secondary-700">
           <div className="md:flex">
             <div className="p-8 md:w-2/3 md:p-12">
               <h2 className="mb-4 text-2xl font-bold text-white md:text-3xl">Not Sure About Your Level?</h2>
@@ -356,18 +356,18 @@ export default function Home() {
               </Link>
             </div>
             <div className="relative md:w-1/3">
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm">
+              <div className="absolute inset-0 backdrop-blur-sm bg-white/10">
                 <svg className="absolute top-0 right-0 w-24 h-full transform translate-x-1/2 text-secondary-700" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                   <polygon points="0,0 100,0 50,100 0,100" />
                 </svg>
               </div>
-              <div className="relative flex items-center justify-center h-full p-6">
-                <div className="p-4 rounded-lg shadow-lg bg-white/90 backdrop-blur">
+              <div className="flex relative justify-center items-center p-6 h-full">
+                <div className="p-4 rounded-lg shadow-lg backdrop-blur bg-white/90">
                   <div className="mb-2 text-xl font-bold text-center text-secondary-700">5-Minute Test</div>
                   <div className="flex justify-center space-x-1">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="w-2 h-8 overflow-hidden rounded-full bg-secondary-200">
-                        <div className="w-full h-full origin-bottom transform scale-y-0 bg-secondary-600 animate-grow" style={{ animationDelay: `${i * 0.2}s` }}></div>
+                      <div key={i} className="overflow-hidden w-2 h-8 rounded-full bg-secondary-200">
+                        <div className="w-full h-full transform origin-bottom scale-y-0 bg-secondary-600 animate-grow" style={{ animationDelay: `${i * 0.2}s` }}></div>
                       </div>
                     ))}
                   </div>
@@ -410,7 +410,7 @@ const FeaturedSection = () => (
     <div className="container px-4 mx-auto">
       <div className="mb-12 text-center">
         <h2 className="mb-4 text-3xl font-bold text-gray-800">Comprehensive Learning Experience</h2>
-        <p className="max-w-3xl mx-auto text-xl text-gray-600">
+        <p className="mx-auto max-w-3xl text-xl text-gray-600">
           Our platform offers a variety of exercises and tools designed to improve all aspects of your French language skills.
         </p>
       </div>
@@ -473,9 +473,9 @@ interface FeatureCardProps {
 // Update the FeatureCard component with TypeScript types
 const FeatureCard = ({ title, description, icon, href }: FeatureCardProps) => (
   <Link href={href} className="block group">
-    <div className="p-6 transition-shadow bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
+    <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-center mb-4">
-        <div className="flex items-center justify-center w-12 h-12 mr-4 text-xl font-bold rounded-full bg-primary-100 text-primary-700">
+        <div className="flex justify-center items-center mr-4 w-12 h-12 text-xl font-bold rounded-full bg-primary-100 text-primary-700">
           {icon}
         </div>
         <div>
