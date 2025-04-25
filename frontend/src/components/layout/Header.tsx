@@ -127,19 +127,19 @@ const Header = () => {
 
   return (
     <header className={`bg-white sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md py-2' : 'py-4'}`}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
+      <div className="container px-4 mx-auto">
+        <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-primary-600 text-white rounded-xl flex items-center justify-center font-bold text-xl group-hover:bg-primary-700 transition-all duration-300 shadow-sm">
+            <div className="flex items-center justify-center w-10 h-10 text-xl font-bold text-white transition-all duration-300 shadow-sm bg-primary-600 rounded-xl group-hover:bg-primary-700">
               FT
             </div>
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-500 group-hover:from-primary-700 group-hover:to-primary-600 transition-all duration-300">
+            <span className="text-2xl font-bold text-transparent transition-all duration-300 bg-clip-text bg-gradient-to-r from-primary-600 to-primary-500 group-hover:from-primary-700 group-hover:to-primary-600">
               French Tutor AI
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-5">
+          <nav className="items-center hidden space-x-5 md:flex">
             {NAVIGATION_GROUPS.map((group) => (
               <div 
                 key={group.name} 
@@ -167,8 +167,8 @@ const Header = () => {
                 </button>
 
                 {activeDropdown === group.name && (
-                  <div className="absolute mt-1 bg-white rounded-lg shadow-lg border border-gray-100 py-1 w-52 animate-fadeIn z-50 overflow-hidden">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
+                  <div className="absolute z-50 py-1 mt-1 overflow-hidden bg-white border border-gray-100 rounded-lg shadow-lg w-52 animate-fadeIn">
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
                     {group.items.map((item) => (
                       <Link
                         key={item.href}
@@ -188,17 +188,17 @@ const Header = () => {
               </div>
             ))}
 
-            <div className="ml-4 flex items-center space-x-2">
+            <div className="flex items-center ml-4 space-x-2">
               {isAuthenticated ? (
                 <div className="relative">
                   <button
                     onClick={toggleProfileMenu}
-                    className="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                    className="flex items-center p-2 space-x-2 text-gray-700 transition-all duration-200 rounded-lg hover:text-primary-600 hover:bg-gray-100"
                   >
-                    <div className="w-8 h-8 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-medium">
+                    <div className="flex items-center justify-center w-8 h-8 font-medium rounded-full bg-primary-100 text-primary-700">
                       {user?.name?.charAt(0) || 'U'}
                     </div>
-                    <span className="hidden sm:inline-block text-sm font-medium text-gray-700">
+                    <span className="hidden text-sm font-medium text-gray-700 sm:inline-block">
                       {user?.name?.split(' ')[0]}
                     </span>
                     <svg className={`w-4 h-4 transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -207,8 +207,8 @@ const Header = () => {
                   </button>
 
                   {profileMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-100 overflow-hidden">
-                      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
+                    <div className="absolute right-0 z-10 w-56 py-1 mt-2 overflow-hidden bg-white border border-gray-100 rounded-lg shadow-lg">
+                      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500 truncate">{user?.email}</p>
@@ -250,10 +250,10 @@ const Header = () => {
                         </svg>
                         Settings
                       </Link>
-                      <div className="border-t border-gray-100 my-1"></div>
+                      <div className="my-1 border-t border-gray-100"></div>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        className="flex items-center w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50"
                       >
                         <svg className="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -267,13 +267,13 @@ const Header = () => {
                 <div className="flex items-center space-x-2">
                   <Link
                     href="/login"
-                    className="px-4 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                    className="px-4 py-2 text-gray-700 transition-all duration-200 rounded-lg hover:text-primary-600 hover:bg-gray-100"
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition-all duration-200"
+                    className="px-4 py-2 text-white transition-all duration-200 rounded-lg bg-primary-600 hover:bg-primary-700 hover:text-white"
                   >
                     Sign up
                   </Link>
@@ -284,7 +284,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-gray-100 focus:outline-none transition-colors duration-200"
+            className="p-2 text-gray-700 transition-colors duration-200 rounded-lg md:hidden hover:text-primary-600 hover:bg-gray-100 focus:outline-none"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
@@ -300,11 +300,11 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden mt-4 pt-4 border-t border-gray-100 animate-slideDown">
+          <nav className="pt-4 mt-4 border-t border-gray-100 md:hidden animate-slideDown">
             <div className="grid grid-cols-1 gap-1 pb-4">
               {NAVIGATION_GROUPS.map((group) => (
                 <div key={group.name} className="mb-4">
-                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                     <span className="text-primary-500">{group.icon}</span>
                     {group.name}
                   </div>
@@ -324,7 +324,7 @@ const Header = () => {
               
               {isAuthenticated ? (
                 <>
-                  <div className="mt-2 px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-4 py-2 mt-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                     <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -342,7 +342,7 @@ const Header = () => {
                     </MobileNavLink>
                     <button
                       onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left rounded-lg font-medium text-red-600 hover:bg-red-50 transition-all duration-200 mt-4 flex items-center"
+                      className="flex items-center w-full px-4 py-2 mt-4 font-medium text-left text-red-600 transition-all duration-200 rounded-lg hover:bg-red-50"
                     >
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -352,16 +352,16 @@ const Header = () => {
                   </div>
                 </>
               ) : (
-                <div className="grid grid-cols-2 gap-2 mt-4 px-4">
+                <div className="grid grid-cols-2 gap-2 px-4 mt-4">
                   <Link
                     href="/login"
-                    className="px-4 py-3 text-center rounded-lg font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-all duration-200 border border-gray-200"
+                    className="px-4 py-3 font-medium text-center text-gray-700 transition-all duration-200 border border-gray-200 rounded-lg hover:text-primary-600 hover:bg-gray-50"
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="px-4 py-3 text-center rounded-lg font-medium text-white bg-primary-600 hover:bg-primary-700 transition-all duration-200"
+                    className="px-4 py-3 font-medium text-center text-white transition-all duration-200 rounded-lg bg-primary-600 hover:bg-primary-700"
                   >
                     Sign up
                   </Link>

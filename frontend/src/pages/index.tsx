@@ -46,7 +46,7 @@ export default function Home() {
             <h1 className="mb-6 text-4xl font-bold md:text-6xl animate-fadeIn">
               Master French with AI
             </h1>
-            <p className="mb-8 text-xl md:text-2xl opacity-90">
+            <p className="mb-8 text-xl text-gray-300">
               Your personal assistant for learning French from beginner to advanced levels
             </p>
 
@@ -91,7 +91,7 @@ export default function Home() {
                     </Button>
                   </Link>
                   <Link href="/register">
-                    <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 animate-fadeIn animation-delay-200">
+                    <Button size="lg" variant="outline" className="text-white border-white bg-white/10 animate-fadeIn animation-delay-200">
                       Create Free Account
                     </Button>
                   </Link>
@@ -102,7 +102,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-4xl p-8 mx-auto mb-12 bg-white rounded-lg shadow-md">
+      <div className="p-8 mx-auto mb-12 bg-white rounded-lg shadow-md ">
         <p className="mb-6 text-lg text-gray-700">
           Welcome to French Tutor AI, an intelligent platform designed to help you master the French language through personalized learning experiences, interactive exercises, and real-time feedback.
         </p>
@@ -112,10 +112,10 @@ export default function Home() {
             <Card
               variant="primary"
               title="Voice Recognition"
-              className="h-full transition-transform group-hover:scale-105"
+              className="h-full p-5 transition-transform group-hover:scale-105"
             >
-              <p className="text-gray-600">Practice your pronunciation with our advanced speech recognition technology.</p>
-              <div className="flex items-center mt-4 font-medium text-primary-600">
+              <p className="text-white">Practice your pronunciation with our advanced speech recognition technology.</p>
+              <div className="flex items-center mt-4 font-medium text-black">
                 Try it now
                 <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -128,10 +128,10 @@ export default function Home() {
             <Card
               variant="secondary"
               title="Writing Correction"
-              className="h-full transition-transform group-hover:scale-105"
+              className="h-full p-5 transition-transform group-hover:scale-105"
             >
-              <p className="text-gray-600">Get instant feedback on your written French with AI-powered corrections.</p>
-              <div className="flex items-center mt-4 font-medium text-secondary-600">
+              <p className="text-white">Get instant feedback on your written French with AI-powered corrections.</p>
+              <div className="flex items-center mt-4 font-medium text-gray-400">
                 Try it now
                 <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -144,7 +144,7 @@ export default function Home() {
             <Card
               variant="success"
               title="Interactive Lessons"
-              className="h-full transition-transform group-hover:scale-105"
+              className="h-full p-5 transition-transform group-hover:scale-105"
             >
               <p className="text-gray-600">Explore our comprehensive library of lessons tailored to your proficiency level.</p>
               <div className="flex items-center mt-4 font-medium text-green-600">
@@ -160,7 +160,7 @@ export default function Home() {
             <Card
               variant="warning"
               title="Progress Tracking"
-              className="h-full transition-transform group-hover:scale-105"
+              className="h-full p-5 transition-transform group-hover:scale-105"
             >
               <p className="text-gray-600">Monitor your learning journey with detailed statistics and personalized insights.</p>
               <div className="flex items-center mt-4 font-medium text-yellow-600">
@@ -187,7 +187,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto mb-12">
+      <div className="mx-auto mb-12">
         <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">Why Choose French Tutor AI?</h2>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -256,7 +256,7 @@ export default function Home() {
       </div>
 
       {/* Testimonials Section */}
-      <div className="max-w-4xl px-4 mx-auto mb-16">
+      <div className="px-4 mx-auto mb-16">
         <h2 className="mb-8 text-2xl font-bold text-center text-gray-800">What Our Students Say</h2>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
