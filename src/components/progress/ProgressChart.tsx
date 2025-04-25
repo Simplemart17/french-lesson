@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import '../../styles/animations.css';
 
 interface ProgressChartProps {
   data: {
@@ -45,11 +44,11 @@ const ProgressChart = ({
     ctx.beginPath();
     ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
-    
+
     // Y-axis
     ctx.moveTo(padding.left, padding.top);
     ctx.lineTo(padding.left, chartHeight);
-    
+
     // X-axis
     ctx.moveTo(padding.left, chartHeight);
     ctx.lineTo(width - padding.right, chartHeight);
@@ -60,12 +59,12 @@ const ProgressChart = ({
     ctx.beginPath();
     ctx.strokeStyle = '#f3f4f6';
     ctx.lineWidth = 1;
-    
+
     for (let i = 1; i <= gridLines; i++) {
       const y = chartHeight - (i * (chartHeight - padding.top) / gridLines);
       ctx.moveTo(padding.left, y);
       ctx.lineTo(width - padding.right, y);
-      
+
       if (showLabels) {
         // Draw y-axis labels
         ctx.fillStyle = '#6b7280';
@@ -82,11 +81,11 @@ const ProgressChart = ({
       ctx.beginPath();
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
-      
+
       data.forEach((point, i) => {
         const x = padding.left + (i * (chartWidth / (data.length - 1)));
         const y = chartHeight - ((point.value / maxValue) * (chartHeight - padding.top));
-        
+
         if (i === 0) {
           ctx.moveTo(x, y);
         } else {
@@ -94,18 +93,18 @@ const ProgressChart = ({
         }
       });
       ctx.stroke();
-      
+
       // Draw area under the line
       ctx.beginPath();
       ctx.fillStyle = `${color}20`; // 20% opacity
-      
+
       const firstPoint = data[0];
       const firstX = padding.left;
       const firstY = chartHeight - ((firstPoint.value / maxValue) * (chartHeight - padding.top));
-      
+
       ctx.moveTo(firstX, chartHeight);
       ctx.lineTo(firstX, firstY);
-      
+
       data.forEach((point, i) => {
         if (i > 0) {
           const x = padding.left + (i * (chartWidth / (data.length - 1)));
@@ -113,7 +112,7 @@ const ProgressChart = ({
           ctx.lineTo(x, y);
         }
       });
-      
+
       const lastX = padding.left + chartWidth;
       ctx.lineTo(lastX, chartHeight);
       ctx.closePath();
@@ -124,7 +123,7 @@ const ProgressChart = ({
     data.forEach((point, i) => {
       const x = padding.left + (i * (chartWidth / (data.length - 1)));
       const y = chartHeight - ((point.value / maxValue) * (chartHeight - padding.top));
-      
+
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, 2 * Math.PI);
       ctx.fillStyle = color;
@@ -132,17 +131,17 @@ const ProgressChart = ({
       ctx.strokeStyle = 'white';
       ctx.lineWidth = 2;
       ctx.stroke();
-      
+
       if (showLabels && i % Math.ceil(data.length / 5) === 0) {
         // Draw x-axis labels for some points
         ctx.fillStyle = '#6b7280';
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
-        
+
         // Format date (assuming YYYY-MM-DD format)
         const dateObj = new Date(point.date);
         const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
-        
+
         ctx.fillText(formattedDate, x, chartHeight + 15);
       }
     });
@@ -151,24 +150,24 @@ const ProgressChart = ({
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
-      
+
       // Find closest data point
       let closestPoint = { index: 0, distance: Infinity };
-      
+
       data.forEach((point, i) => {
         const x = padding.left + (i * (chartWidth / (data.length - 1)));
         const distance = Math.abs(mouseX - x);
-        
+
         if (distance < closestPoint.distance) {
           closestPoint = { index: i, distance };
         }
       });
-      
+
       if (closestPoint.distance < 20) { // Only show tooltip if mouse is close enough
         const point = data[closestPoint.index];
         const x = padding.left + (closestPoint.index * (chartWidth / (data.length - 1)));
         const y = chartHeight - ((point.value / maxValue) * (chartHeight - padding.top));
-        
+
         setTooltipData({
           x,
           y,
@@ -179,14 +178,14 @@ const ProgressChart = ({
         setTooltipData(null);
       }
     };
-    
+
     const handleMouseLeave = () => {
       setTooltipData(null);
     };
-    
+
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
-    
+
     return () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
@@ -200,19 +199,19 @@ const ProgressChart = ({
         {title}
       </h3>
       <div className="relative p-4 bg-white rounded-lg shadow-sm transition-all hover-lift" style={{ height: `${height + 30}px` }}>
-        <canvas 
-          ref={canvasRef} 
+        <canvas
+          ref={canvasRef}
           className="w-full h-full"
           width={800}
           height={height}
           style={{ width: '100%', height: '100%' }}
         />
-        
+
         {tooltipData && (
-          <div 
+          <div
             className="absolute z-10 p-3 text-sm bg-white rounded-md border border-gray-100 shadow-lg transform -translate-x-1/2 -translate-y-full pointer-events-none animate-fade-in"
-            style={{ 
-              left: `${tooltipData.x}px`, 
+            style={{
+              left: `${tooltipData.x}px`,
               top: `${tooltipData.y - 5}px`,
             }}
           >
@@ -220,7 +219,7 @@ const ProgressChart = ({
             <div className="font-bold text-gray-600">{tooltipData.value}</div>
           </div>
         )}
-        
+
         {data.length === 0 && (
           <div className="flex absolute inset-0 justify-center items-center text-gray-500">
             No data available

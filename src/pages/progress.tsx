@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { useState } from 'react';
-import '../styles/animations.css';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import ProgressChart from '@/components/progress/ProgressChart';
