@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply font-sans text-gray-900 bg-gray-50;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-gray-900;
+  }
+
+  h1 {
+    @apply mb-6 text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply mb-4 text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply mb-3 text-2xl;
+  }
+
+  p {
+    @apply mb-4 text-gray-700;
+  }
+}
+
+@layer components {
+  /* Card styles */
+  .card {
+    @apply p-6 transition-all duration-200 bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 font-medium transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply text-white bg-primary-600 hover:bg-primary-700 focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply text-white bg-secondary-600 hover:bg-secondary-700 focus:ring-secondary-500;
+  }
+
+  .btn-outline {
+    @apply text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:ring-primary-500;
+  }
+
+  .btn-sm {
+    @apply text-sm px-3 py-1.5 rounded-md;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg rounded-lg;
+  }
+
+  /* Form elements */
+  .form-input {
+    @apply w-full px-4 py-2 transition-colors duration-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+  }
+
+  .form-label {
+    @apply block mb-1 text-sm font-medium text-gray-700;
+  }
+
+  .form-group {
+    @apply mb-4;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-primary-100 text-primary-800;
+  }
+
+  .badge-secondary {
+    @apply bg-secondary-100 text-secondary-800;
+  }
+
+  .badge-success {
+    @apply text-green-800 bg-green-100;
+  }
+
+  .badge-warning {
+    @apply text-yellow-800 bg-yellow-100;
+  }
+
+  .badge-danger {
+    @apply text-red-800 bg-red-100;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
