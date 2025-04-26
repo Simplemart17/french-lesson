@@ -41,11 +41,16 @@ const getImageUrl = (lesson: any): string | undefined => {
   return lesson.imageUrl;
 };
 
+// Extended lesson type that includes progress
+interface LessonWithProgress extends Omit<Lesson, 'progress'> {
+  progress: number;
+}
+
 interface Lesson {
-  id: string;
+  id: string | number;
   title: string;
   description: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: string;
   category?: string;
   topics?: string[];
   duration: number;
@@ -53,89 +58,6 @@ interface Lesson {
   progress?: number;
   content?: { sections: any[] };
 }
-
-const sampleLessons: Lesson[] = [
-  {
-    id: '1',
-    title: 'Basic Greetings in French',
-    description: 'Learn essential greetings and introductions in French to start conversations confidently.',
-    level: 'beginner',
-    category: 'conversation',
-    duration: 15,
-    imageUrl: 'https://images.unsplash.com/photo-1431274172761-fca41d930114?q=80&w=2070',
-    progress: 100,
-  },
-  {
-    id: '2',
-    title: 'Introducing Yourself in French',
-    description: 'Learn how to introduce yourself and ask basic personal questions in French.',
-    level: 'beginner',
-    category: 'conversation',
-    duration: 20,
-    imageUrl: 'https://images.unsplash.com/photo-1445991842772-097fea258e7b?q=80&w=2070',
-    progress: 75,
-  },
-  {
-    id: '3',
-    title: 'Present Tense Verbs',
-    description: 'Master the conjugation of regular and common irregular verbs in the present tense.',
-    level: 'beginner',
-    category: 'grammar',
-    duration: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2073',
-    progress: 30,
-  },
-  {
-    id: '4',
-    title: 'Food and Dining Vocabulary',
-    description: 'Learn essential vocabulary for ordering food, discussing preferences, and navigating restaurants.',
-    level: 'beginner',
-    category: 'vocabulary',
-    duration: 20,
-    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070',
-    progress: 0,
-  },
-  {
-    id: '5',
-    title: 'French Pronunciation Basics',
-    description: 'Master the fundamentals of French pronunciation, including nasal sounds and silent letters.',
-    level: 'beginner',
-    category: 'pronunciation',
-    duration: 30,
-    imageUrl: 'https://images.unsplash.com/photo-1551818255-e6e10975bc17?q=80&w=2073',
-    progress: 0,
-  },
-  {
-    id: '6',
-    title: 'Past Tense: Passé Composé',
-    description: 'Learn how to form and use the passé composé to talk about past events.',
-    level: 'intermediate',
-    category: 'grammar',
-    duration: 35,
-    imageUrl: 'https://images.unsplash.com/photo-1461360228754-6e81c478b882?q=80&w=2074',
-    progress: 0,
-  },
-  {
-    id: '7',
-    title: 'French Café Culture',
-    description: 'Explore the importance of cafés in French society and learn related vocabulary and expressions.',
-    level: 'intermediate',
-    category: 'culture',
-    duration: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=2071',
-    progress: 0,
-  },
-  {
-    id: '8',
-    title: 'Advanced French Expressions',
-    description: 'Master idiomatic expressions and colloquialisms used by native French speakers.',
-    level: 'advanced',
-    category: 'vocabulary',
-    duration: 40,
-    imageUrl: 'https://images.unsplash.com/photo-1505682634904-d7c8d95cdc50?q=80&w=2070',
-    progress: 0,
-  },
-];
 
 export default function LessonsPage() {
   const { isAuthenticated } = useAuth();
@@ -148,7 +70,7 @@ export default function LessonsPage() {
 
   // Fetch lessons using our custom hook
   const {
-    data: apiLessons = [],
+    data: lessons = [],
     isLoading: isLoadingLessons,
     error: lessonsError,
     refetch: refetchLessons
@@ -182,23 +104,35 @@ export default function LessonsPage() {
   );
 
   // Combine lessons with progress data
-  const lessons = apiLessons.length > 0
-    ? apiLessons.map(lesson => {
-        const progress = progressData.find(p => p.lessonId === lesson.id);
-        return {
-          ...lesson,
-          progress: progress ? (progress.completed ? 100 : 50) : 0
-        };
-      })
-    : sampleLessons; // Fallback to sample data if API fails
+  const lessonsWithProgress: LessonWithProgress[] = lessons.map(lesson => {
+    const progress = progressData.find(p => p.lessonId === lesson.id);
+    return {
+      ...lesson,
+      progress: progress ? (progress.completed ? 100 : progress.score) : 0
+    };
+  });
 
   // Filter lessons based on selected category, level, and search query
-  const filteredLessons = lessons.filter(lesson => {
+  const filteredLessons = lessonsWithProgress.filter(lesson => {
+    // Check if the lesson matches the selected category
+    let matchesCategory = selectedCategory === 'all';
+    if (selectedCategory !== 'all') {
+      if (lesson.category) {
+        matchesCategory = lesson.category.toLowerCase() === selectedCategory;
+      } else if (lesson.topics) {
+        matchesCategory = lesson.topics.some(topic => 
+          topic.toLowerCase() === selectedCategory
+        );
+      }
+    }
+    
+    const matchesLevel = selectedLevel === 'all' || lesson.level === selectedLevel;
+    
     const matchesSearch = searchQuery === '' ||
       lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch;
+    return matchesCategory && matchesLevel && matchesSearch;
   });
 
   // Sort lessons based on selected option
@@ -224,9 +158,11 @@ export default function LessonsPage() {
   const totalPages = Math.ceil(sortedLessons.length / lessonsPerPage);
 
   // Calculate progress stats
-  const completedLessons = isAuthenticated ? lessons.filter(lesson => lesson.progress === 100).length : 0;
-  const inProgressLessons = isAuthenticated ? lessons.filter(lesson => lesson.progress && lesson.progress > 0 && lesson.progress < 100).length : 0;
-  const totalLessons = lessons.length;
+  const completedLessons = isAuthenticated ? 
+    lessonsWithProgress.filter(lesson => lesson.progress === 100).length : 0;
+  const inProgressLessons = isAuthenticated ? 
+    lessonsWithProgress.filter(lesson => lesson.progress && lesson.progress > 0 && lesson.progress < 100).length : 0;
+  const totalLessons = lessonsWithProgress.length;
 
   // Handle page change
   const handlePageChange = (pageNumber: number) => {

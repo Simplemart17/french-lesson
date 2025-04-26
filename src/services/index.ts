@@ -6,6 +6,7 @@ import listeningApiService from './listeningApiService';
 import speakingApiService from './speakingApiService';
 import grammarApiService from './grammarApiService';
 import examApiService from './examApiService';
+import aiService from './aiService';
 
 export {
   authService,
@@ -16,7 +17,8 @@ export {
   listeningApiService,
   speakingApiService,
   grammarApiService,
-  examApiService
+  examApiService,
+  aiService
 };
 
 export default {
@@ -28,5 +30,6 @@ export default {
   listening: listeningApiService,
   speaking: speakingApiService,
   grammar: grammarApiService,
-  exam: examApiService
+  exam: examApiService,
+  ai: aiService
 };

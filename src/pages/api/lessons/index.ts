@@ -1,249 +1,192 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, Lesson } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { authMiddleware } from '../../../utils/authMiddleware';
 
-// Mock lessons data
-const lessonsData: Lesson[] = [
+// Sample lesson data for demonstration
+// In a real app this would come from a database
+const lessons = [
   {
     id: 1,
     title: 'Basic Greetings in French',
     description: 'Learn essential greetings and introductions in French to start conversations confidently.',
-    level: 'A1',
+    level: 'beginner',
     duration: 15,
-    topics: ['Greetings', 'Conversation', 'Basics'],
+    topics: ['conversation', 'basics'],
+    imageUrl: 'https://images.unsplash.com/photo-1431274172761-fca41d930114?q=80&w=2070',
     content: {
       sections: [
         {
           type: 'text',
           title: 'Introduction',
-          content: 'Welcome to your first French lesson! In this lesson, you\'ll learn the most common greetings in French. Being able to greet people properly is essential for any conversation. Let\'s start with the basics.'
-        },
-        {
-          type: 'vocabulary',
-          title: 'Key Vocabulary',
-          words: [
-            { word: 'Bonjour', translation: 'Hello / Good day', notes: 'Used during the day until evening' },
-            { word: 'Bonsoir', translation: 'Good evening', notes: 'Used in the evening' },
-            { word: 'Salut', translation: 'Hi / Bye', notes: 'Informal greeting used among friends' },
-            { word: 'Au revoir', translation: 'Goodbye', notes: 'Formal way to say goodbye' },
-            { word: 'À bientôt', translation: 'See you soon', notes: 'Informal way to say goodbye' }
-          ]
-        },
-        {
-          type: 'audio',
-          title: 'Pronunciation',
-          audioUrl: '/audio/lesson1-greetings.mp3',
-          transcript: 'Bonjour! Comment allez-vous? Je m\'appelle Marie. Enchanté!'
-        },
-        {
-          type: 'exercise',
-          title: 'Practice',
-          questions: [
-            {
-              type: 'multiple-choice',
-              question: 'How do you say "Hello" in French?',
-              options: ['Bonjour', 'Au revoir', 'Merci', 'S\'il vous plaît'],
-              correctAnswer: 'Bonjour'
-            },
-            {
-              type: 'multiple-choice',
-              question: 'Which greeting would you use in the evening?',
-              options: ['Bonjour', 'Bonsoir', 'Salut', 'À bientôt'],
-              correctAnswer: 'Bonsoir'
-            }
-          ]
+          content: 'In this lesson, you will learn the most common French greetings used in everyday conversation.'
         }
       ]
     }
   },
   {
     id: 2,
-    title: 'Common French Phrases',
-    description: 'Essential phrases to help you navigate basic conversations in French.',
-    level: 'A1',
-    duration: 25,
-    topics: ['Phrases', 'Conversation', 'Basics'],
+    title: 'Introducing Yourself in French',
+    description: 'Learn how to introduce yourself and ask basic personal questions in French.',
+    level: 'beginner',
+    duration: 20,
+    topics: ['conversation', 'basics'],
+    imageUrl: 'https://images.unsplash.com/photo-1445991842772-097fea258e7b?q=80&w=2070',
     content: {
       sections: [
         {
           type: 'text',
-          title: 'Essential Phrases',
-          content: 'In this lesson, you\'ll learn some essential French phrases that will help you in everyday situations. These phrases are useful for basic communication and will help you navigate simple conversations.'
-        },
-        {
-          type: 'vocabulary',
-          title: 'Key Phrases',
-          words: [
-            { word: 'Comment allez-vous?', translation: 'How are you? (formal)', notes: 'Used in formal situations' },
-            { word: 'Comment ça va?', translation: 'How are you? (informal)', notes: 'Used among friends' },
-            { word: 'Je m\'appelle...', translation: 'My name is...', notes: 'Used when introducing yourself' },
-            { word: 'Enchanté(e)', translation: 'Nice to meet you', notes: 'Add "e" if you are female' },
-            { word: 'S\'il vous plaît', translation: 'Please (formal)', notes: 'Used in formal situations' },
-            { word: 'Merci', translation: 'Thank you', notes: 'Used in all situations' },
-            { word: 'De rien', translation: 'You\'re welcome', notes: 'Response to "merci"' }
-          ]
-        },
-        {
-          type: 'video',
-          title: 'Using Phrases in Conversation',
-          videoUrl: '/videos/lesson2-phrases.mp4',
-          transcript: 'Bonjour! Comment allez-vous? Je m\'appelle Marie. Enchanté!'
+          title: 'Introduction',
+          content: 'This lesson covers introducing yourself and having basic personal conversations in French.'
         }
       ]
     }
   },
   {
     id: 3,
-    title: 'Numbers and Counting in French',
-    description: 'Learn to count and use numbers in French for shopping, telling time, and more.',
-    level: 'A1',
-    duration: 20,
-    topics: ['Numbers', 'Basics'],
+    title: 'Present Tense Verbs',
+    description: 'Master the conjugation of regular and common irregular verbs in the present tense.',
+    level: 'beginner',
+    duration: 25,
+    topics: ['grammar', 'verbs'],
+    imageUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2073',
     content: {
       sections: [
         {
           type: 'text',
-          title: 'Introduction to Numbers',
-          content: 'In this lesson, you\'ll learn how to count in French from 1 to 100. Numbers are essential for many everyday situations like shopping, telling time, and giving your phone number.'
-        },
-        {
-          type: 'vocabulary',
-          title: 'Numbers 1-10',
-          words: [
-            { word: 'Un', translation: '1', notes: 'Pronounced "ahn"' },
-            { word: 'Deux', translation: '2', notes: 'Pronounced "duh"' },
-            { word: 'Trois', translation: '3', notes: 'Pronounced "twah"' },
-            { word: 'Quatre', translation: '4', notes: 'Pronounced "katr"' },
-            { word: 'Cinq', translation: '5', notes: 'Pronounced "sank"' },
-            { word: 'Six', translation: '6', notes: 'Pronounced "sees"' },
-            { word: 'Sept', translation: '7', notes: 'Pronounced "set"' },
-            { word: 'Huit', translation: '8', notes: 'Pronounced "weet"' },
-            { word: 'Neuf', translation: '9', notes: 'Pronounced "nuhf"' },
-            { word: 'Dix', translation: '10', notes: 'Pronounced "dees"' }
-          ]
-        },
-        {
-          type: 'audio',
-          title: 'Pronunciation of Numbers',
-          audioUrl: '/audio/lesson3-numbers.mp3',
-          transcript: 'Un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix.'
+          title: 'Introduction',
+          content: 'In this lesson, you will learn how to conjugate regular and common irregular verbs in the present tense.'
         }
       ]
     }
   },
   {
     id: 4,
-    title: 'Ordering Food and Drinks',
-    description: 'Learn how to order food and drinks in French restaurants and cafés.',
-    level: 'A2',
-    duration: 30,
-    topics: ['Food', 'Restaurant', 'Conversation'],
+    title: 'Food and Dining Vocabulary',
+    description: 'Learn essential vocabulary for ordering food, discussing preferences, and navigating restaurants.',
+    level: 'beginner',
+    duration: 20,
+    topics: ['vocabulary', 'food'],
+    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070',
     content: {
       sections: [
         {
           type: 'text',
           title: 'Introduction',
-          content: 'In this lesson, you\'ll learn how to order food and drinks in French restaurants and cafés. You\'ll learn vocabulary related to food and drinks, as well as useful phrases for ordering and paying.'
-        },
-        {
-          type: 'vocabulary',
-          title: 'Restaurant Vocabulary',
-          words: [
-            { word: 'Le menu', translation: 'Menu', notes: 'Pronounced "luh men-u"' },
-            { word: 'La carte', translation: 'Menu card', notes: 'More detailed than "le menu"' },
-            { word: 'Le serveur / La serveuse', translation: 'Waiter / Waitress', notes: 'Person who takes your order' },
-            { word: 'Une table pour deux', translation: 'A table for two', notes: 'Requesting a table' },
-            { word: 'L\'addition', translation: 'The bill', notes: 'What you ask for when you want to pay' }
-          ]
-        },
-        {
-          type: 'dialogue',
-          title: 'At the Restaurant',
-          content: 'Serveur: Bonjour, bienvenue au Café Parisien. Une table pour combien de personnes?\nClient: Bonjour, une table pour deux, s\'il vous plaît.\nServeur: Par ici, s\'il vous plaît. Voici la carte.\nClient: Merci. Je voudrais un café, s\'il vous plaît.\nServeur: Un café, très bien. Et pour vous, madame?\nCliente: Je voudrais un thé, s\'il vous plaît.\nServeur: Un café et un thé. Je vous apporte ça tout de suite.'
+          content: 'This lesson covers essential vocabulary and phrases for ordering food and dining in French restaurants.'
         }
       ]
     }
   },
   {
     id: 5,
-    title: 'Asking for Directions',
-    description: 'Learn how to ask for and understand directions in French.',
-    level: 'A2',
-    duration: 25,
-    topics: ['Travel', 'Conversation', 'City'],
+    title: 'French Pronunciation Basics',
+    description: 'Master the fundamentals of French pronunciation, including nasal sounds and silent letters.',
+    level: 'beginner',
+    duration: 30,
+    topics: ['pronunciation'],
+    imageUrl: 'https://images.unsplash.com/photo-1551818255-e6e10975bc17?q=80&w=2073',
     content: {
       sections: [
         {
           type: 'text',
           title: 'Introduction',
-          content: 'In this lesson, you\'ll learn how to ask for and understand directions in French. This is essential for navigating in French-speaking countries.'
-        },
+          content: 'In this lesson, you will learn the basics of French pronunciation, focusing on unique sounds and rules.'
+        }
+      ]
+    }
+  },
+  {
+    id: 6,
+    title: 'Past Tense: Passé Composé',
+    description: 'Learn how to form and use the passé composé to talk about past events.',
+    level: 'intermediate',
+    duration: 35,
+    topics: ['grammar', 'tenses'],
+    imageUrl: 'https://images.unsplash.com/photo-1461360228754-6e81c478b882?q=80&w=2074',
+    content: {
+      sections: [
         {
-          type: 'vocabulary',
-          title: 'Direction Vocabulary',
-          words: [
-            { word: 'Où est...?', translation: 'Where is...?', notes: 'Basic question for locations' },
-            { word: 'À droite', translation: 'To the right', notes: 'Direction' },
-            { word: 'À gauche', translation: 'To the left', notes: 'Direction' },
-            { word: 'Tout droit', translation: 'Straight ahead', notes: 'Direction' },
-            { word: 'Au coin', translation: 'At the corner', notes: 'Location' },
-            { word: 'La rue', translation: 'The street', notes: 'Location' },
-            { word: 'Le carrefour', translation: 'The intersection', notes: 'Location' }
-          ]
-        },
+          type: 'text',
+          title: 'Introduction',
+          content: 'This lesson covers the passé composé, the most common past tense used in French.'
+        }
+      ]
+    }
+  },
+  {
+    id: 7,
+    title: 'French Café Culture',
+    description: 'Explore the importance of cafés in French society and learn related vocabulary and expressions.',
+    level: 'intermediate',
+    duration: 25,
+    topics: ['culture', 'vocabulary'],
+    imageUrl: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=2071',
+    content: {
+      sections: [
         {
-          type: 'dialogue',
-          title: 'Asking for Directions',
-          content: 'Touriste: Excusez-moi, où est la gare, s\'il vous plaît?\nPassant: La gare? C\'est facile. Allez tout droit, puis prenez la deuxième rue à droite. La gare est au bout de la rue.\nTouriste: Merci beaucoup!\nPassant: Je vous en prie.'
+          type: 'text',
+          title: 'Introduction',
+          content: 'In this lesson, you will learn about the significance of cafés in French culture and related vocabulary.'
+        }
+      ]
+    }
+  },
+  {
+    id: 8,
+    title: 'Advanced French Expressions',
+    description: 'Master idiomatic expressions and colloquialisms used by native French speakers.',
+    level: 'advanced',
+    duration: 40,
+    topics: ['vocabulary', 'expressions'],
+    imageUrl: 'https://images.unsplash.com/photo-1505682634904-d7c8d95cdc50?q=80&w=2070',
+    content: {
+      sections: [
+        {
+          type: 'text',
+          title: 'Introduction',
+          content: 'This lesson covers advanced idiomatic expressions and colloquialisms used in everyday French.'
         }
       ]
     }
   }
 ];
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<Lesson[] | Lesson>>
-) {
-  // GET request to retrieve lessons
-  if (req.method === 'GET') {
-    try {
-      const { level, topic } = req.query;
-      let filteredLessons = [...lessonsData];
-
-      // Filter by level if provided
-      if (level) {
-        filteredLessons = filteredLessons.filter(lesson => lesson.level === level);
-      }
-
-      // Filter by topic if provided
-      if (topic) {
-        filteredLessons = filteredLessons.filter(lesson => 
-          lesson.topics.some(t => t.toLowerCase() === (topic as string).toLowerCase())
-        );
-      }
-
-      return res.status(200).json({
-        success: true,
-        data: filteredLessons
-      });
-    } catch (error) {
-      console.error('Error fetching lessons:', error);
-      return res.status(500).json({
-        success: false,
-        error: {
-          message: 'Internal server error'
-        }
-      });
-    }
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Only allow GET for this endpoint
+  if (req.method !== 'GET') {
+    return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
   }
 
-  // Method not allowed
-  return res.status(405).json({
-    success: false,
-    error: {
-      message: 'Method not allowed'
+  try {
+    // Extract query parameters
+    const { level, topic } = req.query;
+    
+    // Filter lessons based on query parameters
+    let filteredLessons = [...lessons];
+    
+    if (level && typeof level === 'string') {
+      filteredLessons = filteredLessons.filter(lesson => 
+        lesson.level.toLowerCase() === level.toLowerCase()
+      );
     }
-  });
+    
+    if (topic && typeof topic === 'string') {
+      filteredLessons = filteredLessons.filter(lesson => 
+        lesson.topics.some(t => t.toLowerCase() === topic.toLowerCase())
+      );
+    }
+    
+    // Return filtered lessons
+    return res.status(200).json({
+      success: true,
+      data: filteredLessons
+    });
+  } catch (error) {
+    console.error('Error fetching lessons:', error);
+    return res.status(500).json({
+      success: false,
+      error: { message: 'Failed to fetch lessons' }
+    });
+  }
 }
+
+export default authMiddleware(handler);

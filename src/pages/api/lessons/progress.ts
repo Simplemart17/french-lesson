@@ -1,79 +1,52 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, LessonProgress } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { authMiddleware } from '../../../utils/authMiddleware';
 
-// Mock lesson progress data
-const userLessonProgress: Record<number, LessonProgress[]> = {
-  1: [
-    {
-      lessonId: 1,
-      completed: true,
-      score: 90,
-      lastAccessed: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-      completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() // 5 days ago
-    },
-    {
-      lessonId: 2,
-      completed: true,
-      score: 85,
-      lastAccessed: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-      completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days ago
-    },
-    {
-      lessonId: 3,
-      completed: false,
-      score: 0,
-      lastAccessed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-      completedAt: null
-    }
-  ]
-};
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<LessonProgress[] | LessonProgress>>
-) {
-  // Check if user is authenticated
-  if (!isAuthenticated(req)) {
-    return res.status(401).json({
-      success: false,
-      error: {
-        message: 'Unauthorized'
-      }
-    });
+// Sample progress data for demonstration
+// In a real app this would come from a database
+const progressData = [
+  {
+    userId: 1,
+    lessonId: 1,
+    completed: true,
+    score: 100,
+    lastAccessed: '2023-06-15T10:30:00Z',
+    completedAt: '2023-06-15T11:00:00Z'
+  },
+  {
+    userId: 1,
+    lessonId: 2,
+    completed: false,
+    score: 75,
+    lastAccessed: '2023-06-16T14:20:00Z',
+    completedAt: null
+  },
+  {
+    userId: 1,
+    lessonId: 3,
+    completed: false,
+    score: 30,
+    lastAccessed: '2023-06-17T09:45:00Z',
+    completedAt: null
   }
+];
 
-  const userId = getUserId(req);
-
-  // GET request to retrieve user lesson progress
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Handle GET request
   if (req.method === 'GET') {
     try {
-      const { lessonId } = req.query;
+      // In a real app, we would get the user ID from the authenticated user
+      const userId = 1; // Mock user ID
+      let { lessonId } = req.query;
       
-      // Get user lesson progress
-      const userProgress = userLessonProgress[userId] || [];
+      // Filter progress by lesson ID if provided
+      let userProgress = progressData.filter(progress => progress.userId === userId);
       
-      // If lessonId is provided, return progress for that lesson
-      if (lessonId) {
-        const lessonProgress = userProgress.find(progress => progress.lessonId === parseInt(lessonId as string));
-        
-        if (!lessonProgress) {
-          return res.status(404).json({
-            success: false,
-            error: {
-              message: 'Lesson progress not found'
-            }
-          });
-        }
-        
-        return res.status(200).json({
-          success: true,
-          data: lessonProgress
-        });
+      if (lessonId && !isNaN(Number(lessonId))) {
+        userProgress = userProgress.filter(progress => 
+          progress.lessonId === Number(lessonId)
+        );
       }
       
-      // Otherwise, return all progress
       return res.status(200).json({
         success: true,
         data: userProgress
@@ -82,63 +55,61 @@ export default async function handler(
       console.error('Error fetching lesson progress:', error);
       return res.status(500).json({
         success: false,
-        error: {
-          message: 'Internal server error'
-        }
+        error: { message: 'Failed to fetch lesson progress' }
       });
     }
   }
-
-  // POST request to update lesson progress
+  
+  // Handle POST request (update progress)
   if (req.method === 'POST') {
     try {
       const { lessonId, completed, score } = req.body;
-
-      // Validate required fields
-      if (!lessonId) {
+      
+      if (!lessonId || typeof completed !== 'boolean' || typeof score !== 'number') {
         return res.status(400).json({
           success: false,
-          error: {
-            message: 'Missing required fields'
-          }
+          error: { message: 'Invalid request body' }
         });
       }
-
-      // Get user lesson progress
-      const userProgress = userLessonProgress[userId] || [];
-
-      // Find the lesson progress
-      const progressIndex = userProgress.findIndex(progress => progress.lessonId === parseInt(lessonId));
-
-      let updatedProgress: LessonProgress;
-
-      if (progressIndex === -1) {
-        // Create new progress if it doesn't exist
-        updatedProgress = {
-          lessonId: parseInt(lessonId),
-          completed: completed || false,
-          score: score || 0,
-          lastAccessed: new Date().toISOString(),
-          completedAt: completed ? new Date().toISOString() : null
-        };
-
-        userProgress.push(updatedProgress);
-      } else {
+      
+      // In a real app, we would get the user ID from the authenticated user
+      const userId = 1; // Mock user ID
+      
+      // Find existing progress or create new
+      const existingProgressIndex = progressData.findIndex(
+        p => p.userId === userId && p.lessonId === lessonId
+      );
+      
+      const now = new Date().toISOString();
+      let updatedProgress;
+      
+      if (existingProgressIndex >= 0) {
         // Update existing progress
         updatedProgress = {
-          ...userProgress[progressIndex],
-          completed: completed !== undefined ? completed : userProgress[progressIndex].completed,
-          score: score !== undefined ? score : userProgress[progressIndex].score,
-          lastAccessed: new Date().toISOString(),
-          completedAt: completed ? new Date().toISOString() : userProgress[progressIndex].completedAt
+          ...progressData[existingProgressIndex],
+          completed,
+          score,
+          lastAccessed: now,
+          completedAt: completed ? now : progressData[existingProgressIndex].completedAt
         };
-
-        userProgress[progressIndex] = updatedProgress;
+        
+        // Update in the array (in a real app this would be a database update)
+        // progressData[existingProgressIndex] = updatedProgress;
+      } else {
+        // Create new progress
+        updatedProgress = {
+          userId,
+          lessonId,
+          completed,
+          score,
+          lastAccessed: now,
+          completedAt: completed ? now : null
+        };
+        
+        // Add to the array (in a real app this would be a database insert)
+        // progressData.push(updatedProgress);
       }
-
-      // Save the updated progress
-      userLessonProgress[userId] = userProgress;
-
+      
       return res.status(200).json({
         success: true,
         data: updatedProgress
@@ -147,18 +118,16 @@ export default async function handler(
       console.error('Error updating lesson progress:', error);
       return res.status(500).json({
         success: false,
-        error: {
-          message: 'Internal server error'
-        }
+        error: { message: 'Failed to update lesson progress' }
       });
     }
   }
-
+  
   // Method not allowed
   return res.status(405).json({
     success: false,
-    error: {
-      message: 'Method not allowed'
-    }
+    error: { message: 'Method not allowed' }
   });
 }
+
+export default authMiddleware(handler);
