@@ -9,7 +9,7 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/setup-db.ts",
-    "db:setup": "npm run db:push && npm run db:seed"
+    "db:setup": "prisma generate && prisma migrate dev && ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/lib/seed.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

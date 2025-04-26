@@ -1,107 +1,98 @@
-# French Tutor AI - Frontend
+# French Lesson - Learning Platform
 
-This is the frontend application for the French Tutor AI project, built with Next.js, TypeScript, and Tailwind CSS.
+A modern, AI-powered French learning platform with personalized lessons, interactive exercises, and conversation practice.
 
-## Database Setup
+## Features
 
-The application uses PostgreSQL with Prisma ORM for database access. Follow these steps to set up the database:
+- Personalized lesson plans based on user level and goals
+- AI-powered French language tutor
+- Grammar correction and feedback
+- Conversation practice with contextual vocabulary
+- Pronunciation analysis
+- Progress tracking
 
-1. Make sure you have PostgreSQL installed and running with a database named `french_lesson`
-2. Configure your database connection in the `.env` file:
-   ```
-   DATABASE_URL="postgresql://postgres:password@localhost:5432/french_lesson?schema=public"
-   ```
-3. Run the database setup commands:
-   ```bash
-   # Push the Prisma schema to the database
-   npm run db:push
-   
-   # Seed the database with initial data
-   npm run db:seed
-   
-   # Or run both commands together
-   npm run db:setup
-   ```
+## Tech Stack
+
+- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API routes
+- **Database**: PostgreSQL with Prisma ORM
+- **AI Integration**: OpenAI GPT-4
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or later)
+- Node.js (v16+)
 - npm or yarn
+- PostgreSQL database
+
+### Environment Setup
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/french_lesson"
+
+# Authentication
+JWT_SECRET="your-secret-key-here"
+
+# OpenAI
+OPENAI_API_KEY="your-openai-api-key"
+```
 
 ### Installation
 
-1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/french-lesson.git
-cd french-lesson/frontend
-```
-
-2. Install dependencies
+1. Install dependencies:
 
 ```bash
 npm install
-# or
-yarn install
 ```
 
-3. Create a `.env.local` file in the frontend directory with the following content:
+2. Generate Prisma client and run migrations:
 
+```bash
+npm run db:setup
 ```
-NEXT_PUBLIC_API_URL=http://localhost:4000/graphql
-```
 
-### Development
-
-Run the development server:
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at http://localhost:3000.
 
-### Build
+## API Endpoints
 
-Build the application for production:
+### Lessons
 
-```bash
-npm run build
-# or
-yarn build
-```
+- `GET /api/lessons` - Get all lessons with optional filtering
+- `GET /api/lessons/progress` - Get user's lesson progress
 
-Start the production server:
+### AI Features
 
-```bash
-npm start
-# or
-yarn start
-```
+- `POST /api/ai/grammar-correction` - Correct French grammar and provide feedback
+- `POST /api/ai/generate-conversation` - Generate conversation practice with vocabulary
+- `POST /api/ai/tutor-chat` - Chat with the AI French tutor
+- `POST /api/ai/personalized-lesson-plan` - Get personalized lesson recommendations
 
-## Project Structure
+## Database Schema
 
-```
-/src
-  /components     # Reusable UI components
-  /pages          # Next.js pages
-  /styles         # Global styles
-  /hooks          # Custom React hooks
-  /utils          # Utility functions
-  /types          # TypeScript type definitions
-  /services       # API service functions
-  /store          # Redux store configuration
-```
+The database includes tables for:
+- Users
+- Lessons
+- Lesson Progress
+- Vocabulary
+- Conversations
+- Messages
 
-## Features
+See `prisma/schema.prisma` for the complete schema.
 
-- Voice input and output for French language practice
-- Writing correction with AI feedback
-- TCF/TEF exam preparation modules
-- Progress tracking
-- Adaptive learning based on user proficiency
-- Conversational practice with AI
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request

@@ -1,55 +1,51 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-
-// Sample progress data for demonstration
-// In a real app this would come from a database
-const progressData = [
-  {
-    userId: 1,
-    lessonId: 1,
-    completed: true,
-    score: 100,
-    lastAccessed: '2023-06-15T10:30:00Z',
-    completedAt: '2023-06-15T11:00:00Z'
-  },
-  {
-    userId: 1,
-    lessonId: 2,
-    completed: false,
-    score: 75,
-    lastAccessed: '2023-06-16T14:20:00Z',
-    completedAt: null
-  },
-  {
-    userId: 1,
-    lessonId: 3,
-    completed: false,
-    score: 30,
-    lastAccessed: '2023-06-17T09:45:00Z',
-    completedAt: null
-  }
-];
+import { prisma } from '../../../lib/prisma';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Handle GET request
   if (req.method === 'GET') {
     try {
-      // In a real app, we would get the user ID from the authenticated user
-      const userId = 1; // Mock user ID
-      let { lessonId } = req.query;
+      // Get user ID from authenticated user
+      const userId = (req as any).user?.id;
       
-      // Filter progress by lesson ID if provided
-      let userProgress = progressData.filter(progress => progress.userId === userId);
-      
-      if (lessonId && !isNaN(Number(lessonId))) {
-        userProgress = userProgress.filter(progress => 
-          progress.lessonId === Number(lessonId)
-        );
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'User not authenticated' }
+        });
       }
+      
+      // Get lessonId from query if provided
+      let { lessonId } = req.query;
+      const lessonIdNum = lessonId ? parseInt(lessonId as string, 10) : undefined;
+      
+      // Build query
+      const query: any = { userId };
+      if (lessonIdNum && !isNaN(lessonIdNum)) {
+        query.lessonId = lessonIdNum;
+      }
+      
+      // Get progress from database
+      const progress = await prisma.lessonProgress.findMany({
+        where: query,
+        orderBy: {
+          lessonId: 'asc',
+        },
+      });
+      
+      // Format the data for the response
+      const formattedProgress = progress.map(item => ({
+        lessonId: item.lessonId,
+        completed: item.completed,
+        score: item.score,
+        lastAccessed: item.startedAt?.toISOString() || null,
+        completedAt: item.completedAt?.toISOString() || null
+      }));
       
       return res.status(200).json({
         success: true,
-        data: userProgress
+        data: formattedProgress
       });
     } catch (error) {
       console.error('Error fetching lesson progress:', error);
@@ -72,47 +68,67 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         });
       }
       
-      // In a real app, we would get the user ID from the authenticated user
-      const userId = 1; // Mock user ID
+      // Get user ID from authenticated user
+      const userId = (req as any).user?.id;
       
-      // Find existing progress or create new
-      const existingProgressIndex = progressData.findIndex(
-        p => p.userId === userId && p.lessonId === lessonId
-      );
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'User not authenticated' }
+        });
+      }
       
-      const now = new Date().toISOString();
-      let updatedProgress;
+      // Check if lesson exists
+      const lesson = await prisma.lesson.findUnique({
+        where: { id: lessonId }
+      });
       
-      if (existingProgressIndex >= 0) {
-        // Update existing progress
-        updatedProgress = {
-          ...progressData[existingProgressIndex],
+      if (!lesson) {
+        return res.status(404).json({
+          success: false,
+          error: { message: 'Lesson not found' }
+        });
+      }
+      
+      // Get current timestamp
+      const now = new Date();
+      
+      // Update or create progress
+      const updatedProgress = await prisma.lessonProgress.upsert({
+        where: {
+          userId_lessonId: {
+            userId,
+            lessonId
+          }
+        },
+        update: {
           completed,
           score,
-          lastAccessed: now,
-          completedAt: completed ? now : progressData[existingProgressIndex].completedAt
-        };
-        
-        // Update in the array (in a real app this would be a database update)
-        // progressData[existingProgressIndex] = updatedProgress;
-      } else {
-        // Create new progress
-        updatedProgress = {
+          startedAt: { set: now },
+          completedAt: completed ? now : undefined
+        },
+        create: {
           userId,
           lessonId,
           completed,
           score,
-          lastAccessed: now,
+          startedAt: now,
           completedAt: completed ? now : null
-        };
-        
-        // Add to the array (in a real app this would be a database insert)
-        // progressData.push(updatedProgress);
-      }
+        }
+      });
+      
+      // Format the data for the response
+      const formattedProgress = {
+        lessonId: updatedProgress.lessonId,
+        completed: updatedProgress.completed,
+        score: updatedProgress.score,
+        lastAccessed: updatedProgress.startedAt?.toISOString() || null,
+        completedAt: updatedProgress.completedAt?.toISOString() || null
+      };
       
       return res.status(200).json({
         success: true,
-        data: updatedProgress
+        data: formattedProgress
       });
     } catch (error) {
       console.error('Error updating lesson progress:', error);
