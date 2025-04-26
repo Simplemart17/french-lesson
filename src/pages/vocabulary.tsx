@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import SpacedRepetition, { VocabularyWord } from '@/components/features/SpacedRepetition';
+import VocabularyQuiz, { QuizResult } from '@/components/features/VocabularyQuiz';
 import { vocabularyService } from '@/services/vocabularyService';
 import { vocabularyApiService } from '@/services/index';
 import { useAuth } from '@/context/AuthContext';
@@ -493,22 +494,54 @@ export default function VocabularyPage() {
           </div>
         )}
 
-        {/* Quiz Mode - Simple Implementation */}
+        {/* Quiz Mode */}
         {studyMode === 'quiz' && (
           <div className="mb-12">
-            <div className="p-6 bg-white rounded-lg shadow-lg">
-              <h2 className="mb-6 text-xl font-semibold text-center text-gray-800">
-                Quiz Mode Coming Soon!
-              </h2>
-              <p className="mb-4 text-center text-gray-600">
-                We're working on an interactive quiz mode to help you test your vocabulary knowledge.
-              </p>
-              <div className="flex justify-center">
-                <Button onClick={() => setStudyMode('flashcards')}>
-                  Return to Flashcards
-                </Button>
+            {isLoading ? (
+              <div className="p-6 bg-white rounded-lg shadow-lg">
+                <LoadingState message="Loading quiz..." size="medium" />
               </div>
-            </div>
+            ) : filteredVocabulary.length >= 4 ? (
+              <VocabularyQuiz
+                words={filteredVocabulary}
+                onComplete={(results: QuizResult[]) => {
+                  // Update progress for words in the quiz
+                  const reviewedWords = results.map(result => {
+                    const word = result.word;
+                    // If correct, increase repetition stage, otherwise reset
+                    const repetitionStage = result.isCorrect
+                      ? (word.repetitionStage || 0) + 1
+                      : 0;
+
+                    return {
+                      ...word,
+                      repetitionStage,
+                      lastReviewed: new Date().toISOString()
+                    };
+                  });
+
+                  handleSpacedRepetitionComplete(reviewedWords);
+                }}
+                questionsCount={10}
+              />
+            ) : (
+              <div className="p-6 bg-white rounded-lg shadow-lg">
+                <h2 className="mb-6 text-xl font-semibold text-center text-gray-800">
+                  Not Enough Vocabulary Words
+                </h2>
+                <p className="mb-4 text-center text-gray-600">
+                  You need at least 4 vocabulary words in the selected category and level to take a quiz.
+                </p>
+                <div className="flex justify-center">
+                  <Button onClick={() => {
+                    setSelectedCategory('all');
+                    setSelectedLevel('beginner');
+                  }}>
+                    View All Beginner Words
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

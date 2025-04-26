@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorMessage from '@/components/ui/ErrorMessage';
 import { useAuth } from '@/context/AuthContext';
+import { lessonApiService } from '@/services/index';
+import useFetch from '@/hooks/useFetch';
 
 // Sample lesson data
 const lessonCategories = [
@@ -22,15 +26,32 @@ const lessonLevels = [
   { id: 'advanced', name: 'Advanced (C1-C2)' },
 ];
 
+// Helper function to get category display text
+const getCategoryDisplay = (lesson: any): string => {
+  if (lesson.category) {
+    return lesson.category;
+  } else if (lesson.topics && lesson.topics.length > 0) {
+    return lesson.topics[0];
+  }
+  return 'general';
+};
+
+// Helper function to get image URL
+const getImageUrl = (lesson: any): string | undefined => {
+  return lesson.imageUrl;
+};
+
 interface Lesson {
   id: string;
   title: string;
   description: string;
   level: 'beginner' | 'intermediate' | 'advanced';
-  category: string;
+  category?: string;
+  topics?: string[];
   duration: number;
   imageUrl?: string;
   progress?: number;
+  content?: { sections: any[] };
 }
 
 const sampleLessons: Lesson[] = [
@@ -121,30 +142,105 @@ export default function LessonsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const [sortOption, setSortOption] = useState('recommended');
+  const [currentPage, setCurrentPage] = useState(1);
+  const lessonsPerPage = 6;
+
+  // Fetch lessons using our custom hook
+  const {
+    data: apiLessons = [],
+    isLoading: isLoadingLessons,
+    error: lessonsError,
+    refetch: refetchLessons
+  } = useFetch(
+    () => lessonApiService.getLessons(
+      selectedLevel === 'all' ? undefined : selectedLevel,
+      selectedCategory === 'all' ? undefined : selectedCategory
+    ),
+    {
+      cacheKey: `lessons-${selectedLevel}-${selectedCategory}`,
+      onError: (err) => {
+        console.error('Error fetching lessons:', err);
+      }
+    }
+  );
+
+  // Fetch lesson progress if authenticated
+  const {
+    data: progressData = [],
+    isLoading: isLoadingProgress,
+    error: progressError,
+    refetch: refetchProgress
+  } = useFetch(
+    () => isAuthenticated ? lessonApiService.getLessonProgress() : Promise.resolve([]),
+    {
+      cacheKey: 'lesson-progress',
+      onError: (err) => {
+        console.error('Error fetching lesson progress:', err);
+      }
+    }
+  );
+
+  // Combine lessons with progress data
+  const lessons = apiLessons.length > 0
+    ? apiLessons.map(lesson => {
+        const progress = progressData.find(p => p.lessonId === lesson.id);
+        return {
+          ...lesson,
+          progress: progress ? (progress.completed ? 100 : 50) : 0
+        };
+      })
+    : sampleLessons; // Fallback to sample data if API fails
+
   // Filter lessons based on selected category, level, and search query
-  const filteredLessons = sampleLessons.filter(lesson => {
-    const matchesCategory = selectedCategory === 'all' || lesson.category === selectedCategory;
-    const matchesLevel = selectedLevel === 'all' || lesson.level === selectedLevel;
-    const matchesSearch = searchQuery === '' || 
-      lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredLessons = lessons.filter(lesson => {
+    const matchesSearch = searchQuery === '' ||
+      lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return matchesCategory && matchesLevel && matchesSearch;
+
+    return matchesSearch;
   });
-  
+
+  // Sort lessons based on selected option
+  const sortedLessons = [...filteredLessons].sort((a, b) => {
+    switch (sortOption) {
+      case 'newest':
+        return new Date(b.id).getTime() - new Date(a.id).getTime();
+      case 'popular':
+        return (b.progress || 0) - (a.progress || 0);
+      case 'duration-asc':
+        return a.duration - b.duration;
+      case 'duration-desc':
+        return b.duration - a.duration;
+      default: // recommended
+        return 0;
+    }
+  });
+
+  // Paginate lessons
+  const indexOfLastLesson = currentPage * lessonsPerPage;
+  const indexOfFirstLesson = indexOfLastLesson - lessonsPerPage;
+  const currentLessons = sortedLessons.slice(indexOfFirstLesson, indexOfLastLesson);
+  const totalPages = Math.ceil(sortedLessons.length / lessonsPerPage);
+
   // Calculate progress stats
-  const completedLessons = isAuthenticated ? sampleLessons.filter(lesson => lesson.progress === 100).length : 0;
-  const inProgressLessons = isAuthenticated ? sampleLessons.filter(lesson => lesson.progress && lesson.progress > 0 && lesson.progress < 100).length : 0;
-  const totalLessons = sampleLessons.length;
-  
+  const completedLessons = isAuthenticated ? lessons.filter(lesson => lesson.progress === 100).length : 0;
+  const inProgressLessons = isAuthenticated ? lessons.filter(lesson => lesson.progress && lesson.progress > 0 && lesson.progress < 100).length : 0;
+  const totalLessons = lessons.length;
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
       <Head>
         <title>French Lessons | French Tutor AI</title>
         <meta name="description" content="Browse and learn from our comprehensive collection of French lessons" />
       </Head>
-      
+
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="mb-4 text-3xl font-bold text-gray-800">French Lessons</h1>
@@ -152,26 +248,45 @@ export default function LessonsPage() {
             Browse our comprehensive collection of French lessons designed for all proficiency levels.
           </p>
         </div>
-        
+
         {isAuthenticated && (
           <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3">
             <Card className="p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-primary-600">{completedLessons}</div>
               <div className="text-gray-600">Completed Lessons</div>
             </Card>
-            
+
             <Card className="p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-yellow-500">{inProgressLessons}</div>
               <div className="text-gray-600">In Progress</div>
             </Card>
-            
+
             <Card className="p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-gray-600">{totalLessons}</div>
               <div className="text-gray-600">Total Lessons</div>
             </Card>
           </div>
         )}
-        
+
+        {/* Loading and Error States */}
+        {(isLoadingLessons || isLoadingProgress) && (
+          <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
+            <LoadingState message="Loading lessons..." size="medium" />
+          </div>
+        )}
+
+        {(lessonsError || progressError) && !isLoadingLessons && !isLoadingProgress && (
+          <div className="mb-8">
+            <ErrorMessage
+              message="Failed to load lessons. Using locally stored data instead."
+              retryAction={() => {
+                refetchLessons();
+                if (isAuthenticated) refetchProgress();
+              }}
+            />
+          </div>
+        )}
+
         {/* Filters Section */}
         <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -192,7 +307,7 @@ export default function LessonsPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Category Filter */}
             <div>
               <h2 className="mb-3 text-lg font-semibold text-gray-800">Category</h2>
@@ -212,7 +327,7 @@ export default function LessonsPage() {
                 ))}
               </div>
             </div>
-            
+
             {/* Level Filter */}
             <div>
               <h2 className="mb-3 text-lg font-semibold text-gray-800">Level</h2>
@@ -232,11 +347,13 @@ export default function LessonsPage() {
                 ))}
               </div>
             </div>
-            
+
             {/* Sort Options */}
             <div>
               <h2 className="mb-3 text-lg font-semibold text-gray-800">Sort By</h2>
               <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="recommended">Recommended</option>
@@ -248,18 +365,30 @@ export default function LessonsPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Lessons Grid */}
-        <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-2 lg:grid-cols-3">
-          {filteredLessons.length > 0 ? (
-            filteredLessons.map((lesson) => (
+        <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
+          {isLoadingLessons ? (
+            // Loading skeletons
+            Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="h-full overflow-hidden animate-pulse">
+                <div className="h-48 bg-gray-200"></div>
+                <div className="p-5">
+                  <div className="w-3/4 h-5 mb-2 bg-gray-200 rounded"></div>
+                  <div className="w-full h-4 mb-4 bg-gray-200 rounded"></div>
+                  <div className="w-1/2 h-4 bg-gray-200 rounded"></div>
+                </div>
+              </Card>
+            ))
+          ) : currentLessons.length > 0 ? (
+            currentLessons.map((lesson) => (
               <Link key={lesson.id} href={`/lessons/${lesson.id}`} className="block group">
                 <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
                   <div className="relative h-48 overflow-hidden">
-                    {lesson.imageUrl ? (
-                      <img 
-                        src={lesson.imageUrl} 
-                        alt={lesson.title} 
+                    {getImageUrl(lesson) ? (
+                      <img
+                        src={getImageUrl(lesson)}
+                        alt={lesson.title}
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
@@ -269,12 +398,12 @@ export default function LessonsPage() {
                         </svg>
                       </div>
                     )}
-                    
+
                     {/* Level Badge */}
                     <div className="absolute top-3 left-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        lesson.level === 'beginner' 
-                          ? 'bg-green-100 text-green-800' 
+                        lesson.level === 'beginner'
+                          ? 'bg-green-100 text-green-800'
                           : lesson.level === 'intermediate'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
@@ -282,31 +411,31 @@ export default function LessonsPage() {
                         {lesson.level.charAt(0).toUpperCase() + lesson.level.slice(1)}
                       </span>
                     </div>
-                    
+
                     {/* Category Badge */}
                     <div className="absolute top-3 right-3">
                       <span className="px-2 py-1 text-xs font-medium text-gray-800 rounded-full bg-white/80 backdrop-blur-sm">
-                        {lesson.category.charAt(0).toUpperCase() + lesson.category.slice(1)}
+                        {getCategoryDisplay(lesson).charAt(0).toUpperCase() + getCategoryDisplay(lesson).slice(1)}
                       </span>
                     </div>
-                    
+
                     {/* Progress Bar (if authenticated) */}
                     {isAuthenticated && lesson.progress !== undefined && (
                       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
-                        <div 
+                        <div
                           className={`h-full ${
-                            lesson.progress === 100 
-                              ? 'bg-green-500' 
-                              : lesson.progress > 0 
-                                ? 'bg-yellow-500' 
+                            lesson.progress === 100
+                              ? 'bg-green-500'
+                              : lesson.progress > 0
+                                ? 'bg-yellow-500'
                                 : ''
-                          }`} 
+                          }`}
                           style={{ width: `${lesson.progress}%` }}
                         ></div>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-800 transition-colors group-hover:text-primary-600">
@@ -317,14 +446,14 @@ export default function LessonsPage() {
                     <p className="mb-4 text-sm text-gray-600 line-clamp-2">
                       {lesson.description}
                     </p>
-                    
+
                     {isAuthenticated && (
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-500">
-                          {lesson.progress && lesson.progress === 100 
-                            ? 'Completed' 
-                            : lesson.progress && lesson.progress > 0 
-                              ? `${lesson.progress}% complete` 
+                          {lesson.progress && lesson.progress === 100
+                            ? 'Completed'
+                            : lesson.progress && lesson.progress > 0
+                              ? `${lesson.progress}% complete`
                               : 'Not started'}
                         </div>
                         <Button size="sm" variant={lesson.progress && lesson.progress > 0 ? "outline" : "default"}>
@@ -348,6 +477,9 @@ export default function LessonsPage() {
                   setSelectedCategory('all');
                   setSelectedLevel('all');
                   setSearchQuery('');
+                  setSortOption('recommended');
+                  setCurrentPage(1);
+                  refetchLessons();
                 }}>
                   Reset Filters
                 </Button>
@@ -355,7 +487,58 @@ export default function LessonsPage() {
             </div>
           )}
         </div>
-        
+
+        {/* Pagination */}
+        {!isLoadingLessons && sortedLessons.length > lessonsPerPage && (
+          <div className="flex justify-center mb-12">
+            <nav className="inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                  currentPage === 1
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                <span className="sr-only">Previous</span>
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                    currentPage === index + 1
+                      ? 'z-10 bg-primary-50 border-primary-500 text-primary-600'
+                      : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                  currentPage === totalPages
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                <span className="sr-only">Next</span>
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        )}
+
         {/* Learning Path Suggestion */}
         <div className="mb-12">
           <div className="overflow-hidden shadow-lg bg-gradient-to-r from-primary-600 to-primary-800 rounded-xl">

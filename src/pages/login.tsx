@@ -31,17 +31,15 @@ export default function LoginPage() {
   useEffect(() => {
     // Only redirect if we're authenticated, initialized, and not in a loading state
     if (isAuthenticated && isInitialized && !isLoading) {
-      // // Prevent redirect loops by checking if we're being redirected back to login
-      // const redirectPath = redirect && typeof redirect === 'string' && !redirect.includes('/login')
-      //   ? redirect
-      //   : '/dashboard';
+      // Prevent redirect loops by checking if we're being redirected back to login
+      const redirectPath = redirect && typeof redirect === 'string' && !redirect.includes('/login')
+        ? redirect
+        : '/dashboard';
 
-      // console.log('Already authenticated, redirecting to:', redirectPath);
-
-      // Use a simple redirect to the dashboard
-      router.push('/dashboard');
+      // Use router.push for navigation
+      router.push(redirectPath);
     }
-  }, [isAuthenticated, isLoading, isInitialized, redirect]);
+  }, [isAuthenticated, isLoading, isInitialized, redirect, router]);
 
   // Show auth error from context if present
   useEffect(() => {
@@ -91,11 +89,13 @@ export default function LoginPage() {
 
       // Small delay to allow the toast to be seen before redirecting
       setTimeout(() => {
-        // Always redirect to dashboard after login to prevent loops
-        console.log('Login successful, redirecting to dashboard');
+        // Redirect to the original page or dashboard
+        const redirectPath = redirect && typeof redirect === 'string' && !redirect.includes('/login')
+          ? redirect
+          : '/dashboard';
 
         // Use router.push for navigation
-        router.push('/dashboard');
+        router.push(redirectPath);
       }, 1000);
 
     } catch (err: any) {
