@@ -36,13 +36,24 @@ export interface AuthResponse {
 
 // Lesson-related types
 export interface LessonSection {
-  type: 'text' | 'audio' | 'video' | 'image';
+  type: 'text' | 'audio' | 'video' | 'image' | 'vocabulary' | 'dialogue' | 'exercise';
   title: string;
   content?: string;
   audioUrl?: string;
   videoUrl?: string;
   imageUrl?: string;
   transcript?: string;
+  words?: {
+    word: string;
+    translation: string;
+    notes?: string;
+  }[];
+  questions?: {
+    type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking';
+    question?: string;
+    options?: string[];
+    correctAnswer?: string;
+  }[];
 }
 
 export interface LessonExercise {
@@ -62,7 +73,6 @@ export interface Lesson {
   topics: string[];
   content: {
     sections: LessonSection[];
-    exercises: LessonExercise[];
   };
 }
 
@@ -70,9 +80,8 @@ export interface LessonProgress {
   lessonId: number;
   completed: boolean;
   score: number;
-  startedAt?: string;
-  completedAt?: string;
-  answers?: Record<number, string | string[]>; // exerciseIndex -> answer
+  lastAccessed: string;
+  completedAt: string | null;
 }
 
 // Vocabulary and Practice types
@@ -81,15 +90,17 @@ export interface VocabularyItem {
   translation: string;
   example: string;
   level: string;
+  category?: string;
   learned: boolean;
   lastPracticed?: string;
+  nextReview?: string;
 }
 
 export interface PracticeSession {
   id: string;
   userId: number;
   type: 'vocabulary' | 'grammar' | 'listening' | 'speaking';
-  items: Array<VocabularyItem | LessonExercise>; 
+  items: Array<VocabularyItem | LessonExercise>;
   startedAt: string;
   completedAt?: string;
   score?: number;
@@ -197,4 +208,4 @@ export interface ConversationResponse {
   message: string;
   context: string;
   history: ConversationMessage[];
-} 
+}
