@@ -11,8 +11,8 @@ A full-stack web application designed to help users learn French from beginner t
 - **Responsive Design:** Mobile-first approach
 
 ### Backend
-- **Language:** Python (Django) or Node.js (Express)
-- **API:** GraphQL
+- **Language:** Node.js (Express)
+- **API:** RESTful
 - **Real-time Communication:** WebSocket
 - **Architecture:** Microservices
 

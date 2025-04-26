@@ -1,10 +1,14 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import UserProfile, { UserProfileData } from '@/components/features/UserProfile';
+import { useAuth } from '@/context/AuthContext';
+import LoadingState from '@/components/ui/LoadingState';
 
 export default function ProfilePage() {
+  const { isAuthenticated } = useAuth();
   // Mock user data - would come from API/state in a real app
   const [user, setUser] = useState({
     name: 'Sophie Laurent',
@@ -35,6 +39,39 @@ export default function ProfilePage() {
     { skill: 'Grammar', level: 'B1', percentage: 70 },
     { skill: 'Vocabulary', level: 'B2', percentage: 80 },
   ];
+
+  // User profile data for the UserProfile component
+  const [profileData, setProfileData] = useState<UserProfileData>({
+    name: user.name,
+    email: user.email,
+    level: user.level as 'beginner' | 'intermediate' | 'advanced',
+    learningGoals: ['Improve conversation skills', 'Expand vocabulary', 'Prepare for an exam'],
+    interests: ['Culture', 'Food & Cuisine', 'Travel', 'Movies & TV'],
+    studyTime: '30min-1hour',
+    targetExam: 'tcf'
+  });
+
+  // Handle profile save
+  const handleProfileSave = async (data: UserProfileData) => {
+    try {
+      // In a real app, this would save to an API
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+
+      setProfileData(data);
+      // Update user data
+      setUser(prev => ({
+        ...prev,
+        name: data.name,
+        email: data.email,
+        level: data.level
+      }));
+
+      alert('Profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Failed to save profile. Please try again.');
+    }
+  };
 
   return (
     <>
@@ -110,8 +147,8 @@ export default function ProfilePage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div 
-                        className="bg-primary-600 h-2.5 rounded-full" 
+                      <div
+                        className="bg-primary-600 h-2.5 rounded-full"
                         style={{ width: `${skill.percentage}%` }}
                       ></div>
                     </div>
@@ -125,7 +162,7 @@ export default function ProfilePage() {
               <div className="p-4 mt-4 border border-yellow-100 rounded-lg bg-yellow-50">
                 <h3 className="mb-2 font-medium text-yellow-800">Recommended Focus Areas</h3>
                 <p className="text-sm text-yellow-700">
-                  Based on your progress, we recommend focusing on improving your writing skills. 
+                  Based on your progress, we recommend focusing on improving your writing skills.
                   Check out our <Link href="/writing" className="text-primary-600 hover:underline">writing exercises</Link> to practice.
                 </p>
               </div>
@@ -165,9 +202,9 @@ export default function ProfilePage() {
                         <div className="text-sm font-medium text-gray-900">{activity.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${activity.type === 'lesson' ? 'bg-green-100 text-green-800' : 
-                            activity.type === 'practice' ? 'bg-blue-100 text-blue-800' : 
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                          ${activity.type === 'lesson' ? 'bg-green-100 text-green-800' :
+                            activity.type === 'practice' ? 'bg-blue-100 text-blue-800' :
                             'bg-purple-100 text-purple-800'}`}>
                           {activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}
                         </span>
@@ -185,9 +222,9 @@ export default function ProfilePage() {
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm whitespace-nowrap">
-                        <Link href={`/${activity.type === 'lesson' ? 'lessons' : 
-                                        activity.type === 'practice' ? 'practice' : 
-                                        'exam-practice'}`} 
+                        <Link href={`/${activity.type === 'lesson' ? 'lessons' :
+                                        activity.type === 'practice' ? 'practice' :
+                                        'exam-practice'}`}
                               className="text-primary-600 hover:text-primary-900">
                           Retry
                         </Link>
@@ -250,9 +287,19 @@ export default function ProfilePage() {
                 <p className="mb-4 text-sm text-gray-600">
                   You're making great progress! Continue with regular practice to reach your B2 level goal.
                 </p>
-                <Button size="sm">Update Goal</Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    const profileSection = document.getElementById('profile-section');
+                    if (profileSection) {
+                      profileSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Update Goals
+                </Button>
               </div>
-              
+
               <div className="p-5 bg-white rounded-lg shadow-sm">
                 <h3 className="mb-3 text-lg font-semibold text-gray-800">Daily Streak</h3>
                 <div className="grid grid-cols-7 gap-2 mb-4">
@@ -271,14 +318,23 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* User Profile Section */}
+        <div id="profile-section" className="mb-12">
+          <h2 className="mb-6 text-2xl font-bold text-gray-800">Learning Profile</h2>
+          <UserProfile
+            initialData={profileData}
+            onSave={handleProfileSave}
+          />
+        </div>
+
         {/* Suggested Resources */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold text-gray-800">Suggested Resources</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <Link href="/lessons" className="block group">
-              <Card 
-                variant="primary" 
-                title="Intermediate Grammar" 
+              <Card
+                variant="primary"
+                title="Intermediate Grammar"
                 className="h-full p-5 transition-transform group-hover:scale-105"
               >
                 <p className="text-gray-300">Master complex verb tenses and sentence structures.</p>
@@ -290,11 +346,11 @@ export default function ProfilePage() {
                 </div>
               </Card>
             </Link>
-            
+
             <Link href="/vocabulary" className="block group">
-              <Card 
-                variant="secondary" 
-                title="Business Vocabulary" 
+              <Card
+                variant="secondary"
+                title="Business Vocabulary"
                 className="h-full p-5 transition-transform group-hover:scale-105"
               >
                 <p className="text-gray-300">Learn essential terms for professional environments.</p>
@@ -306,11 +362,11 @@ export default function ProfilePage() {
                 </div>
               </Card>
             </Link>
-            
+
             <Link href="/exam-practice" className="block group">
-              <Card 
-                variant="success" 
-                title="B1 Exam Preparation" 
+              <Card
+                variant="success"
+                title="B1 Exam Preparation"
                 className="h-full p-5 transition-transform group-hover:scale-105"
               >
                 <p className="text-gray-600">Practice tests and exercises to prepare for your B1 exam.</p>

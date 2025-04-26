@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import EnhancedSpeechRecognition from '@/components/features/EnhancedSpeechRecognition';
+import PronunciationPractice, { PronunciationResult } from '@/components/features/PronunciationPractice';
 import { useAuth } from '@/context/AuthContext';
 
 // Sample pronunciation exercises
@@ -13,10 +13,26 @@ const pronunciationExercises = [
     description: 'Practice common French greetings and introductions',
     difficulty: 'beginner' as const,
     phrases: [
-      'Bonjour, comment allez-vous?',
-      'Je m\'appelle Jean. Enchanté.',
-      'Au revoir et à bientôt!',
-      'Merci beaucoup pour votre aide.'
+      {
+        text: 'Bonjour, comment allez-vous?',
+        translation: 'Hello, how are you?',
+        audioUrl: '/audio/greetings/bonjour-comment-allez-vous.mp3'
+      },
+      {
+        text: 'Je m\'appelle Jean. Enchanté.',
+        translation: 'My name is Jean. Nice to meet you.',
+        audioUrl: '/audio/greetings/je-mappelle-jean.mp3'
+      },
+      {
+        text: 'Au revoir et à bientôt!',
+        translation: 'Goodbye and see you soon!',
+        audioUrl: '/audio/greetings/au-revoir-a-bientot.mp3'
+      },
+      {
+        text: 'Merci beaucoup pour votre aide.',
+        translation: 'Thank you very much for your help.',
+        audioUrl: '/audio/greetings/merci-beaucoup.mp3'
+      }
     ]
   },
   {
@@ -25,10 +41,26 @@ const pronunciationExercises = [
     description: 'Practice French nasal vowel sounds',
     difficulty: 'beginner' as const,
     phrases: [
-      'Un bon vin blanc',
-      'Demain matin',
-      'Le train est en retard',
-      'J\'ai faim et j\'ai besoin de pain'
+      {
+        text: 'Un bon vin blanc',
+        translation: 'A good white wine',
+        audioUrl: '/audio/nasal/un-bon-vin-blanc.mp3'
+      },
+      {
+        text: 'Demain matin',
+        translation: 'Tomorrow morning',
+        audioUrl: '/audio/nasal/demain-matin.mp3'
+      },
+      {
+        text: 'Le train est en retard',
+        translation: 'The train is late',
+        audioUrl: '/audio/nasal/le-train-est-en-retard.mp3'
+      },
+      {
+        text: 'J\'ai faim et j\'ai besoin de pain',
+        translation: 'I am hungry and I need bread',
+        audioUrl: '/audio/nasal/jai-faim-et-besoin-de-pain.mp3'
+      }
     ]
   },
   {
@@ -37,10 +69,26 @@ const pronunciationExercises = [
     description: 'Practice the French R sound',
     difficulty: 'intermediate' as const,
     phrases: [
-      'Trois gros rats gris',
-      'Regardez derrière la porte',
-      'Je voudrais réserver une chambre',
-      'Le restaurant est sur la rue à droite'
+      {
+        text: 'Trois gros rats gris',
+        translation: 'Three big gray rats',
+        audioUrl: '/audio/r-sound/trois-gros-rats-gris.mp3'
+      },
+      {
+        text: 'Regardez derrière la porte',
+        translation: 'Look behind the door',
+        audioUrl: '/audio/r-sound/regardez-derriere-la-porte.mp3'
+      },
+      {
+        text: 'Je voudrais réserver une chambre',
+        translation: 'I would like to book a room',
+        audioUrl: '/audio/r-sound/je-voudrais-reserver.mp3'
+      },
+      {
+        text: 'Le restaurant est sur la rue à droite',
+        translation: 'The restaurant is on the street to the right',
+        audioUrl: '/audio/r-sound/le-restaurant-est-sur-la-rue.mp3'
+      }
     ]
   },
   {
@@ -49,10 +97,26 @@ const pronunciationExercises = [
     description: 'Practice the French U sound',
     difficulty: 'intermediate' as const,
     phrases: [
-      'Tu as vu la rue?',
-      'J\'ai bu du jus',
-      'La musique est une culture universelle',
-      'Une minute de plus s\'il vous plaît'
+      {
+        text: 'Tu as vu la rue?',
+        translation: 'Have you seen the street?',
+        audioUrl: '/audio/u-sound/tu-as-vu-la-rue.mp3'
+      },
+      {
+        text: 'J\'ai bu du jus',
+        translation: 'I drank some juice',
+        audioUrl: '/audio/u-sound/jai-bu-du-jus.mp3'
+      },
+      {
+        text: 'La musique est une culture universelle',
+        translation: 'Music is a universal culture',
+        audioUrl: '/audio/u-sound/la-musique-est-une-culture.mp3'
+      },
+      {
+        text: 'Une minute de plus s\'il vous plaît',
+        translation: 'One more minute please',
+        audioUrl: '/audio/u-sound/une-minute-de-plus.mp3'
+      }
     ]
   },
   {
@@ -61,47 +125,70 @@ const pronunciationExercises = [
     description: 'Practice complex French sentences with multiple challenging sounds',
     difficulty: 'advanced' as const,
     phrases: [
-      'Les chaussettes de l\'archiduchesse sont-elles sèches ou archi-sèches?',
-      'Un chasseur sachant chasser doit savoir chasser sans son chien',
-      'Je veux et j\'exige d\'exquises excuses',
-      'Ton thé t\'a-t-il ôté ta toux?'
+      {
+        text: 'Les chaussettes de l\'archiduchesse sont-elles sèches ou archi-sèches?',
+        translation: 'Are the archduchess\'s socks dry or very dry?',
+        audioUrl: '/audio/difficult/les-chaussettes-de-larchiduchesse.mp3'
+      },
+      {
+        text: 'Un chasseur sachant chasser doit savoir chasser sans son chien',
+        translation: 'A hunter who knows how to hunt must know how to hunt without his dog',
+        audioUrl: '/audio/difficult/un-chasseur-sachant-chasser.mp3'
+      },
+      {
+        text: 'Je veux et j\'exige d\'exquises excuses',
+        translation: 'I want and demand exquisite apologies',
+        audioUrl: '/audio/difficult/je-veux-et-jexige.mp3'
+      },
+      {
+        text: 'Ton thé t\'a-t-il ôté ta toux?',
+        translation: 'Has your tea taken away your cough?',
+        audioUrl: '/audio/difficult/ton-the-ta-til-ote-ta-toux.mp3'
+      }
     ]
   }
 ];
 
+// Define the phrase type
+interface PhraseItem {
+  text: string;
+  translation: string;
+  audioUrl: string;
+}
+
 export default function PronunciationPage() {
   const { isAuthenticated } = useAuth();
   const [selectedExercise, setSelectedExercise] = useState<typeof pronunciationExercises[0] | null>(null);
-  const [selectedPhrase, setSelectedPhrase] = useState<string>('');
+  const [selectedPhrase, setSelectedPhrase] = useState<PhraseItem | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
   const [userScores, setUserScores] = useState<Record<string, number>>({});
-  
+
   // Filter exercises based on selected difficulty
-  const filteredExercises = selectedDifficulty === 'all' 
-    ? pronunciationExercises 
+  const filteredExercises = selectedDifficulty === 'all'
+    ? pronunciationExercises
     : pronunciationExercises.filter(exercise => exercise.difficulty === selectedDifficulty);
-  
-  const handlePronunciationComplete = (transcript: string, score: number, feedback: any[]) => {
-    console.log('Pronunciation completed:', { transcript, score, feedback });
-    
+
+  const handlePronunciationComplete = (result: PronunciationResult) => {
+    console.log('Pronunciation completed:', result);
+
     // Update user scores
     if (selectedPhrase) {
       setUserScores(prev => ({
         ...prev,
-        [selectedPhrase]: score
+        [selectedPhrase.text]: result.accuracy
       }));
     }
-    
+
     // In a real app, this would save the user's progress
   };
-  
+
   return (
     <>
       <Head>
         <title>Pronunciation Practice | French Tutor AI</title>
         <meta name="description" content="Practice French pronunciation with detailed feedback" />
       </Head>
-      
+
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="mb-4 text-3xl font-bold text-gray-800">Pronunciation Practice</h1>
@@ -109,13 +196,13 @@ export default function PronunciationPage() {
             Improve your French pronunciation with targeted exercises and get detailed feedback on your speech.
           </p>
         </div>
-        
+
         {selectedExercise && selectedPhrase ? (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setSelectedPhrase('')}
+              <Button
+                variant="outline"
+                onClick={() => setSelectedPhrase(null)}
                 className="flex items-center"
               >
                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -123,10 +210,10 @@ export default function PronunciationPage() {
                 </svg>
                 Back to Phrases
               </Button>
-              
+
               <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                selectedExercise.difficulty === 'beginner' 
-                  ? 'bg-green-100 text-green-800' 
+                selectedExercise.difficulty === 'beginner'
+                  ? 'bg-green-100 text-green-800'
                   : selectedExercise.difficulty === 'intermediate'
                     ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-red-100 text-red-800'
@@ -134,17 +221,19 @@ export default function PronunciationPage() {
                 {selectedExercise.difficulty.charAt(0).toUpperCase() + selectedExercise.difficulty.slice(1)}
               </div>
             </div>
-            
-            <EnhancedSpeechRecognition 
-              targetPhrase={selectedPhrase}
-              onComplete={handlePronunciationComplete}
+
+            <PronunciationPractice
+              phrase={selectedPhrase.text}
+              translation={selectedPhrase.translation}
+              audioUrl={selectedPhrase.audioUrl}
+              onResult={handlePronunciationComplete}
             />
           </div>
         ) : selectedExercise ? (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setSelectedExercise(null)}
                 className="flex items-center"
               >
@@ -153,10 +242,10 @@ export default function PronunciationPage() {
                 </svg>
                 Back to Exercises
               </Button>
-              
+
               <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                selectedExercise.difficulty === 'beginner' 
-                  ? 'bg-green-100 text-green-800' 
+                selectedExercise.difficulty === 'beginner'
+                  ? 'bg-green-100 text-green-800'
                   : selectedExercise.difficulty === 'intermediate'
                     ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-red-100 text-red-800'
@@ -164,35 +253,36 @@ export default function PronunciationPage() {
                 {selectedExercise.difficulty.charAt(0).toUpperCase() + selectedExercise.difficulty.slice(1)}
               </div>
             </div>
-            
+
             <Card className="mb-6">
               <div className="p-6">
                 <h2 className="mb-2 text-xl font-semibold text-gray-800">{selectedExercise.title}</h2>
                 <p className="mb-6 text-gray-600">{selectedExercise.description}</p>
-                
+
                 <h3 className="mb-3 font-medium text-gray-800">Select a phrase to practice:</h3>
                 <div className="space-y-3">
                   {selectedExercise.phrases.map((phrase, index) => {
-                    const score = userScores[phrase];
+                    const score = userScores[phrase.text];
                     const hasScore = score !== undefined;
-                    
+
                     return (
-                      <div 
+                      <div
                         key={index}
                         onClick={() => setSelectedPhrase(phrase)}
                         className="p-4 transition-colors border border-gray-200 rounded-lg cursor-pointer hover:border-primary-300 hover:bg-primary-50"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-gray-800">{phrase}</p>
+                            <p className="font-medium text-gray-800">{phrase.text}</p>
+                            <p className="text-sm text-gray-500">{phrase.translation}</p>
                             {hasScore && (
                               <div className="mt-1 text-sm text-gray-500">
-                                Last score: 
+                                Last score:
                                 <span className={`ml-1 font-medium ${
-                                  score >= 80 
-                                    ? 'text-green-600' 
-                                    : score >= 50 
-                                    ? 'text-yellow-600' 
+                                  score >= 80
+                                    ? 'text-green-600'
+                                    : score >= 50
+                                    ? 'text-yellow-600'
                                     : 'text-red-600'
                                 }`}>
                                   {score}%
@@ -256,9 +346,9 @@ export default function PronunciationPage() {
                 </button>
               </div>
             </div>
-            
+
             <h2 className="mb-6 text-2xl font-semibold text-gray-800">Pronunciation Exercises</h2>
-            
+
             <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-2 lg:grid-cols-3">
               {filteredExercises.map((exercise) => (
                 <Card key={exercise.id} className="h-full transition-shadow hover:shadow-lg">
@@ -266,8 +356,8 @@ export default function PronunciationPage() {
                     <div className="flex items-start justify-between mb-4">
                       <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'beginner' 
-                          ? 'bg-green-100 text-green-800' 
+                        exercise.difficulty === 'beginner'
+                          ? 'bg-green-100 text-green-800'
                           : exercise.difficulty === 'intermediate'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
@@ -275,11 +365,11 @@ export default function PronunciationPage() {
                         {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
                       </span>
                     </div>
-                    
+
                     <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
-                    
+
                     <div className="mt-auto">
-                      <Button 
+                      <Button
                         onClick={() => setSelectedExercise(exercise)}
                         className="w-full"
                       >
@@ -290,7 +380,7 @@ export default function PronunciationPage() {
                 </Card>
               ))}
             </div>
-            
+
             {!isAuthenticated && (
               <div className="p-6 mb-8 border rounded-lg bg-primary-50 border-primary-100">
                 <div className="items-center md:flex">
@@ -301,7 +391,7 @@ export default function PronunciationPage() {
                     </p>
                   </div>
                   <div className="flex justify-end md:w-1/4">
-                    <Button 
+                    <Button
                       variant="default"
                       onClick={() => window.location.href = '/register'}
                     >
@@ -311,7 +401,7 @@ export default function PronunciationPage() {
                 </div>
               </div>
             )}
-            
+
             <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
               <h2 className="mb-4 text-xl font-semibold text-gray-800">French Pronunciation Tips</h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -336,7 +426,7 @@ export default function PronunciationPage() {
                   </ul>
                 </div>
               </div>
-              
+
               <div className="mt-6">
                 <h3 className="mb-2 font-medium text-gray-800">Nasal Sounds</h3>
                 <p className="mb-2 text-gray-600">
