@@ -1,4 +1,5 @@
-import { vocabularyApiService, lessonApiService } from '@/services/index';
+import { vocabularyService, lessonService, conversationService, grammarService, pronunciationService, examService } from '@/services/index';
+import { localStorageCache } from '@/utils/cache';
 
 /**
  * Prefetch common data that will be needed across the application
@@ -9,27 +10,45 @@ export const prefetchCommonData = async () => {
     // Start all fetches in parallel
     const promises = [
       // Prefetch vocabulary data
-      vocabularyApiService.getVocabulary().catch(err => {
+      vocabularyService.getVocabulary().catch((err: Error) => {
         console.error('Failed to prefetch vocabulary:', err);
         return [];
       }),
-      
+
       // Prefetch lessons data
-      lessonApiService.getLessons().catch(err => {
+      lessonService.getLessons().catch((err: Error) => {
         console.error('Failed to prefetch lessons:', err);
         return [];
       }),
-      
+
       // Prefetch vocabulary categories
-      vocabularyApiService.getCategories().catch(err => {
+      vocabularyService.getCategories().catch((err: Error) => {
         console.error('Failed to prefetch vocabulary categories:', err);
         return [];
       }),
+
+      // Prefetch grammar exercises
+      grammarService.getGrammarExercises().catch((err: Error) => {
+        console.error('Failed to prefetch grammar exercises:', err);
+        return [];
+      }),
+
+      // Prefetch pronunciation exercises
+      pronunciationService.getPronunciationExercises().catch((err: Error) => {
+        console.error('Failed to prefetch pronunciation exercises:', err);
+        return [];
+      }),
+
+      // Prefetch exam modules
+      examService.getExamModules().catch((err: Error) => {
+        console.error('Failed to prefetch exam modules:', err);
+        return [];
+      }),
     ];
-    
+
     // Wait for all prefetches to complete
     await Promise.all(promises);
-    
+
     console.log('Prefetching completed successfully');
   } catch (error) {
     console.error('Error during prefetching:', error);
@@ -44,38 +63,89 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
   try {
     switch (page) {
       case 'vocabulary':
-        await vocabularyApiService.getVocabulary(
-          params?.level,
-          params?.category
-        ).catch(err => {
+        await vocabularyService.getVocabulary({
+          level: params?.level,
+          category: params?.category
+        }).catch((err: Error) => {
           console.error('Failed to prefetch vocabulary for page:', err);
           return [];
         });
         break;
-        
+
       case 'lessons':
-        await lessonApiService.getLessons(
+        await lessonService.getLessons(
           params?.level,
           params?.topic
-        ).catch(err => {
+        ).catch((err: Error) => {
           console.error('Failed to prefetch lessons for page:', err);
           return [];
         });
         break;
-        
+
       case 'lesson-detail':
         if (params?.id) {
-          await lessonApiService.getLesson(Number(params.id)).catch(err => {
+          await lessonService.getLesson(Number(params.id)).catch((err: Error) => {
             console.error(`Failed to prefetch lesson ${params.id}:`, err);
             return null;
           });
         }
         break;
-        
+
+      case 'grammar':
+        await grammarService.getGrammarExercises(
+          params?.difficulty,
+          params?.category
+        ).catch((err: Error) => {
+          console.error('Failed to prefetch grammar exercises for page:', err);
+          return [];
+        });
+        break;
+
+      case 'pronunciation':
+        await pronunciationService.getPronunciationExercises(
+          params?.difficulty
+        ).catch((err: Error) => {
+          console.error('Failed to prefetch pronunciation exercises for page:', err);
+          return [];
+        });
+        break;
+
+      case 'exam':
+        await examService.getExamModules(
+          params?.examType,
+          params?.section,
+          params?.difficulty
+        ).catch((err: Error) => {
+          console.error('Failed to prefetch exam modules for page:', err);
+          return [];
+        });
+        break;
+
+      case 'conversation':
+        await conversationService.getConversationTopics(
+          params?.level
+        ).catch((err: Error) => {
+          console.error('Failed to prefetch conversation topics for page:', err);
+          return [];
+        });
+        break;
+
       default:
         break;
     }
-    
+
+    // Store the prefetch timestamp in localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        localStorageCache.set(`prefetch_${page}`, {
+          timestamp: Date.now(),
+          params
+        }, 30 * 60 * 1000); // 30 minutes
+      } catch (err) {
+        console.error('Failed to store prefetch timestamp:', err);
+      }
+    }
+
     console.log(`Prefetching for page ${page} completed`);
   } catch (error) {
     console.error(`Error during prefetching for page ${page}:`, error);

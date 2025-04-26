@@ -10,7 +10,7 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: '/auth/reset-password',
     VERIFY_EMAIL: '/auth/verify-email',
   },
-  
+
   // User endpoints
   USER: {
     PROFILE: '/user/profile',
@@ -20,7 +20,7 @@ export const API_ENDPOINTS = {
     PROGRESS: '/user/progress',
     STATISTICS: '/user/statistics',
   },
-  
+
   // Vocabulary endpoints
   VOCABULARY: {
     LIST: '/vocabulary',
@@ -30,7 +30,7 @@ export const API_ENDPOINTS = {
     PROGRESS: '/vocabulary/progress',
     SPACED_REPETITION: '/vocabulary/spaced-repetition',
   },
-  
+
   // Lessons endpoints
   LESSONS: {
     LIST: '/lessons',
@@ -39,7 +39,7 @@ export const API_ENDPOINTS = {
     COMPLETE: (id: number | string) => `/lessons/${id}/complete`,
     CATEGORIES: '/lessons/categories',
   },
-  
+
   // Grammar endpoints
   GRAMMAR: {
     LIST: '/grammar',
@@ -48,7 +48,7 @@ export const API_ENDPOINTS = {
     EXERCISES: '/grammar/exercises',
     PROGRESS: '/grammar/progress',
   },
-  
+
   // Pronunciation endpoints
   PRONUNCIATION: {
     EXERCISES: '/pronunciation/exercises',
@@ -56,7 +56,7 @@ export const API_ENDPOINTS = {
     AUDIO: (id: number | string) => `/pronunciation/audio/${id}`,
     PROGRESS: '/pronunciation/progress',
   },
-  
+
   // Exam endpoints
   EXAM: {
     LIST: '/exams',
@@ -66,13 +66,30 @@ export const API_ENDPOINTS = {
     RESULTS: '/exams/results',
     TYPES: '/exams/types',
   },
-  
+
   // Conversation endpoints
   CONVERSATION: {
     START: '/conversation/start',
     SEND_MESSAGE: '/conversation/message',
     HISTORY: '/conversation/history',
     TOPICS: '/conversation/topics',
+  },
+
+  // Listening endpoints
+  LISTENING: {
+    LIST: '/listening/exercises',
+    ITEM: (id: number | string) => `/listening/exercises/${id}`,
+    SUBMIT: (id: number | string) => `/listening/exercises/${id}/submit`,
+    PROGRESS: '/listening/progress',
+  },
+
+  // Speaking endpoints
+  SPEAKING: {
+    LIST: '/speaking/exercises',
+    ITEM: (id: number | string) => `/speaking/exercises/${id}`,
+    PHRASE: (id: number | string) => `/speaking/phrases/${id}`,
+    CHECK: '/speaking/check',
+    PROGRESS: '/speaking/progress',
   },
 };
 

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { AuthService } from '@/utils/authService';
+import { localStorageCache } from '@/utils/cache';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -19,21 +20,27 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Cache configuration
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
 /**
  * AI Service
- * 
+ *
  * Handles interactions with OpenAI and other AI services for
  * language learning features.
  */
-export const aiService = {
+class AIService {
+  private cache = localStorageCache;
+
   /**
    * Grammar correction and feedback
    */
-  correctGrammar: async (text: string, level: string = 'beginner'): Promise<{
+  async correctGrammar(text: string, level: string = 'beginner'): Promise<{
     corrected: string;
     feedback: string[];
     explanations: Array<{ original: string; correction: string; rule: string }>;
-  }> => {
+  }> {
+    // For grammar correction, we don't cache as text is likely unique each time
     try {
       const response = await api.post('/ai/grammar-correction', {
         text,
@@ -47,21 +54,38 @@ export const aiService = {
       throw new Error('Failed to correct grammar');
     } catch (error) {
       console.error('Error correcting grammar:', error);
-      throw error;
+
+      // Return a basic response instead of throwing
+      return {
+        corrected: text,
+        feedback: ['Unable to analyze text at this time.'],
+        explanations: []
+      };
     }
-  },
+  }
 
   /**
    * Generate conversation practice
    */
-  generateConversation: async (
+  async generateConversation(
     topic: string,
     level: string = 'beginner',
     context?: string
   ): Promise<{
     conversation: Array<{ role: string; content: string }>;
     vocabulary: Array<{ word: string; translation: string; usage: string }>;
-  }> => {
+  }> {
+    const cacheKey = `conversation-${topic}-${level}-${context || 'none'}`;
+
+    // Check cache first
+    const cachedData = this.cache.get<{
+      conversation: Array<{ role: string; content: string }>;
+      vocabulary: Array<{ word: string; translation: string; usage: string }>;
+    }>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const response = await api.post('/ai/generate-conversation', {
         topic,
@@ -70,20 +94,30 @@ export const aiService = {
       });
 
       if (response.data.success && response.data.data) {
+        // Cache the result
+        this.cache.set(cacheKey, response.data.data, CACHE_DURATION);
         return response.data.data;
       }
 
       throw new Error('Failed to generate conversation');
     } catch (error) {
       console.error('Error generating conversation:', error);
-      throw error;
+
+      // Return a basic response instead of throwing
+      return {
+        conversation: [
+          { role: 'system', content: 'Unable to generate conversation at this time.' },
+          { role: 'assistant', content: 'Bonjour! Comment puis-je vous aider aujourd\'hui?' }
+        ],
+        vocabulary: []
+      };
     }
-  },
+  }
 
   /**
    * French language tutor chat
    */
-  tutorChat: async (
+  async tutorChat(
     message: string,
     conversationId?: string,
     level: string = 'beginner'
@@ -91,7 +125,7 @@ export const aiService = {
     response: string;
     conversationId: string;
     corrections?: Array<{ error: string; correction: string; explanation: string }>;
-  }> => {
+  }> {
     try {
       const response = await api.post('/ai/tutor-chat', {
         message,
@@ -106,14 +140,20 @@ export const aiService = {
       throw new Error('Failed to get tutor response');
     } catch (error) {
       console.error('Error in tutor chat:', error);
-      throw error;
+
+      // Return a basic response instead of throwing
+      return {
+        response: "Je suis désolé, je ne peux pas répondre pour le moment. (I'm sorry, I can't respond at the moment.)",
+        conversationId: conversationId || `fallback-${Date.now()}`,
+        corrections: []
+      };
     }
-  },
+  }
 
   /**
    * Generate vocabulary practice
    */
-  generateVocabularyExercises: async (
+  async generateVocabularyExercises(
     topic: string,
     level: string = 'beginner',
     count: number = 10
@@ -124,7 +164,22 @@ export const aiService = {
       options?: string[];
       answer: string;
     }>;
-  }> => {
+  }> {
+    const cacheKey = `vocab-exercises-${topic}-${level}-${count}`;
+
+    // Check cache first
+    const cachedData = this.cache.get<{
+      exercises: Array<{
+        type: 'multiple-choice' | 'fill-in-blank' | 'matching';
+        question: string;
+        options?: string[];
+        answer: string;
+      }>;
+    }>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const response = await api.post('/ai/vocabulary-exercises', {
         topic,
@@ -133,20 +188,31 @@ export const aiService = {
       });
 
       if (response.data.success && response.data.data) {
+        // Cache the result
+        this.cache.set(cacheKey, response.data.data, CACHE_DURATION);
         return response.data.data;
       }
 
       throw new Error('Failed to generate vocabulary exercises');
     } catch (error) {
       console.error('Error generating vocabulary exercises:', error);
-      throw error;
+
+      // Return a basic response instead of throwing
+      return {
+        exercises: [{
+          type: 'multiple-choice',
+          question: 'Unable to generate exercises at this time.',
+          options: ['OK'],
+          answer: 'OK'
+        }]
+      };
     }
-  },
+  }
 
   /**
    * Analyze pronunciation
    */
-  analyzePronunciation: async (
+  async analyzePronunciation(
     audioBlob: Blob,
     text: string
   ): Promise<{
@@ -154,7 +220,7 @@ export const aiService = {
     wordScores: Array<{ word: string; score: number; feedback: string }>;
     problemSounds: Array<{ sound: string; description: string }>;
     recommendations: string[];
-  }> => {
+  }> {
     try {
       // Convert blob to base64
       const base64Audio = await new Promise<string>((resolve) => {
@@ -178,14 +244,25 @@ export const aiService = {
       throw new Error('Failed to analyze pronunciation');
     } catch (error) {
       console.error('Error analyzing pronunciation:', error);
-      throw error;
+
+      // Return a basic response instead of throwing
+      return {
+        overallScore: 0,
+        wordScores: text.split(' ').map(word => ({
+          word,
+          score: 0,
+          feedback: 'Unable to analyze pronunciation at this time.'
+        })),
+        problemSounds: [],
+        recommendations: ['Try again later.']
+      };
     }
-  },
+  }
 
   /**
    * Generate personalized lesson plan
    */
-  generateLessonPlan: async (
+  async generateLessonPlan(
     userLevel: string,
     learningGoals: string[],
     weakPoints: string[]
@@ -198,7 +275,24 @@ export const aiService = {
     }>;
     focusAreas: string[];
     timeEstimate: number;
-  }> => {
+  }> {
+    const cacheKey = `lesson-plan-${userLevel}-${learningGoals.join(',')}-${weakPoints.join(',')}`;
+
+    // Check cache first
+    const cachedData = this.cache.get<{
+      recommendedLessons: Array<{
+        title: string;
+        description: string;
+        topics: string[];
+        reason: string;
+      }>;
+      focusAreas: string[];
+      timeEstimate: number;
+    }>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const response = await api.post('/ai/personalized-lesson-plan', {
         userLevel,
@@ -207,15 +301,40 @@ export const aiService = {
       });
 
       if (response.data.success && response.data.data) {
+        // Cache the result
+        this.cache.set(cacheKey, response.data.data, CACHE_DURATION);
         return response.data.data;
       }
 
       throw new Error('Failed to generate lesson plan');
     } catch (error) {
       console.error('Error generating lesson plan:', error);
-      throw error;
+
+      // Return a basic response instead of throwing
+      return {
+        recommendedLessons: [],
+        focusAreas: [],
+        timeEstimate: 0
+      };
     }
   }
-};
 
-export default aiService; 
+  /**
+   * Clear AI service cache
+   */
+  clearCache(): void {
+    // Get all keys that start with our AI-related prefixes
+    const aiCacheKeys = this.cache.keys().filter(key =>
+      key.startsWith('conversation-') ||
+      key.startsWith('vocab-exercises-') ||
+      key.startsWith('lesson-plan-')
+    );
+
+    // Remove each key
+    aiCacheKeys.forEach(key => this.cache.remove(key));
+  }
+}
+
+// Create and export an instance of the AI service
+const aiService = new AIService();
+export default aiService;

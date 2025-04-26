@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { memoryCache, localStorageCache, Cache } from '@/utils/cache';
 
 interface UseFetchOptions<T> {
   initialData?: T;
@@ -6,15 +7,17 @@ interface UseFetchOptions<T> {
   onError?: (error: Error) => void;
   cacheKey?: string;
   cacheDuration?: number; // in milliseconds
+  cacheStorage?: 'memory' | 'localStorage' | 'sessionStorage';
+  retry?: boolean | number; // Whether to retry failed requests (true = 3 retries, number = specific retries)
+  retryDelay?: number; // Delay between retries in milliseconds
+  dependencies?: any[]; // Dependencies that trigger a refetch when changed
+  skipInitialFetch?: boolean; // Skip the initial fetch when the component mounts
+  staleWhileRevalidate?: boolean; // Return stale data while fetching fresh data
+  dedupingInterval?: number; // Interval in milliseconds to dedupe requests
 }
 
-interface CachedData<T> {
-  data: T;
-  timestamp: number;
-}
-
-// Simple in-memory cache
-const cache: Record<string, any> = {};
+// Keep track of in-flight requests to avoid duplicate requests
+const inFlightRequests: Record<string, Promise<any>> = {};
 
 export function useFetch<T>(
   fetchFn: () => Promise<T>,
@@ -26,71 +29,212 @@ export function useFetch<T>(
     onError,
     cacheKey,
     cacheDuration = 5 * 60 * 1000, // 5 minutes default
+    cacheStorage = 'memory',
+    retry = false,
+    retryDelay = 1000,
+    dependencies = [],
+    skipInitialFetch = false,
+    staleWhileRevalidate = true,
+    dedupingInterval = 2000, // 2 seconds
   } = options;
 
-  const [data, setData] = useState<T | undefined>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  // Get the appropriate cache based on storage option
+  const getCache = (): Cache => {
+    switch (cacheStorage) {
+      case 'localStorage':
+        return localStorageCache;
+      case 'sessionStorage':
+        return sessionStorageCache;
+      default:
+        return memoryCache;
+    }
+  };
 
+  // State
+  const [data, setData] = useState<T | undefined>(initialData);
+  const [isLoading, setIsLoading] = useState(!skipInitialFetch && !initialData);
+  const [error, setError] = useState<Error | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
+
+  // Refs
+  const retryCountRef = useRef(0);
+  const isMountedRef = useRef(true);
+  const lastFetchTimeRef = useRef(0);
+
+  // Function to safely update state only if component is mounted
+  const safeSetState = useCallback(<S>(setter: React.Dispatch<React.SetStateAction<S>>, value: React.SetStateAction<S>) => {
+    if (isMountedRef.current) {
+      setter(value);
+    }
+  }, []);
+
+  // Fetch data with retry logic
+  const fetchWithRetry = useCallback(async (
+    fn: () => Promise<T>,
+    maxRetries: number,
+    currentRetry = 0
+  ): Promise<T> => {
+    try {
+      return await fn();
+    } catch (err) {
+      if (currentRetry < maxRetries) {
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, currentRetry)));
+        return fetchWithRetry(fn, maxRetries, currentRetry + 1);
+      }
+      throw err;
+    }
+  }, [retryDelay]);
+
+  // Main fetch function
   const fetchData = useCallback(async (skipCache = false) => {
-    // Check cache first if cacheKey is provided
+    // Avoid duplicate requests within deduping interval
+    const now = Date.now();
+    if (now - lastFetchTimeRef.current < dedupingInterval && !skipCache) {
+      return;
+    }
+    lastFetchTimeRef.current = now;
+
+    // Check if we have a cached version
+    const cache = getCache();
     if (cacheKey && !skipCache) {
-      const cachedItem = cache[cacheKey] as CachedData<T> | undefined;
-      if (cachedItem) {
-        const isExpired = Date.now() - cachedItem.timestamp > cacheDuration;
-        if (!isExpired) {
-          setData(cachedItem.data);
-          onSuccess?.(cachedItem.data);
+      const cachedData = cache.get<T>(cacheKey);
+      if (cachedData) {
+        safeSetState(setData, cachedData);
+        onSuccess?.(cachedData);
+
+        // If staleWhileRevalidate is false, we're done
+        if (!staleWhileRevalidate) {
           return;
         }
       }
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchFn();
-      setData(result);
-      
-      // Cache the result if cacheKey is provided
-      if (cacheKey) {
-        cache[cacheKey] = {
-          data: result,
-          timestamp: Date.now(),
-        };
-      }
-      
-      onSuccess?.(result);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
-      onError?.(error);
-    } finally {
-      setIsLoading(false);
+    // If we're already loading and not explicitly skipping cache, don't start another request
+    if (isLoading && !skipCache) {
+      return;
     }
-  }, [fetchFn, cacheKey, cacheDuration, onSuccess, onError]);
 
+    // Check if there's already an in-flight request for this key
+    if (cacheKey && cacheKey in inFlightRequests && !skipCache) {
+      try {
+        const result = await inFlightRequests[cacheKey];
+        safeSetState(setData, result);
+        onSuccess?.(result);
+        return;
+      } catch (err) {
+        // If the in-flight request fails, we'll continue with a new request
+      }
+    }
+
+    // Start loading
+    safeSetState(setIsLoading, true);
+    safeSetState(setIsValidating, true);
+    safeSetState(setError, null);
+
+    // Create the fetch promise
+    const fetchPromise = async (): Promise<T> => {
+      try {
+        // Determine max retries
+        const maxRetries = typeof retry === 'boolean' ? (retry ? 3 : 0) : retry;
+        retryCountRef.current = 0;
+
+        // Execute fetch with retry logic
+        const result = await fetchWithRetry(fetchFn, maxRetries);
+
+        // Cache the result if cacheKey is provided
+        if (cacheKey) {
+          cache.set(cacheKey, result, cacheDuration);
+        }
+
+        // Update state and call onSuccess
+        safeSetState(setData, result);
+        safeSetState(setIsLoading, false);
+        safeSetState(setIsValidating, false);
+        onSuccess?.(result);
+
+        return result;
+      } catch (err) {
+        // Handle error
+        const error = err instanceof Error ? err : new Error(String(err));
+        safeSetState(setError, error);
+        safeSetState(setIsLoading, false);
+        safeSetState(setIsValidating, false);
+        onError?.(error);
+        throw error;
+      } finally {
+        // Clean up in-flight request
+        if (cacheKey) {
+          delete inFlightRequests[cacheKey];
+        }
+      }
+    };
+
+    // Store the promise for deduping
+    if (cacheKey) {
+      inFlightRequests[cacheKey] = fetchPromise();
+    }
+
+    // Execute the fetch
+    await fetchPromise();
+  }, [
+    fetchFn,
+    cacheKey,
+    cacheDuration,
+    cacheStorage,
+    onSuccess,
+    onError,
+    staleWhileRevalidate,
+    isLoading,
+    dedupingInterval,
+    safeSetState,
+    fetchWithRetry,
+    retry
+  ]);
+
+  // Effect to fetch data on mount and when dependencies change
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!skipInitialFetch) {
+      fetchData();
+    }
+  }, [fetchData, skipInitialFetch, ...dependencies]);
 
+  // Cleanup effect
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Function to manually refetch data
   const refetch = useCallback(() => fetchData(true), [fetchData]);
 
+  // Function to clear cache for this specific key
   const clearCache = useCallback(() => {
     if (cacheKey) {
-      delete cache[cacheKey];
+      getCache().remove(cacheKey);
     }
-  }, [cacheKey]);
+  }, [cacheKey, cacheStorage]);
 
-  return { data, isLoading, error, refetch, clearCache };
+  return {
+    data,
+    isLoading,
+    isValidating,
+    error,
+    refetch,
+    clearCache
+  };
 }
 
-// Helper function to clear the entire cache
+// Helper function to clear all caches
 export function clearAllCache() {
-  Object.keys(cache).forEach(key => {
-    delete cache[key];
-  });
+  memoryCache.clear();
+  localStorageCache.clear();
+  sessionStorageCache.clear();
 }
+
+// Export a sessionStorage cache instance
+export const sessionStorageCache = new Cache({ storage: 'sessionStorage' });
 
 export default useFetch;

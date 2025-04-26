@@ -1,0 +1,212 @@
+import { localStorageCache } from '@/utils/cache';
+import aiService from './aiService';
+import { apiClient } from './api/apiClient';
+
+/**
+ * Speaking Service
+ *
+ * This service provides speaking practice exercises.
+ * Currently using mock data, but designed to be replaced with real API calls.
+ */
+class SpeakingService {
+  private cache = localStorageCache;
+  private cacheDuration = 30 * 60 * 1000; // 30 minutes
+
+  /**
+   * Get speaking exercises with optional filtering
+   */
+  async getSpeakingExercises(difficulty?: string): Promise<any[]> {
+    const cacheKey = `speaking-exercises-${difficulty || 'all'}`;
+
+    // Check cache first
+    const cachedData = this.cache.get<any[]>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      // Build query parameters
+      const params: Record<string, string> = {};
+      if (difficulty) {
+        params.difficulty = difficulty;
+      }
+
+      // Call the API
+      const response = await apiClient.get('/api/speaking/exercises', { params });
+
+      if (!response.data || !response.data.success) {
+        throw new Error('Failed to fetch speaking exercises');
+      }
+
+      const exercises = response.data.data || [];
+
+      // Cache the result
+      this.cache.set(cacheKey, exercises, this.cacheDuration);
+
+      return exercises;
+    } catch (error) {
+      console.error('Error fetching speaking exercises:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get a specific speaking exercise by ID
+   */
+  async getSpeakingExercise(id: number): Promise<any | null> {
+    const cacheKey = `speaking-exercise-${id}`;
+
+    // Check cache first
+    const cachedData = this.cache.get<any>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      // Call the API
+      const response = await apiClient.get(`/api/speaking/exercises/${id}`);
+
+      if (!response.data || !response.data.success) {
+        throw new Error(`Failed to fetch speaking exercise ${id}`);
+      }
+
+      const exercise = response.data.data;
+
+      if (!exercise) {
+        return null;
+      }
+
+      // Cache the result
+      this.cache.set(cacheKey, exercise, this.cacheDuration);
+
+      return exercise;
+    } catch (error) {
+      console.error(`Error fetching speaking exercise ${id}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get a specific phrase by ID
+   */
+  async getPhrase(id: number): Promise<any | null> {
+    const cacheKey = `phrase-${id}`;
+
+    // Check cache first
+    const cachedData = this.cache.get<any>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      // Call the API
+      const response = await apiClient.get(`/api/speaking/phrases/${id}`);
+
+      if (!response.data || !response.data.success) {
+        throw new Error(`Failed to fetch phrase ${id}`);
+      }
+
+      const phrase = response.data.data;
+
+      if (!phrase) {
+        return null;
+      }
+
+      // Cache the result
+      this.cache.set(cacheKey, phrase, this.cacheDuration);
+
+      return phrase;
+    } catch (error) {
+      console.error(`Error fetching phrase ${id}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Check pronunciation of a phrase
+   */
+  async checkPronunciation(
+    phraseId: number,
+    audioBlob: Blob
+  ): Promise<{
+    accuracy: number;
+    feedback: string[];
+    details?: any;
+  }> {
+    try {
+      // Get the phrase text
+      const phrase = await this.getPhrase(phraseId);
+
+      if (!phrase) {
+        throw new Error(`Phrase ${phraseId} not found`);
+      }
+
+      // Use AI service to analyze pronunciation
+      const result = await aiService.analyzePronunciation(audioBlob, phrase.text);
+
+      // Process the result
+      const accuracy = result.overallScore;
+
+      // Generate feedback based on accuracy
+      const feedback = [];
+
+      if (accuracy >= 90) {
+        feedback.push('Excellent pronunciation!');
+      } else if (accuracy >= 70) {
+        feedback.push('Good pronunciation. Keep practicing!');
+      } else if (accuracy >= 50) {
+        feedback.push('Your pronunciation needs some work.');
+      } else {
+        feedback.push('You need to practice more on your pronunciation.');
+      }
+
+      // Add specific feedback from the analysis
+      if (result.problemSounds && result.problemSounds.length > 0) {
+        result.problemSounds.forEach((problem: any) => {
+          feedback.push(`Work on the "${problem.sound}" sound: ${problem.description}`);
+        });
+      }
+
+      // Add recommendations
+      if (result.recommendations && result.recommendations.length > 0) {
+        result.recommendations.forEach((recommendation: string) => {
+          feedback.push(recommendation);
+        });
+      }
+
+      return {
+        accuracy,
+        feedback,
+        details: {
+          wordScores: result.wordScores,
+          problemSounds: result.problemSounds
+        }
+      };
+    } catch (error) {
+      console.error('Error checking pronunciation:', error);
+
+      // Return a basic response if there's an error
+      return {
+        accuracy: 0,
+        feedback: ['An error occurred while analyzing your pronunciation.']
+      };
+    }
+  }
+
+  /**
+   * Clear cache
+   */
+  clearCache(): void {
+    const keys = this.cache.keys().filter(key =>
+      key.startsWith('speaking-exercise-') ||
+      key.startsWith('speaking-exercises-') ||
+      key.startsWith('phrase-')
+    );
+
+    keys.forEach(key => this.cache.remove(key));
+  }
+}
+
+// Create and export speaking service instance
+const speakingService = new SpeakingService();
+export default speakingService;

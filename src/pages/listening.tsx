@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import DictationExercise from '@/components/exercises/DictationExercise';
 import ListeningComprehension from '@/components/exercises/ListeningComprehension';
 import { useAuth } from '@/context/AuthContext';
+import listeningService from '@/services/listeningService';
 
 // Sample dictation exercises
 const dictationExercises = [
@@ -173,27 +176,75 @@ export default function ListeningPage() {
   const [exerciseType, setExerciseType] = useState<'dictation' | 'comprehension' | null>(null);
   const [selectedExercise, setSelectedExercise] = useState<any | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
-  
-  // Filter exercises based on selected difficulty
-  const filteredDictationExercises = selectedDifficulty === 'all' 
-    ? dictationExercises 
-    : dictationExercises.filter(ex => ex.difficulty === selectedDifficulty);
-  
-  const filteredComprehensionExercises = selectedDifficulty === 'all' 
-    ? comprehensionExercises 
-    : comprehensionExercises.filter(ex => ex.difficulty === selectedDifficulty);
-  
-  const handleExerciseComplete = (score: number) => {
+
+  // State for API data
+  const [listeningExercises, setListeningExercises] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch listening exercises from the API
+  useEffect(() => {
+    const fetchExercises = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const exercises = await listeningService.getListeningExercises(
+          selectedDifficulty !== 'all' ? selectedDifficulty : undefined
+        );
+
+        setListeningExercises(exercises);
+      } catch (err) {
+        console.error('Error fetching listening exercises:', err);
+        setError('Failed to load listening exercises. Please try again later.');
+
+        // Use mock data as fallback
+        setListeningExercises([...dictationExercises, ...comprehensionExercises]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchExercises();
+  }, [selectedDifficulty]);
+
+  // Filter exercises based on type and difficulty
+  const filteredDictationExercises = listeningExercises
+    .filter(ex => ex.type === 'dictation' || !ex.type) // Include exercises without type for backward compatibility
+    .filter(ex => selectedDifficulty === 'all' || ex.difficulty === selectedDifficulty);
+
+  const filteredComprehensionExercises = listeningExercises
+    .filter(ex => ex.type === 'comprehension' || (ex.questions && ex.questions.length > 0)) // Include exercises with questions
+    .filter(ex => selectedDifficulty === 'all' || ex.difficulty === selectedDifficulty);
+
+  const handleExerciseComplete = async (score: number, answers?: Record<string, string>) => {
     console.log('Exercise completed with score:', score);
-    // In a real app, this would save the user's progress
+
+    if (selectedExercise && isAuthenticated) {
+      try {
+        // In a real implementation, this would submit the results to the API
+        // For now, we'll just log the results
+        console.log('Submitting exercise results:', {
+          exerciseId: selectedExercise.id,
+          score,
+          answers
+        });
+
+        // Show a success message or update UI
+        // This could be enhanced with a toast notification
+      } catch (err) {
+        console.error('Error submitting exercise results:', err);
+        // Show an error message
+      }
+    }
   };
-  
+
   const renderExerciseSelector = () => (
     <>
       <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
         <h2 className="mb-4 text-xl font-semibold text-gray-800">Choose Exercise Type</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Card 
+          <Card
             className={`p-6 cursor-pointer transition-all hover:shadow-md ${
               exerciseType === 'dictation' ? 'ring-2 ring-primary-500' : ''
             }`}
@@ -211,8 +262,8 @@ export default function ListeningPage() {
               </p>
             </div>
           </Card>
-          
-          <Card 
+
+          <Card
             className={`p-6 cursor-pointer transition-all hover:shadow-md ${
               exerciseType === 'comprehension' ? 'ring-2 ring-primary-500' : ''
             }`}
@@ -232,7 +283,7 @@ export default function ListeningPage() {
           </Card>
         </div>
       </div>
-      
+
       {exerciseType && (
         <>
           <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
@@ -280,11 +331,11 @@ export default function ListeningPage() {
               </button>
             </div>
           </div>
-          
+
           <h2 className="mb-6 text-2xl font-semibold text-gray-800">
             {exerciseType === 'dictation' ? 'Dictation Exercises' : 'Comprehension Exercises'}
           </h2>
-          
+
           <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-2 lg:grid-cols-3">
             {exerciseType === 'dictation' ? (
               filteredDictationExercises.map(exercise => (
@@ -293,8 +344,8 @@ export default function ListeningPage() {
                     <div className="flex items-start justify-between mb-4">
                       <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'beginner' 
-                          ? 'bg-green-100 text-green-800' 
+                        exercise.difficulty === 'beginner'
+                          ? 'bg-green-100 text-green-800'
                           : exercise.difficulty === 'intermediate'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
@@ -302,11 +353,11 @@ export default function ListeningPage() {
                         {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
                       </span>
                     </div>
-                    
+
                     <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
-                    
+
                     <div className="mt-auto">
-                      <Button 
+                      <Button
                         onClick={() => {
                           setSelectedExercise(exercise);
                         }}
@@ -325,8 +376,8 @@ export default function ListeningPage() {
                     <div className="flex items-start justify-between mb-4">
                       <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'beginner' 
-                          ? 'bg-green-100 text-green-800' 
+                        exercise.difficulty === 'beginner'
+                          ? 'bg-green-100 text-green-800'
                           : exercise.difficulty === 'intermediate'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
@@ -334,11 +385,11 @@ export default function ListeningPage() {
                         {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
                       </span>
                     </div>
-                    
+
                     <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
-                    
+
                     <div className="mt-auto">
-                      <Button 
+                      <Button
                         onClick={() => {
                           setSelectedExercise(exercise);
                         }}
@@ -356,14 +407,14 @@ export default function ListeningPage() {
       )}
     </>
   );
-  
+
   return (
     <>
       <Head>
         <title>Listening Practice | French Tutor AI</title>
         <meta name="description" content="Practice your French listening skills with dictation and comprehension exercises" />
       </Head>
-      
+
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="mb-4 text-3xl font-bold text-gray-800">Listening Practice</h1>
@@ -371,55 +422,75 @@ export default function ListeningPage() {
             Improve your French listening skills with dictation and comprehension exercises. Listen to native speakers and test your understanding.
           </p>
         </div>
-        
-        {selectedExercise ? (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setSelectedExercise(null)}
-                className="flex items-center"
-              >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Exercises
-              </Button>
-              
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                selectedExercise.difficulty === 'beginner' 
-                  ? 'bg-green-100 text-green-800' 
-                  : selectedExercise.difficulty === 'intermediate'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-red-100 text-red-800'
-              }`}>
-                {selectedExercise.difficulty.charAt(0).toUpperCase() + selectedExercise.difficulty.slice(1)}
-              </div>
-            </div>
-            
-            {exerciseType === 'dictation' ? (
-              <DictationExercise 
-                audioUrl={selectedExercise.audioUrl}
-                text={selectedExercise.text}
-                difficulty={selectedExercise.difficulty}
-                onComplete={handleExerciseComplete}
-              />
-            ) : (
-              <ListeningComprehension 
-                audioUrl={selectedExercise.audioUrl}
-                title={selectedExercise.title}
-                description={selectedExercise.description}
-                questions={selectedExercise.questions}
-                difficulty={selectedExercise.difficulty}
-                transcript={selectedExercise.transcript}
-                onComplete={handleExerciseComplete}
-              />
-            )}
+
+        {isLoading && (
+          <div className="flex items-center justify-center p-12">
+            <LoadingState message="Loading listening exercises..." size="large" />
           </div>
-        ) : (
-          renderExerciseSelector()
         )}
-        
+
+        {error && !isLoading && (
+          <div className="p-6 mb-8">
+            <ErrorMessage
+              message={error}
+              type="error"
+              retryAction={() => window.location.reload()}
+            />
+          </div>
+        )}
+
+        {!isLoading && !error && (
+          <>
+            {selectedExercise ? (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedExercise(null)}
+                    className="flex items-center"
+                  >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Exercises
+                  </Button>
+
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    selectedExercise.difficulty === 'beginner'
+                      ? 'bg-green-100 text-green-800'
+                      : selectedExercise.difficulty === 'intermediate'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                  }`}>
+                    {selectedExercise.difficulty.charAt(0).toUpperCase() + selectedExercise.difficulty.slice(1)}
+                  </div>
+                </div>
+
+                {exerciseType === 'dictation' ? (
+                  <DictationExercise
+                    audioUrl={selectedExercise.audioUrl}
+                    text={selectedExercise.text}
+                    difficulty={selectedExercise.difficulty}
+                    onComplete={handleExerciseComplete}
+                  />
+                ) : (
+                  <ListeningComprehension
+                    audioUrl={selectedExercise.audioUrl}
+                    title={selectedExercise.title}
+                    description={selectedExercise.description}
+                    questions={selectedExercise.questions}
+                    difficulty={selectedExercise.difficulty}
+                    transcript={selectedExercise.transcript}
+                    onComplete={handleExerciseComplete}
+                  />
+                )}
+              </div>
+            ) : (
+              renderExerciseSelector()
+            )}
+          </>
+        )}
+
         {!selectedExercise && (
           <>
             {!isAuthenticated && (
@@ -432,7 +503,7 @@ export default function ListeningPage() {
                     </p>
                   </div>
                   <div className="flex justify-end md:w-1/4">
-                    <Button 
+                    <Button
                       variant="default"
                       onClick={() => window.location.href = '/register'}
                     >
@@ -442,7 +513,7 @@ export default function ListeningPage() {
                 </div>
               </div>
             )}
-            
+
             <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
               <h2 className="mb-4 text-xl font-semibold text-gray-800">Tips for Improving Listening Skills</h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -467,7 +538,7 @@ export default function ListeningPage() {
                   </ul>
                 </div>
               </div>
-              
+
               <div className="mt-6">
                 <h3 className="mb-2 font-medium text-gray-800">Daily Practice Ideas</h3>
                 <ul className="space-y-1 text-gray-600 list-disc list-inside">

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { LoadingState } from '../ui/LoadingState';
+import { ErrorMessage } from '../ui/ErrorMessage';
+import aiService from '@/services/aiService';
 
 interface WritingCorrectionProps {
   initialText?: string;
@@ -40,228 +43,79 @@ const WritingCorrection = ({
     { id: 'future', title: 'Future Plans', prompt: 'Quels sont vos projets pour l\'avenir?' },
   ];
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async () => {
     if (!text.trim()) return;
 
     setIsSubmitting(true);
+    setError(null);
+    setCorrections([]);
 
-    // This is a more comprehensive mock implementation of a writing correction service
-    // In a real app, this would be an API call to a backend service
-    setTimeout(() => {
-      // Enhanced mock corrections based on common French mistakes
-      const commonMistakes = [
-        // Articles and prepositions
-        {
-          pattern: /au le/gi,
-          corrected: 'au',
-          explanation: 'When "à" combines with "le", it becomes "au". You don\'t need to say "au le".',
-          category: 'grammar',
-        },
-        {
-          pattern: /a le/gi,
-          corrected: 'au',
-          explanation: 'When "à" combines with "le", it becomes "au".',
-          category: 'grammar',
-        },
-        {
-          pattern: /de le/gi,
-          corrected: 'du',
-          explanation: 'When "de" combines with "le", it becomes "du".',
-          category: 'grammar',
-        },
-        {
-          pattern: /a la/gi,
-          corrected: 'à la',
-          explanation: 'The preposition "à" needs an accent.',
-          category: 'spelling',
-        },
-
-        // Verb conjugations
-        {
-          pattern: /j'ai acheter/gi,
-          corrected: 'j\'ai acheté',
-          explanation: 'After "avoir" in passé composé, use the past participle (acheté) not the infinitive (acheter).',
-          category: 'grammar',
-        },
-        {
-          pattern: /je suis alle/gi,
-          corrected: 'je suis allé',
-          explanation: 'The past participle of "aller" needs an accent: allé',
-          category: 'spelling',
-        },
-        {
-          pattern: /j'ai alle/gi,
-          corrected: 'je suis allé',
-          explanation: 'The verb "aller" uses "être" as its auxiliary verb in passé composé, not "avoir".',
-          category: 'grammar',
-        },
-        {
-          pattern: /je suis parti(r)/gi,
-          corrected: 'je suis parti',
-          explanation: 'The past participle of "partir" is "parti", not "partir".',
-          category: 'grammar',
-        },
-
-        // Accents and spelling
-        {
-          pattern: /tres/gi,
-          corrected: 'très',
-          explanation: 'The word "très" requires an accent.',
-          category: 'spelling',
-        },
-        {
-          pattern: /etre/gi,
-          corrected: 'être',
-          explanation: 'The word "être" requires a circumflex accent.',
-          category: 'spelling',
-        },
-        {
-          pattern: /francais/gi,
-          corrected: 'français',
-          explanation: 'The word "français" requires a cedilla (ç) and an accent.',
-          category: 'spelling',
-        },
-
-        // Gender agreement
-        {
-          pattern: /une (homme|garçon|père|frère)/gi,
-          corrected: (match: string) => `un ${match.substring(4)}`,
-          explanation: 'These nouns are masculine, so they need the masculine article "un" instead of "une".',
-          category: 'grammar',
-        },
-        {
-          pattern: /un (femme|fille|mère|soeur)/gi,
-          corrected: (match: string) => `une ${match.substring(3)}`,
-          explanation: 'These nouns are feminine, so they need the feminine article "une" instead of "un".',
-          category: 'grammar',
-        },
-
-        // Adjective agreement
-        {
-          pattern: /(la|une) petit/gi,
-          corrected: (match: string) => `${match.substring(0, match.length - 5)}petite`,
-          explanation: 'Adjectives must agree with the gender of the noun. Since the noun is feminine, the adjective should be "petite".',
-          category: 'grammar',
-        },
-        {
-          pattern: /(le|un) grande/gi,
-          corrected: (match: string) => `${match.substring(0, match.length - 6)}grand`,
-          explanation: 'Adjectives must agree with the gender of the noun. Since the noun is masculine, the adjective should be "grand".',
-          category: 'grammar',
-        },
-
-        // Common vocabulary mistakes
-        {
-          pattern: /attendre pour/gi,
-          corrected: 'attendre',
-          explanation: 'In French, "attendre" is used without "pour". The correct form is simply "attendre quelque chose".',
-          category: 'vocabulary',
-        },
-        {
-          pattern: /regarder la télévision/gi,
-          corrected: 'regarder la télé',
-          explanation: 'While "regarder la télévision" is grammatically correct, French speakers more commonly say "regarder la télé".',
-          category: 'vocabulary',
-        },
-      ];
-
-      // Generate corrections based on the text
-      const foundCorrections: Correction[] = [];
-
-      // Process each mistake pattern
-      commonMistakes.forEach(mistake => {
-        const matches = text.match(mistake.pattern);
-        if (matches) {
-          matches.forEach(match => {
-            const corrected = typeof mistake.corrected === 'function'
-              ? mistake.corrected(match)
-              : mistake.corrected;
-
-            foundCorrections.push({
-              original: match,
-              corrected: corrected,
-              explanation: mistake.explanation,
-            });
-          });
-        }
-      });
-
-      // Check for sentence structure issues (simplified)
-      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-      sentences.forEach(sentence => {
-        // Check for subject-verb-object order
-        const trimmedSentence = sentence.trim().toLowerCase();
-        if (trimmedSentence.length > 10 && !trimmedSentence.match(/je|tu|il|elle|nous|vous|ils|elles|on/i)) {
-          foundCorrections.push({
-            original: sentence.trim(),
-            corrected: sentence.trim(), // No specific correction, just highlighting
-            explanation: 'This sentence might be missing a subject. In French, sentences typically need an explicit subject.',
-          });
-        }
-      });
-
-      // Add contextual feedback based on the writing topic
+    try {
+      // Get the topic context if one is selected
+      let context = '';
       if (selectedTopic) {
         const topic = writingTopics.find(t => t.id === selectedTopic);
         if (topic) {
-          // Topic-specific feedback
-          switch (topic.id) {
-            case 'daily':
-              if (!text.match(/je me lève|je me réveille|je prends|je vais|je fais/gi)) {
-                foundCorrections.push({
-                  original: '',
-                  corrected: '',
-                  explanation: 'When describing your daily routine, try using present tense verbs and time expressions like "d\'abord" (first), "ensuite" (then), "après" (after), etc.',
-                });
-              }
-              break;
-            case 'travel':
-              if (!text.match(/j'ai visité|je suis allé|nous avons|j'ai vu/gi)) {
-                foundCorrections.push({
-                  original: '',
-                  corrected: '',
-                  explanation: 'When talking about past travels, use the passé composé tense for completed actions. Consider including descriptions of places, activities, and your impressions.',
-                });
-              }
-              break;
-            case 'food':
-              if (!text.match(/j'aime|je préfère|c'est délicieux|saveur|goût/gi)) {
-                foundCorrections.push({
-                  original: '',
-                  corrected: '',
-                  explanation: 'When describing food, consider using sensory vocabulary (saveur, goût, texture) and expressions of preference (j\'aime, je préfère, mon plat préféré est...).',
-                });
-              }
-              break;
-          }
+          context = `Topic: ${topic.title}. Prompt: ${topic.prompt}`;
         }
       }
 
-      // If no mistakes found, provide a positive feedback
-      if (foundCorrections.length === 0 && text.length > 10) {
-        // Add a placeholder correction with positive feedback
-        foundCorrections.push({
+      // Use the AI service to check the writing
+      const result = await aiService.checkWriting(text);
+
+      // Convert the API response to our Correction format
+      const apiCorrections: Correction[] = [];
+
+      // Process corrections from the API
+      if (result.corrections && result.corrections.length > 0) {
+        result.corrections.forEach(correction => {
+          apiCorrections.push({
+            original: correction.original,
+            corrected: correction.corrected,
+            explanation: correction.explanation
+          });
+        });
+      }
+
+      // If no corrections but we have feedback, add it as a general correction
+      if (apiCorrections.length === 0 && result.feedback) {
+        apiCorrections.push({
           original: '',
           corrected: '',
-          explanation: 'Excellent! Your writing looks good. Your grammar and vocabulary usage are appropriate. Keep practicing to improve further.',
+          explanation: result.feedback
+        });
+      }
+
+      // If still no corrections, add a positive feedback
+      if (apiCorrections.length === 0 && text.length > 10) {
+        apiCorrections.push({
+          original: '',
+          corrected: '',
+          explanation: 'Excellent! Your writing looks good. Your grammar and vocabulary usage are appropriate. Keep practicing to improve further.'
         });
       }
 
       // Sort corrections to show grammar issues first
-      foundCorrections.sort((a, b) => {
+      apiCorrections.sort((a, b) => {
         // Empty originals (positive feedback) should come last
         if (!a.original) return 1;
         if (!b.original) return -1;
         return 0;
       });
 
-      setCorrections(foundCorrections);
-      setIsSubmitting(false);
+      setCorrections(apiCorrections);
 
       if (onSubmit) {
         onSubmit(text);
       }
-    }, 1500);
+    } catch (err) {
+      console.error('Error checking writing:', err);
+      setError('An error occurred while checking your writing. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSelectTopic = (topicId: string) => {
@@ -352,6 +206,22 @@ const WritingCorrection = ({
             Check My Writing
           </Button>
         </div>
+
+        {isSubmitting && (
+          <div className="mt-4">
+            <LoadingState message="Analyzing your writing..." size="small" />
+          </div>
+        )}
+
+        {error && (
+          <div className="mt-4">
+            <ErrorMessage
+              message={error}
+              retryAction={handleSubmit}
+              type="error"
+            />
+          </div>
+        )}
 
         {corrections.length > 0 && (
           <div className="mt-6 space-y-4">

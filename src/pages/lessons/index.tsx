@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { useAuth } from '@/context/AuthContext';
-import { lessonApiService } from '@/services/index';
+import { lessonService } from '@/services/index';
 import useFetch from '@/hooks/useFetch';
 
 // Sample lesson data
@@ -74,8 +74,8 @@ export default function LessonsPage() {
     isLoading: isLoadingLessons,
     error: lessonsError,
     refetch: refetchLessons
-  } = useFetch(
-    () => lessonApiService.getLessons(
+  } = useFetch<any[]>(
+    () => lessonService.getLessons(
       selectedLevel === 'all' ? undefined : selectedLevel,
       selectedCategory === 'all' ? undefined : selectedCategory
     ),
@@ -93,8 +93,8 @@ export default function LessonsPage() {
     isLoading: isLoadingProgress,
     error: progressError,
     refetch: refetchProgress
-  } = useFetch(
-    () => isAuthenticated ? lessonApiService.getLessonProgress() : Promise.resolve([]),
+  } = useFetch<any[]>(
+    () => isAuthenticated ? lessonService.getAllLessonProgress() : Promise.resolve([]),
     {
       cacheKey: 'lesson-progress',
       onError: (err) => {
@@ -120,14 +120,14 @@ export default function LessonsPage() {
       if (lesson.category) {
         matchesCategory = lesson.category.toLowerCase() === selectedCategory;
       } else if (lesson.topics) {
-        matchesCategory = lesson.topics.some(topic => 
+        matchesCategory = lesson.topics.some(topic =>
           topic.toLowerCase() === selectedCategory
         );
       }
     }
-    
+
     const matchesLevel = selectedLevel === 'all' || lesson.level === selectedLevel;
-    
+
     const matchesSearch = searchQuery === '' ||
       lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -158,9 +158,9 @@ export default function LessonsPage() {
   const totalPages = Math.ceil(sortedLessons.length / lessonsPerPage);
 
   // Calculate progress stats
-  const completedLessons = isAuthenticated ? 
+  const completedLessons = isAuthenticated ?
     lessonsWithProgress.filter(lesson => lesson.progress === 100).length : 0;
-  const inProgressLessons = isAuthenticated ? 
+  const inProgressLessons = isAuthenticated ?
     lessonsWithProgress.filter(lesson => lesson.progress && lesson.progress > 0 && lesson.progress < 100).length : 0;
   const totalLessons = lessonsWithProgress.length;
 

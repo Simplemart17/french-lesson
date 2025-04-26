@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { 
-  createConversation, 
-  getConversation, 
-  getUserConversations,
-  addMessageToConversation
-} from '@/utils/mockDb';
+import { PrismaClient } from '@prisma/client';
 import { ApiResponse, Conversation, Message } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
+import aiService from '@/services/aiService';
+
+// Initialize Prisma client
+const prisma = new PrismaClient();
 
 // Mock conversation contexts for new conversations
 const conversationContexts = {
@@ -17,53 +16,7 @@ const conversationContexts = {
   smalltalk: 'You are having a casual conversation in French'
 };
 
-// Mock AI response generator
-function generateAIResponse(message: string, context: string): string {
-  // In a real app, this would call an AI model
-  // For this mock, we'll return some simple responses based on context
-  
-  // Make simple responses based on the context and last message from user
-  const contextType = context.toLowerCase();
-  const userMessageLower = message.toLowerCase();
-  
-  // Default responses for different contexts
-  if (contextType.includes('restaurant')) {
-    if (userMessageLower.includes('commander') || userMessageLower.includes('menu')) {
-      return 'Bien sûr ! Nous avons du bœuf bourguignon, du coq au vin, et des crêpes aujourd\'hui. Qu\'est-ce qui vous ferait plaisir ?';
-    } else if (userMessageLower.includes('bonjour') || userMessageLower.includes('salut')) {
-      return 'Bonjour ! Bienvenue à notre restaurant. Puis-je prendre votre commande ?';
-    } else {
-      return 'D\'accord. Souhaitez-vous commander un dessert ?';
-    }
-  } else if (contextType.includes('shopping')) {
-    if (userMessageLower.includes('taille') || userMessageLower.includes('size')) {
-      return 'Nous avons des tailles S, M, L et XL. Quelle taille cherchez-vous ?';
-    } else if (userMessageLower.includes('prix') || userMessageLower.includes('coûte')) {
-      return 'Cet article coûte 45 euros. Nous avons aussi des promotions sur la collection de l\'an dernier.';
-    } else {
-      return 'Cette couleur vous va très bien ! Voulez-vous l\'essayer ?';
-    }
-  } else if (contextType.includes('travel')) {
-    if (userMessageLower.includes('gare') || userMessageLower.includes('train')) {
-      return 'La gare est tout droit puis à gauche après le parc. C\'est à environ 10 minutes à pied.';
-    } else if (userMessageLower.includes('musée') || userMessageLower.includes('museum')) {
-      return 'Le musée est fermé le lundi. Les horaires d\'ouverture sont de 9h à 18h du mardi au dimanche.';
-    } else {
-      return 'Je vous conseille de prendre le métro, c\'est plus rapide qu\'un bus à cette heure-ci.';
-    }
-  } else if (contextType.includes('doctor')) {
-    return 'Je comprends. Depuis combien de temps avez-vous ces symptômes ?';
-  } else {
-    // Default small talk responses
-    if (userMessageLower.includes('bonjour') || userMessageLower.includes('salut')) {
-      return 'Bonjour ! Comment allez-vous aujourd\'hui ?';
-    } else if (userMessageLower.includes('merci')) {
-      return 'Je vous en prie ! Y a-t-il autre chose que je puisse faire pour vous ?';
-    } else {
-      return 'C\'est très intéressant. Parlez-moi plus de vos expériences avec la langue française.';
-    }
-  }
-}
+
 
 export default async function handler(
   req: NextApiRequest,
@@ -71,8 +24,8 @@ export default async function handler(
 ) {
   // Check authentication
   if (!isAuthenticated(req)) {
-    return res.status(401).json({ 
-      success: false, 
+    return res.status(401).json({
+      success: false,
       error: {
         message: 'Unauthorized'
       }
@@ -86,127 +39,205 @@ export default async function handler(
       const { message, conversationId, context } = req.body;
 
       if (!message) {
-        return res.status(400).json({ 
-          success: false, 
+        return res.status(400).json({
+          success: false,
           error: {
             message: 'Message is required'
           }
         });
       }
 
-      let conversation: Conversation | undefined;
+      let conversation: any;
+      let messages: any[] = [];
 
       // Start a new conversation if no ID provided
       if (!conversationId) {
         if (!context || !conversationContexts[context as keyof typeof conversationContexts]) {
-          return res.status(400).json({ 
-            success: false, 
+          return res.status(400).json({
+            success: false,
             error: {
               message: 'Valid conversation context is required for new conversations'
             }
           });
         }
 
-        // Create a new conversation
+        // Create a new conversation in the database
         const contextDescription = conversationContexts[context as keyof typeof conversationContexts];
-        conversation = createConversation(
-          userId,
-          `French conversation: ${context}`, // Title
-          contextDescription, // Context description
-          message // Initial message
-        );
+        conversation = await prisma.conversation.create({
+          data: {
+            userId: userId,
+            title: `French conversation: ${context}`,
+            context: contextDescription,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        // Create the initial user message
+        await prisma.message.create({
+          data: {
+            conversationId: conversation.id,
+            role: 'user',
+            content: message,
+            createdAt: new Date()
+          }
+        });
+
+        messages = [{ role: 'user', content: message }];
       } else {
         // Get existing conversation
-        conversation = getConversation(conversationId);
-        
+        conversation = await prisma.conversation.findUnique({
+          where: { id: conversationId },
+          include: { messages: { orderBy: { createdAt: 'asc' } } }
+        });
+
         if (!conversation) {
-          return res.status(404).json({ 
-            success: false, 
+          return res.status(404).json({
+            success: false,
             error: {
               message: 'Conversation not found'
             }
           });
         }
-        
+
+        // Check if the conversation belongs to the user
+        if (conversation.userId !== userId) {
+          return res.status(403).json({
+            success: false,
+            error: {
+              message: 'Access denied'
+            }
+          });
+        }
+
         // Add user message to conversation
-        conversation = addMessageToConversation(conversationId, {
-          role: 'user',
-          content: message
-        });
-      }
-      
-      if (!conversation) {
-        return res.status(500).json({ 
-          success: false, 
-          error: {
-            message: 'Failed to update conversation'
+        await prisma.message.create({
+          data: {
+            conversationId: conversation.id,
+            role: 'user',
+            content: message,
+            createdAt: new Date()
           }
         });
+
+        // Update conversation's updatedAt timestamp
+        await prisma.conversation.update({
+          where: { id: conversation.id },
+          data: { updatedAt: new Date() }
+        });
+
+        messages = [...conversation.messages, { role: 'user', content: message }];
       }
-      
-      // Generate AI response
-      const aiMessage = generateAIResponse(message, conversation.context);
-      
+
+      // Generate AI response using aiService
+      // Convert messages to the format expected by the AI service
+      const messageHistory = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n');
+
+      const aiResponse = await aiService.generateConversation(
+        message,
+        conversation.context,
+        messageHistory
+      );
+
       // Add AI response to conversation
-      conversation = addMessageToConversation(conversation.id, {
-        role: 'assistant',
-        content: aiMessage
+      await prisma.message.create({
+        data: {
+          conversationId: conversation.id,
+          role: 'assistant',
+          content: aiResponse,
+          createdAt: new Date()
+        }
       });
-      
+
+      // Get updated messages
+      messages = [...messages, { role: 'assistant', content: aiResponse }];
+
       return res.status(200).json({
         success: true,
         data: {
-          conversationId: conversation?.id,
-          message: aiMessage,
-          context: conversation?.context,
-          history: conversation?.messages
+          conversationId: conversation.id,
+          message: aiResponse,
+          context: conversation.context,
+          history: messages
         }
       });
     } catch (error) {
       console.error('Conversation error:', error);
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         error: {
           message: 'Internal server error'
         }
       });
     }
   } else if (req.method === 'GET') {
-    // Get conversation history or list of conversations
-    const { id } = req.query;
-    
-    if (id && typeof id === 'string') {
-      // Get specific conversation
-      const conversation = getConversation(id);
-      
-      if (!conversation) {
-        return res.status(404).json({ 
-          success: false, 
-          error: {
-            message: 'Conversation not found'
+    try {
+      // Get conversation history or list of conversations
+      const { id } = req.query;
+
+      if (id && typeof id === 'string') {
+        // Get specific conversation
+        const conversation = await prisma.conversation.findUnique({
+          where: { id },
+          include: { messages: { orderBy: { createdAt: 'asc' } } }
+        });
+
+        if (!conversation) {
+          return res.status(404).json({
+            success: false,
+            error: {
+              message: 'Conversation not found'
+            }
+          });
+        }
+
+        // Check if the conversation belongs to the user
+        if (conversation.userId !== userId) {
+          return res.status(403).json({
+            success: false,
+            error: {
+              message: 'Access denied'
+            }
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          data: conversation
+        });
+      } else {
+        // Get all user's conversations
+        const conversations = await prisma.conversation.findMany({
+          where: { userId },
+          orderBy: { updatedAt: 'desc' },
+          include: {
+            messages: {
+              orderBy: { createdAt: 'desc' },
+              take: 1 // Just get the last message for preview
+            }
           }
         });
+
+        return res.status(200).json({
+          success: true,
+          data: conversations
+        });
       }
-      
-      return res.status(200).json({
-        success: true,
-        data: conversation
-      });
-    } else {
-      // Get all user's conversations
-      const conversations = getUserConversations(userId);
-      
-      return res.status(200).json({
-        success: true,
-        data: conversations
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          message: 'Internal server error'
+        }
       });
     }
   } else {
-    return res.status(405).json({ 
-      success: false, 
+    return res.status(405).json({
+      success: false,
       error: {
         message: 'Method not allowed'
       }
     });
   }
-} 
+}

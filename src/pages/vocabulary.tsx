@@ -5,8 +5,7 @@ import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import SpacedRepetition, { VocabularyWord } from '@/components/features/SpacedRepetition';
 import VocabularyQuiz, { QuizResult } from '@/components/features/VocabularyQuiz';
-import { vocabularyService } from '@/services/vocabularyService';
-import { vocabularyApiService } from '@/services/index';
+import vocabularyService from '@/services/vocabularyService';
 import { useAuth } from '@/context/AuthContext';
 import useFetch from '@/hooks/useFetch';
 import Link from 'next/link';
@@ -31,12 +30,12 @@ export default function VocabularyPage() {
 
   // Fetch vocabulary using our custom hook
   const {
-    data: apiVocabulary = [],
+    data: apiResponse,
     isLoading,
     error,
     refetch: refetchVocabulary
-  } = useFetch(
-    () => vocabularyApiService.getVocabulary(),
+  } = useFetch<any>(
+    () => vocabularyService.getVocabulary({ level: selectedLevel }),
     {
       cacheKey: 'vocabulary',
       onError: (err) => {
@@ -45,29 +44,31 @@ export default function VocabularyPage() {
     }
   );
 
-  // Convert API vocabulary to VocabularyWord format or use local fallback
+  // Extract vocabulary items from API response
+  const apiVocabulary = apiResponse?.data?.items || [];
+
+  // Convert API vocabulary to VocabularyWord format
   useEffect(() => {
-    if (apiVocabulary.length > 0) {
+    if (apiVocabulary?.length > 0) {
       // Convert API vocabulary to VocabularyWord format
-      const convertedVocabulary: VocabularyWord[] = apiVocabulary.map((item, index) => ({
-        id: index.toString(),
+      const convertedVocabulary: VocabularyWord[] = apiVocabulary.map((item: any, index: number) => ({
+        id: item.id?.toString() || index.toString(),
         word: item.word,
         translation: item.translation,
-        example: item.example,
-        category: item.category || 'general',
+        example: item.example || '',
+        category: 'general', // Default category
         pronunciation: '', // API doesn't provide pronunciation
         level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
                item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
         lastReviewed: item.lastPracticed,
-        nextReview: item.nextReview,
+        nextReview: undefined,
         repetitionStage: item.learned ? 3 : 0 // Estimate stage based on learned status
       }));
 
       setVocabulary(convertedVocabulary);
-    } else if (!isLoading && (error || apiVocabulary.length === 0)) {
-      // Fallback to local service if API returns empty or error
-      const loadedVocabulary = vocabularyService.getVocabulary();
-      setVocabulary(loadedVocabulary);
+    } else if (!isLoading && (error || !apiVocabulary?.length)) {
+      // If API fails, set empty vocabulary
+      setVocabulary([]);
     }
   }, [apiVocabulary, isLoading, error]);
 
@@ -102,12 +103,11 @@ export default function VocabularyPage() {
       const updatePromises = reviewedWords.map(async (word) => {
         try {
           // Update the word in the API
-          await vocabularyApiService.updateVocabularyProgress(
-            word.word,
-            !!word.repetitionStage && word.repetitionStage > 0, // Consider learned if stage > 0
-            word.lastReviewed,
-            word.nextReview
-          );
+          await vocabularyService.updateVocabularyProgress({
+            word: word.word,
+            learned: !!word.repetitionStage && word.repetitionStage > 0, // Consider learned if stage > 0
+            lastPracticed: word.lastReviewed
+          });
           return word;
         } catch (error) {
           console.error(`Error updating word "${word.word}" in API:`, error);
@@ -118,16 +118,28 @@ export default function VocabularyPage() {
       // Wait for all updates to complete
       await Promise.all(updatePromises);
 
-      // Update local state
-      const updatedVocabulary = vocabularyService.updateVocabularyWords(reviewedWords);
+      // Update local state with the reviewed words
+      const updatedVocabulary = [...vocabulary];
+      reviewedWords.forEach(reviewedWord => {
+        const index = updatedVocabulary.findIndex(w => w.id === reviewedWord.id);
+        if (index !== -1) {
+          updatedVocabulary[index] = reviewedWord;
+        }
+      });
       setVocabulary(updatedVocabulary);
 
       // Refresh vocabulary data from API
       refetchVocabulary();
     } catch (error) {
       console.error('Error updating vocabulary progress:', error);
-      // Fallback to local service
-      const updatedVocabulary = vocabularyService.updateVocabularyWords(reviewedWords);
+      // Just update the local state
+      const updatedVocabulary = [...vocabulary];
+      reviewedWords.forEach(reviewedWord => {
+        const index = updatedVocabulary.findIndex(w => w.id === reviewedWord.id);
+        if (index !== -1) {
+          updatedVocabulary[index] = reviewedWord;
+        }
+      });
       setVocabulary(updatedVocabulary);
     }
   };
@@ -137,29 +149,52 @@ export default function VocabularyPage() {
     if (!newWord.word || !newWord.translation) return;
 
     try {
-      // First try to add the word to the API
+      // Convert level to API format
       const apiLevel = newWord.level === 'beginner' ? 'A1' :
                       newWord.level === 'intermediate' ? 'B1' : 'C1';
 
-      await vocabularyApiService.addVocabularyItem(
-        newWord.word,
-        newWord.translation,
-        newWord.example || '',
-        apiLevel,
-        newWord.category || 'general'
-      );
+      // Add the word to the API
+      await vocabularyService.updateVocabularyProgress({
+        word: newWord.word,
+        translation: newWord.translation,
+        example: newWord.example || '',
+        level: apiLevel,
+        learned: false
+      });
 
-      // Then update local state
-      const updatedVocabulary = vocabularyService.addVocabularyWord(newWord as Omit<VocabularyWord, 'id'>);
-      setVocabulary(updatedVocabulary);
+      // Add the word to local state
+      const newVocabWord: VocabularyWord = {
+        id: Date.now().toString(), // Temporary ID
+        word: newWord.word,
+        translation: newWord.translation,
+        example: newWord.example || '',
+        category: newWord.category || 'general',
+        pronunciation: newWord.pronunciation || '',
+        level: newWord.level || 'beginner',
+        lastReviewed: new Date().toISOString(),
+        repetitionStage: 0
+      };
+
+      setVocabulary([...vocabulary, newVocabWord]);
 
       // Refresh vocabulary data from API
       refetchVocabulary();
     } catch (error) {
       console.error('Error adding word to API:', error);
-      // Fallback to local service
-      const updatedVocabulary = vocabularyService.addVocabularyWord(newWord as Omit<VocabularyWord, 'id'>);
-      setVocabulary(updatedVocabulary);
+      // Add to local state anyway
+      const newVocabWord: VocabularyWord = {
+        id: Date.now().toString(), // Temporary ID
+        word: newWord.word,
+        translation: newWord.translation,
+        example: newWord.example || '',
+        category: newWord.category || 'general',
+        pronunciation: newWord.pronunciation || '',
+        level: newWord.level || 'beginner',
+        lastReviewed: new Date().toISOString(),
+        repetitionStage: 0
+      };
+
+      setVocabulary([...vocabulary, newVocabWord]);
     }
 
     // Reset form
