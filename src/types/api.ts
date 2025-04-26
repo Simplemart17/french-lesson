@@ -178,14 +178,6 @@ export interface AssessmentResponse {
 }
 
 // Pronunciation-related types
-export interface PronunciationResponse {
-  overallScore: number;
-  wordScores: WordScore[];
-  problemSounds: ProblemSound[];
-  recommendations: string[];
-  recognizedText: string;
-}
-
 export interface WordScore {
   word: string;
   score: number;
@@ -195,6 +187,18 @@ export interface WordScore {
 export interface ProblemSound {
   sound: string;
   description: string;
+}
+
+export interface PronunciationResponse {
+  transcript: string;
+  expected: string;
+  similarity: number;
+  feedback: {
+    overallScore: number;
+    wordScores: WordScore[];
+    problemSounds: ProblemSound[];
+    recommendations: string[];
+  };
 }
 
 // Conversation-related types

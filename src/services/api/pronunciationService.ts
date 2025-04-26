@@ -68,6 +68,36 @@ export interface PronunciationExerciseListResponse {
   totalPages: number;
 }
 
+// New interfaces for AI pronunciation analysis
+export interface PronunciationWordScore {
+  word: string;
+  score: number;
+  feedback: string;
+}
+
+export interface PronunciationProblemSound {
+  sound: string;
+  description: string;
+}
+
+export interface PronunciationResponse {
+  success: boolean;
+  data?: {
+    transcript: string;
+    expected: string;
+    similarity: number;
+    feedback: {
+      overallScore: number;
+      wordScores: PronunciationWordScore[];
+      problemSounds: PronunciationProblemSound[];
+      recommendations: string[];
+    };
+  };
+  error?: {
+    message: string;
+  };
+}
+
 // Pronunciation service class
 class PronunciationService {
   // Get pronunciation exercises
@@ -105,9 +135,34 @@ class PronunciationService {
     });
   }
   
+  // AI-powered advanced pronunciation analysis
+  public async analyzePronunciation(audioBlob: Blob, text: string): Promise<PronunciationResponse> {
+    try {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+      formData.append('text', text);
+      
+      const response = await fetch('/api/ai/pronunciation-analysis', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error in pronunciation analysis:', error);
+      return {
+        success: false,
+        error: {
+          message: 'Failed to analyze pronunciation'
+        }
+      };
+    }
+  }
+  
   // Get pronunciation audio
   public getAudioUrl(id: number): string {
-    return `${apiClient.baseURL}${API_ENDPOINTS.PRONUNCIATION.AUDIO(id)}`;
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    return `${baseURL}${API_ENDPOINTS.PRONUNCIATION.AUDIO(id)}`;
   }
   
   // Get pronunciation progress

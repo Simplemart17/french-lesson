@@ -1,448 +1,168 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import PronunciationPractice, { PronunciationResult } from '@/components/features/PronunciationPractice';
 import { useAuth } from '@/context/AuthContext';
+import apiClient from '@/services/api/apiClient';
+import { API_ENDPOINTS } from '@/services/api/apiConfig';
+import { PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationService';
 
-// Sample pronunciation exercises
-const pronunciationExercises = [
-  {
-    id: '1',
-    title: 'Basic Greetings',
-    description: 'Practice common French greetings and introductions',
-    difficulty: 'beginner' as const,
-    phrases: [
-      {
-        text: 'Bonjour, comment allez-vous?',
-        translation: 'Hello, how are you?',
-        audioUrl: '/audio/greetings/bonjour-comment-allez-vous.mp3'
-      },
-      {
-        text: 'Je m\'appelle Jean. Enchanté.',
-        translation: 'My name is Jean. Nice to meet you.',
-        audioUrl: '/audio/greetings/je-mappelle-jean.mp3'
-      },
-      {
-        text: 'Au revoir et à bientôt!',
-        translation: 'Goodbye and see you soon!',
-        audioUrl: '/audio/greetings/au-revoir-a-bientot.mp3'
-      },
-      {
-        text: 'Merci beaucoup pour votre aide.',
-        translation: 'Thank you very much for your help.',
-        audioUrl: '/audio/greetings/merci-beaucoup.mp3'
-      }
-    ]
-  },
-  {
-    id: '2',
-    title: 'Nasal Sounds',
-    description: 'Practice French nasal vowel sounds',
-    difficulty: 'beginner' as const,
-    phrases: [
-      {
-        text: 'Un bon vin blanc',
-        translation: 'A good white wine',
-        audioUrl: '/audio/nasal/un-bon-vin-blanc.mp3'
-      },
-      {
-        text: 'Demain matin',
-        translation: 'Tomorrow morning',
-        audioUrl: '/audio/nasal/demain-matin.mp3'
-      },
-      {
-        text: 'Le train est en retard',
-        translation: 'The train is late',
-        audioUrl: '/audio/nasal/le-train-est-en-retard.mp3'
-      },
-      {
-        text: 'J\'ai faim et j\'ai besoin de pain',
-        translation: 'I am hungry and I need bread',
-        audioUrl: '/audio/nasal/jai-faim-et-besoin-de-pain.mp3'
-      }
-    ]
-  },
-  {
-    id: '3',
-    title: 'R Sound',
-    description: 'Practice the French R sound',
-    difficulty: 'intermediate' as const,
-    phrases: [
-      {
-        text: 'Trois gros rats gris',
-        translation: 'Three big gray rats',
-        audioUrl: '/audio/r-sound/trois-gros-rats-gris.mp3'
-      },
-      {
-        text: 'Regardez derrière la porte',
-        translation: 'Look behind the door',
-        audioUrl: '/audio/r-sound/regardez-derriere-la-porte.mp3'
-      },
-      {
-        text: 'Je voudrais réserver une chambre',
-        translation: 'I would like to book a room',
-        audioUrl: '/audio/r-sound/je-voudrais-reserver.mp3'
-      },
-      {
-        text: 'Le restaurant est sur la rue à droite',
-        translation: 'The restaurant is on the street to the right',
-        audioUrl: '/audio/r-sound/le-restaurant-est-sur-la-rue.mp3'
-      }
-    ]
-  },
-  {
-    id: '4',
-    title: 'U Sound',
-    description: 'Practice the French U sound',
-    difficulty: 'intermediate' as const,
-    phrases: [
-      {
-        text: 'Tu as vu la rue?',
-        translation: 'Have you seen the street?',
-        audioUrl: '/audio/u-sound/tu-as-vu-la-rue.mp3'
-      },
-      {
-        text: 'J\'ai bu du jus',
-        translation: 'I drank some juice',
-        audioUrl: '/audio/u-sound/jai-bu-du-jus.mp3'
-      },
-      {
-        text: 'La musique est une culture universelle',
-        translation: 'Music is a universal culture',
-        audioUrl: '/audio/u-sound/la-musique-est-une-culture.mp3'
-      },
-      {
-        text: 'Une minute de plus s\'il vous plaît',
-        translation: 'One more minute please',
-        audioUrl: '/audio/u-sound/une-minute-de-plus.mp3'
-      }
-    ]
-  },
-  {
-    id: '5',
-    title: 'Difficult Sentences',
-    description: 'Practice complex French sentences with multiple challenging sounds',
-    difficulty: 'advanced' as const,
-    phrases: [
-      {
-        text: 'Les chaussettes de l\'archiduchesse sont-elles sèches ou archi-sèches?',
-        translation: 'Are the archduchess\'s socks dry or very dry?',
-        audioUrl: '/audio/difficult/les-chaussettes-de-larchiduchesse.mp3'
-      },
-      {
-        text: 'Un chasseur sachant chasser doit savoir chasser sans son chien',
-        translation: 'A hunter who knows how to hunt must know how to hunt without his dog',
-        audioUrl: '/audio/difficult/un-chasseur-sachant-chasser.mp3'
-      },
-      {
-        text: 'Je veux et j\'exige d\'exquises excuses',
-        translation: 'I want and demand exquisite apologies',
-        audioUrl: '/audio/difficult/je-veux-et-jexige.mp3'
-      },
-      {
-        text: 'Ton thé t\'a-t-il ôté ta toux?',
-        translation: 'Has your tea taken away your cough?',
-        audioUrl: '/audio/difficult/ton-the-ta-til-ote-ta-toux.mp3'
-      }
-    ]
-  }
-];
-
-// Define the phrase type
-interface PhraseItem {
-  text: string;
-  translation: string;
-  audioUrl: string;
+interface ApiResponseData {
+  success: boolean;
+  data?: PronunciationExerciseListResponse;
+  error?: {
+    message: string;
+  };
 }
 
 export default function PronunciationPage() {
   const { isAuthenticated } = useAuth();
-  const [selectedExercise, setSelectedExercise] = useState<typeof pronunciationExercises[0] | null>(null);
-  const [selectedPhrase, setSelectedPhrase] = useState<PhraseItem | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
-  const [userScores, setUserScores] = useState<Record<string, number>>({});
+  const [exercises, setExercises] = useState<PronunciationExercise[]>([]);
+  const [selectedExercise, setSelectedExercise] = useState<PronunciationExercise | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<PronunciationResult[]>([]);
+  
+  // Fetch pronunciation exercises from API
+  useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiClient.get<ApiResponseData>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
+        
+        if (response.data.success && response.data.data) {
+          setExercises(response.data.data.items);
+          if (response.data.data.items.length > 0) {
+            setSelectedExercise(response.data.data.items[0]);
+          }
+        } else {
+          setError('Failed to load pronunciation exercises');
+        }
+      } catch (err) {
+        console.error('Error fetching pronunciation exercises:', err);
+        setError('Failed to load pronunciation exercises. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Filter exercises based on selected difficulty
-  const filteredExercises = selectedDifficulty === 'all'
-    ? pronunciationExercises
-    : pronunciationExercises.filter(exercise => exercise.difficulty === selectedDifficulty);
-
-  const handlePronunciationComplete = (result: PronunciationResult) => {
-    console.log('Pronunciation completed:', result);
-
-    // Update user scores
-    if (selectedPhrase) {
-      setUserScores(prev => ({
-        ...prev,
-        [selectedPhrase.text]: result.accuracy
-      }));
-    }
-
-    // In a real app, this would save the user's progress
+    fetchExercises();
+  }, []);
+  
+  const handleResultUpdate = (result: PronunciationResult) => {
+    setResults(prev => [...prev, result]);
   };
-
+  
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <Head>
-        <title>Pronunciation Practice | French Tutor AI</title>
-        <meta name="description" content="Practice French pronunciation with detailed feedback" />
+        <title>French Pronunciation Practice</title>
+        <meta name="description" content="Practice your French pronunciation with AI feedback" />
       </Head>
-
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="mb-4 text-3xl font-bold text-gray-800">Pronunciation Practice</h1>
-          <p className="text-lg text-gray-600">
-            Improve your French pronunciation with targeted exercises and get detailed feedback on your speech.
+      
+      <main className="container p-4 mx-auto max-w-7xl">
+        <header className="py-8">
+          <h1 className="mb-4 text-3xl font-bold text-center text-indigo-800">
+            French Pronunciation Practice
+          </h1>
+          <p className="max-w-2xl mx-auto text-center text-gray-600">
+            Improve your French pronunciation with these exercises. Listen to the audio, 
+            repeat the phrase, and get feedback on your pronunciation.
           </p>
-        </div>
-
-        {selectedExercise && selectedPhrase ? (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <Button
-                variant="outline"
-                onClick={() => setSelectedPhrase(null)}
-                className="flex items-center"
-              >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Phrases
-              </Button>
-
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                selectedExercise.difficulty === 'beginner'
-                  ? 'bg-green-100 text-green-800'
-                  : selectedExercise.difficulty === 'intermediate'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-red-100 text-red-800'
-              }`}>
-                {selectedExercise.difficulty.charAt(0).toUpperCase() + selectedExercise.difficulty.slice(1)}
-              </div>
-            </div>
-
-            <PronunciationPractice
-              phrase={selectedPhrase.text}
-              translation={selectedPhrase.translation}
-              audioUrl={selectedPhrase.audioUrl}
-              onResult={handlePronunciationComplete}
-            />
+        </header>
+        
+        {isLoading ? (
+          <div className="flex items-center justify-center p-12">
+            <div className="w-12 h-12 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin"></div>
+            <span className="ml-3 text-gray-700">Loading exercises...</span>
           </div>
-        ) : selectedExercise ? (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <Button
-                variant="outline"
-                onClick={() => setSelectedExercise(null)}
-                className="flex items-center"
-              >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Exercises
-              </Button>
-
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                selectedExercise.difficulty === 'beginner'
-                  ? 'bg-green-100 text-green-800'
-                  : selectedExercise.difficulty === 'intermediate'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-red-100 text-red-800'
-              }`}>
-                {selectedExercise.difficulty.charAt(0).toUpperCase() + selectedExercise.difficulty.slice(1)}
-              </div>
-            </div>
-
-            <Card className="mb-6">
-              <div className="p-6">
-                <h2 className="mb-2 text-xl font-semibold text-gray-800">{selectedExercise.title}</h2>
-                <p className="mb-6 text-gray-600">{selectedExercise.description}</p>
-
-                <h3 className="mb-3 font-medium text-gray-800">Select a phrase to practice:</h3>
-                <div className="space-y-3">
-                  {selectedExercise.phrases.map((phrase, index) => {
-                    const score = userScores[phrase.text];
-                    const hasScore = score !== undefined;
-
-                    return (
-                      <div
-                        key={index}
-                        onClick={() => setSelectedPhrase(phrase)}
-                        className="p-4 transition-colors border border-gray-200 rounded-lg cursor-pointer hover:border-primary-300 hover:bg-primary-50"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-gray-800">{phrase.text}</p>
-                            <p className="text-sm text-gray-500">{phrase.translation}</p>
-                            {hasScore && (
-                              <div className="mt-1 text-sm text-gray-500">
-                                Last score:
-                                <span className={`ml-1 font-medium ${
-                                  score >= 80
-                                    ? 'text-green-600'
-                                    : score >= 50
-                                    ? 'text-yellow-600'
-                                    : 'text-red-600'
-                                }`}>
-                                  {score}%
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <Button size="sm">Practice</Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </Card>
+        ) : error ? (
+          <div className="p-4 mb-6 text-red-700 bg-red-100 rounded-lg">
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+            >
+              Try Again
+            </button>
           </div>
         ) : (
-          <>
-            <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
-              <h2 className="mb-4 text-xl font-semibold text-gray-800">Choose a Difficulty Level</h2>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => setSelectedDifficulty('all')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedDifficulty === 'all'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                  }`}
-                >
-                  All Levels
-                </button>
-                <button
-                  onClick={() => setSelectedDifficulty('beginner')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedDifficulty === 'beginner'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-green-100 text-green-800 hover:bg-green-200'
-                  }`}
-                >
-                  Beginner
-                </button>
-                <button
-                  onClick={() => setSelectedDifficulty('intermediate')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedDifficulty === 'intermediate'
-                      ? 'bg-yellow-600 text-white'
-                      : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                  }`}
-                >
-                  Intermediate
-                </button>
-                <button
-                  onClick={() => setSelectedDifficulty('advanced')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedDifficulty === 'advanced'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-red-100 text-red-800 hover:bg-red-200'
-                  }`}
-                >
-                  Advanced
-                </button>
-              </div>
-            </div>
-
-            <h2 className="mb-6 text-2xl font-semibold text-gray-800">Pronunciation Exercises</h2>
-
-            <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-2 lg:grid-cols-3">
-              {filteredExercises.map((exercise) => (
-                <Card key={exercise.id} className="h-full transition-shadow hover:shadow-lg">
-                  <div className="flex flex-col h-full p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'beginner'
-                          ? 'bg-green-100 text-green-800'
-                          : exercise.difficulty === 'intermediate'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                      }`}>
-                        {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
-                      </span>
-                    </div>
-
-                    <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
-
-                    <div className="mt-auto">
-                      <Button
-                        onClick={() => setSelectedExercise(exercise)}
-                        className="w-full"
-                      >
-                        Start Exercise
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            {!isAuthenticated && (
-              <div className="p-6 mb-8 border rounded-lg bg-primary-50 border-primary-100">
-                <div className="items-center md:flex">
-                  <div className="md:w-3/4">
-                    <h3 className="mb-2 text-xl font-semibold text-primary-800">Create an Account to Track Your Progress</h3>
-                    <p className="mb-4 text-primary-700 md:mb-0">
-                      Sign up to save your pronunciation scores, track your improvement over time, and unlock more exercises.
-                    </p>
-                  </div>
-                  <div className="flex justify-end md:w-1/4">
-                    <Button
-                      variant="default"
-                      onClick={() => window.location.href = '/register'}
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Exercise selection */}
+            <div>
+              <Card className="p-4">
+                <h2 className="mb-4 text-xl font-semibold">Exercises</h2>
+                
+                <div className="space-y-2">
+                  {exercises.map((exercise) => (
+                    <button
+                      key={exercise.id}
+                      onClick={() => setSelectedExercise(exercise)}
+                      className={`w-full px-4 py-3 text-left rounded-lg transition ${
+                        selectedExercise?.id === exercise.id
+                          ? 'bg-indigo-100 text-indigo-800'
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
                     >
-                      Create Free Account
-                    </Button>
+                      <div className="font-medium">{exercise.title}</div>
+                      <div className="text-sm text-gray-500">{exercise.description}</div>
+                      <div className="mt-1 text-xs">
+                        <span className={`px-2 py-1 rounded-full ${
+                          exercise.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : 
+                          exercise.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                  
+                  {exercises.length === 0 && (
+                    <div className="p-4 text-yellow-700 bg-yellow-100 rounded-lg">
+                      No pronunciation exercises available. Please check back later.
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+            
+            {/* Practice area */}
+            <div className="md:col-span-2">
+              {selectedExercise ? (
+                <div>
+                  <Card className="p-6 mb-6">
+                    <h2 className="mb-2 text-2xl font-bold">{selectedExercise.title}</h2>
+                    <p className="mb-4 text-gray-600">{selectedExercise.description}</p>
+                    
+                    <div className="p-2 text-sm text-indigo-800 bg-indigo-50 rounded-lg">
+                      <span className="font-medium">Difficulty:</span> {selectedExercise.difficulty}
+                    </div>
+                  </Card>
+                  
+                  <div className="space-y-6">
+                    {selectedExercise.phrases.map((phrase) => (
+                      <div key={phrase.id}>
+                        <PronunciationPractice
+                          phrase={phrase.text}
+                          translation={phrase.translation}
+                          audioUrl={phrase.audioUrl}
+                          onResult={handleResultUpdate}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            )}
-
-            <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
-              <h2 className="mb-4 text-xl font-semibold text-gray-800">French Pronunciation Tips</h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <h3 className="mb-2 font-medium text-gray-800">Vowel Sounds</h3>
-                  <ul className="space-y-1 text-gray-600 list-disc list-inside">
-                    <li><strong>U</strong> - Pronounce with rounded lips, like saying "ee" while whistling</li>
-                    <li><strong>EU</strong> - Similar to "u" in "burn" but with rounded lips</li>
-                    <li><strong>OU</strong> - Like "oo" in "food"</li>
-                    <li><strong>E</strong> - Often silent at the end of words</li>
-                    <li><strong>É</strong> - Like "ay" in "say"</li>
-                  </ul>
+              ) : exercises.length > 0 ? (
+                <div className="flex items-center justify-center h-full p-12 text-gray-500">
+                  Please select an exercise from the list
                 </div>
-                <div>
-                  <h3 className="mb-2 font-medium text-gray-800">Consonant Sounds</h3>
-                  <ul className="space-y-1 text-gray-600 list-disc list-inside">
-                    <li><strong>R</strong> - Pronounced at the back of the throat</li>
-                    <li><strong>J</strong> - Like "s" in "measure"</li>
-                    <li><strong>CH</strong> - Like "sh" in "ship"</li>
-                    <li><strong>GN</strong> - Like "ny" in "canyon"</li>
-                    <li><strong>H</strong> - Always silent</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="mb-2 font-medium text-gray-800">Nasal Sounds</h3>
-                <p className="mb-2 text-gray-600">
-                  French has four nasal vowel sounds that are pronounced by letting air flow through your nose:
-                </p>
-                <ul className="space-y-1 text-gray-600 list-disc list-inside">
-                  <li><strong>AN/EN/AM/EM</strong> - As in "enfant" (child)</li>
-                  <li><strong>IN/IM/AIN/EIN</strong> - As in "pain" (bread)</li>
-                  <li><strong>ON/OM</strong> - As in "bon" (good)</li>
-                  <li><strong>UN/UM</strong> - As in "parfum" (perfume)</li>
-                </ul>
-              </div>
+              ) : null}
             </div>
-          </>
+          </div>
         )}
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

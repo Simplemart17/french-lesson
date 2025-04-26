@@ -1,36 +1,81 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getOpenAIClient } from '../../../utils/openaiClient';
+import { getOpenAIClient, createAudioTranscription } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import fs from 'fs';
+import formidable from 'formidable';
+import path from 'path';
+import os from 'os';
+
+// Configure Next.js API route to handle file uploads
+export const config = {
+  api: {
+    bodyParser: false, // Disable the default body parser
+  },
+};
+
+// Helper to parse the form data with formidable
+const parseForm = async (req: NextApiRequest) => {
+  return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
+    const form = formidable({
+      uploadDir: os.tmpdir(),
+      keepExtensions: true,
+    });
+
+    form.parse(req, (err, fields, files) => {
+      if (err) return reject(err);
+      resolve({ fields, files });
+    });
+  });
+};
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
   }
 
+  // Temporary file paths to clean up later
+  const tempFiles: string[] = [];
+
   try {
-    const { audio, text } = req.body;
+    // Parse the form data
+    const { fields, files } = await parseForm(req);
     
-    if (!audio || !text) {
+    // Extract the expected text from the form fields
+    const expectedText = Array.isArray(fields.text) 
+      ? fields.text[0] 
+      : fields.text || '';
+    
+    if (!expectedText) {
       return res.status(400).json({ 
         success: false, 
-        error: { message: 'Audio data and text are required' } 
+        error: { message: 'Expected text is required' } 
       });
     }
+    
+    // Get the audio file
+    const audioFile = Array.isArray(files.audio) 
+      ? files.audio[0] 
+      : files.audio;
+      
+    if (!audioFile || !audioFile.filepath) {
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: 'Audio file is required' } 
+      });
+    }
+    
+    // Add the file path to the cleanup list
+    tempFiles.push(audioFile.filepath);
     
     // Get OpenAI client
     const openai = getOpenAIClient();
 
-    // In a production environment, we would process the audio file with OpenAI's Whisper API
-    // For now, we'll simulate the transcription result
+    // Use our createAudioTranscription helper function with Whisper API
+    const actualText = await createAudioTranscription(fs.createReadStream(audioFile.filepath));
+    const expectedTextNormalized = expectedText.toLowerCase().trim();
     
-    // Simulate a transcription with some errors to test the analysis
-    const simulatedTranscription = simulateTranscription(text);
-    const actualText = simulatedTranscription.toLowerCase().trim();
-    const expectedText = text.toLowerCase().trim();
-    
-    // Calculate simple similarity score
-    const similarityScore = calculateSimilarity(actualText, expectedText);
+    // Calculate similarity score
+    const similarityScore = calculateSimilarity(actualText.toLowerCase().trim(), expectedTextNormalized);
     
     // Generate feedback using GPT
     const feedbackResponse = await openai.chat.completions.create({
@@ -54,7 +99,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
         {
           role: "user",
-          content: `Expected text: "${expectedText}"
+          content: `Expected text: "${expectedTextNormalized}"
           Actual transcript: "${actualText}"
           Similarity score: ${similarityScore}`
         }
@@ -67,7 +112,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     
     return res.status(200).json({
       success: true,
-      data: feedback
+      data: {
+        transcript: actualText,
+        expected: expectedTextNormalized,
+        similarity: similarityScore,
+        feedback
+      }
     });
   } catch (error) {
     console.error('Pronunciation analysis error:', error);
@@ -75,6 +125,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       success: false, 
       error: { message: 'Failed to analyze pronunciation' } 
     });
+  } finally {
+    // Clean up temporary files
+    for (const filePath of tempFiles) {
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (err) {
+        console.error('Error cleaning up temp file:', err);
+      }
+    }
   }
 }
 
@@ -88,37 +149,6 @@ function calculateSimilarity(text1: string, text2: string): number {
   const totalWords = Math.max(words1.length, words2.length);
   
   return Math.round((commonWords / totalWords) * 100);
-}
-
-// Function to simulate transcription with some common pronunciation mistakes
-function simulateTranscription(text: string): string {
-  // Common French pronunciation mistakes for English speakers
-  const mistakes = [
-    { pattern: /\br\b/g, replacement: 'r' },  // English 'r' instead of French rolled 'r'
-    { pattern: /\bun\b/g, replacement: 'un' }, // Missing nasal sound
-    { pattern: /\bje\b/g, replacement: 'je' }, // 'je' pronounced with English 'j'
-    { pattern: /\btu\b/g, replacement: 'tu' }, // 'u' sound often mispronounced
-    { pattern: /\bau\b/g, replacement: 'o' },  // 'au' sound often Anglicized
-  ];
-  
-  // Introduce some random errors (about 20% of the time)
-  let result = text;
-  const words = text.split(' ');
-  for (let i = 0; i < words.length; i++) {
-    if (Math.random() < 0.2) {
-      // Either drop a word or modify it
-      if (Math.random() < 0.5) {
-        words[i] = '';
-      } else {
-        // Apply a random mistake
-        const mistake = mistakes[Math.floor(Math.random() * mistakes.length)];
-        words[i] = words[i].replace(mistake.pattern, mistake.replacement);
-      }
-    }
-  }
-  
-  // Randomly return either the original or modified text
-  return Math.random() < 0.7 ? words.filter(Boolean).join(' ') : text;
 }
 
 export default authMiddleware(handler); 

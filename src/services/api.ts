@@ -194,27 +194,34 @@ export const assessmentService = {
 // Pronunciation services
 export const pronunciationService = {
   analyzePronunciation: async (audioData: Blob, text: string): Promise<PronunciationResponse> => {
-    // Convert blob to base64 for API transmission
-    const reader = new FileReader();
-    const audioBase64Promise = new Promise<string>((resolve) => {
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        resolve(base64data.split(',')[1]); // Remove the data URL part
-      };
-      reader.readAsDataURL(audioData);
-    });
-
-    const audioBase64 = await audioBase64Promise;
-
-    const response = await api.post<ApiResponse<PronunciationResponse>>('/speech/pronunciation', {
-      audioData: audioBase64,
-      text
-    });
-
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+    try {
+      // Create a FormData object to send the audio file
+      const formData = new FormData();
+      
+      // Add the audio file to the form data
+      formData.append('audio', audioData, 'recording.webm');
+      
+      // Add the expected text
+      formData.append('text', text);
+      
+      const response = await api.post<ApiResponse<PronunciationResponse>>(
+        '/ai/pronunciation-analysis',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+      throw new Error('Failed to analyze pronunciation');
+    } catch (error) {
+      console.error('Error in pronunciation analysis:', error);
+      throw new Error('Failed to analyze pronunciation');
     }
-    throw new Error('Failed to analyze pronunciation');
   }
 };
 
