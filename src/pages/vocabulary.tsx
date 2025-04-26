@@ -1,11 +1,13 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorMessage from '@/components/ui/ErrorMessage';
 import SpacedRepetition, { VocabularyWord } from '@/components/features/SpacedRepetition';
 import { vocabularyService } from '@/services/vocabularyService';
 import { vocabularyApiService } from '@/services/index';
 import { useAuth } from '@/context/AuthContext';
+import useFetch from '@/hooks/useFetch';
 import Link from 'next/link';
 
 export default function VocabularyPage() {
@@ -26,48 +28,49 @@ export default function VocabularyPage() {
     level: 'beginner'
   });
 
-  // Load vocabulary from API service
-  useEffect(() => {
-    const fetchVocabulary = async () => {
-      try {
-        // First try to get vocabulary from API
-        const apiVocabulary = await vocabularyApiService.getVocabulary();
-
-        // Convert API vocabulary to VocabularyWord format
-        const convertedVocabulary: VocabularyWord[] = apiVocabulary.map((item, index) => ({
-          id: index.toString(),
-          word: item.word,
-          translation: item.translation,
-          example: item.example,
-          category: item.category || 'general',
-          pronunciation: '', // API doesn't provide pronunciation
-          level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
-                 item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
-          lastReviewed: item.lastPracticed,
-          nextReview: item.nextReview,
-          repetitionStage: item.learned ? 3 : 0 // Estimate stage based on learned status
-        }));
-
-        if (convertedVocabulary.length > 0) {
-          setVocabulary(convertedVocabulary);
-        } else {
-          // Fallback to local service if API returns empty
-          const loadedVocabulary = vocabularyService.getVocabulary();
-          setVocabulary(loadedVocabulary);
-        }
-      } catch (error) {
-        console.error('Error fetching vocabulary from API:', error);
-        // Fallback to local service
-        const loadedVocabulary = vocabularyService.getVocabulary();
-        setVocabulary(loadedVocabulary);
+  // Fetch vocabulary using our custom hook
+  const {
+    data: apiVocabulary = [],
+    isLoading,
+    error,
+    refetch: refetchVocabulary
+  } = useFetch(
+    () => vocabularyApiService.getVocabulary(),
+    {
+      cacheKey: 'vocabulary',
+      onError: (err) => {
+        console.error('Error fetching vocabulary from API:', err);
       }
-    };
+    }
+  );
 
-    fetchVocabulary();
-  }, []);
+  // Convert API vocabulary to VocabularyWord format or use local fallback
+  useEffect(() => {
+    if (apiVocabulary.length > 0) {
+      // Convert API vocabulary to VocabularyWord format
+      const convertedVocabulary: VocabularyWord[] = apiVocabulary.map((item, index) => ({
+        id: index.toString(),
+        word: item.word,
+        translation: item.translation,
+        example: item.example,
+        category: item.category || 'general',
+        pronunciation: '', // API doesn't provide pronunciation
+        level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
+               item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
+        lastReviewed: item.lastPracticed,
+        nextReview: item.nextReview,
+        repetitionStage: item.learned ? 3 : 0 // Estimate stage based on learned status
+      }));
 
-  // Get unique categories from vocabulary
-  const categories = ['all', ...Array.from(new Set(vocabulary.map(word => word.category)))];
+      setVocabulary(convertedVocabulary);
+    } else if (!isLoading && (error || apiVocabulary.length === 0)) {
+      // Fallback to local service if API returns empty or error
+      const loadedVocabulary = vocabularyService.getVocabulary();
+      setVocabulary(loadedVocabulary);
+    }
+  }, [apiVocabulary, isLoading, error]);
+
+  // Define vocabulary categories and levels
 
   const vocabularyCategories = [
     { id: 'all', name: 'All Categories' },
@@ -117,6 +120,9 @@ export default function VocabularyPage() {
       // Update local state
       const updatedVocabulary = vocabularyService.updateVocabularyWords(reviewedWords);
       setVocabulary(updatedVocabulary);
+
+      // Refresh vocabulary data from API
+      refetchVocabulary();
     } catch (error) {
       console.error('Error updating vocabulary progress:', error);
       // Fallback to local service
@@ -145,6 +151,9 @@ export default function VocabularyPage() {
       // Then update local state
       const updatedVocabulary = vocabularyService.addVocabularyWord(newWord as Omit<VocabularyWord, 'id'>);
       setVocabulary(updatedVocabulary);
+
+      // Refresh vocabulary data from API
+      refetchVocabulary();
     } catch (error) {
       console.error('Error adding word to API:', error);
       // Fallback to local service
@@ -219,6 +228,22 @@ export default function VocabularyPage() {
             >
               Start Review Session
             </Button>
+          </div>
+        )}
+
+        {/* Loading and Error States */}
+        {isLoading && (
+          <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
+            <LoadingState message="Loading vocabulary..." size="medium" />
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="mb-8">
+            <ErrorMessage
+              message="Failed to load vocabulary. Using locally stored data instead."
+              retryAction={refetchVocabulary}
+            />
           </div>
         )}
 
@@ -417,43 +442,54 @@ export default function VocabularyPage() {
         </div>
 
         {/* Flashcard Section */}
-        {studyMode === 'flashcards' && filteredVocabulary.length > 0 && (
+        {studyMode === 'flashcards' && (
           <div className="mb-12">
-            <div className="overflow-hidden bg-white rounded-lg shadow-lg">
-              <div className="p-6 text-center">
-                <div className="mb-2 text-sm text-gray-500">
-                  Card {currentCardIndex + 1} of {filteredVocabulary.length}
-                </div>
+            {isLoading ? (
+              <div className="p-6 bg-white rounded-lg shadow-lg">
+                <LoadingState message="Loading flashcards..." size="medium" />
+              </div>
+            ) : filteredVocabulary.length > 0 ? (
+              <div className="overflow-hidden bg-white rounded-lg shadow-lg">
+                <div className="p-6 text-center">
+                  <div className="mb-2 text-sm text-gray-500">
+                    Card {currentCardIndex + 1} of {filteredVocabulary.length}
+                  </div>
 
-                <div
-                  className="min-h-[200px] flex flex-col items-center justify-center cursor-pointer"
-                  onClick={toggleTranslation}
-                >
-                  {!showTranslation ? (
-                    <>
-                      <h2 className="mb-3 text-3xl font-bold text-gray-800">{currentWord.word}</h2>
-                      <p className="italic text-gray-500">{currentWord.pronunciation}</p>
-                      <p className="mt-4 text-sm text-gray-500">Click to reveal translation</p>
-                    </>
-                  ) : (
-                    <>
-                      <h2 className="mb-3 text-3xl font-bold text-gray-800">{currentWord.translation}</h2>
-                      <p className="mt-2 text-gray-600">{currentWord.example}</p>
-                      <p className="mt-4 text-sm text-gray-500">Click to see word</p>
-                    </>
-                  )}
-                </div>
+                  <div
+                    className="min-h-[200px] flex flex-col items-center justify-center cursor-pointer"
+                    onClick={toggleTranslation}
+                  >
+                    {!showTranslation ? (
+                      <>
+                        <h2 className="mb-3 text-3xl font-bold text-gray-800">{currentWord.word}</h2>
+                        <p className="italic text-gray-500">{currentWord.pronunciation}</p>
+                        <p className="mt-4 text-sm text-gray-500">Click to reveal translation</p>
+                      </>
+                    ) : (
+                      <>
+                        <h2 className="mb-3 text-3xl font-bold text-gray-800">{currentWord.translation}</h2>
+                        <p className="mt-2 text-gray-600">{currentWord.example}</p>
+                        <p className="mt-4 text-sm text-gray-500">Click to see word</p>
+                      </>
+                    )}
+                  </div>
 
-                <div className="flex justify-between mt-8">
-                  <Button variant="outline" onClick={handlePrevCard}>
-                    Previous
-                  </Button>
-                  <Button onClick={handleNextCard}>
-                    Next
-                  </Button>
+                  <div className="flex justify-between mt-8">
+                    <Button variant="outline" onClick={handlePrevCard}>
+                      Previous
+                    </Button>
+                    <Button onClick={handleNextCard}>
+                      Next
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="p-6 bg-white rounded-lg shadow-lg text-center">
+                <p className="text-gray-600">No vocabulary words found for the selected category and level.</p>
+                <Button onClick={refetchVocabulary} className="mt-4">Refresh</Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -512,49 +548,63 @@ export default function VocabularyPage() {
         {/* Vocabulary List Section */}
         <div className="mb-12">
           <h2 className="mb-6 text-2xl font-bold text-gray-800">Vocabulary List</h2>
-          <div className="overflow-hidden bg-white rounded-lg shadow-md">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                      French
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                      English
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                      Example
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                      Category
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredVocabulary.map((word, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{word.word}</div>
-                        <div className="text-xs text-gray-500">{word.pronunciation}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{word.translation}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-500">{word.example}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex px-2 text-xs font-semibold leading-5 text-blue-800 bg-blue-100 rounded-full">
-                          {word.category}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+          {isLoading ? (
+            <div className="p-6 bg-white rounded-lg shadow-md">
+              <LoadingState message="Loading vocabulary list..." size="medium" />
             </div>
-          </div>
+          ) : (
+            <div className="overflow-hidden bg-white rounded-lg shadow-md">
+              {filteredVocabulary.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          French
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          English
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          Example
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                          Category
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredVocabulary.map((word, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{word.word}</div>
+                            <div className="text-xs text-gray-500">{word.pronunciation}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">{word.translation}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-500">{word.example}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex px-2 text-xs font-semibold leading-5 text-blue-800 bg-blue-100 rounded-full">
+                              {word.category}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-6 text-center">
+                  <p className="text-gray-600">No vocabulary words found for the selected category and level.</p>
+                  <Button onClick={refetchVocabulary} className="mt-4">Refresh</Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Tips Section */}
