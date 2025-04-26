@@ -32,10 +32,11 @@ model User {
   theme            String   @default("light")
 
   // Relations
-  lessonProgress LessonProgress[]
-  vocabulary     UserVocabulary[]
-  examResults    ExamResult[]
-  conversations  Conversation[]
+  lessonProgress   LessonProgress[]
+  vocabulary       UserVocabulary[]
+  examResults      ExamResult[]
+  conversations    Conversation[]
+  practiceSessions PracticeSession[]
 }
 
 // Lesson model
@@ -80,6 +81,7 @@ model Vocabulary {
 
   // Relations
   userVocabulary UserVocabulary[]
+  practiceItems  PracticeItem[]
 }
 
 // UserVocabulary model for tracking user's vocabulary progress
@@ -136,4 +138,32 @@ model ExamResult {
 
   // Relations
   user User @relation(fields: [userId], references: [id])
+}
+
+// Practice session model
+model PracticeSession {
+  id        String   @id @default(uuid())
+  userId    Int
+  type      String // 'vocabulary', 'grammar', 'listening', 'speaking'
+  duration  Int // time in seconds
+  createdAt DateTime @default(now())
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id])
+  practiceItems PracticeItem[]
+}
+
+// Practice item model
+model PracticeItem {
+  id             Int     @id @default(autoincrement())
+  sessionId      String
+  vocabularyId   Int
+  exerciseType   String // 'multiple-choice', 'fill-in-blank', 'translation', 'matching'
+  isCorrect      Boolean
+  userAnswer     String
+  expectedAnswer String
+
+  // Relations
+  session    PracticeSession @relation(fields: [sessionId], references: [id])
+  vocabulary Vocabulary      @relation(fields: [vocabularyId], references: [id])
 }

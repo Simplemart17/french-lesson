@@ -199,6 +199,24 @@ exports.Prisma.ExamResultScalarFieldEnum = {
   completedAt: 'completedAt'
 };
 
+exports.Prisma.PracticeSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  duration: 'duration',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PracticeItemScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  vocabularyId: 'vocabularyId',
+  exerciseType: 'exerciseType',
+  isCorrect: 'isCorrect',
+  userAnswer: 'userAnswer',
+  expectedAnswer: 'expectedAnswer'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -238,7 +256,9 @@ exports.Prisma.ModelName = {
   UserVocabulary: 'UserVocabulary',
   Conversation: 'Conversation',
   Message: 'Message',
-  ExamResult: 'ExamResult'
+  ExamResult: 'ExamResult',
+  PracticeSession: 'PracticeSession',
+  PracticeItem: 'PracticeItem'
 };
 
 /**

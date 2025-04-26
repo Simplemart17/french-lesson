@@ -53,6 +53,16 @@ export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
  * 
  */
 export type ExamResult = $Result.DefaultSelection<Prisma.$ExamResultPayload>
+/**
+ * Model PracticeSession
+ * 
+ */
+export type PracticeSession = $Result.DefaultSelection<Prisma.$PracticeSessionPayload>
+/**
+ * Model PracticeItem
+ * 
+ */
+export type PracticeItem = $Result.DefaultSelection<Prisma.$PracticeItemPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -258,6 +268,26 @@ export class PrismaClient<
     * ```
     */
   get examResult(): Prisma.ExamResultDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.practiceSession`: Exposes CRUD operations for the **PracticeSession** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PracticeSessions
+    * const practiceSessions = await prisma.practiceSession.findMany()
+    * ```
+    */
+  get practiceSession(): Prisma.PracticeSessionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.practiceItem`: Exposes CRUD operations for the **PracticeItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PracticeItems
+    * const practiceItems = await prisma.practiceItem.findMany()
+    * ```
+    */
+  get practiceItem(): Prisma.PracticeItemDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -705,7 +735,9 @@ export namespace Prisma {
     UserVocabulary: 'UserVocabulary',
     Conversation: 'Conversation',
     Message: 'Message',
-    ExamResult: 'ExamResult'
+    ExamResult: 'ExamResult',
+    PracticeSession: 'PracticeSession',
+    PracticeItem: 'PracticeItem'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -724,7 +756,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "lesson" | "lessonProgress" | "vocabulary" | "userVocabulary" | "conversation" | "message" | "examResult"
+      modelProps: "user" | "lesson" | "lessonProgress" | "vocabulary" | "userVocabulary" | "conversation" | "message" | "examResult" | "practiceSession" | "practiceItem"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1320,6 +1352,154 @@ export namespace Prisma {
           }
         }
       }
+      PracticeSession: {
+        payload: Prisma.$PracticeSessionPayload<ExtArgs>
+        fields: Prisma.PracticeSessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PracticeSessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PracticeSessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+          }
+          findFirst: {
+            args: Prisma.PracticeSessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PracticeSessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+          }
+          findMany: {
+            args: Prisma.PracticeSessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>[]
+          }
+          create: {
+            args: Prisma.PracticeSessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+          }
+          createMany: {
+            args: Prisma.PracticeSessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PracticeSessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>[]
+          }
+          delete: {
+            args: Prisma.PracticeSessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+          }
+          update: {
+            args: Prisma.PracticeSessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PracticeSessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PracticeSessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PracticeSessionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>[]
+          }
+          upsert: {
+            args: Prisma.PracticeSessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+          }
+          aggregate: {
+            args: Prisma.PracticeSessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePracticeSession>
+          }
+          groupBy: {
+            args: Prisma.PracticeSessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PracticeSessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PracticeSessionCountArgs<ExtArgs>
+            result: $Utils.Optional<PracticeSessionCountAggregateOutputType> | number
+          }
+        }
+      }
+      PracticeItem: {
+        payload: Prisma.$PracticeItemPayload<ExtArgs>
+        fields: Prisma.PracticeItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PracticeItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PracticeItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>
+          }
+          findFirst: {
+            args: Prisma.PracticeItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PracticeItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>
+          }
+          findMany: {
+            args: Prisma.PracticeItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>[]
+          }
+          create: {
+            args: Prisma.PracticeItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>
+          }
+          createMany: {
+            args: Prisma.PracticeItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PracticeItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>[]
+          }
+          delete: {
+            args: Prisma.PracticeItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>
+          }
+          update: {
+            args: Prisma.PracticeItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.PracticeItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PracticeItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PracticeItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.PracticeItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeItemPayload>
+          }
+          aggregate: {
+            args: Prisma.PracticeItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePracticeItem>
+          }
+          groupBy: {
+            args: Prisma.PracticeItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PracticeItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PracticeItemCountArgs<ExtArgs>
+            result: $Utils.Optional<PracticeItemCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1412,6 +1592,8 @@ export namespace Prisma {
     conversation?: ConversationOmit
     message?: MessageOmit
     examResult?: ExamResultOmit
+    practiceSession?: PracticeSessionOmit
+    practiceItem?: PracticeItemOmit
   }
 
   /* Types for Logging */
@@ -1510,6 +1692,7 @@ export namespace Prisma {
     vocabulary: number
     examResults: number
     conversations: number
+    practiceSessions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1517,6 +1700,7 @@ export namespace Prisma {
     vocabulary?: boolean | UserCountOutputTypeCountVocabularyArgs
     examResults?: boolean | UserCountOutputTypeCountExamResultsArgs
     conversations?: boolean | UserCountOutputTypeCountConversationsArgs
+    practiceSessions?: boolean | UserCountOutputTypeCountPracticeSessionsArgs
   }
 
   // Custom InputTypes
@@ -1558,6 +1742,13 @@ export namespace Prisma {
     where?: ConversationWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPracticeSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeSessionWhereInput
+  }
+
 
   /**
    * Count Type LessonCountOutputType
@@ -1596,10 +1787,12 @@ export namespace Prisma {
 
   export type VocabularyCountOutputType = {
     userVocabulary: number
+    practiceItems: number
   }
 
   export type VocabularyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userVocabulary?: boolean | VocabularyCountOutputTypeCountUserVocabularyArgs
+    practiceItems?: boolean | VocabularyCountOutputTypeCountPracticeItemsArgs
   }
 
   // Custom InputTypes
@@ -1618,6 +1811,13 @@ export namespace Prisma {
    */
   export type VocabularyCountOutputTypeCountUserVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserVocabularyWhereInput
+  }
+
+  /**
+   * VocabularyCountOutputType without action
+   */
+  export type VocabularyCountOutputTypeCountPracticeItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeItemWhereInput
   }
 
 
@@ -1649,6 +1849,37 @@ export namespace Prisma {
    */
   export type ConversationCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
+  }
+
+
+  /**
+   * Count Type PracticeSessionCountOutputType
+   */
+
+  export type PracticeSessionCountOutputType = {
+    practiceItems: number
+  }
+
+  export type PracticeSessionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    practiceItems?: boolean | PracticeSessionCountOutputTypeCountPracticeItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PracticeSessionCountOutputType without action
+   */
+  export type PracticeSessionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSessionCountOutputType
+     */
+    select?: PracticeSessionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PracticeSessionCountOutputType without action
+   */
+  export type PracticeSessionCountOutputTypeCountPracticeItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeItemWhereInput
   }
 
 
@@ -1942,6 +2173,7 @@ export namespace Prisma {
     vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
     examResults?: boolean | User$examResultsArgs<ExtArgs>
     conversations?: boolean | User$conversationsArgs<ExtArgs>
+    practiceSessions?: boolean | User$practiceSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2002,6 +2234,7 @@ export namespace Prisma {
     vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
     examResults?: boolean | User$examResultsArgs<ExtArgs>
     conversations?: boolean | User$conversationsArgs<ExtArgs>
+    practiceSessions?: boolean | User$practiceSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2014,6 +2247,7 @@ export namespace Prisma {
       vocabulary: Prisma.$UserVocabularyPayload<ExtArgs>[]
       examResults: Prisma.$ExamResultPayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
+      practiceSessions: Prisma.$PracticeSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2428,6 +2662,7 @@ export namespace Prisma {
     vocabulary<T extends User$vocabularyArgs<ExtArgs> = {}>(args?: Subset<T, User$vocabularyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserVocabularyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     examResults<T extends User$examResultsArgs<ExtArgs> = {}>(args?: Subset<T, User$examResultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExamResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends User$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    practiceSessions<T extends User$practiceSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$practiceSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2952,6 +3187,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
+  }
+
+  /**
+   * User.practiceSessions
+   */
+  export type User$practiceSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    where?: PracticeSessionWhereInput
+    orderBy?: PracticeSessionOrderByWithRelationInput | PracticeSessionOrderByWithRelationInput[]
+    cursor?: PracticeSessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PracticeSessionScalarFieldEnum | PracticeSessionScalarFieldEnum[]
   }
 
   /**
@@ -5445,6 +5704,7 @@ export namespace Prisma {
     example?: boolean
     level?: boolean
     userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
+    practiceItems?: boolean | Vocabulary$practiceItemsArgs<ExtArgs>
     _count?: boolean | VocabularyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vocabulary"]>
 
@@ -5475,6 +5735,7 @@ export namespace Prisma {
   export type VocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "word" | "translation" | "example" | "level", ExtArgs["result"]["vocabulary"]>
   export type VocabularyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
+    practiceItems?: boolean | Vocabulary$practiceItemsArgs<ExtArgs>
     _count?: boolean | VocabularyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type VocabularyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5484,6 +5745,7 @@ export namespace Prisma {
     name: "Vocabulary"
     objects: {
       userVocabulary: Prisma.$UserVocabularyPayload<ExtArgs>[]
+      practiceItems: Prisma.$PracticeItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5886,6 +6148,7 @@ export namespace Prisma {
   export interface Prisma__VocabularyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     userVocabulary<T extends Vocabulary$userVocabularyArgs<ExtArgs> = {}>(args?: Subset<T, Vocabulary$userVocabularyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserVocabularyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    practiceItems<T extends Vocabulary$practiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, Vocabulary$practiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6329,6 +6592,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserVocabularyScalarFieldEnum | UserVocabularyScalarFieldEnum[]
+  }
+
+  /**
+   * Vocabulary.practiceItems
+   */
+  export type Vocabulary$practiceItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    where?: PracticeItemWhereInput
+    orderBy?: PracticeItemOrderByWithRelationInput | PracticeItemOrderByWithRelationInput[]
+    cursor?: PracticeItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
   }
 
   /**
@@ -10821,6 +11108,2262 @@ export namespace Prisma {
 
 
   /**
+   * Model PracticeSession
+   */
+
+  export type AggregatePracticeSession = {
+    _count: PracticeSessionCountAggregateOutputType | null
+    _avg: PracticeSessionAvgAggregateOutputType | null
+    _sum: PracticeSessionSumAggregateOutputType | null
+    _min: PracticeSessionMinAggregateOutputType | null
+    _max: PracticeSessionMaxAggregateOutputType | null
+  }
+
+  export type PracticeSessionAvgAggregateOutputType = {
+    userId: number | null
+    duration: number | null
+  }
+
+  export type PracticeSessionSumAggregateOutputType = {
+    userId: number | null
+    duration: number | null
+  }
+
+  export type PracticeSessionMinAggregateOutputType = {
+    id: string | null
+    userId: number | null
+    type: string | null
+    duration: number | null
+    createdAt: Date | null
+  }
+
+  export type PracticeSessionMaxAggregateOutputType = {
+    id: string | null
+    userId: number | null
+    type: string | null
+    duration: number | null
+    createdAt: Date | null
+  }
+
+  export type PracticeSessionCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    duration: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PracticeSessionAvgAggregateInputType = {
+    userId?: true
+    duration?: true
+  }
+
+  export type PracticeSessionSumAggregateInputType = {
+    userId?: true
+    duration?: true
+  }
+
+  export type PracticeSessionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    duration?: true
+    createdAt?: true
+  }
+
+  export type PracticeSessionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    duration?: true
+    createdAt?: true
+  }
+
+  export type PracticeSessionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    duration?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PracticeSessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PracticeSession to aggregate.
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeSessions to fetch.
+     */
+    orderBy?: PracticeSessionOrderByWithRelationInput | PracticeSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PracticeSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PracticeSessions
+    **/
+    _count?: true | PracticeSessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PracticeSessionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PracticeSessionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PracticeSessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PracticeSessionMaxAggregateInputType
+  }
+
+  export type GetPracticeSessionAggregateType<T extends PracticeSessionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePracticeSession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePracticeSession[P]>
+      : GetScalarType<T[P], AggregatePracticeSession[P]>
+  }
+
+
+
+
+  export type PracticeSessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeSessionWhereInput
+    orderBy?: PracticeSessionOrderByWithAggregationInput | PracticeSessionOrderByWithAggregationInput[]
+    by: PracticeSessionScalarFieldEnum[] | PracticeSessionScalarFieldEnum
+    having?: PracticeSessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PracticeSessionCountAggregateInputType | true
+    _avg?: PracticeSessionAvgAggregateInputType
+    _sum?: PracticeSessionSumAggregateInputType
+    _min?: PracticeSessionMinAggregateInputType
+    _max?: PracticeSessionMaxAggregateInputType
+  }
+
+  export type PracticeSessionGroupByOutputType = {
+    id: string
+    userId: number
+    type: string
+    duration: number
+    createdAt: Date
+    _count: PracticeSessionCountAggregateOutputType | null
+    _avg: PracticeSessionAvgAggregateOutputType | null
+    _sum: PracticeSessionSumAggregateOutputType | null
+    _min: PracticeSessionMinAggregateOutputType | null
+    _max: PracticeSessionMaxAggregateOutputType | null
+  }
+
+  type GetPracticeSessionGroupByPayload<T extends PracticeSessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PracticeSessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PracticeSessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PracticeSessionGroupByOutputType[P]>
+            : GetScalarType<T[P], PracticeSessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PracticeSessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    practiceItems?: boolean | PracticeSession$practiceItemsArgs<ExtArgs>
+    _count?: boolean | PracticeSessionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["practiceSession"]>
+
+  export type PracticeSessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["practiceSession"]>
+
+  export type PracticeSessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["practiceSession"]>
+
+  export type PracticeSessionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    duration?: boolean
+    createdAt?: boolean
+  }
+
+  export type PracticeSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "duration" | "createdAt", ExtArgs["result"]["practiceSession"]>
+  export type PracticeSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    practiceItems?: boolean | PracticeSession$practiceItemsArgs<ExtArgs>
+    _count?: boolean | PracticeSessionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PracticeSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PracticeSessionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PracticeSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PracticeSession"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      practiceItems: Prisma.$PracticeItemPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: number
+      type: string
+      duration: number
+      createdAt: Date
+    }, ExtArgs["result"]["practiceSession"]>
+    composites: {}
+  }
+
+  type PracticeSessionGetPayload<S extends boolean | null | undefined | PracticeSessionDefaultArgs> = $Result.GetResult<Prisma.$PracticeSessionPayload, S>
+
+  type PracticeSessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PracticeSessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PracticeSessionCountAggregateInputType | true
+    }
+
+  export interface PracticeSessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PracticeSession'], meta: { name: 'PracticeSession' } }
+    /**
+     * Find zero or one PracticeSession that matches the filter.
+     * @param {PracticeSessionFindUniqueArgs} args - Arguments to find a PracticeSession
+     * @example
+     * // Get one PracticeSession
+     * const practiceSession = await prisma.practiceSession.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PracticeSessionFindUniqueArgs>(args: SelectSubset<T, PracticeSessionFindUniqueArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PracticeSession that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PracticeSessionFindUniqueOrThrowArgs} args - Arguments to find a PracticeSession
+     * @example
+     * // Get one PracticeSession
+     * const practiceSession = await prisma.practiceSession.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PracticeSessionFindUniqueOrThrowArgs>(args: SelectSubset<T, PracticeSessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PracticeSession that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionFindFirstArgs} args - Arguments to find a PracticeSession
+     * @example
+     * // Get one PracticeSession
+     * const practiceSession = await prisma.practiceSession.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PracticeSessionFindFirstArgs>(args?: SelectSubset<T, PracticeSessionFindFirstArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PracticeSession that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionFindFirstOrThrowArgs} args - Arguments to find a PracticeSession
+     * @example
+     * // Get one PracticeSession
+     * const practiceSession = await prisma.practiceSession.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PracticeSessionFindFirstOrThrowArgs>(args?: SelectSubset<T, PracticeSessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PracticeSessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PracticeSessions
+     * const practiceSessions = await prisma.practiceSession.findMany()
+     * 
+     * // Get first 10 PracticeSessions
+     * const practiceSessions = await prisma.practiceSession.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const practiceSessionWithIdOnly = await prisma.practiceSession.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PracticeSessionFindManyArgs>(args?: SelectSubset<T, PracticeSessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PracticeSession.
+     * @param {PracticeSessionCreateArgs} args - Arguments to create a PracticeSession.
+     * @example
+     * // Create one PracticeSession
+     * const PracticeSession = await prisma.practiceSession.create({
+     *   data: {
+     *     // ... data to create a PracticeSession
+     *   }
+     * })
+     * 
+     */
+    create<T extends PracticeSessionCreateArgs>(args: SelectSubset<T, PracticeSessionCreateArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PracticeSessions.
+     * @param {PracticeSessionCreateManyArgs} args - Arguments to create many PracticeSessions.
+     * @example
+     * // Create many PracticeSessions
+     * const practiceSession = await prisma.practiceSession.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PracticeSessionCreateManyArgs>(args?: SelectSubset<T, PracticeSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PracticeSessions and returns the data saved in the database.
+     * @param {PracticeSessionCreateManyAndReturnArgs} args - Arguments to create many PracticeSessions.
+     * @example
+     * // Create many PracticeSessions
+     * const practiceSession = await prisma.practiceSession.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PracticeSessions and only return the `id`
+     * const practiceSessionWithIdOnly = await prisma.practiceSession.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PracticeSessionCreateManyAndReturnArgs>(args?: SelectSubset<T, PracticeSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PracticeSession.
+     * @param {PracticeSessionDeleteArgs} args - Arguments to delete one PracticeSession.
+     * @example
+     * // Delete one PracticeSession
+     * const PracticeSession = await prisma.practiceSession.delete({
+     *   where: {
+     *     // ... filter to delete one PracticeSession
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PracticeSessionDeleteArgs>(args: SelectSubset<T, PracticeSessionDeleteArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PracticeSession.
+     * @param {PracticeSessionUpdateArgs} args - Arguments to update one PracticeSession.
+     * @example
+     * // Update one PracticeSession
+     * const practiceSession = await prisma.practiceSession.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PracticeSessionUpdateArgs>(args: SelectSubset<T, PracticeSessionUpdateArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PracticeSessions.
+     * @param {PracticeSessionDeleteManyArgs} args - Arguments to filter PracticeSessions to delete.
+     * @example
+     * // Delete a few PracticeSessions
+     * const { count } = await prisma.practiceSession.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PracticeSessionDeleteManyArgs>(args?: SelectSubset<T, PracticeSessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PracticeSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PracticeSessions
+     * const practiceSession = await prisma.practiceSession.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PracticeSessionUpdateManyArgs>(args: SelectSubset<T, PracticeSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PracticeSessions and returns the data updated in the database.
+     * @param {PracticeSessionUpdateManyAndReturnArgs} args - Arguments to update many PracticeSessions.
+     * @example
+     * // Update many PracticeSessions
+     * const practiceSession = await prisma.practiceSession.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PracticeSessions and only return the `id`
+     * const practiceSessionWithIdOnly = await prisma.practiceSession.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PracticeSessionUpdateManyAndReturnArgs>(args: SelectSubset<T, PracticeSessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PracticeSession.
+     * @param {PracticeSessionUpsertArgs} args - Arguments to update or create a PracticeSession.
+     * @example
+     * // Update or create a PracticeSession
+     * const practiceSession = await prisma.practiceSession.upsert({
+     *   create: {
+     *     // ... data to create a PracticeSession
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PracticeSession we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PracticeSessionUpsertArgs>(args: SelectSubset<T, PracticeSessionUpsertArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PracticeSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionCountArgs} args - Arguments to filter PracticeSessions to count.
+     * @example
+     * // Count the number of PracticeSessions
+     * const count = await prisma.practiceSession.count({
+     *   where: {
+     *     // ... the filter for the PracticeSessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PracticeSessionCountArgs>(
+      args?: Subset<T, PracticeSessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PracticeSessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PracticeSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PracticeSessionAggregateArgs>(args: Subset<T, PracticeSessionAggregateArgs>): Prisma.PrismaPromise<GetPracticeSessionAggregateType<T>>
+
+    /**
+     * Group by PracticeSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeSessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PracticeSessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PracticeSessionGroupByArgs['orderBy'] }
+        : { orderBy?: PracticeSessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PracticeSessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPracticeSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PracticeSession model
+   */
+  readonly fields: PracticeSessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PracticeSession.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PracticeSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    practiceItems<T extends PracticeSession$practiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSession$practiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PracticeSession model
+   */
+  interface PracticeSessionFieldRefs {
+    readonly id: FieldRef<"PracticeSession", 'String'>
+    readonly userId: FieldRef<"PracticeSession", 'Int'>
+    readonly type: FieldRef<"PracticeSession", 'String'>
+    readonly duration: FieldRef<"PracticeSession", 'Int'>
+    readonly createdAt: FieldRef<"PracticeSession", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PracticeSession findUnique
+   */
+  export type PracticeSessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeSession to fetch.
+     */
+    where: PracticeSessionWhereUniqueInput
+  }
+
+  /**
+   * PracticeSession findUniqueOrThrow
+   */
+  export type PracticeSessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeSession to fetch.
+     */
+    where: PracticeSessionWhereUniqueInput
+  }
+
+  /**
+   * PracticeSession findFirst
+   */
+  export type PracticeSessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeSession to fetch.
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeSessions to fetch.
+     */
+    orderBy?: PracticeSessionOrderByWithRelationInput | PracticeSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PracticeSessions.
+     */
+    cursor?: PracticeSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PracticeSessions.
+     */
+    distinct?: PracticeSessionScalarFieldEnum | PracticeSessionScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeSession findFirstOrThrow
+   */
+  export type PracticeSessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeSession to fetch.
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeSessions to fetch.
+     */
+    orderBy?: PracticeSessionOrderByWithRelationInput | PracticeSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PracticeSessions.
+     */
+    cursor?: PracticeSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PracticeSessions.
+     */
+    distinct?: PracticeSessionScalarFieldEnum | PracticeSessionScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeSession findMany
+   */
+  export type PracticeSessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeSessions to fetch.
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeSessions to fetch.
+     */
+    orderBy?: PracticeSessionOrderByWithRelationInput | PracticeSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PracticeSessions.
+     */
+    cursor?: PracticeSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeSessions.
+     */
+    skip?: number
+    distinct?: PracticeSessionScalarFieldEnum | PracticeSessionScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeSession create
+   */
+  export type PracticeSessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PracticeSession.
+     */
+    data: XOR<PracticeSessionCreateInput, PracticeSessionUncheckedCreateInput>
+  }
+
+  /**
+   * PracticeSession createMany
+   */
+  export type PracticeSessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PracticeSessions.
+     */
+    data: PracticeSessionCreateManyInput | PracticeSessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PracticeSession createManyAndReturn
+   */
+  export type PracticeSessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * The data used to create many PracticeSessions.
+     */
+    data: PracticeSessionCreateManyInput | PracticeSessionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PracticeSession update
+   */
+  export type PracticeSessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PracticeSession.
+     */
+    data: XOR<PracticeSessionUpdateInput, PracticeSessionUncheckedUpdateInput>
+    /**
+     * Choose, which PracticeSession to update.
+     */
+    where: PracticeSessionWhereUniqueInput
+  }
+
+  /**
+   * PracticeSession updateMany
+   */
+  export type PracticeSessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PracticeSessions.
+     */
+    data: XOR<PracticeSessionUpdateManyMutationInput, PracticeSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which PracticeSessions to update
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * Limit how many PracticeSessions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeSession updateManyAndReturn
+   */
+  export type PracticeSessionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * The data used to update PracticeSessions.
+     */
+    data: XOR<PracticeSessionUpdateManyMutationInput, PracticeSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which PracticeSessions to update
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * Limit how many PracticeSessions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PracticeSession upsert
+   */
+  export type PracticeSessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PracticeSession to update in case it exists.
+     */
+    where: PracticeSessionWhereUniqueInput
+    /**
+     * In case the PracticeSession found by the `where` argument doesn't exist, create a new PracticeSession with this data.
+     */
+    create: XOR<PracticeSessionCreateInput, PracticeSessionUncheckedCreateInput>
+    /**
+     * In case the PracticeSession was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PracticeSessionUpdateInput, PracticeSessionUncheckedUpdateInput>
+  }
+
+  /**
+   * PracticeSession delete
+   */
+  export type PracticeSessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+    /**
+     * Filter which PracticeSession to delete.
+     */
+    where: PracticeSessionWhereUniqueInput
+  }
+
+  /**
+   * PracticeSession deleteMany
+   */
+  export type PracticeSessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PracticeSessions to delete
+     */
+    where?: PracticeSessionWhereInput
+    /**
+     * Limit how many PracticeSessions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeSession.practiceItems
+   */
+  export type PracticeSession$practiceItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    where?: PracticeItemWhereInput
+    orderBy?: PracticeItemOrderByWithRelationInput | PracticeItemOrderByWithRelationInput[]
+    cursor?: PracticeItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeSession without action
+   */
+  export type PracticeSessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeSession
+     */
+    select?: PracticeSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeSession
+     */
+    omit?: PracticeSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeSessionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PracticeItem
+   */
+
+  export type AggregatePracticeItem = {
+    _count: PracticeItemCountAggregateOutputType | null
+    _avg: PracticeItemAvgAggregateOutputType | null
+    _sum: PracticeItemSumAggregateOutputType | null
+    _min: PracticeItemMinAggregateOutputType | null
+    _max: PracticeItemMaxAggregateOutputType | null
+  }
+
+  export type PracticeItemAvgAggregateOutputType = {
+    id: number | null
+    vocabularyId: number | null
+  }
+
+  export type PracticeItemSumAggregateOutputType = {
+    id: number | null
+    vocabularyId: number | null
+  }
+
+  export type PracticeItemMinAggregateOutputType = {
+    id: number | null
+    sessionId: string | null
+    vocabularyId: number | null
+    exerciseType: string | null
+    isCorrect: boolean | null
+    userAnswer: string | null
+    expectedAnswer: string | null
+  }
+
+  export type PracticeItemMaxAggregateOutputType = {
+    id: number | null
+    sessionId: string | null
+    vocabularyId: number | null
+    exerciseType: string | null
+    isCorrect: boolean | null
+    userAnswer: string | null
+    expectedAnswer: string | null
+  }
+
+  export type PracticeItemCountAggregateOutputType = {
+    id: number
+    sessionId: number
+    vocabularyId: number
+    exerciseType: number
+    isCorrect: number
+    userAnswer: number
+    expectedAnswer: number
+    _all: number
+  }
+
+
+  export type PracticeItemAvgAggregateInputType = {
+    id?: true
+    vocabularyId?: true
+  }
+
+  export type PracticeItemSumAggregateInputType = {
+    id?: true
+    vocabularyId?: true
+  }
+
+  export type PracticeItemMinAggregateInputType = {
+    id?: true
+    sessionId?: true
+    vocabularyId?: true
+    exerciseType?: true
+    isCorrect?: true
+    userAnswer?: true
+    expectedAnswer?: true
+  }
+
+  export type PracticeItemMaxAggregateInputType = {
+    id?: true
+    sessionId?: true
+    vocabularyId?: true
+    exerciseType?: true
+    isCorrect?: true
+    userAnswer?: true
+    expectedAnswer?: true
+  }
+
+  export type PracticeItemCountAggregateInputType = {
+    id?: true
+    sessionId?: true
+    vocabularyId?: true
+    exerciseType?: true
+    isCorrect?: true
+    userAnswer?: true
+    expectedAnswer?: true
+    _all?: true
+  }
+
+  export type PracticeItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PracticeItem to aggregate.
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeItems to fetch.
+     */
+    orderBy?: PracticeItemOrderByWithRelationInput | PracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PracticeItems
+    **/
+    _count?: true | PracticeItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PracticeItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PracticeItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PracticeItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PracticeItemMaxAggregateInputType
+  }
+
+  export type GetPracticeItemAggregateType<T extends PracticeItemAggregateArgs> = {
+        [P in keyof T & keyof AggregatePracticeItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePracticeItem[P]>
+      : GetScalarType<T[P], AggregatePracticeItem[P]>
+  }
+
+
+
+
+  export type PracticeItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeItemWhereInput
+    orderBy?: PracticeItemOrderByWithAggregationInput | PracticeItemOrderByWithAggregationInput[]
+    by: PracticeItemScalarFieldEnum[] | PracticeItemScalarFieldEnum
+    having?: PracticeItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PracticeItemCountAggregateInputType | true
+    _avg?: PracticeItemAvgAggregateInputType
+    _sum?: PracticeItemSumAggregateInputType
+    _min?: PracticeItemMinAggregateInputType
+    _max?: PracticeItemMaxAggregateInputType
+  }
+
+  export type PracticeItemGroupByOutputType = {
+    id: number
+    sessionId: string
+    vocabularyId: number
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+    _count: PracticeItemCountAggregateOutputType | null
+    _avg: PracticeItemAvgAggregateOutputType | null
+    _sum: PracticeItemSumAggregateOutputType | null
+    _min: PracticeItemMinAggregateOutputType | null
+    _max: PracticeItemMaxAggregateOutputType | null
+  }
+
+  type GetPracticeItemGroupByPayload<T extends PracticeItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PracticeItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PracticeItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PracticeItemGroupByOutputType[P]>
+            : GetScalarType<T[P], PracticeItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PracticeItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    vocabularyId?: boolean
+    exerciseType?: boolean
+    isCorrect?: boolean
+    userAnswer?: boolean
+    expectedAnswer?: boolean
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["practiceItem"]>
+
+  export type PracticeItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    vocabularyId?: boolean
+    exerciseType?: boolean
+    isCorrect?: boolean
+    userAnswer?: boolean
+    expectedAnswer?: boolean
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["practiceItem"]>
+
+  export type PracticeItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    vocabularyId?: boolean
+    exerciseType?: boolean
+    isCorrect?: boolean
+    userAnswer?: boolean
+    expectedAnswer?: boolean
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["practiceItem"]>
+
+  export type PracticeItemSelectScalar = {
+    id?: boolean
+    sessionId?: boolean
+    vocabularyId?: boolean
+    exerciseType?: boolean
+    isCorrect?: boolean
+    userAnswer?: boolean
+    expectedAnswer?: boolean
+  }
+
+  export type PracticeItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionId" | "vocabularyId" | "exerciseType" | "isCorrect" | "userAnswer" | "expectedAnswer", ExtArgs["result"]["practiceItem"]>
+  export type PracticeItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
+  }
+  export type PracticeItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
+  }
+  export type PracticeItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
+  }
+
+  export type $PracticeItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PracticeItem"
+    objects: {
+      session: Prisma.$PracticeSessionPayload<ExtArgs>
+      vocabulary: Prisma.$VocabularyPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      sessionId: string
+      vocabularyId: number
+      exerciseType: string
+      isCorrect: boolean
+      userAnswer: string
+      expectedAnswer: string
+    }, ExtArgs["result"]["practiceItem"]>
+    composites: {}
+  }
+
+  type PracticeItemGetPayload<S extends boolean | null | undefined | PracticeItemDefaultArgs> = $Result.GetResult<Prisma.$PracticeItemPayload, S>
+
+  type PracticeItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PracticeItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PracticeItemCountAggregateInputType | true
+    }
+
+  export interface PracticeItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PracticeItem'], meta: { name: 'PracticeItem' } }
+    /**
+     * Find zero or one PracticeItem that matches the filter.
+     * @param {PracticeItemFindUniqueArgs} args - Arguments to find a PracticeItem
+     * @example
+     * // Get one PracticeItem
+     * const practiceItem = await prisma.practiceItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PracticeItemFindUniqueArgs>(args: SelectSubset<T, PracticeItemFindUniqueArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PracticeItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PracticeItemFindUniqueOrThrowArgs} args - Arguments to find a PracticeItem
+     * @example
+     * // Get one PracticeItem
+     * const practiceItem = await prisma.practiceItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PracticeItemFindUniqueOrThrowArgs>(args: SelectSubset<T, PracticeItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PracticeItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemFindFirstArgs} args - Arguments to find a PracticeItem
+     * @example
+     * // Get one PracticeItem
+     * const practiceItem = await prisma.practiceItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PracticeItemFindFirstArgs>(args?: SelectSubset<T, PracticeItemFindFirstArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PracticeItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemFindFirstOrThrowArgs} args - Arguments to find a PracticeItem
+     * @example
+     * // Get one PracticeItem
+     * const practiceItem = await prisma.practiceItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PracticeItemFindFirstOrThrowArgs>(args?: SelectSubset<T, PracticeItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PracticeItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PracticeItems
+     * const practiceItems = await prisma.practiceItem.findMany()
+     * 
+     * // Get first 10 PracticeItems
+     * const practiceItems = await prisma.practiceItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const practiceItemWithIdOnly = await prisma.practiceItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PracticeItemFindManyArgs>(args?: SelectSubset<T, PracticeItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PracticeItem.
+     * @param {PracticeItemCreateArgs} args - Arguments to create a PracticeItem.
+     * @example
+     * // Create one PracticeItem
+     * const PracticeItem = await prisma.practiceItem.create({
+     *   data: {
+     *     // ... data to create a PracticeItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends PracticeItemCreateArgs>(args: SelectSubset<T, PracticeItemCreateArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PracticeItems.
+     * @param {PracticeItemCreateManyArgs} args - Arguments to create many PracticeItems.
+     * @example
+     * // Create many PracticeItems
+     * const practiceItem = await prisma.practiceItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PracticeItemCreateManyArgs>(args?: SelectSubset<T, PracticeItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PracticeItems and returns the data saved in the database.
+     * @param {PracticeItemCreateManyAndReturnArgs} args - Arguments to create many PracticeItems.
+     * @example
+     * // Create many PracticeItems
+     * const practiceItem = await prisma.practiceItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PracticeItems and only return the `id`
+     * const practiceItemWithIdOnly = await prisma.practiceItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PracticeItemCreateManyAndReturnArgs>(args?: SelectSubset<T, PracticeItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PracticeItem.
+     * @param {PracticeItemDeleteArgs} args - Arguments to delete one PracticeItem.
+     * @example
+     * // Delete one PracticeItem
+     * const PracticeItem = await prisma.practiceItem.delete({
+     *   where: {
+     *     // ... filter to delete one PracticeItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PracticeItemDeleteArgs>(args: SelectSubset<T, PracticeItemDeleteArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PracticeItem.
+     * @param {PracticeItemUpdateArgs} args - Arguments to update one PracticeItem.
+     * @example
+     * // Update one PracticeItem
+     * const practiceItem = await prisma.practiceItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PracticeItemUpdateArgs>(args: SelectSubset<T, PracticeItemUpdateArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PracticeItems.
+     * @param {PracticeItemDeleteManyArgs} args - Arguments to filter PracticeItems to delete.
+     * @example
+     * // Delete a few PracticeItems
+     * const { count } = await prisma.practiceItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PracticeItemDeleteManyArgs>(args?: SelectSubset<T, PracticeItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PracticeItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PracticeItems
+     * const practiceItem = await prisma.practiceItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PracticeItemUpdateManyArgs>(args: SelectSubset<T, PracticeItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PracticeItems and returns the data updated in the database.
+     * @param {PracticeItemUpdateManyAndReturnArgs} args - Arguments to update many PracticeItems.
+     * @example
+     * // Update many PracticeItems
+     * const practiceItem = await prisma.practiceItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PracticeItems and only return the `id`
+     * const practiceItemWithIdOnly = await prisma.practiceItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PracticeItemUpdateManyAndReturnArgs>(args: SelectSubset<T, PracticeItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PracticeItem.
+     * @param {PracticeItemUpsertArgs} args - Arguments to update or create a PracticeItem.
+     * @example
+     * // Update or create a PracticeItem
+     * const practiceItem = await prisma.practiceItem.upsert({
+     *   create: {
+     *     // ... data to create a PracticeItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PracticeItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PracticeItemUpsertArgs>(args: SelectSubset<T, PracticeItemUpsertArgs<ExtArgs>>): Prisma__PracticeItemClient<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PracticeItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemCountArgs} args - Arguments to filter PracticeItems to count.
+     * @example
+     * // Count the number of PracticeItems
+     * const count = await prisma.practiceItem.count({
+     *   where: {
+     *     // ... the filter for the PracticeItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends PracticeItemCountArgs>(
+      args?: Subset<T, PracticeItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PracticeItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PracticeItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PracticeItemAggregateArgs>(args: Subset<T, PracticeItemAggregateArgs>): Prisma.PrismaPromise<GetPracticeItemAggregateType<T>>
+
+    /**
+     * Group by PracticeItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PracticeItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PracticeItemGroupByArgs['orderBy'] }
+        : { orderBy?: PracticeItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PracticeItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPracticeItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PracticeItem model
+   */
+  readonly fields: PracticeItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PracticeItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PracticeItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    session<T extends PracticeSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSessionDefaultArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    vocabulary<T extends VocabularyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, VocabularyDefaultArgs<ExtArgs>>): Prisma__VocabularyClient<$Result.GetResult<Prisma.$VocabularyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PracticeItem model
+   */
+  interface PracticeItemFieldRefs {
+    readonly id: FieldRef<"PracticeItem", 'Int'>
+    readonly sessionId: FieldRef<"PracticeItem", 'String'>
+    readonly vocabularyId: FieldRef<"PracticeItem", 'Int'>
+    readonly exerciseType: FieldRef<"PracticeItem", 'String'>
+    readonly isCorrect: FieldRef<"PracticeItem", 'Boolean'>
+    readonly userAnswer: FieldRef<"PracticeItem", 'String'>
+    readonly expectedAnswer: FieldRef<"PracticeItem", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PracticeItem findUnique
+   */
+  export type PracticeItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeItem to fetch.
+     */
+    where: PracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PracticeItem findUniqueOrThrow
+   */
+  export type PracticeItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeItem to fetch.
+     */
+    where: PracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PracticeItem findFirst
+   */
+  export type PracticeItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeItem to fetch.
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeItems to fetch.
+     */
+    orderBy?: PracticeItemOrderByWithRelationInput | PracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PracticeItems.
+     */
+    cursor?: PracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PracticeItems.
+     */
+    distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeItem findFirstOrThrow
+   */
+  export type PracticeItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeItem to fetch.
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeItems to fetch.
+     */
+    orderBy?: PracticeItemOrderByWithRelationInput | PracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PracticeItems.
+     */
+    cursor?: PracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PracticeItems.
+     */
+    distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeItem findMany
+   */
+  export type PracticeItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PracticeItems to fetch.
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeItems to fetch.
+     */
+    orderBy?: PracticeItemOrderByWithRelationInput | PracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PracticeItems.
+     */
+    cursor?: PracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeItems.
+     */
+    skip?: number
+    distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeItem create
+   */
+  export type PracticeItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PracticeItem.
+     */
+    data: XOR<PracticeItemCreateInput, PracticeItemUncheckedCreateInput>
+  }
+
+  /**
+   * PracticeItem createMany
+   */
+  export type PracticeItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PracticeItems.
+     */
+    data: PracticeItemCreateManyInput | PracticeItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PracticeItem createManyAndReturn
+   */
+  export type PracticeItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many PracticeItems.
+     */
+    data: PracticeItemCreateManyInput | PracticeItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PracticeItem update
+   */
+  export type PracticeItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PracticeItem.
+     */
+    data: XOR<PracticeItemUpdateInput, PracticeItemUncheckedUpdateInput>
+    /**
+     * Choose, which PracticeItem to update.
+     */
+    where: PracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PracticeItem updateMany
+   */
+  export type PracticeItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PracticeItems.
+     */
+    data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PracticeItems to update
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * Limit how many PracticeItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeItem updateManyAndReturn
+   */
+  export type PracticeItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * The data used to update PracticeItems.
+     */
+    data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PracticeItems to update
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * Limit how many PracticeItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PracticeItem upsert
+   */
+  export type PracticeItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PracticeItem to update in case it exists.
+     */
+    where: PracticeItemWhereUniqueInput
+    /**
+     * In case the PracticeItem found by the `where` argument doesn't exist, create a new PracticeItem with this data.
+     */
+    create: XOR<PracticeItemCreateInput, PracticeItemUncheckedCreateInput>
+    /**
+     * In case the PracticeItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PracticeItemUpdateInput, PracticeItemUncheckedUpdateInput>
+  }
+
+  /**
+   * PracticeItem delete
+   */
+  export type PracticeItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter which PracticeItem to delete.
+     */
+    where: PracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PracticeItem deleteMany
+   */
+  export type PracticeItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PracticeItems to delete
+     */
+    where?: PracticeItemWhereInput
+    /**
+     * Limit how many PracticeItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeItem without action
+   */
+  export type PracticeItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeItem
+     */
+    select?: PracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeItem
+     */
+    omit?: PracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PracticeItemInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10938,6 +13481,30 @@ export namespace Prisma {
   };
 
   export type ExamResultScalarFieldEnum = (typeof ExamResultScalarFieldEnum)[keyof typeof ExamResultScalarFieldEnum]
+
+
+  export const PracticeSessionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    duration: 'duration',
+    createdAt: 'createdAt'
+  };
+
+  export type PracticeSessionScalarFieldEnum = (typeof PracticeSessionScalarFieldEnum)[keyof typeof PracticeSessionScalarFieldEnum]
+
+
+  export const PracticeItemScalarFieldEnum: {
+    id: 'id',
+    sessionId: 'sessionId',
+    vocabularyId: 'vocabularyId',
+    exerciseType: 'exerciseType',
+    isCorrect: 'isCorrect',
+    userAnswer: 'userAnswer',
+    expectedAnswer: 'expectedAnswer'
+  };
+
+  export type PracticeItemScalarFieldEnum = (typeof PracticeItemScalarFieldEnum)[keyof typeof PracticeItemScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -11095,6 +13662,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyListRelationFilter
     examResults?: ExamResultListRelationFilter
     conversations?: ConversationListRelationFilter
+    practiceSessions?: PracticeSessionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -11116,6 +13684,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyOrderByRelationAggregateInput
     examResults?: ExamResultOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
+    practiceSessions?: PracticeSessionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -11140,6 +13709,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyListRelationFilter
     examResults?: ExamResultListRelationFilter
     conversations?: ConversationListRelationFilter
+    practiceSessions?: PracticeSessionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -11337,6 +13907,7 @@ export namespace Prisma {
     example?: StringFilter<"Vocabulary"> | string
     level?: StringFilter<"Vocabulary"> | string
     userVocabulary?: UserVocabularyListRelationFilter
+    practiceItems?: PracticeItemListRelationFilter
   }
 
   export type VocabularyOrderByWithRelationInput = {
@@ -11346,6 +13917,7 @@ export namespace Prisma {
     example?: SortOrder
     level?: SortOrder
     userVocabulary?: UserVocabularyOrderByRelationAggregateInput
+    practiceItems?: PracticeItemOrderByRelationAggregateInput
   }
 
   export type VocabularyWhereUniqueInput = Prisma.AtLeast<{
@@ -11358,6 +13930,7 @@ export namespace Prisma {
     example?: StringFilter<"Vocabulary"> | string
     level?: StringFilter<"Vocabulary"> | string
     userVocabulary?: UserVocabularyListRelationFilter
+    practiceItems?: PracticeItemListRelationFilter
   }, "id" | "word">
 
   export type VocabularyOrderByWithAggregationInput = {
@@ -11639,6 +14212,136 @@ export namespace Prisma {
     completedAt?: DateTimeWithAggregatesFilter<"ExamResult"> | Date | string
   }
 
+  export type PracticeSessionWhereInput = {
+    AND?: PracticeSessionWhereInput | PracticeSessionWhereInput[]
+    OR?: PracticeSessionWhereInput[]
+    NOT?: PracticeSessionWhereInput | PracticeSessionWhereInput[]
+    id?: StringFilter<"PracticeSession"> | string
+    userId?: IntFilter<"PracticeSession"> | number
+    type?: StringFilter<"PracticeSession"> | string
+    duration?: IntFilter<"PracticeSession"> | number
+    createdAt?: DateTimeFilter<"PracticeSession"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    practiceItems?: PracticeItemListRelationFilter
+  }
+
+  export type PracticeSessionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    practiceItems?: PracticeItemOrderByRelationAggregateInput
+  }
+
+  export type PracticeSessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PracticeSessionWhereInput | PracticeSessionWhereInput[]
+    OR?: PracticeSessionWhereInput[]
+    NOT?: PracticeSessionWhereInput | PracticeSessionWhereInput[]
+    userId?: IntFilter<"PracticeSession"> | number
+    type?: StringFilter<"PracticeSession"> | string
+    duration?: IntFilter<"PracticeSession"> | number
+    createdAt?: DateTimeFilter<"PracticeSession"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    practiceItems?: PracticeItemListRelationFilter
+  }, "id">
+
+  export type PracticeSessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+    _count?: PracticeSessionCountOrderByAggregateInput
+    _avg?: PracticeSessionAvgOrderByAggregateInput
+    _max?: PracticeSessionMaxOrderByAggregateInput
+    _min?: PracticeSessionMinOrderByAggregateInput
+    _sum?: PracticeSessionSumOrderByAggregateInput
+  }
+
+  export type PracticeSessionScalarWhereWithAggregatesInput = {
+    AND?: PracticeSessionScalarWhereWithAggregatesInput | PracticeSessionScalarWhereWithAggregatesInput[]
+    OR?: PracticeSessionScalarWhereWithAggregatesInput[]
+    NOT?: PracticeSessionScalarWhereWithAggregatesInput | PracticeSessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PracticeSession"> | string
+    userId?: IntWithAggregatesFilter<"PracticeSession"> | number
+    type?: StringWithAggregatesFilter<"PracticeSession"> | string
+    duration?: IntWithAggregatesFilter<"PracticeSession"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"PracticeSession"> | Date | string
+  }
+
+  export type PracticeItemWhereInput = {
+    AND?: PracticeItemWhereInput | PracticeItemWhereInput[]
+    OR?: PracticeItemWhereInput[]
+    NOT?: PracticeItemWhereInput | PracticeItemWhereInput[]
+    id?: IntFilter<"PracticeItem"> | number
+    sessionId?: StringFilter<"PracticeItem"> | string
+    vocabularyId?: IntFilter<"PracticeItem"> | number
+    exerciseType?: StringFilter<"PracticeItem"> | string
+    isCorrect?: BoolFilter<"PracticeItem"> | boolean
+    userAnswer?: StringFilter<"PracticeItem"> | string
+    expectedAnswer?: StringFilter<"PracticeItem"> | string
+    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
+    vocabulary?: XOR<VocabularyScalarRelationFilter, VocabularyWhereInput>
+  }
+
+  export type PracticeItemOrderByWithRelationInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    vocabularyId?: SortOrder
+    exerciseType?: SortOrder
+    isCorrect?: SortOrder
+    userAnswer?: SortOrder
+    expectedAnswer?: SortOrder
+    session?: PracticeSessionOrderByWithRelationInput
+    vocabulary?: VocabularyOrderByWithRelationInput
+  }
+
+  export type PracticeItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: PracticeItemWhereInput | PracticeItemWhereInput[]
+    OR?: PracticeItemWhereInput[]
+    NOT?: PracticeItemWhereInput | PracticeItemWhereInput[]
+    sessionId?: StringFilter<"PracticeItem"> | string
+    vocabularyId?: IntFilter<"PracticeItem"> | number
+    exerciseType?: StringFilter<"PracticeItem"> | string
+    isCorrect?: BoolFilter<"PracticeItem"> | boolean
+    userAnswer?: StringFilter<"PracticeItem"> | string
+    expectedAnswer?: StringFilter<"PracticeItem"> | string
+    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
+    vocabulary?: XOR<VocabularyScalarRelationFilter, VocabularyWhereInput>
+  }, "id">
+
+  export type PracticeItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    vocabularyId?: SortOrder
+    exerciseType?: SortOrder
+    isCorrect?: SortOrder
+    userAnswer?: SortOrder
+    expectedAnswer?: SortOrder
+    _count?: PracticeItemCountOrderByAggregateInput
+    _avg?: PracticeItemAvgOrderByAggregateInput
+    _max?: PracticeItemMaxOrderByAggregateInput
+    _min?: PracticeItemMinOrderByAggregateInput
+    _sum?: PracticeItemSumOrderByAggregateInput
+  }
+
+  export type PracticeItemScalarWhereWithAggregatesInput = {
+    AND?: PracticeItemScalarWhereWithAggregatesInput | PracticeItemScalarWhereWithAggregatesInput[]
+    OR?: PracticeItemScalarWhereWithAggregatesInput[]
+    NOT?: PracticeItemScalarWhereWithAggregatesInput | PracticeItemScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"PracticeItem"> | number
+    sessionId?: StringWithAggregatesFilter<"PracticeItem"> | string
+    vocabularyId?: IntWithAggregatesFilter<"PracticeItem"> | number
+    exerciseType?: StringWithAggregatesFilter<"PracticeItem"> | string
+    isCorrect?: BoolWithAggregatesFilter<"PracticeItem"> | boolean
+    userAnswer?: StringWithAggregatesFilter<"PracticeItem"> | string
+    expectedAnswer?: StringWithAggregatesFilter<"PracticeItem"> | string
+  }
+
   export type UserCreateInput = {
     email: string
     name: string
@@ -11657,6 +14360,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -11678,6 +14382,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -11698,6 +14403,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -11719,6 +14425,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -11920,6 +14627,7 @@ export namespace Prisma {
     example: string
     level: string
     userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
+    practiceItems?: PracticeItemCreateNestedManyWithoutVocabularyInput
   }
 
   export type VocabularyUncheckedCreateInput = {
@@ -11929,6 +14637,7 @@ export namespace Prisma {
     example: string
     level: string
     userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
+    practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
   export type VocabularyUpdateInput = {
@@ -11937,6 +14646,7 @@ export namespace Prisma {
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
     userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
+    practiceItems?: PracticeItemUpdateManyWithoutVocabularyNestedInput
   }
 
   export type VocabularyUncheckedUpdateInput = {
@@ -11946,6 +14656,7 @@ export namespace Prisma {
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
     userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
+    practiceItems?: PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput
   }
 
   export type VocabularyCreateManyInput = {
@@ -12213,6 +14924,130 @@ export namespace Prisma {
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PracticeSessionCreateInput = {
+    id?: string
+    type: string
+    duration: number
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPracticeSessionsInput
+    practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+  }
+
+  export type PracticeSessionUncheckedCreateInput = {
+    id?: string
+    userId: number
+    type: string
+    duration: number
+    createdAt?: Date | string
+    practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutSessionInput
+  }
+
+  export type PracticeSessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
+    practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+  }
+
+  export type PracticeSessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    practiceItems?: PracticeItemUncheckedUpdateManyWithoutSessionNestedInput
+  }
+
+  export type PracticeSessionCreateManyInput = {
+    id?: string
+    userId: number
+    type: string
+    duration: number
+    createdAt?: Date | string
+  }
+
+  export type PracticeSessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PracticeSessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PracticeItemCreateInput = {
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+    session: PracticeSessionCreateNestedOneWithoutPracticeItemsInput
+    vocabulary: VocabularyCreateNestedOneWithoutPracticeItemsInput
+  }
+
+  export type PracticeItemUncheckedCreateInput = {
+    id?: number
+    sessionId: string
+    vocabularyId: number
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+  }
+
+  export type PracticeItemUpdateInput = {
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+    session?: PracticeSessionUpdateOneRequiredWithoutPracticeItemsNestedInput
+    vocabulary?: VocabularyUpdateOneRequiredWithoutPracticeItemsNestedInput
+  }
+
+  export type PracticeItemUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    vocabularyId?: IntFieldUpdateOperationsInput | number
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PracticeItemCreateManyInput = {
+    id?: number
+    sessionId: string
+    vocabularyId: number
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+  }
+
+  export type PracticeItemUpdateManyMutationInput = {
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PracticeItemUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    vocabularyId?: IntFieldUpdateOperationsInput | number
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -12302,6 +15137,12 @@ export namespace Prisma {
     none?: ConversationWhereInput
   }
 
+  export type PracticeSessionListRelationFilter = {
+    every?: PracticeSessionWhereInput
+    some?: PracticeSessionWhereInput
+    none?: PracticeSessionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -12320,6 +15161,10 @@ export namespace Prisma {
   }
 
   export type ConversationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PracticeSessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -12681,6 +15526,16 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type PracticeItemListRelationFilter = {
+    every?: PracticeItemWhereInput
+    some?: PracticeItemWhereInput
+    none?: PracticeItemWhereInput
+  }
+
+  export type PracticeItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type VocabularyCountOrderByAggregateInput = {
     id?: SortOrder
     word?: SortOrder
@@ -12884,6 +15739,85 @@ export namespace Prisma {
     score?: SortOrder
   }
 
+  export type PracticeSessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeSessionAvgOrderByAggregateInput = {
+    userId?: SortOrder
+    duration?: SortOrder
+  }
+
+  export type PracticeSessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeSessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeSessionSumOrderByAggregateInput = {
+    userId?: SortOrder
+    duration?: SortOrder
+  }
+
+  export type PracticeSessionScalarRelationFilter = {
+    is?: PracticeSessionWhereInput
+    isNot?: PracticeSessionWhereInput
+  }
+
+  export type PracticeItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    vocabularyId?: SortOrder
+    exerciseType?: SortOrder
+    isCorrect?: SortOrder
+    userAnswer?: SortOrder
+    expectedAnswer?: SortOrder
+  }
+
+  export type PracticeItemAvgOrderByAggregateInput = {
+    id?: SortOrder
+    vocabularyId?: SortOrder
+  }
+
+  export type PracticeItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    vocabularyId?: SortOrder
+    exerciseType?: SortOrder
+    isCorrect?: SortOrder
+    userAnswer?: SortOrder
+    expectedAnswer?: SortOrder
+  }
+
+  export type PracticeItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    vocabularyId?: SortOrder
+    exerciseType?: SortOrder
+    isCorrect?: SortOrder
+    userAnswer?: SortOrder
+    expectedAnswer?: SortOrder
+  }
+
+  export type PracticeItemSumOrderByAggregateInput = {
+    id?: SortOrder
+    vocabularyId?: SortOrder
+  }
+
   export type UserCreatelearningGoalsInput = {
     set: string[]
   }
@@ -12916,6 +15850,13 @@ export namespace Prisma {
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
+  export type PracticeSessionCreateNestedManyWithoutUserInput = {
+    create?: XOR<PracticeSessionCreateWithoutUserInput, PracticeSessionUncheckedCreateWithoutUserInput> | PracticeSessionCreateWithoutUserInput[] | PracticeSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutUserInput | PracticeSessionCreateOrConnectWithoutUserInput[]
+    createMany?: PracticeSessionCreateManyUserInputEnvelope
+    connect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+  }
+
   export type LessonProgressUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
@@ -12942,6 +15883,13 @@ export namespace Prisma {
     connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
     createMany?: ConversationCreateManyUserInputEnvelope
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  }
+
+  export type PracticeSessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PracticeSessionCreateWithoutUserInput, PracticeSessionUncheckedCreateWithoutUserInput> | PracticeSessionCreateWithoutUserInput[] | PracticeSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutUserInput | PracticeSessionCreateOrConnectWithoutUserInput[]
+    createMany?: PracticeSessionCreateManyUserInputEnvelope
+    connect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -13029,6 +15977,20 @@ export namespace Prisma {
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
+  export type PracticeSessionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PracticeSessionCreateWithoutUserInput, PracticeSessionUncheckedCreateWithoutUserInput> | PracticeSessionCreateWithoutUserInput[] | PracticeSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutUserInput | PracticeSessionCreateOrConnectWithoutUserInput[]
+    upsert?: PracticeSessionUpsertWithWhereUniqueWithoutUserInput | PracticeSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PracticeSessionCreateManyUserInputEnvelope
+    set?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    disconnect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    delete?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    connect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    update?: PracticeSessionUpdateWithWhereUniqueWithoutUserInput | PracticeSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PracticeSessionUpdateManyWithWhereWithoutUserInput | PracticeSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PracticeSessionScalarWhereInput | PracticeSessionScalarWhereInput[]
+  }
+
   export type LessonProgressUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
@@ -13083,6 +16045,20 @@ export namespace Prisma {
     update?: ConversationUpdateWithWhereUniqueWithoutUserInput | ConversationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ConversationUpdateManyWithWhereWithoutUserInput | ConversationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  }
+
+  export type PracticeSessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PracticeSessionCreateWithoutUserInput, PracticeSessionUncheckedCreateWithoutUserInput> | PracticeSessionCreateWithoutUserInput[] | PracticeSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutUserInput | PracticeSessionCreateOrConnectWithoutUserInput[]
+    upsert?: PracticeSessionUpsertWithWhereUniqueWithoutUserInput | PracticeSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PracticeSessionCreateManyUserInputEnvelope
+    set?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    disconnect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    delete?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    connect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+    update?: PracticeSessionUpdateWithWhereUniqueWithoutUserInput | PracticeSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PracticeSessionUpdateManyWithWhereWithoutUserInput | PracticeSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PracticeSessionScalarWhereInput | PracticeSessionScalarWhereInput[]
   }
 
   export type LessonCreatetopicsInput = {
@@ -13175,11 +16151,25 @@ export namespace Prisma {
     connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
   }
 
+  export type PracticeItemCreateNestedManyWithoutVocabularyInput = {
+    create?: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput> | PracticeItemCreateWithoutVocabularyInput[] | PracticeItemUncheckedCreateWithoutVocabularyInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutVocabularyInput | PracticeItemCreateOrConnectWithoutVocabularyInput[]
+    createMany?: PracticeItemCreateManyVocabularyInputEnvelope
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+  }
+
   export type UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput = {
     create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
     createMany?: UserVocabularyCreateManyVocabularyInputEnvelope
     connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+  }
+
+  export type PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput = {
+    create?: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput> | PracticeItemCreateWithoutVocabularyInput[] | PracticeItemUncheckedCreateWithoutVocabularyInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutVocabularyInput | PracticeItemCreateOrConnectWithoutVocabularyInput[]
+    createMany?: PracticeItemCreateManyVocabularyInputEnvelope
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
   }
 
   export type UserVocabularyUpdateManyWithoutVocabularyNestedInput = {
@@ -13196,6 +16186,20 @@ export namespace Prisma {
     deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
   }
 
+  export type PracticeItemUpdateManyWithoutVocabularyNestedInput = {
+    create?: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput> | PracticeItemCreateWithoutVocabularyInput[] | PracticeItemUncheckedCreateWithoutVocabularyInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutVocabularyInput | PracticeItemCreateOrConnectWithoutVocabularyInput[]
+    upsert?: PracticeItemUpsertWithWhereUniqueWithoutVocabularyInput | PracticeItemUpsertWithWhereUniqueWithoutVocabularyInput[]
+    createMany?: PracticeItemCreateManyVocabularyInputEnvelope
+    set?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    disconnect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    delete?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    update?: PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput | PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput[]
+    updateMany?: PracticeItemUpdateManyWithWhereWithoutVocabularyInput | PracticeItemUpdateManyWithWhereWithoutVocabularyInput[]
+    deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+  }
+
   export type UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput = {
     create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
@@ -13208,6 +16212,20 @@ export namespace Prisma {
     update?: UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput | UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput[]
     updateMany?: UserVocabularyUpdateManyWithWhereWithoutVocabularyInput | UserVocabularyUpdateManyWithWhereWithoutVocabularyInput[]
     deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
+  }
+
+  export type PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput = {
+    create?: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput> | PracticeItemCreateWithoutVocabularyInput[] | PracticeItemUncheckedCreateWithoutVocabularyInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutVocabularyInput | PracticeItemCreateOrConnectWithoutVocabularyInput[]
+    upsert?: PracticeItemUpsertWithWhereUniqueWithoutVocabularyInput | PracticeItemUpsertWithWhereUniqueWithoutVocabularyInput[]
+    createMany?: PracticeItemCreateManyVocabularyInputEnvelope
+    set?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    disconnect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    delete?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    update?: PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput | PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput[]
+    updateMany?: PracticeItemUpdateManyWithWhereWithoutVocabularyInput | PracticeItemUpdateManyWithWhereWithoutVocabularyInput[]
+    deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutVocabularyInput = {
@@ -13320,6 +16338,90 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutExamResultsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExamResultsInput, UserUpdateWithoutExamResultsInput>, UserUncheckedUpdateWithoutExamResultsInput>
+  }
+
+  export type UserCreateNestedOneWithoutPracticeSessionsInput = {
+    create?: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPracticeSessionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PracticeItemCreateNestedManyWithoutSessionInput = {
+    create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
+    createMany?: PracticeItemCreateManySessionInputEnvelope
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+  }
+
+  export type PracticeItemUncheckedCreateNestedManyWithoutSessionInput = {
+    create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
+    createMany?: PracticeItemCreateManySessionInputEnvelope
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
+    create?: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPracticeSessionsInput
+    upsert?: UserUpsertWithoutPracticeSessionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPracticeSessionsInput, UserUpdateWithoutPracticeSessionsInput>, UserUncheckedUpdateWithoutPracticeSessionsInput>
+  }
+
+  export type PracticeItemUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
+    upsert?: PracticeItemUpsertWithWhereUniqueWithoutSessionInput | PracticeItemUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: PracticeItemCreateManySessionInputEnvelope
+    set?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    disconnect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    delete?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    update?: PracticeItemUpdateWithWhereUniqueWithoutSessionInput | PracticeItemUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: PracticeItemUpdateManyWithWhereWithoutSessionInput | PracticeItemUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+  }
+
+  export type PracticeItemUncheckedUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
+    upsert?: PracticeItemUpsertWithWhereUniqueWithoutSessionInput | PracticeItemUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: PracticeItemCreateManySessionInputEnvelope
+    set?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    disconnect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    delete?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+    update?: PracticeItemUpdateWithWhereUniqueWithoutSessionInput | PracticeItemUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: PracticeItemUpdateManyWithWhereWithoutSessionInput | PracticeItemUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+  }
+
+  export type PracticeSessionCreateNestedOneWithoutPracticeItemsInput = {
+    create?: XOR<PracticeSessionCreateWithoutPracticeItemsInput, PracticeSessionUncheckedCreateWithoutPracticeItemsInput>
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPracticeItemsInput
+    connect?: PracticeSessionWhereUniqueInput
+  }
+
+  export type VocabularyCreateNestedOneWithoutPracticeItemsInput = {
+    create?: XOR<VocabularyCreateWithoutPracticeItemsInput, VocabularyUncheckedCreateWithoutPracticeItemsInput>
+    connectOrCreate?: VocabularyCreateOrConnectWithoutPracticeItemsInput
+    connect?: VocabularyWhereUniqueInput
+  }
+
+  export type PracticeSessionUpdateOneRequiredWithoutPracticeItemsNestedInput = {
+    create?: XOR<PracticeSessionCreateWithoutPracticeItemsInput, PracticeSessionUncheckedCreateWithoutPracticeItemsInput>
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPracticeItemsInput
+    upsert?: PracticeSessionUpsertWithoutPracticeItemsInput
+    connect?: PracticeSessionWhereUniqueInput
+    update?: XOR<XOR<PracticeSessionUpdateToOneWithWhereWithoutPracticeItemsInput, PracticeSessionUpdateWithoutPracticeItemsInput>, PracticeSessionUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type VocabularyUpdateOneRequiredWithoutPracticeItemsNestedInput = {
+    create?: XOR<VocabularyCreateWithoutPracticeItemsInput, VocabularyUncheckedCreateWithoutPracticeItemsInput>
+    connectOrCreate?: VocabularyCreateOrConnectWithoutPracticeItemsInput
+    upsert?: VocabularyUpsertWithoutPracticeItemsInput
+    connect?: VocabularyWhereUniqueInput
+    update?: XOR<XOR<VocabularyUpdateToOneWithWhereWithoutPracticeItemsInput, VocabularyUpdateWithoutPracticeItemsInput>, VocabularyUncheckedUpdateWithoutPracticeItemsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -13651,6 +16753,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PracticeSessionCreateWithoutUserInput = {
+    id?: string
+    type: string
+    duration: number
+    createdAt?: Date | string
+    practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+  }
+
+  export type PracticeSessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: string
+    duration: number
+    createdAt?: Date | string
+    practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutSessionInput
+  }
+
+  export type PracticeSessionCreateOrConnectWithoutUserInput = {
+    where: PracticeSessionWhereUniqueInput
+    create: XOR<PracticeSessionCreateWithoutUserInput, PracticeSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PracticeSessionCreateManyUserInputEnvelope = {
+    data: PracticeSessionCreateManyUserInput | PracticeSessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type LessonProgressUpsertWithWhereUniqueWithoutUserInput = {
     where: LessonProgressWhereUniqueInput
     update: XOR<LessonProgressUpdateWithoutUserInput, LessonProgressUncheckedUpdateWithoutUserInput>
@@ -13766,6 +16894,33 @@ export namespace Prisma {
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
   }
 
+  export type PracticeSessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: PracticeSessionWhereUniqueInput
+    update: XOR<PracticeSessionUpdateWithoutUserInput, PracticeSessionUncheckedUpdateWithoutUserInput>
+    create: XOR<PracticeSessionCreateWithoutUserInput, PracticeSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PracticeSessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: PracticeSessionWhereUniqueInput
+    data: XOR<PracticeSessionUpdateWithoutUserInput, PracticeSessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PracticeSessionUpdateManyWithWhereWithoutUserInput = {
+    where: PracticeSessionScalarWhereInput
+    data: XOR<PracticeSessionUpdateManyMutationInput, PracticeSessionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PracticeSessionScalarWhereInput = {
+    AND?: PracticeSessionScalarWhereInput | PracticeSessionScalarWhereInput[]
+    OR?: PracticeSessionScalarWhereInput[]
+    NOT?: PracticeSessionScalarWhereInput | PracticeSessionScalarWhereInput[]
+    id?: StringFilter<"PracticeSession"> | string
+    userId?: IntFilter<"PracticeSession"> | number
+    type?: StringFilter<"PracticeSession"> | string
+    duration?: IntFilter<"PracticeSession"> | number
+    createdAt?: DateTimeFilter<"PracticeSession"> | Date | string
+  }
+
   export type LessonProgressCreateWithoutLessonInput = {
     completed?: boolean
     score?: number
@@ -13852,6 +17007,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -13872,6 +17028,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -13937,6 +17094,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -13957,6 +17115,7 @@ export namespace Prisma {
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserVocabularyCreateWithoutVocabularyInput = {
@@ -13982,6 +17141,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PracticeItemCreateWithoutVocabularyInput = {
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+    session: PracticeSessionCreateNestedOneWithoutPracticeItemsInput
+  }
+
+  export type PracticeItemUncheckedCreateWithoutVocabularyInput = {
+    id?: number
+    sessionId: string
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+  }
+
+  export type PracticeItemCreateOrConnectWithoutVocabularyInput = {
+    where: PracticeItemWhereUniqueInput
+    create: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput>
+  }
+
+  export type PracticeItemCreateManyVocabularyInputEnvelope = {
+    data: PracticeItemCreateManyVocabularyInput | PracticeItemCreateManyVocabularyInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput = {
     where: UserVocabularyWhereUniqueInput
     update: XOR<UserVocabularyUpdateWithoutVocabularyInput, UserVocabularyUncheckedUpdateWithoutVocabularyInput>
@@ -13996,6 +17182,35 @@ export namespace Prisma {
   export type UserVocabularyUpdateManyWithWhereWithoutVocabularyInput = {
     where: UserVocabularyScalarWhereInput
     data: XOR<UserVocabularyUpdateManyMutationInput, UserVocabularyUncheckedUpdateManyWithoutVocabularyInput>
+  }
+
+  export type PracticeItemUpsertWithWhereUniqueWithoutVocabularyInput = {
+    where: PracticeItemWhereUniqueInput
+    update: XOR<PracticeItemUpdateWithoutVocabularyInput, PracticeItemUncheckedUpdateWithoutVocabularyInput>
+    create: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput>
+  }
+
+  export type PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput = {
+    where: PracticeItemWhereUniqueInput
+    data: XOR<PracticeItemUpdateWithoutVocabularyInput, PracticeItemUncheckedUpdateWithoutVocabularyInput>
+  }
+
+  export type PracticeItemUpdateManyWithWhereWithoutVocabularyInput = {
+    where: PracticeItemScalarWhereInput
+    data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyWithoutVocabularyInput>
+  }
+
+  export type PracticeItemScalarWhereInput = {
+    AND?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+    OR?: PracticeItemScalarWhereInput[]
+    NOT?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+    id?: IntFilter<"PracticeItem"> | number
+    sessionId?: StringFilter<"PracticeItem"> | string
+    vocabularyId?: IntFilter<"PracticeItem"> | number
+    exerciseType?: StringFilter<"PracticeItem"> | string
+    isCorrect?: BoolFilter<"PracticeItem"> | boolean
+    userAnswer?: StringFilter<"PracticeItem"> | string
+    expectedAnswer?: StringFilter<"PracticeItem"> | string
   }
 
   export type UserCreateWithoutVocabularyInput = {
@@ -14015,6 +17230,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVocabularyInput = {
@@ -14035,6 +17251,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVocabularyInput = {
@@ -14047,6 +17264,7 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    practiceItems?: PracticeItemCreateNestedManyWithoutVocabularyInput
   }
 
   export type VocabularyUncheckedCreateWithoutUserVocabularyInput = {
@@ -14055,6 +17273,7 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
   export type VocabularyCreateOrConnectWithoutUserVocabularyInput = {
@@ -14090,6 +17309,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVocabularyInput = {
@@ -14110,6 +17330,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type VocabularyUpsertWithoutUserVocabularyInput = {
@@ -14128,6 +17349,7 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    practiceItems?: PracticeItemUpdateManyWithoutVocabularyNestedInput
   }
 
   export type VocabularyUncheckedUpdateWithoutUserVocabularyInput = {
@@ -14136,6 +17358,7 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    practiceItems?: PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput
   }
 
   export type UserCreateWithoutConversationsInput = {
@@ -14155,6 +17378,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationsInput = {
@@ -14175,6 +17399,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationsInput = {
@@ -14233,6 +17458,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationsInput = {
@@ -14253,6 +17479,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -14351,6 +17578,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutExamResultsInput = {
@@ -14371,6 +17599,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutExamResultsInput = {
@@ -14406,6 +17635,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExamResultsInput = {
@@ -14426,6 +17656,246 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutPracticeSessionsInput = {
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    conversations?: ConversationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPracticeSessionsInput = {
+    id?: number
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPracticeSessionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+  }
+
+  export type PracticeItemCreateWithoutSessionInput = {
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+    vocabulary: VocabularyCreateNestedOneWithoutPracticeItemsInput
+  }
+
+  export type PracticeItemUncheckedCreateWithoutSessionInput = {
+    id?: number
+    vocabularyId: number
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+  }
+
+  export type PracticeItemCreateOrConnectWithoutSessionInput = {
+    where: PracticeItemWhereUniqueInput
+    create: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PracticeItemCreateManySessionInputEnvelope = {
+    data: PracticeItemCreateManySessionInput | PracticeItemCreateManySessionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutPracticeSessionsInput = {
+    update: XOR<UserUpdateWithoutPracticeSessionsInput, UserUncheckedUpdateWithoutPracticeSessionsInput>
+    create: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPracticeSessionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPracticeSessionsInput, UserUncheckedUpdateWithoutPracticeSessionsInput>
+  }
+
+  export type UserUpdateWithoutPracticeSessionsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    conversations?: ConversationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPracticeSessionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type PracticeItemUpsertWithWhereUniqueWithoutSessionInput = {
+    where: PracticeItemWhereUniqueInput
+    update: XOR<PracticeItemUpdateWithoutSessionInput, PracticeItemUncheckedUpdateWithoutSessionInput>
+    create: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PracticeItemUpdateWithWhereUniqueWithoutSessionInput = {
+    where: PracticeItemWhereUniqueInput
+    data: XOR<PracticeItemUpdateWithoutSessionInput, PracticeItemUncheckedUpdateWithoutSessionInput>
+  }
+
+  export type PracticeItemUpdateManyWithWhereWithoutSessionInput = {
+    where: PracticeItemScalarWhereInput
+    data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyWithoutSessionInput>
+  }
+
+  export type PracticeSessionCreateWithoutPracticeItemsInput = {
+    id?: string
+    type: string
+    duration: number
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPracticeSessionsInput
+  }
+
+  export type PracticeSessionUncheckedCreateWithoutPracticeItemsInput = {
+    id?: string
+    userId: number
+    type: string
+    duration: number
+    createdAt?: Date | string
+  }
+
+  export type PracticeSessionCreateOrConnectWithoutPracticeItemsInput = {
+    where: PracticeSessionWhereUniqueInput
+    create: XOR<PracticeSessionCreateWithoutPracticeItemsInput, PracticeSessionUncheckedCreateWithoutPracticeItemsInput>
+  }
+
+  export type VocabularyCreateWithoutPracticeItemsInput = {
+    word: string
+    translation: string
+    example: string
+    level: string
+    userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
+  }
+
+  export type VocabularyUncheckedCreateWithoutPracticeItemsInput = {
+    id?: number
+    word: string
+    translation: string
+    example: string
+    level: string
+    userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
+  }
+
+  export type VocabularyCreateOrConnectWithoutPracticeItemsInput = {
+    where: VocabularyWhereUniqueInput
+    create: XOR<VocabularyCreateWithoutPracticeItemsInput, VocabularyUncheckedCreateWithoutPracticeItemsInput>
+  }
+
+  export type PracticeSessionUpsertWithoutPracticeItemsInput = {
+    update: XOR<PracticeSessionUpdateWithoutPracticeItemsInput, PracticeSessionUncheckedUpdateWithoutPracticeItemsInput>
+    create: XOR<PracticeSessionCreateWithoutPracticeItemsInput, PracticeSessionUncheckedCreateWithoutPracticeItemsInput>
+    where?: PracticeSessionWhereInput
+  }
+
+  export type PracticeSessionUpdateToOneWithWhereWithoutPracticeItemsInput = {
+    where?: PracticeSessionWhereInput
+    data: XOR<PracticeSessionUpdateWithoutPracticeItemsInput, PracticeSessionUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type PracticeSessionUpdateWithoutPracticeItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
+  }
+
+  export type PracticeSessionUncheckedUpdateWithoutPracticeItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VocabularyUpsertWithoutPracticeItemsInput = {
+    update: XOR<VocabularyUpdateWithoutPracticeItemsInput, VocabularyUncheckedUpdateWithoutPracticeItemsInput>
+    create: XOR<VocabularyCreateWithoutPracticeItemsInput, VocabularyUncheckedCreateWithoutPracticeItemsInput>
+    where?: VocabularyWhereInput
+  }
+
+  export type VocabularyUpdateToOneWithWhereWithoutPracticeItemsInput = {
+    where?: VocabularyWhereInput
+    data: XOR<VocabularyUpdateWithoutPracticeItemsInput, VocabularyUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type VocabularyUpdateWithoutPracticeItemsInput = {
+    word?: StringFieldUpdateOperationsInput | string
+    translation?: StringFieldUpdateOperationsInput | string
+    example?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
+  }
+
+  export type VocabularyUncheckedUpdateWithoutPracticeItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    word?: StringFieldUpdateOperationsInput | string
+    translation?: StringFieldUpdateOperationsInput | string
+    example?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
   }
 
   export type LessonProgressCreateManyUserInput = {
@@ -14461,6 +17931,13 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+  }
+
+  export type PracticeSessionCreateManyUserInput = {
+    id?: string
+    type: string
+    duration: number
+    createdAt?: Date | string
   }
 
   export type LessonProgressUpdateWithoutUserInput = {
@@ -14567,6 +18044,29 @@ export namespace Prisma {
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PracticeSessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+  }
+
+  export type PracticeSessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    practiceItems?: PracticeItemUncheckedUpdateManyWithoutSessionNestedInput
+  }
+
+  export type PracticeSessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LessonProgressCreateManyLessonInput = {
     id?: number
     userId: number
@@ -14613,6 +18113,15 @@ export namespace Prisma {
     lastPracticed?: Date | string | null
   }
 
+  export type PracticeItemCreateManyVocabularyInput = {
+    id?: number
+    sessionId: string
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+  }
+
   export type UserVocabularyUpdateWithoutVocabularyInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14631,6 +18140,32 @@ export namespace Prisma {
     userId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PracticeItemUpdateWithoutVocabularyInput = {
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+    session?: PracticeSessionUpdateOneRequiredWithoutPracticeItemsNestedInput
+  }
+
+  export type PracticeItemUncheckedUpdateWithoutVocabularyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PracticeItemUncheckedUpdateManyWithoutVocabularyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
   }
 
   export type MessageCreateManyConversationInput = {
@@ -14658,6 +18193,41 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PracticeItemCreateManySessionInput = {
+    id?: number
+    vocabularyId: number
+    exerciseType: string
+    isCorrect: boolean
+    userAnswer: string
+    expectedAnswer: string
+  }
+
+  export type PracticeItemUpdateWithoutSessionInput = {
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+    vocabulary?: VocabularyUpdateOneRequiredWithoutPracticeItemsNestedInput
+  }
+
+  export type PracticeItemUncheckedUpdateWithoutSessionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    vocabularyId?: IntFieldUpdateOperationsInput | number
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PracticeItemUncheckedUpdateManyWithoutSessionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    vocabularyId?: IntFieldUpdateOperationsInput | number
+    exerciseType?: StringFieldUpdateOperationsInput | string
+    isCorrect?: BoolFieldUpdateOperationsInput | boolean
+    userAnswer?: StringFieldUpdateOperationsInput | string
+    expectedAnswer?: StringFieldUpdateOperationsInput | string
   }
 
 
