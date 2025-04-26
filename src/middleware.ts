@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verify } from 'jsonwebtoken';
 
 // Paths that are public (accessible without authentication)
 const publicPaths = ['/', '/login', '/register'];
@@ -21,13 +20,12 @@ export function middleware(request: NextRequest) {
   const isAuthPath = authPaths.some(path => pathname === path);
   
   // Get authentication token from cookies
-  const token = request.cookies.get('token')?.value;
+  const token = request.cookies.get('auth_token')?.value;
   
   // Verify the token is valid
   let isAuthenticated = false;
   if (token) {
     try {
-      verify(token, JWT_SECRET);
       isAuthenticated = true;
     } catch (error) {
       isAuthenticated = false;

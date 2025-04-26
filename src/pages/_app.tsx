@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import Layout from '@/components/layout/Layout';
 import { AuthProvider } from '@/context/AuthContext';
+import { Toaster } from 'sonner';
 
 // Initialize Inter font
 const inter = Inter({ subsets: ['latin'] });
@@ -15,6 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Layout>
           <Component {...pageProps} />
         </Layout>
+        <Toaster position="top-right" richColors />
       </main>
     </AuthProvider>
   );

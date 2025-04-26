@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useAuth } from '@/context/AuthContext';
-import withAuth from '@/utils/withAuth';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
-function DashboardPage() {
+export default function DashboardPage() {
   const { user } = useAuth();
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
     const hour = new Date().getHours();
     let newGreeting = '';
-    
+
     if (hour < 12) {
       newGreeting = 'Bonjour';
     } else if (hour < 18) {
@@ -18,12 +18,12 @@ function DashboardPage() {
     } else {
       newGreeting = 'Bonsoir';
     }
-    
+
     setGreeting(newGreeting);
   }, []);
 
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Dashboard | French Tutor AI</title>
         <meta name="description" content="Your personalized French learning dashboard" />
@@ -120,8 +120,6 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }
-
-export default withAuth(DashboardPage);

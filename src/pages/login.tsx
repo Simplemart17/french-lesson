@@ -4,39 +4,114 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
+import { toast } from 'sonner';
+import { GetServerSideProps } from 'next';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login, isLoading, isAuthenticated } = useAuth();
+  const [errors, setErrors] = useState<{email?: string; password?: string; general?: string}>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, isLoading, isAuthenticated, error, clearError, isInitialized } = useAuth();
   const router = useRouter();
-  const { redirect } = router.query;
+  const { redirect, session } = router.query;
+
+  // Show session expired message if redirected with session=expired
+  useEffect(() => {
+    if (session === 'expired') {
+      toast.error('Your session has expired. Please log in again.');
+
+      // Remove the query parameter to prevent showing the message again on refresh
+      const { pathname } = router;
+      router.replace(pathname, undefined, { shallow: true });
+    }
+  }, [session]);
 
   // If already authenticated, redirect to dashboard or the redirect URL
   useEffect(() => {
-    if (isAuthenticated) {
-      const redirectPath = redirect && typeof redirect === 'string' 
-        ? redirect 
-        : '/dashboard';
-      router.push(redirectPath);
+    // Only redirect if we're authenticated, initialized, and not in a loading state
+    if (isAuthenticated && isInitialized && !isLoading) {
+      // // Prevent redirect loops by checking if we're being redirected back to login
+      // const redirectPath = redirect && typeof redirect === 'string' && !redirect.includes('/login')
+      //   ? redirect
+      //   : '/dashboard';
+
+      // console.log('Already authenticated, redirecting to:', redirectPath);
+
+      // Use a simple redirect to the dashboard
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, redirect, router]);
+  }, [isAuthenticated, isLoading, isInitialized, redirect]);
+
+  // Show auth error from context if present
+  useEffect(() => {
+    if (error) {
+      setErrors({ general: error });
+      clearError(); // Clear the error from context after displaying it
+    }
+  }, [error, clearError]);
+
+  const validateForm = () => {
+    const newErrors: {email?: string; password?: string} = {};
+
+    // Email validation
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+
     try {
       await login(email, password);
-      
-      // After successful login, redirect to the specified page or dashboard
-      const redirectPath = redirect && typeof redirect === 'string' 
-        ? redirect 
-        : '/dashboard';
-      router.push(redirectPath);
-    } catch (err) {
-      setError('Invalid email or password');
+
+      toast.success('Successfully logged in!', {
+        duration: 2000,
+      });
+
+      // Small delay to allow the toast to be seen before redirecting
+      setTimeout(() => {
+        // Always redirect to dashboard after login to prevent loops
+        console.log('Login successful, redirecting to dashboard');
+
+        // Use router.push for navigation
+        router.push('/dashboard');
+      }, 1000);
+
+    } catch (err: any) {
+      console.error('Login form error:', err);
+      // Error is already set in the auth context and will be displayed via the useEffect
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper function to clear errors
+  const clearErrors = (field?: string) => {
+    if (field) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    } else {
+      setErrors({});
     }
   };
 
@@ -54,9 +129,9 @@ export default function LoginPage() {
             <p className="text-gray-600">Log in to continue your French learning journey</p>
           </div>
 
-          {error && (
+          {errors.general && (
             <div className="p-3 mb-4 text-red-700 border border-red-200 rounded-lg bg-red-50">
-              {error}
+              {errors.general}
             </div>
           )}
 
@@ -69,11 +144,19 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email || errors.general) {
+                    clearErrors('email');
+                    clearErrors('general');
+                  }
+                }}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
+                  errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
                 placeholder="your.email@example.com"
-                required
               />
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
 
             <div>
@@ -89,11 +172,19 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password || errors.general) {
+                    clearErrors('password');
+                    clearErrors('general');
+                  }
+                }}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
+                  errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
                 placeholder="••••••••"
-                required
               />
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <div className="flex items-center">
@@ -111,9 +202,10 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full"
-              isLoading={isLoading}
+              isLoading={isLoading || isSubmitting}
+              disabled={isLoading || isSubmitting}
             >
-              Log In
+              {isSubmitting ? 'Logging in...' : 'Log In'}
             </Button>
           </form>
 
@@ -130,3 +222,14 @@ export default function LoginPage() {
     </>
   );
 }
+
+// Server-side props to check authentication status
+export const getServerSideProps: GetServerSideProps = async () => {
+  // We'll let client-side handle authentication to avoid redirection loops
+  // This is safer because client-side can check the actual auth state
+  // rather than just the presence of a token
+
+  return {
+    props: {},
+  };
+};

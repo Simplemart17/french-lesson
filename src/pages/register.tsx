@@ -4,46 +4,74 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
+import { toast } from 'sonner';
+import { GetServerSideProps } from 'next';
+
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const { register, isLoading, isAuthenticated } = useAuth();
+  const [errors, setErrors] = useState<{general?: string; password?: string}>({});
+  const { register, isLoading, isAuthenticated, isInitialized, error, clearError } = useAuth();
   const router = useRouter();
   const { redirect } = router.query;
 
+  // Show auth error from context if present
+  useEffect(() => {
+    if (error) {
+      setErrors({ general: error });
+      clearError(); // Clear the error from context after displaying it
+    }
+  }, [error, clearError]);
+
   // If already authenticated, redirect to dashboard or the redirect URL
   useEffect(() => {
-    if (isAuthenticated) {
-      const redirectPath = redirect && typeof redirect === 'string' 
-        ? redirect 
-        : '/dashboard';
-      router.push(redirectPath);
+    if (isAuthenticated && isInitialized && !isLoading) {
+      console.log('Already authenticated, redirecting to dashboard');
+      // Use router.push for navigation
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, redirect, router]);
+  }, [isAuthenticated, isInitialized, isLoading, router]);
+
+  const validateForm = () => {
+    const newErrors: {general?: string; password?: string} = {};
+
+    // Password validation
+    if (password !== confirmPassword) {
+      newErrors.password = 'Passwords do not match';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters long';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+
+    if (!validateForm()) {
       return;
     }
-    
+
     try {
       await register(name, email, password);
-      
-      // After successful registration, redirect to the specified page or dashboard
-      const redirectPath = redirect && typeof redirect === 'string' 
-        ? redirect 
-        : '/dashboard';
-      router.push(redirectPath);
+
+      toast.success('Account created successfully!', {
+        duration: 2000,
+      });
+
+      // Small delay to allow the toast to be seen before redirecting
+      setTimeout(() => {
+        console.log('Registration successful, redirecting to dashboard');
+        // Use router.push for navigation
+        router.push('/dashboard');
+      }, 1000);
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      // Error is already set in the auth context and will be displayed via the useEffect
+      console.error('Registration error:', err);
     }
   };
 
@@ -61,9 +89,9 @@ export default function RegisterPage() {
             <p className="text-gray-600">Start your French learning journey today</p>
           </div>
 
-          {error && (
+          {(errors.general || errors.password) && (
             <div className="p-3 mb-4 text-red-700 border border-red-200 rounded-lg bg-red-50">
-              {error}
+              {errors.general || errors.password}
             </div>
           )}
 
@@ -174,3 +202,14 @@ export default function RegisterPage() {
     </>
   );
 }
+
+// Server-side props to check authentication status
+export const getServerSideProps: GetServerSideProps = async () => {
+  // We'll let client-side handle authentication to avoid redirection loops
+  // This is safer because client-side can check the actual auth state
+  // rather than just the presence of a token
+
+  return {
+    props: {},
+  };
+};
