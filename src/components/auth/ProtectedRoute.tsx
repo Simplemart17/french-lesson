@@ -13,7 +13,6 @@ interface ProtectedRouteProps {
  * Redirects to login if user is not authenticated
  */
 const ProtectedRoute = ({ children, fallback }: ProtectedRouteProps) => {
-  console.log("ProtectedRoute component rendered")
   const { isAuthenticated, isLoading, isInitialized } = useAuth();
   const [isClient, setIsClient] = useState(false);
   const [redirected, setRedirected] = useState(false);

@@ -39,7 +39,6 @@ export const setUserData = (userData: any) => {
  */
 export const getAuthToken = () => {
   const cookies = parseCookies();
-  console.log('token>>>>>>>>>>>>>>>>>', cookies[TOKEN_NAME]);
   return cookies[TOKEN_NAME];
 };
 
