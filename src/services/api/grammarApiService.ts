@@ -1,5 +1,6 @@
 import { ApiResponse } from '@/types/api';
 import apiClient from '@/services/api/apiClient';
+import { API_ENDPOINTS } from './apiConfig';
 
 // Define the verb conjugation exercise type
 interface VerbConjugationExercise {
@@ -26,12 +27,58 @@ interface GrammarExercise {
   correctAnswer: string | string[];
 }
 
+// Define the grammar exercise list response type
+interface GrammarExerciseListResponse {
+  items: GrammarExercise[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 /**
  * Grammar API Service
  *
  * This service handles all grammar-related API calls.
  */
 export const grammarApiService = {
+  /**
+   * Get exercises with optional filtering
+   * This is the main method used by the grammarService
+   */
+  getExercises: async (params?: {
+    difficulty?: string;
+    category?: string;
+    type?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<GrammarExerciseListResponse>> => {
+    return apiClient.get<GrammarExerciseListResponse>(API_ENDPOINTS.GRAMMAR.EXERCISES, params);
+  },
+
+  /**
+   * Get exercise by ID
+   */
+  getExercise: async (id: number): Promise<ApiResponse<GrammarExercise>> => {
+    return apiClient.get<GrammarExercise>(`${API_ENDPOINTS.GRAMMAR.EXERCISES}/${id}`);
+  },
+
+  /**
+   * Get progress
+   */
+  getProgress: async (): Promise<ApiResponse<any[]>> => {
+    return apiClient.get<any[]>(API_ENDPOINTS.GRAMMAR.PROGRESS);
+  },
+
+  /**
+   * Update progress
+   */
+  updateProgress: async (exerciseId: number, score: number): Promise<ApiResponse<any>> => {
+    return apiClient.post<any>(API_ENDPOINTS.GRAMMAR.PROGRESS, {
+      exerciseId,
+      score
+    });
+  },
   /**
    * Get verb conjugation exercises with optional filtering
    */

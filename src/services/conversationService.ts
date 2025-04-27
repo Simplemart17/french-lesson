@@ -23,7 +23,7 @@ class ConversationService {
         level
       });
 
-      if (response.success && response.data) {
+      if (response.data) {
         return response.data;
       }
 
@@ -34,11 +34,12 @@ class ConversationService {
       // Create a local conversation if API fails
       const localConversation: Conversation = {
         id: `local-${Date.now()}`,
-        topic,
-        level,
+        userId: -1, // Default value for offline mode
+        title: topic,
+        context: `Conversation about ${topic}`,
         messages: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        startedAt: new Date().toISOString(),
+        lastMessageAt: new Date().toISOString()
       };
 
       return localConversation;
@@ -59,7 +60,7 @@ class ConversationService {
     try {
       const response = await conversationApiService.getConversationHistory();
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;
@@ -92,7 +93,7 @@ class ConversationService {
     try {
       const response = await conversationApiService.getConversation(conversationId);
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
 
@@ -129,7 +130,7 @@ class ConversationService {
         audioBlob
       });
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Invalidate conversation cache
         this.invalidateCache(`conversation-${conversationId}`);
 
@@ -142,11 +143,9 @@ class ConversationService {
 
       // Create a local message if API fails
       const localMessage: Message = {
-        id: `local-${Date.now()}`,
-        conversationId,
         role: 'user',
         content,
-        createdAt: new Date().toISOString()
+        timestamp: new Date().toISOString()
       };
 
       // Store the message locally
@@ -170,7 +169,7 @@ class ConversationService {
     try {
       const response = await conversationApiService.getTopics(level);
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;

@@ -1,5 +1,35 @@
-import examApiService from './api/examApiService';
-import { ExamModule, ExamResults, ExamQuestion } from '@/types/api';
+import examApiService from '@/services/api/examApiService';
+
+// Define types if not available in @/types/api
+interface ExamModule {
+  id: string;
+  title: string;
+  description: string;
+  section: 'listening' | 'reading' | 'writing' | 'speaking';
+  level: string;
+  duration: number; // in minutes
+  questions?: ExamQuestion[];
+}
+
+interface ExamQuestion {
+  id: string;
+  type: 'multiple-choice' | 'text-input' | 'audio-response' | 'writing' | 'speaking';
+  text: string;
+  options?: string[];
+  correctAnswer?: string;
+  audioUrl?: string;
+  imageUrl?: string;
+  explanation?: string;
+}
+
+interface ExamResults {
+  moduleId: string;
+  score: number;
+  totalQuestions: number;
+  answers: (string | number)[];
+  timeSpent: number; // in seconds
+  completedAt: Date;
+}
 
 /**
  * Exam Service
@@ -28,16 +58,16 @@ class ExamService {
     }
 
     try {
-      const response = await examApiService.getExamModules({
+      const modules = await examApiService.getExamModules({
         examType,
         section,
         difficulty
       });
 
-      if (response.success && response.data) {
+      if (modules && Array.isArray(modules)) {
         // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
+        this.setCache(cacheKey, modules);
+        return modules;
       }
 
       return [];
@@ -65,12 +95,12 @@ class ExamService {
     }
 
     try {
-      const response = await examApiService.getExamModule(moduleId);
+      const module = await examApiService.getExamModule(moduleId);
 
-      if (response.success && response.data) {
+      if (module) {
         // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
+        this.setCache(cacheKey, module);
+        return module;
       }
 
       return null;
@@ -100,7 +130,7 @@ class ExamService {
     try {
       const response = await examApiService.getExamQuestions(moduleId);
 
-      if (response.success && response.data) {
+      if (response && response.success && response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;
@@ -125,7 +155,7 @@ class ExamService {
   async submitExamResults(results: ExamResults): Promise<boolean> {
     try {
       const response = await examApiService.submitExamResults(results);
-      return response.success;
+      return response && response.success === true;
     } catch (error) {
       console.error('Error submitting exam results:', error);
 
@@ -150,7 +180,7 @@ class ExamService {
     try {
       const response = await examApiService.getExamResults();
 
-      if (response.success && response.data) {
+      if (response && response.success && response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
 

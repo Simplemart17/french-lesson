@@ -27,13 +27,6 @@ interface UserProfileFullData extends User {
   }[];
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: {
-    message: string;
-  };
-}
 
 interface LanguageSkill {
   skill: string;
@@ -80,12 +73,13 @@ export default function ProfilePage() {
 
       try {
         setIsLoading(true);
-        const response = await apiClient.get<ApiResponse<UserProfileFullData>>('/user/profile');
-        
-        if (response.data.success && response.data.data) {
-          const userData = response.data.data;
+        const response = await apiClient.get<UserProfileFullData>('/user/profile');
+        console.log(response.data, "response.data<><>");
+
+        if (response.data) {
+          const userData = response.data;
           setUser(userData);
-          
+
           // Update profile data
           setProfileData({
             name: userData.name,
@@ -118,10 +112,10 @@ export default function ProfilePage() {
       }
 
       try {
-        const response = await apiClient.get<ApiResponse<LanguageSkill[]>>('/user/skills');
-        
-        if (response.data.success && response.data.data) {
-          setLanguageSkills(response.data.data);
+        const response = await apiClient.get<LanguageSkill[]>('/user/skills');
+
+        if (response.data) {
+          setLanguageSkills(response.data);
         } else {
           // Fallback to default skills if API fails
           setLanguageSkills([
@@ -159,7 +153,7 @@ export default function ProfilePage() {
 
       try {
         const response = await apiClient.get<{resources: ResourceItem[]}>('/learning/recommended-resources');
-        
+
         if (response.data && response.data.resources) {
           setResources(response.data.resources);
         } else {
@@ -178,14 +172,14 @@ export default function ProfilePage() {
   const handleProfileSave = async (data: UserProfileData) => {
     try {
       setIsLoading(true);
-      const response = await apiClient.put<ApiResponse<UserProfileFullData>>('/user/profile', {
+      const response = await apiClient.put<UserProfileFullData>('/user/profile', {
         name: data.name,
         email: data.email,
         level: data.level,
         learningGoals: data.learningGoals
       });
 
-      if (response.data.success && response.data.data) {
+      if (response.data) {
         // Update local state with new user data
         setUser(prev => prev ? {
           ...prev,
@@ -194,7 +188,7 @@ export default function ProfilePage() {
           level: data.level,
           learningGoals: data.learningGoals
         } : null);
-        
+
         setProfileData(data);
         alert('Profile saved successfully!');
       } else {
@@ -222,8 +216,8 @@ export default function ProfilePage() {
         <div className="p-6 text-red-700 border border-red-100 rounded-lg bg-red-50">
           <h2 className="mb-4 text-xl font-bold">{error || 'User profile not available'}</h2>
           <p>Please try refreshing the page or logging in again.</p>
-          <Button 
-            onClick={() => window.location.reload()} 
+          <Button
+            onClick={() => window.location.reload()}
             className="mt-4"
           >
             Refresh Page
@@ -308,7 +302,7 @@ export default function ProfilePage() {
                       </span>
                     </div>
                     <div className="w-full h-2 bg-gray-200 rounded-full">
-                      <div 
+                      <div
                         className="h-2 rounded-full bg-primary-500"
                         style={{ width: `${skill.percentage}%` }}
                       ></div>
@@ -352,9 +346,9 @@ export default function ProfilePage() {
                           <div className="text-sm font-medium text-gray-900">{activity.name}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full 
-                            ${activity.type === 'lesson' ? 'bg-green-100 text-green-800' : 
-                              activity.type === 'practice' ? 'bg-blue-100 text-blue-800' : 
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full
+                            ${activity.type === 'lesson' ? 'bg-green-100 text-green-800' :
+                              activity.type === 'practice' ? 'bg-blue-100 text-blue-800' :
                               'bg-purple-100 text-purple-800'}`}>
                             {activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}
                           </span>
@@ -478,8 +472,8 @@ export default function ProfilePage() {
                 <Card key={resource.id} className="overflow-hidden transition-shadow hover:shadow-lg">
                   <div className="relative h-40 bg-gray-200">
                     {resource.imageUrl ? (
-                      <img 
-                        src={resource.imageUrl} 
+                      <img
+                        src={resource.imageUrl}
                         alt={resource.title}
                         className="object-cover w-full h-full"
                       />
@@ -494,8 +488,8 @@ export default function ProfilePage() {
                     <p className="mb-4 text-sm text-gray-600">{resource.description}</p>
                     <Link href={resource.link}>
                       <Button size="sm">
-                        {resource.type === 'lesson' ? 'Start Lesson' : 
-                        resource.type === 'exercise' ? 'Start Practice' : 
+                        {resource.type === 'lesson' ? 'Start Lesson' :
+                        resource.type === 'exercise' ? 'Start Practice' :
                         'View Resource'}
                       </Button>
                     </Link>

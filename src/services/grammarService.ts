@@ -1,5 +1,32 @@
-import grammarApiService from './api/grammarApiService';
-import { GrammarExercise, GrammarCheckResponse } from '@/types/api';
+import grammarApiService from '@/services/api/grammarApiService';
+
+// Define types if not available in @/types/api
+interface GrammarExercise {
+  id: number;
+  title: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  type: 'multiple-choice' | 'fill-in-blank' | 'reorder';
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
+}
+
+interface GrammarCheckResponse {
+  text: string;
+  corrections: Array<{
+    original: string;
+    corrected: string;
+    explanation: string;
+    position: {
+      start: number;
+      end: number;
+    };
+    type: 'grammar' | 'spelling' | 'punctuation' | 'style';
+    severity: 'error' | 'warning' | 'suggestion';
+  }>;
+  score: number;
+}
 
 /**
  * Grammar Service
@@ -32,7 +59,7 @@ class GrammarService {
         category
       });
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data.items);
         return response.data.items;
@@ -65,7 +92,7 @@ class GrammarService {
     try {
       const response = await grammarApiService.getExercise(id);
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;
@@ -89,9 +116,9 @@ class GrammarService {
    */
   async checkGrammar(text: string): Promise<GrammarCheckResponse> {
     try {
-      const response = await grammarApiService.checkGrammar({ text });
+      const response = await grammarApiService.checkGrammar(text);
 
-      if (response.success && response.data) {
+      if (response.data) {
         return response.data;
       }
 
@@ -122,7 +149,7 @@ class GrammarService {
     try {
       const response = await grammarApiService.getProgress();
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;
@@ -148,7 +175,7 @@ class GrammarService {
     try {
       const response = await grammarApiService.updateProgress(exerciseId, score);
 
-      if (response.success) {
+      if (response.data) {
         // Invalidate progress cache
         this.invalidateCache('grammar-progress');
         return true;

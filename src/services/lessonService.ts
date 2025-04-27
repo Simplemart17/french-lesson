@@ -1,4 +1,4 @@
-import lessonApiService from './api/lessonApiService';
+import lessonApiService from '@/services/api/lessonApiService';
 import { Lesson, LessonProgress } from '@/types/api';
 
 /**
@@ -27,18 +27,11 @@ class LessonService {
     }
 
     try {
-      const response = await lessonApiService.getLessons({
-        level,
-        topic
-      });
+      const lessons = await lessonApiService.getLessons(level, topic);
 
-      if (response.success && response.data) {
-        // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
-      }
-
-      return [];
+      // Cache the result
+      this.setCache(cacheKey, lessons);
+      return lessons;
     } catch (error) {
       console.error('Error fetching lessons:', error);
 
@@ -63,12 +56,12 @@ class LessonService {
     }
 
     try {
-      const response = await lessonApiService.getLesson(id);
+      const lesson = await lessonApiService.getLesson(id);
 
-      if (response.success && response.data) {
+      if (lesson) {
         // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
+        this.setCache(cacheKey, lesson);
+        return lesson;
       }
 
       return null;
@@ -96,12 +89,13 @@ class LessonService {
     }
 
     try {
-      const response = await lessonApiService.getLessonProgress(lessonId);
+      const progressList = await lessonApiService.getLessonProgress(lessonId);
 
-      if (response.success && response.data) {
+      if (progressList && progressList.length > 0) {
+        const progress = progressList[0];
         // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
+        this.setCache(cacheKey, progress);
+        return progress;
       }
 
       return null;
@@ -123,18 +117,19 @@ class LessonService {
   async updateLessonProgress(
     lessonId: number,
     completed: boolean,
-    score?: number
+    score: number = 0
   ): Promise<LessonProgress | null> {
     try {
-      const response = await lessonApiService.updateLessonProgress(lessonId, {
+      const response = await lessonApiService.updateLessonProgress(
+        lessonId,
         completed,
         score
-      });
+      );
 
-      if (response.success && response.data) {
+      if (response) {
         // Invalidate progress cache
         this.invalidateCache(`lesson-progress-${lessonId}`);
-        return response.data;
+        return response;
       }
 
       return null;
@@ -156,15 +151,12 @@ class LessonService {
     }
 
     try {
-      const response = await lessonApiService.getAllLessonProgress();
+      // Get all progress by calling getLessonProgress without a specific lessonId
+      const progressList = await lessonApiService.getLessonProgress();
 
-      if (response.success && response.data) {
-        // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
-      }
-
-      return [];
+      // Cache the result
+      this.setCache(cacheKey, progressList);
+      return progressList;
     } catch (error) {
       console.error('Error fetching all lesson progress:', error);
 

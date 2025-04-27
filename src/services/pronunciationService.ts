@@ -1,5 +1,8 @@
-import pronunciationApiService from './api/pronunciationApiService';
-import { PronunciationExercise, PronunciationCheckResponse } from '@/types/api';
+import pronunciationApiService, {
+  PronunciationExercise,
+  PronunciationCheckResponse,
+  PronunciationProgress
+} from './api/pronunciationApiService';
 
 /**
  * Pronunciation Service
@@ -16,7 +19,7 @@ class PronunciationService {
    * Get pronunciation exercises with optional filtering
    */
   async getPronunciationExercises(
-    difficulty?: string
+    difficulty?: 'beginner' | 'intermediate' | 'advanced'
   ): Promise<PronunciationExercise[]> {
     const cacheKey = `pronunciation-exercises-${difficulty || 'all'}`;
 
@@ -30,7 +33,7 @@ class PronunciationService {
         difficulty
       });
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data.items);
         return response.data.items;
@@ -63,7 +66,7 @@ class PronunciationService {
     try {
       const response = await pronunciationApiService.getExercise(id);
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;
@@ -97,7 +100,7 @@ class PronunciationService {
         transcript
       });
 
-      if (response.success && response.data) {
+      if (response.data) {
         return response.data;
       }
 
@@ -119,7 +122,7 @@ class PronunciationService {
   /**
    * Get pronunciation progress
    */
-  async getPronunciationProgress(): Promise<any[]> {
+  async getPronunciationProgress(): Promise<PronunciationProgress[]> {
     const cacheKey = 'pronunciation-progress';
 
     // Check cache first
@@ -130,7 +133,7 @@ class PronunciationService {
     try {
       const response = await pronunciationApiService.getProgress();
 
-      if (response.success && response.data) {
+      if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
         return response.data;
@@ -156,7 +159,7 @@ class PronunciationService {
     try {
       const response = await pronunciationApiService.updateProgress(phraseId, accuracy);
 
-      if (response.success) {
+      if (response.status === 200) {
         // Invalidate progress cache
         this.invalidateCache('pronunciation-progress');
         return true;
