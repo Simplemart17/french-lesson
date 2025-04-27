@@ -74,7 +74,6 @@ export default function ProfilePage() {
       try {
         setIsLoading(true);
         const response = await apiClient.get<UserProfileFullData>('/user/profile');
-        console.log(response.data, "response.data<><>");
 
         if (response.data) {
           const userData = response.data;

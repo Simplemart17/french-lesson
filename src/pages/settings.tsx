@@ -2,8 +2,10 @@ import Head from 'next/head';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { AuthService } from '@/utils/authService';
 
 export default function SettingsPage() {
+  const storedUser = AuthService.getUserData();
   // User preferences state
   const [preferences, setPreferences] = useState({
     dailyGoal: 15, // minutes
@@ -16,9 +18,9 @@ export default function SettingsPage() {
 
   // Profile information state
   const [profile, setProfile] = useState({
-    name: 'Sophie Laurent',
-    email: 'sophie.laurent@example.com',
-    level: 'intermediate'
+    name: storedUser?.name,
+    email: storedUser?.email,
+    level: storedUser?.level
   });
 
   // Form state
@@ -157,8 +159,8 @@ export default function SettingsPage() {
                   <div>
                     <p className="mb-1 text-sm text-gray-500">French Level</p>
                     <p className="text-gray-800">
-                      {profile.level === 'beginner' ? 'Beginner (A1-A2)' : 
-                       profile.level === 'intermediate' ? 'Intermediate (B1-B2)' : 
+                      {profile.level === "A1" || profile.level === "A2" ? 'Beginner (A1-A2)' : 
+                       profile.level === "B1" || profile.level === "B2" ? 'Intermediate (B1-B2)' : 
                        'Advanced (C1-C2)'}
                     </p>
                   </div>

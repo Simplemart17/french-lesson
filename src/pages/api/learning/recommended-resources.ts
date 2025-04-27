@@ -1,9 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import { getToken } from 'next-auth/jwt';
-
-// Initialize Prisma client
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { isAuthenticated, getUserId } from '@/utils/auth';
 
 type ResourceItem = {
   id: string;
@@ -20,14 +17,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const token = await getToken({ req });
-    
-    if (!token || !token.sub) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+  // Check if user is authenticated
+  if (!isAuthenticated(req)) {
+    return res.status(401).json({
+      success: false,
+      error: {
+        message: 'Unauthorized'
+      }
+    });
+  }
 
-    const userId = token.sub;
-    
+  const userId = getUserId(req);
+
     // Get user data to determine their level
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -39,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const userLevel = user.level;
-    
+
     // Get lessons for the user's level without checking progress
     const lessons = await prisma.lesson.findMany({
       where: {
@@ -78,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           imageUrl: '/images/grammar-exercise.jpg',
         },
       ];
-      
+
       // Add mock exercises until we have at least 3 resources
       for (let i = 0; i < mockExercises.length && resources.length < 3; i++) {
         resources.push(mockExercises[i]);
@@ -90,4 +91,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('Error fetching recommended resources:', error);
     return res.status(500).json({ error: 'Failed to fetch recommended resources' });
   }
-} 
+}

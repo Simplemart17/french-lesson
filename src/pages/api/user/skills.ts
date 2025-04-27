@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import { getToken } from 'next-auth/jwt';
-
-// Initialize Prisma client
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { isAuthenticated, getUserId } from '@/utils/auth';
 
 interface SkillResponse {
   skill: string;
@@ -15,18 +12,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Get JWT token from request
-  const token = await getToken({ req });
-
   // Check if user is authenticated
-  if (!token?.sub) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({
       success: false,
-      error: { message: 'Not authenticated' }
+      error: {
+        message: 'Unauthorized'
+      }
     });
   }
 
-  const userId = parseInt(token.sub);
+  const userId = getUserId(req);
 
   if (req.method === 'GET') {
     try {
@@ -81,4 +77,4 @@ export default async function handler(
       error: { message: 'Method not allowed' }
     });
   }
-} 
+}
