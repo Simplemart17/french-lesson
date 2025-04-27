@@ -24,6 +24,16 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Lesson = $Result.DefaultSelection<Prisma.$LessonPayload>
 /**
+ * Model LessonSection
+ * 
+ */
+export type LessonSection = $Result.DefaultSelection<Prisma.$LessonSectionPayload>
+/**
+ * Model LessonExercise
+ * 
+ */
+export type LessonExercise = $Result.DefaultSelection<Prisma.$LessonExercisePayload>
+/**
  * Model LessonProgress
  * 
  */
@@ -49,6 +59,16 @@ export type Conversation = $Result.DefaultSelection<Prisma.$ConversationPayload>
  */
 export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
 /**
+ * Model ConversationTemplate
+ * 
+ */
+export type ConversationTemplate = $Result.DefaultSelection<Prisma.$ConversationTemplatePayload>
+/**
+ * Model UserTemplateUsage
+ * 
+ */
+export type UserTemplateUsage = $Result.DefaultSelection<Prisma.$UserTemplateUsagePayload>
+/**
  * Model ExamResult
  * 
  */
@@ -63,6 +83,21 @@ export type PracticeSession = $Result.DefaultSelection<Prisma.$PracticeSessionPa
  * 
  */
 export type PracticeItem = $Result.DefaultSelection<Prisma.$PracticeItemPayload>
+/**
+ * Model PronunciationExercise
+ * 
+ */
+export type PronunciationExercise = $Result.DefaultSelection<Prisma.$PronunciationExercisePayload>
+/**
+ * Model PronunciationPracticeItem
+ * 
+ */
+export type PronunciationPracticeItem = $Result.DefaultSelection<Prisma.$PronunciationPracticeItemPayload>
+/**
+ * Model GrammarRule
+ * 
+ */
+export type GrammarRule = $Result.DefaultSelection<Prisma.$GrammarRulePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -210,6 +245,26 @@ export class PrismaClient<
   get lesson(): Prisma.LessonDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.lessonSection`: Exposes CRUD operations for the **LessonSection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LessonSections
+    * const lessonSections = await prisma.lessonSection.findMany()
+    * ```
+    */
+  get lessonSection(): Prisma.LessonSectionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.lessonExercise`: Exposes CRUD operations for the **LessonExercise** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LessonExercises
+    * const lessonExercises = await prisma.lessonExercise.findMany()
+    * ```
+    */
+  get lessonExercise(): Prisma.LessonExerciseDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.lessonProgress`: Exposes CRUD operations for the **LessonProgress** model.
     * Example usage:
     * ```ts
@@ -260,6 +315,26 @@ export class PrismaClient<
   get message(): Prisma.MessageDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.conversationTemplate`: Exposes CRUD operations for the **ConversationTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ConversationTemplates
+    * const conversationTemplates = await prisma.conversationTemplate.findMany()
+    * ```
+    */
+  get conversationTemplate(): Prisma.ConversationTemplateDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userTemplateUsage`: Exposes CRUD operations for the **UserTemplateUsage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserTemplateUsages
+    * const userTemplateUsages = await prisma.userTemplateUsage.findMany()
+    * ```
+    */
+  get userTemplateUsage(): Prisma.UserTemplateUsageDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.examResult`: Exposes CRUD operations for the **ExamResult** model.
     * Example usage:
     * ```ts
@@ -288,6 +363,36 @@ export class PrismaClient<
     * ```
     */
   get practiceItem(): Prisma.PracticeItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pronunciationExercise`: Exposes CRUD operations for the **PronunciationExercise** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PronunciationExercises
+    * const pronunciationExercises = await prisma.pronunciationExercise.findMany()
+    * ```
+    */
+  get pronunciationExercise(): Prisma.PronunciationExerciseDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pronunciationPracticeItem`: Exposes CRUD operations for the **PronunciationPracticeItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PronunciationPracticeItems
+    * const pronunciationPracticeItems = await prisma.pronunciationPracticeItem.findMany()
+    * ```
+    */
+  get pronunciationPracticeItem(): Prisma.PronunciationPracticeItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.grammarRule`: Exposes CRUD operations for the **GrammarRule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GrammarRules
+    * const grammarRules = await prisma.grammarRule.findMany()
+    * ```
+    */
+  get grammarRule(): Prisma.GrammarRuleDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -730,14 +835,21 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Lesson: 'Lesson',
+    LessonSection: 'LessonSection',
+    LessonExercise: 'LessonExercise',
     LessonProgress: 'LessonProgress',
     Vocabulary: 'Vocabulary',
     UserVocabulary: 'UserVocabulary',
     Conversation: 'Conversation',
     Message: 'Message',
+    ConversationTemplate: 'ConversationTemplate',
+    UserTemplateUsage: 'UserTemplateUsage',
     ExamResult: 'ExamResult',
     PracticeSession: 'PracticeSession',
-    PracticeItem: 'PracticeItem'
+    PracticeItem: 'PracticeItem',
+    PronunciationExercise: 'PronunciationExercise',
+    PronunciationPracticeItem: 'PronunciationPracticeItem',
+    GrammarRule: 'GrammarRule'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -756,7 +868,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "lesson" | "lessonProgress" | "vocabulary" | "userVocabulary" | "conversation" | "message" | "examResult" | "practiceSession" | "practiceItem"
+      modelProps: "user" | "lesson" | "lessonSection" | "lessonExercise" | "lessonProgress" | "vocabulary" | "userVocabulary" | "conversation" | "message" | "conversationTemplate" | "userTemplateUsage" | "examResult" | "practiceSession" | "practiceItem" | "pronunciationExercise" | "pronunciationPracticeItem" | "grammarRule"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -905,6 +1017,154 @@ export namespace Prisma {
           count: {
             args: Prisma.LessonCountArgs<ExtArgs>
             result: $Utils.Optional<LessonCountAggregateOutputType> | number
+          }
+        }
+      }
+      LessonSection: {
+        payload: Prisma.$LessonSectionPayload<ExtArgs>
+        fields: Prisma.LessonSectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LessonSectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LessonSectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>
+          }
+          findFirst: {
+            args: Prisma.LessonSectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LessonSectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>
+          }
+          findMany: {
+            args: Prisma.LessonSectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>[]
+          }
+          create: {
+            args: Prisma.LessonSectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>
+          }
+          createMany: {
+            args: Prisma.LessonSectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LessonSectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>[]
+          }
+          delete: {
+            args: Prisma.LessonSectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>
+          }
+          update: {
+            args: Prisma.LessonSectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.LessonSectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LessonSectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LessonSectionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>[]
+          }
+          upsert: {
+            args: Prisma.LessonSectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonSectionPayload>
+          }
+          aggregate: {
+            args: Prisma.LessonSectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLessonSection>
+          }
+          groupBy: {
+            args: Prisma.LessonSectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LessonSectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LessonSectionCountArgs<ExtArgs>
+            result: $Utils.Optional<LessonSectionCountAggregateOutputType> | number
+          }
+        }
+      }
+      LessonExercise: {
+        payload: Prisma.$LessonExercisePayload<ExtArgs>
+        fields: Prisma.LessonExerciseFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LessonExerciseFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LessonExerciseFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>
+          }
+          findFirst: {
+            args: Prisma.LessonExerciseFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LessonExerciseFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>
+          }
+          findMany: {
+            args: Prisma.LessonExerciseFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>[]
+          }
+          create: {
+            args: Prisma.LessonExerciseCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>
+          }
+          createMany: {
+            args: Prisma.LessonExerciseCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LessonExerciseCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>[]
+          }
+          delete: {
+            args: Prisma.LessonExerciseDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>
+          }
+          update: {
+            args: Prisma.LessonExerciseUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>
+          }
+          deleteMany: {
+            args: Prisma.LessonExerciseDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LessonExerciseUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LessonExerciseUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>[]
+          }
+          upsert: {
+            args: Prisma.LessonExerciseUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonExercisePayload>
+          }
+          aggregate: {
+            args: Prisma.LessonExerciseAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLessonExercise>
+          }
+          groupBy: {
+            args: Prisma.LessonExerciseGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LessonExerciseGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LessonExerciseCountArgs<ExtArgs>
+            result: $Utils.Optional<LessonExerciseCountAggregateOutputType> | number
           }
         }
       }
@@ -1278,6 +1538,154 @@ export namespace Prisma {
           }
         }
       }
+      ConversationTemplate: {
+        payload: Prisma.$ConversationTemplatePayload<ExtArgs>
+        fields: Prisma.ConversationTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ConversationTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ConversationTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.ConversationTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ConversationTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.ConversationTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.ConversationTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.ConversationTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ConversationTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.ConversationTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>
+          }
+          update: {
+            args: Prisma.ConversationTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.ConversationTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ConversationTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ConversationTemplateUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>[]
+          }
+          upsert: {
+            args: Prisma.ConversationTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.ConversationTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateConversationTemplate>
+          }
+          groupBy: {
+            args: Prisma.ConversationTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ConversationTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ConversationTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<ConversationTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserTemplateUsage: {
+        payload: Prisma.$UserTemplateUsagePayload<ExtArgs>
+        fields: Prisma.UserTemplateUsageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserTemplateUsageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserTemplateUsageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>
+          }
+          findFirst: {
+            args: Prisma.UserTemplateUsageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserTemplateUsageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>
+          }
+          findMany: {
+            args: Prisma.UserTemplateUsageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>[]
+          }
+          create: {
+            args: Prisma.UserTemplateUsageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>
+          }
+          createMany: {
+            args: Prisma.UserTemplateUsageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserTemplateUsageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>[]
+          }
+          delete: {
+            args: Prisma.UserTemplateUsageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>
+          }
+          update: {
+            args: Prisma.UserTemplateUsageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>
+          }
+          deleteMany: {
+            args: Prisma.UserTemplateUsageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserTemplateUsageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserTemplateUsageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>[]
+          }
+          upsert: {
+            args: Prisma.UserTemplateUsageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateUsagePayload>
+          }
+          aggregate: {
+            args: Prisma.UserTemplateUsageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserTemplateUsage>
+          }
+          groupBy: {
+            args: Prisma.UserTemplateUsageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserTemplateUsageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserTemplateUsageCountArgs<ExtArgs>
+            result: $Utils.Optional<UserTemplateUsageCountAggregateOutputType> | number
+          }
+        }
+      }
       ExamResult: {
         payload: Prisma.$ExamResultPayload<ExtArgs>
         fields: Prisma.ExamResultFieldRefs
@@ -1500,6 +1908,228 @@ export namespace Prisma {
           }
         }
       }
+      PronunciationExercise: {
+        payload: Prisma.$PronunciationExercisePayload<ExtArgs>
+        fields: Prisma.PronunciationExerciseFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PronunciationExerciseFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PronunciationExerciseFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>
+          }
+          findFirst: {
+            args: Prisma.PronunciationExerciseFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PronunciationExerciseFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>
+          }
+          findMany: {
+            args: Prisma.PronunciationExerciseFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>[]
+          }
+          create: {
+            args: Prisma.PronunciationExerciseCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>
+          }
+          createMany: {
+            args: Prisma.PronunciationExerciseCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PronunciationExerciseCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>[]
+          }
+          delete: {
+            args: Prisma.PronunciationExerciseDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>
+          }
+          update: {
+            args: Prisma.PronunciationExerciseUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>
+          }
+          deleteMany: {
+            args: Prisma.PronunciationExerciseDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PronunciationExerciseUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PronunciationExerciseUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>[]
+          }
+          upsert: {
+            args: Prisma.PronunciationExerciseUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationExercisePayload>
+          }
+          aggregate: {
+            args: Prisma.PronunciationExerciseAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePronunciationExercise>
+          }
+          groupBy: {
+            args: Prisma.PronunciationExerciseGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PronunciationExerciseGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PronunciationExerciseCountArgs<ExtArgs>
+            result: $Utils.Optional<PronunciationExerciseCountAggregateOutputType> | number
+          }
+        }
+      }
+      PronunciationPracticeItem: {
+        payload: Prisma.$PronunciationPracticeItemPayload<ExtArgs>
+        fields: Prisma.PronunciationPracticeItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PronunciationPracticeItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PronunciationPracticeItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>
+          }
+          findFirst: {
+            args: Prisma.PronunciationPracticeItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PronunciationPracticeItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>
+          }
+          findMany: {
+            args: Prisma.PronunciationPracticeItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>[]
+          }
+          create: {
+            args: Prisma.PronunciationPracticeItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>
+          }
+          createMany: {
+            args: Prisma.PronunciationPracticeItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PronunciationPracticeItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>[]
+          }
+          delete: {
+            args: Prisma.PronunciationPracticeItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>
+          }
+          update: {
+            args: Prisma.PronunciationPracticeItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.PronunciationPracticeItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PronunciationPracticeItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PronunciationPracticeItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.PronunciationPracticeItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PronunciationPracticeItemPayload>
+          }
+          aggregate: {
+            args: Prisma.PronunciationPracticeItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePronunciationPracticeItem>
+          }
+          groupBy: {
+            args: Prisma.PronunciationPracticeItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PronunciationPracticeItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PronunciationPracticeItemCountArgs<ExtArgs>
+            result: $Utils.Optional<PronunciationPracticeItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      GrammarRule: {
+        payload: Prisma.$GrammarRulePayload<ExtArgs>
+        fields: Prisma.GrammarRuleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GrammarRuleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GrammarRuleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>
+          }
+          findFirst: {
+            args: Prisma.GrammarRuleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GrammarRuleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>
+          }
+          findMany: {
+            args: Prisma.GrammarRuleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>[]
+          }
+          create: {
+            args: Prisma.GrammarRuleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>
+          }
+          createMany: {
+            args: Prisma.GrammarRuleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GrammarRuleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>[]
+          }
+          delete: {
+            args: Prisma.GrammarRuleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>
+          }
+          update: {
+            args: Prisma.GrammarRuleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>
+          }
+          deleteMany: {
+            args: Prisma.GrammarRuleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GrammarRuleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GrammarRuleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>[]
+          }
+          upsert: {
+            args: Prisma.GrammarRuleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GrammarRulePayload>
+          }
+          aggregate: {
+            args: Prisma.GrammarRuleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGrammarRule>
+          }
+          groupBy: {
+            args: Prisma.GrammarRuleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GrammarRuleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GrammarRuleCountArgs<ExtArgs>
+            result: $Utils.Optional<GrammarRuleCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1586,14 +2216,21 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     lesson?: LessonOmit
+    lessonSection?: LessonSectionOmit
+    lessonExercise?: LessonExerciseOmit
     lessonProgress?: LessonProgressOmit
     vocabulary?: VocabularyOmit
     userVocabulary?: UserVocabularyOmit
     conversation?: ConversationOmit
     message?: MessageOmit
+    conversationTemplate?: ConversationTemplateOmit
+    userTemplateUsage?: UserTemplateUsageOmit
     examResult?: ExamResultOmit
     practiceSession?: PracticeSessionOmit
     practiceItem?: PracticeItemOmit
+    pronunciationExercise?: PronunciationExerciseOmit
+    pronunciationPracticeItem?: PronunciationPracticeItemOmit
+    grammarRule?: GrammarRuleOmit
   }
 
   /* Types for Logging */
@@ -1693,6 +2330,7 @@ export namespace Prisma {
     examResults: number
     conversations: number
     practiceSessions: number
+    templateUsage: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1701,6 +2339,7 @@ export namespace Prisma {
     examResults?: boolean | UserCountOutputTypeCountExamResultsArgs
     conversations?: boolean | UserCountOutputTypeCountConversationsArgs
     practiceSessions?: boolean | UserCountOutputTypeCountPracticeSessionsArgs
+    templateUsage?: boolean | UserCountOutputTypeCountTemplateUsageArgs
   }
 
   // Custom InputTypes
@@ -1749,6 +2388,13 @@ export namespace Prisma {
     where?: PracticeSessionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateUsageWhereInput
+  }
+
 
   /**
    * Count Type LessonCountOutputType
@@ -1756,10 +2402,12 @@ export namespace Prisma {
 
   export type LessonCountOutputType = {
     progress: number
+    sections: number
   }
 
   export type LessonCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     progress?: boolean | LessonCountOutputTypeCountProgressArgs
+    sections?: boolean | LessonCountOutputTypeCountSectionsArgs
   }
 
   // Custom InputTypes
@@ -1778,6 +2426,44 @@ export namespace Prisma {
    */
   export type LessonCountOutputTypeCountProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LessonProgressWhereInput
+  }
+
+  /**
+   * LessonCountOutputType without action
+   */
+  export type LessonCountOutputTypeCountSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonSectionWhereInput
+  }
+
+
+  /**
+   * Count Type LessonSectionCountOutputType
+   */
+
+  export type LessonSectionCountOutputType = {
+    exercises: number
+  }
+
+  export type LessonSectionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exercises?: boolean | LessonSectionCountOutputTypeCountExercisesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * LessonSectionCountOutputType without action
+   */
+  export type LessonSectionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSectionCountOutputType
+     */
+    select?: LessonSectionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * LessonSectionCountOutputType without action
+   */
+  export type LessonSectionCountOutputTypeCountExercisesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonExerciseWhereInput
   }
 
 
@@ -1853,15 +2539,57 @@ export namespace Prisma {
 
 
   /**
+   * Count Type ConversationTemplateCountOutputType
+   */
+
+  export type ConversationTemplateCountOutputType = {
+    userTemplateUsage: number
+    conversations: number
+  }
+
+  export type ConversationTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userTemplateUsage?: boolean | ConversationTemplateCountOutputTypeCountUserTemplateUsageArgs
+    conversations?: boolean | ConversationTemplateCountOutputTypeCountConversationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ConversationTemplateCountOutputType without action
+   */
+  export type ConversationTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplateCountOutputType
+     */
+    select?: ConversationTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ConversationTemplateCountOutputType without action
+   */
+  export type ConversationTemplateCountOutputTypeCountUserTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateUsageWhereInput
+  }
+
+  /**
+   * ConversationTemplateCountOutputType without action
+   */
+  export type ConversationTemplateCountOutputTypeCountConversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConversationWhereInput
+  }
+
+
+  /**
    * Count Type PracticeSessionCountOutputType
    */
 
   export type PracticeSessionCountOutputType = {
     practiceItems: number
+    pronunciationItems: number
   }
 
   export type PracticeSessionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     practiceItems?: boolean | PracticeSessionCountOutputTypeCountPracticeItemsArgs
+    pronunciationItems?: boolean | PracticeSessionCountOutputTypeCountPronunciationItemsArgs
   }
 
   // Custom InputTypes
@@ -1880,6 +2608,44 @@ export namespace Prisma {
    */
   export type PracticeSessionCountOutputTypeCountPracticeItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PracticeItemWhereInput
+  }
+
+  /**
+   * PracticeSessionCountOutputType without action
+   */
+  export type PracticeSessionCountOutputTypeCountPronunciationItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PronunciationPracticeItemWhereInput
+  }
+
+
+  /**
+   * Count Type PronunciationExerciseCountOutputType
+   */
+
+  export type PronunciationExerciseCountOutputType = {
+    practiceItems: number
+  }
+
+  export type PronunciationExerciseCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    practiceItems?: boolean | PronunciationExerciseCountOutputTypeCountPracticeItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PronunciationExerciseCountOutputType without action
+   */
+  export type PronunciationExerciseCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExerciseCountOutputType
+     */
+    select?: PronunciationExerciseCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PronunciationExerciseCountOutputType without action
+   */
+  export type PronunciationExerciseCountOutputTypeCountPracticeItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PronunciationPracticeItemWhereInput
   }
 
 
@@ -1929,6 +2695,10 @@ export namespace Prisma {
     dailyGoal: number | null
     notifications: boolean | null
     theme: string | null
+    aiCorrectionEnabled: boolean | null
+    aiVocabSuggestionsEnabled: boolean | null
+    preferredVoice: string | null
+    speechRecognitionEnabled: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1945,6 +2715,10 @@ export namespace Prisma {
     dailyGoal: number | null
     notifications: boolean | null
     theme: string | null
+    aiCorrectionEnabled: boolean | null
+    aiVocabSuggestionsEnabled: boolean | null
+    preferredVoice: string | null
+    speechRecognitionEnabled: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1962,6 +2736,10 @@ export namespace Prisma {
     dailyGoal: number
     notifications: number
     theme: number
+    aiCorrectionEnabled: number
+    aiVocabSuggestionsEnabled: number
+    preferredVoice: number
+    speechRecognitionEnabled: number
     _all: number
   }
 
@@ -1996,6 +2774,10 @@ export namespace Prisma {
     dailyGoal?: true
     notifications?: true
     theme?: true
+    aiCorrectionEnabled?: true
+    aiVocabSuggestionsEnabled?: true
+    preferredVoice?: true
+    speechRecognitionEnabled?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2012,6 +2794,10 @@ export namespace Prisma {
     dailyGoal?: true
     notifications?: true
     theme?: true
+    aiCorrectionEnabled?: true
+    aiVocabSuggestionsEnabled?: true
+    preferredVoice?: true
+    speechRecognitionEnabled?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2029,6 +2815,10 @@ export namespace Prisma {
     dailyGoal?: true
     notifications?: true
     theme?: true
+    aiCorrectionEnabled?: true
+    aiVocabSuggestionsEnabled?: true
+    preferredVoice?: true
+    speechRecognitionEnabled?: true
     _all?: true
   }
 
@@ -2133,6 +2923,10 @@ export namespace Prisma {
     dailyGoal: number
     notifications: boolean
     theme: string
+    aiCorrectionEnabled: boolean
+    aiVocabSuggestionsEnabled: boolean
+    preferredVoice: string | null
+    speechRecognitionEnabled: boolean
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2169,11 +2963,16 @@ export namespace Prisma {
     dailyGoal?: boolean
     notifications?: boolean
     theme?: boolean
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: boolean
+    speechRecognitionEnabled?: boolean
     lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
     examResults?: boolean | User$examResultsArgs<ExtArgs>
     conversations?: boolean | User$conversationsArgs<ExtArgs>
     practiceSessions?: boolean | User$practiceSessionsArgs<ExtArgs>
+    templateUsage?: boolean | User$templateUsageArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2192,6 +2991,10 @@ export namespace Prisma {
     dailyGoal?: boolean
     notifications?: boolean
     theme?: boolean
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: boolean
+    speechRecognitionEnabled?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2209,6 +3012,10 @@ export namespace Prisma {
     dailyGoal?: boolean
     notifications?: boolean
     theme?: boolean
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: boolean
+    speechRecognitionEnabled?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2226,15 +3033,20 @@ export namespace Prisma {
     dailyGoal?: boolean
     notifications?: boolean
     theme?: boolean
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: boolean
+    speechRecognitionEnabled?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "level" | "points" | "streakDays" | "joinedAt" | "learningGoals" | "completedLessons" | "lastActive" | "dailyGoal" | "notifications" | "theme", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "level" | "points" | "streakDays" | "joinedAt" | "learningGoals" | "completedLessons" | "lastActive" | "dailyGoal" | "notifications" | "theme" | "aiCorrectionEnabled" | "aiVocabSuggestionsEnabled" | "preferredVoice" | "speechRecognitionEnabled", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
     examResults?: boolean | User$examResultsArgs<ExtArgs>
     conversations?: boolean | User$conversationsArgs<ExtArgs>
     practiceSessions?: boolean | User$practiceSessionsArgs<ExtArgs>
+    templateUsage?: boolean | User$templateUsageArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2248,6 +3060,7 @@ export namespace Prisma {
       examResults: Prisma.$ExamResultPayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
       practiceSessions: Prisma.$PracticeSessionPayload<ExtArgs>[]
+      templateUsage: Prisma.$UserTemplateUsagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2264,6 +3077,10 @@ export namespace Prisma {
       dailyGoal: number
       notifications: boolean
       theme: string
+      aiCorrectionEnabled: boolean
+      aiVocabSuggestionsEnabled: boolean
+      preferredVoice: string | null
+      speechRecognitionEnabled: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2663,6 +3480,7 @@ export namespace Prisma {
     examResults<T extends User$examResultsArgs<ExtArgs> = {}>(args?: Subset<T, User$examResultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExamResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends User$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     practiceSessions<T extends User$practiceSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$practiceSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    templateUsage<T extends User$templateUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$templateUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2706,6 +3524,10 @@ export namespace Prisma {
     readonly dailyGoal: FieldRef<"User", 'Int'>
     readonly notifications: FieldRef<"User", 'Boolean'>
     readonly theme: FieldRef<"User", 'String'>
+    readonly aiCorrectionEnabled: FieldRef<"User", 'Boolean'>
+    readonly aiVocabSuggestionsEnabled: FieldRef<"User", 'Boolean'>
+    readonly preferredVoice: FieldRef<"User", 'String'>
+    readonly speechRecognitionEnabled: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -3214,6 +4036,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.templateUsage
+   */
+  export type User$templateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    where?: UserTemplateUsageWhereInput
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    cursor?: UserTemplateUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3277,7 +4123,6 @@ export namespace Prisma {
     level: number
     duration: number
     topics: number
-    content: number
     _all: number
   }
 
@@ -3315,7 +4160,6 @@ export namespace Prisma {
     level?: true
     duration?: true
     topics?: true
-    content?: true
     _all?: true
   }
 
@@ -3412,7 +4256,6 @@ export namespace Prisma {
     level: string
     duration: number
     topics: string[]
-    content: JsonValue
     _count: LessonCountAggregateOutputType | null
     _avg: LessonAvgAggregateOutputType | null
     _sum: LessonSumAggregateOutputType | null
@@ -3441,8 +4284,8 @@ export namespace Prisma {
     level?: boolean
     duration?: boolean
     topics?: boolean
-    content?: boolean
     progress?: boolean | Lesson$progressArgs<ExtArgs>
+    sections?: boolean | Lesson$sectionsArgs<ExtArgs>
     _count?: boolean | LessonCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lesson"]>
 
@@ -3453,7 +4296,6 @@ export namespace Prisma {
     level?: boolean
     duration?: boolean
     topics?: boolean
-    content?: boolean
   }, ExtArgs["result"]["lesson"]>
 
   export type LessonSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3463,7 +4305,6 @@ export namespace Prisma {
     level?: boolean
     duration?: boolean
     topics?: boolean
-    content?: boolean
   }, ExtArgs["result"]["lesson"]>
 
   export type LessonSelectScalar = {
@@ -3473,12 +4314,12 @@ export namespace Prisma {
     level?: boolean
     duration?: boolean
     topics?: boolean
-    content?: boolean
   }
 
-  export type LessonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "level" | "duration" | "topics" | "content", ExtArgs["result"]["lesson"]>
+  export type LessonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "level" | "duration" | "topics", ExtArgs["result"]["lesson"]>
   export type LessonInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     progress?: boolean | Lesson$progressArgs<ExtArgs>
+    sections?: boolean | Lesson$sectionsArgs<ExtArgs>
     _count?: boolean | LessonCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LessonIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3488,6 +4329,7 @@ export namespace Prisma {
     name: "Lesson"
     objects: {
       progress: Prisma.$LessonProgressPayload<ExtArgs>[]
+      sections: Prisma.$LessonSectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3496,7 +4338,6 @@ export namespace Prisma {
       level: string
       duration: number
       topics: string[]
-      content: Prisma.JsonValue
     }, ExtArgs["result"]["lesson"]>
     composites: {}
   }
@@ -3892,6 +4733,7 @@ export namespace Prisma {
   export interface Prisma__LessonClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     progress<T extends Lesson$progressArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$progressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sections<T extends Lesson$sectionsArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3927,7 +4769,6 @@ export namespace Prisma {
     readonly level: FieldRef<"Lesson", 'String'>
     readonly duration: FieldRef<"Lesson", 'Int'>
     readonly topics: FieldRef<"Lesson", 'String[]'>
-    readonly content: FieldRef<"Lesson", 'Json'>
   }
     
 
@@ -4340,6 +5181,30 @@ export namespace Prisma {
   }
 
   /**
+   * Lesson.sections
+   */
+  export type Lesson$sectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    where?: LessonSectionWhereInput
+    orderBy?: LessonSectionOrderByWithRelationInput | LessonSectionOrderByWithRelationInput[]
+    cursor?: LessonSectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LessonSectionScalarFieldEnum | LessonSectionScalarFieldEnum[]
+  }
+
+  /**
    * Lesson without action
    */
   export type LessonDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4355,6 +5220,2293 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: LessonInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model LessonSection
+   */
+
+  export type AggregateLessonSection = {
+    _count: LessonSectionCountAggregateOutputType | null
+    _avg: LessonSectionAvgAggregateOutputType | null
+    _sum: LessonSectionSumAggregateOutputType | null
+    _min: LessonSectionMinAggregateOutputType | null
+    _max: LessonSectionMaxAggregateOutputType | null
+  }
+
+  export type LessonSectionAvgAggregateOutputType = {
+    id: number | null
+    lessonId: number | null
+    order: number | null
+  }
+
+  export type LessonSectionSumAggregateOutputType = {
+    id: number | null
+    lessonId: number | null
+    order: number | null
+  }
+
+  export type LessonSectionMinAggregateOutputType = {
+    id: number | null
+    lessonId: number | null
+    title: string | null
+    type: string | null
+    content: string | null
+    audioUrl: string | null
+    videoUrl: string | null
+    order: number | null
+  }
+
+  export type LessonSectionMaxAggregateOutputType = {
+    id: number | null
+    lessonId: number | null
+    title: string | null
+    type: string | null
+    content: string | null
+    audioUrl: string | null
+    videoUrl: string | null
+    order: number | null
+  }
+
+  export type LessonSectionCountAggregateOutputType = {
+    id: number
+    lessonId: number
+    title: number
+    type: number
+    content: number
+    audioUrl: number
+    videoUrl: number
+    order: number
+    _all: number
+  }
+
+
+  export type LessonSectionAvgAggregateInputType = {
+    id?: true
+    lessonId?: true
+    order?: true
+  }
+
+  export type LessonSectionSumAggregateInputType = {
+    id?: true
+    lessonId?: true
+    order?: true
+  }
+
+  export type LessonSectionMinAggregateInputType = {
+    id?: true
+    lessonId?: true
+    title?: true
+    type?: true
+    content?: true
+    audioUrl?: true
+    videoUrl?: true
+    order?: true
+  }
+
+  export type LessonSectionMaxAggregateInputType = {
+    id?: true
+    lessonId?: true
+    title?: true
+    type?: true
+    content?: true
+    audioUrl?: true
+    videoUrl?: true
+    order?: true
+  }
+
+  export type LessonSectionCountAggregateInputType = {
+    id?: true
+    lessonId?: true
+    title?: true
+    type?: true
+    content?: true
+    audioUrl?: true
+    videoUrl?: true
+    order?: true
+    _all?: true
+  }
+
+  export type LessonSectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LessonSection to aggregate.
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonSections to fetch.
+     */
+    orderBy?: LessonSectionOrderByWithRelationInput | LessonSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LessonSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonSections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LessonSections
+    **/
+    _count?: true | LessonSectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LessonSectionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LessonSectionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LessonSectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LessonSectionMaxAggregateInputType
+  }
+
+  export type GetLessonSectionAggregateType<T extends LessonSectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateLessonSection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLessonSection[P]>
+      : GetScalarType<T[P], AggregateLessonSection[P]>
+  }
+
+
+
+
+  export type LessonSectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonSectionWhereInput
+    orderBy?: LessonSectionOrderByWithAggregationInput | LessonSectionOrderByWithAggregationInput[]
+    by: LessonSectionScalarFieldEnum[] | LessonSectionScalarFieldEnum
+    having?: LessonSectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LessonSectionCountAggregateInputType | true
+    _avg?: LessonSectionAvgAggregateInputType
+    _sum?: LessonSectionSumAggregateInputType
+    _min?: LessonSectionMinAggregateInputType
+    _max?: LessonSectionMaxAggregateInputType
+  }
+
+  export type LessonSectionGroupByOutputType = {
+    id: number
+    lessonId: number
+    title: string
+    type: string
+    content: string | null
+    audioUrl: string | null
+    videoUrl: string | null
+    order: number
+    _count: LessonSectionCountAggregateOutputType | null
+    _avg: LessonSectionAvgAggregateOutputType | null
+    _sum: LessonSectionSumAggregateOutputType | null
+    _min: LessonSectionMinAggregateOutputType | null
+    _max: LessonSectionMaxAggregateOutputType | null
+  }
+
+  type GetLessonSectionGroupByPayload<T extends LessonSectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LessonSectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LessonSectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LessonSectionGroupByOutputType[P]>
+            : GetScalarType<T[P], LessonSectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LessonSectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    lessonId?: boolean
+    title?: boolean
+    type?: boolean
+    content?: boolean
+    audioUrl?: boolean
+    videoUrl?: boolean
+    order?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+    exercises?: boolean | LessonSection$exercisesArgs<ExtArgs>
+    _count?: boolean | LessonSectionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonSection"]>
+
+  export type LessonSectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    lessonId?: boolean
+    title?: boolean
+    type?: boolean
+    content?: boolean
+    audioUrl?: boolean
+    videoUrl?: boolean
+    order?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonSection"]>
+
+  export type LessonSectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    lessonId?: boolean
+    title?: boolean
+    type?: boolean
+    content?: boolean
+    audioUrl?: boolean
+    videoUrl?: boolean
+    order?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonSection"]>
+
+  export type LessonSectionSelectScalar = {
+    id?: boolean
+    lessonId?: boolean
+    title?: boolean
+    type?: boolean
+    content?: boolean
+    audioUrl?: boolean
+    videoUrl?: boolean
+    order?: boolean
+  }
+
+  export type LessonSectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lessonId" | "title" | "type" | "content" | "audioUrl" | "videoUrl" | "order", ExtArgs["result"]["lessonSection"]>
+  export type LessonSectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+    exercises?: boolean | LessonSection$exercisesArgs<ExtArgs>
+    _count?: boolean | LessonSectionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type LessonSectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+  export type LessonSectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+
+  export type $LessonSectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LessonSection"
+    objects: {
+      lesson: Prisma.$LessonPayload<ExtArgs>
+      exercises: Prisma.$LessonExercisePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      lessonId: number
+      title: string
+      type: string
+      content: string | null
+      audioUrl: string | null
+      videoUrl: string | null
+      order: number
+    }, ExtArgs["result"]["lessonSection"]>
+    composites: {}
+  }
+
+  type LessonSectionGetPayload<S extends boolean | null | undefined | LessonSectionDefaultArgs> = $Result.GetResult<Prisma.$LessonSectionPayload, S>
+
+  type LessonSectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LessonSectionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LessonSectionCountAggregateInputType | true
+    }
+
+  export interface LessonSectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LessonSection'], meta: { name: 'LessonSection' } }
+    /**
+     * Find zero or one LessonSection that matches the filter.
+     * @param {LessonSectionFindUniqueArgs} args - Arguments to find a LessonSection
+     * @example
+     * // Get one LessonSection
+     * const lessonSection = await prisma.lessonSection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LessonSectionFindUniqueArgs>(args: SelectSubset<T, LessonSectionFindUniqueArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LessonSection that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LessonSectionFindUniqueOrThrowArgs} args - Arguments to find a LessonSection
+     * @example
+     * // Get one LessonSection
+     * const lessonSection = await prisma.lessonSection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LessonSectionFindUniqueOrThrowArgs>(args: SelectSubset<T, LessonSectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LessonSection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionFindFirstArgs} args - Arguments to find a LessonSection
+     * @example
+     * // Get one LessonSection
+     * const lessonSection = await prisma.lessonSection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LessonSectionFindFirstArgs>(args?: SelectSubset<T, LessonSectionFindFirstArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LessonSection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionFindFirstOrThrowArgs} args - Arguments to find a LessonSection
+     * @example
+     * // Get one LessonSection
+     * const lessonSection = await prisma.lessonSection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LessonSectionFindFirstOrThrowArgs>(args?: SelectSubset<T, LessonSectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LessonSections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LessonSections
+     * const lessonSections = await prisma.lessonSection.findMany()
+     * 
+     * // Get first 10 LessonSections
+     * const lessonSections = await prisma.lessonSection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const lessonSectionWithIdOnly = await prisma.lessonSection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LessonSectionFindManyArgs>(args?: SelectSubset<T, LessonSectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LessonSection.
+     * @param {LessonSectionCreateArgs} args - Arguments to create a LessonSection.
+     * @example
+     * // Create one LessonSection
+     * const LessonSection = await prisma.lessonSection.create({
+     *   data: {
+     *     // ... data to create a LessonSection
+     *   }
+     * })
+     * 
+     */
+    create<T extends LessonSectionCreateArgs>(args: SelectSubset<T, LessonSectionCreateArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LessonSections.
+     * @param {LessonSectionCreateManyArgs} args - Arguments to create many LessonSections.
+     * @example
+     * // Create many LessonSections
+     * const lessonSection = await prisma.lessonSection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LessonSectionCreateManyArgs>(args?: SelectSubset<T, LessonSectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LessonSections and returns the data saved in the database.
+     * @param {LessonSectionCreateManyAndReturnArgs} args - Arguments to create many LessonSections.
+     * @example
+     * // Create many LessonSections
+     * const lessonSection = await prisma.lessonSection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LessonSections and only return the `id`
+     * const lessonSectionWithIdOnly = await prisma.lessonSection.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LessonSectionCreateManyAndReturnArgs>(args?: SelectSubset<T, LessonSectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LessonSection.
+     * @param {LessonSectionDeleteArgs} args - Arguments to delete one LessonSection.
+     * @example
+     * // Delete one LessonSection
+     * const LessonSection = await prisma.lessonSection.delete({
+     *   where: {
+     *     // ... filter to delete one LessonSection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LessonSectionDeleteArgs>(args: SelectSubset<T, LessonSectionDeleteArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LessonSection.
+     * @param {LessonSectionUpdateArgs} args - Arguments to update one LessonSection.
+     * @example
+     * // Update one LessonSection
+     * const lessonSection = await prisma.lessonSection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LessonSectionUpdateArgs>(args: SelectSubset<T, LessonSectionUpdateArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LessonSections.
+     * @param {LessonSectionDeleteManyArgs} args - Arguments to filter LessonSections to delete.
+     * @example
+     * // Delete a few LessonSections
+     * const { count } = await prisma.lessonSection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LessonSectionDeleteManyArgs>(args?: SelectSubset<T, LessonSectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LessonSections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LessonSections
+     * const lessonSection = await prisma.lessonSection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LessonSectionUpdateManyArgs>(args: SelectSubset<T, LessonSectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LessonSections and returns the data updated in the database.
+     * @param {LessonSectionUpdateManyAndReturnArgs} args - Arguments to update many LessonSections.
+     * @example
+     * // Update many LessonSections
+     * const lessonSection = await prisma.lessonSection.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LessonSections and only return the `id`
+     * const lessonSectionWithIdOnly = await prisma.lessonSection.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LessonSectionUpdateManyAndReturnArgs>(args: SelectSubset<T, LessonSectionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LessonSection.
+     * @param {LessonSectionUpsertArgs} args - Arguments to update or create a LessonSection.
+     * @example
+     * // Update or create a LessonSection
+     * const lessonSection = await prisma.lessonSection.upsert({
+     *   create: {
+     *     // ... data to create a LessonSection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LessonSection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LessonSectionUpsertArgs>(args: SelectSubset<T, LessonSectionUpsertArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LessonSections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionCountArgs} args - Arguments to filter LessonSections to count.
+     * @example
+     * // Count the number of LessonSections
+     * const count = await prisma.lessonSection.count({
+     *   where: {
+     *     // ... the filter for the LessonSections we want to count
+     *   }
+     * })
+    **/
+    count<T extends LessonSectionCountArgs>(
+      args?: Subset<T, LessonSectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LessonSectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LessonSection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LessonSectionAggregateArgs>(args: Subset<T, LessonSectionAggregateArgs>): Prisma.PrismaPromise<GetLessonSectionAggregateType<T>>
+
+    /**
+     * Group by LessonSection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonSectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LessonSectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LessonSectionGroupByArgs['orderBy'] }
+        : { orderBy?: LessonSectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LessonSectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLessonSectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LessonSection model
+   */
+  readonly fields: LessonSectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LessonSection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LessonSectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    lesson<T extends LessonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonDefaultArgs<ExtArgs>>): Prisma__LessonClient<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    exercises<T extends LessonSection$exercisesArgs<ExtArgs> = {}>(args?: Subset<T, LessonSection$exercisesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LessonSection model
+   */
+  interface LessonSectionFieldRefs {
+    readonly id: FieldRef<"LessonSection", 'Int'>
+    readonly lessonId: FieldRef<"LessonSection", 'Int'>
+    readonly title: FieldRef<"LessonSection", 'String'>
+    readonly type: FieldRef<"LessonSection", 'String'>
+    readonly content: FieldRef<"LessonSection", 'String'>
+    readonly audioUrl: FieldRef<"LessonSection", 'String'>
+    readonly videoUrl: FieldRef<"LessonSection", 'String'>
+    readonly order: FieldRef<"LessonSection", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LessonSection findUnique
+   */
+  export type LessonSectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonSection to fetch.
+     */
+    where: LessonSectionWhereUniqueInput
+  }
+
+  /**
+   * LessonSection findUniqueOrThrow
+   */
+  export type LessonSectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonSection to fetch.
+     */
+    where: LessonSectionWhereUniqueInput
+  }
+
+  /**
+   * LessonSection findFirst
+   */
+  export type LessonSectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonSection to fetch.
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonSections to fetch.
+     */
+    orderBy?: LessonSectionOrderByWithRelationInput | LessonSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LessonSections.
+     */
+    cursor?: LessonSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonSections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonSections.
+     */
+    distinct?: LessonSectionScalarFieldEnum | LessonSectionScalarFieldEnum[]
+  }
+
+  /**
+   * LessonSection findFirstOrThrow
+   */
+  export type LessonSectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonSection to fetch.
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonSections to fetch.
+     */
+    orderBy?: LessonSectionOrderByWithRelationInput | LessonSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LessonSections.
+     */
+    cursor?: LessonSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonSections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonSections.
+     */
+    distinct?: LessonSectionScalarFieldEnum | LessonSectionScalarFieldEnum[]
+  }
+
+  /**
+   * LessonSection findMany
+   */
+  export type LessonSectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonSections to fetch.
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonSections to fetch.
+     */
+    orderBy?: LessonSectionOrderByWithRelationInput | LessonSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LessonSections.
+     */
+    cursor?: LessonSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonSections.
+     */
+    skip?: number
+    distinct?: LessonSectionScalarFieldEnum | LessonSectionScalarFieldEnum[]
+  }
+
+  /**
+   * LessonSection create
+   */
+  export type LessonSectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LessonSection.
+     */
+    data: XOR<LessonSectionCreateInput, LessonSectionUncheckedCreateInput>
+  }
+
+  /**
+   * LessonSection createMany
+   */
+  export type LessonSectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LessonSections.
+     */
+    data: LessonSectionCreateManyInput | LessonSectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LessonSection createManyAndReturn
+   */
+  export type LessonSectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * The data used to create many LessonSections.
+     */
+    data: LessonSectionCreateManyInput | LessonSectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LessonSection update
+   */
+  export type LessonSectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LessonSection.
+     */
+    data: XOR<LessonSectionUpdateInput, LessonSectionUncheckedUpdateInput>
+    /**
+     * Choose, which LessonSection to update.
+     */
+    where: LessonSectionWhereUniqueInput
+  }
+
+  /**
+   * LessonSection updateMany
+   */
+  export type LessonSectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LessonSections.
+     */
+    data: XOR<LessonSectionUpdateManyMutationInput, LessonSectionUncheckedUpdateManyInput>
+    /**
+     * Filter which LessonSections to update
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * Limit how many LessonSections to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LessonSection updateManyAndReturn
+   */
+  export type LessonSectionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * The data used to update LessonSections.
+     */
+    data: XOR<LessonSectionUpdateManyMutationInput, LessonSectionUncheckedUpdateManyInput>
+    /**
+     * Filter which LessonSections to update
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * Limit how many LessonSections to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LessonSection upsert
+   */
+  export type LessonSectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LessonSection to update in case it exists.
+     */
+    where: LessonSectionWhereUniqueInput
+    /**
+     * In case the LessonSection found by the `where` argument doesn't exist, create a new LessonSection with this data.
+     */
+    create: XOR<LessonSectionCreateInput, LessonSectionUncheckedCreateInput>
+    /**
+     * In case the LessonSection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LessonSectionUpdateInput, LessonSectionUncheckedUpdateInput>
+  }
+
+  /**
+   * LessonSection delete
+   */
+  export type LessonSectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+    /**
+     * Filter which LessonSection to delete.
+     */
+    where: LessonSectionWhereUniqueInput
+  }
+
+  /**
+   * LessonSection deleteMany
+   */
+  export type LessonSectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LessonSections to delete
+     */
+    where?: LessonSectionWhereInput
+    /**
+     * Limit how many LessonSections to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LessonSection.exercises
+   */
+  export type LessonSection$exercisesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    where?: LessonExerciseWhereInput
+    orderBy?: LessonExerciseOrderByWithRelationInput | LessonExerciseOrderByWithRelationInput[]
+    cursor?: LessonExerciseWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LessonExerciseScalarFieldEnum | LessonExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * LessonSection without action
+   */
+  export type LessonSectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonSection
+     */
+    select?: LessonSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonSection
+     */
+    omit?: LessonSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonSectionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model LessonExercise
+   */
+
+  export type AggregateLessonExercise = {
+    _count: LessonExerciseCountAggregateOutputType | null
+    _avg: LessonExerciseAvgAggregateOutputType | null
+    _sum: LessonExerciseSumAggregateOutputType | null
+    _min: LessonExerciseMinAggregateOutputType | null
+    _max: LessonExerciseMaxAggregateOutputType | null
+  }
+
+  export type LessonExerciseAvgAggregateOutputType = {
+    id: number | null
+    sectionId: number | null
+  }
+
+  export type LessonExerciseSumAggregateOutputType = {
+    id: number | null
+    sectionId: number | null
+  }
+
+  export type LessonExerciseMinAggregateOutputType = {
+    id: number | null
+    sectionId: number | null
+    type: string | null
+    question: string | null
+    correctAnswer: string | null
+    explanation: string | null
+  }
+
+  export type LessonExerciseMaxAggregateOutputType = {
+    id: number | null
+    sectionId: number | null
+    type: string | null
+    question: string | null
+    correctAnswer: string | null
+    explanation: string | null
+  }
+
+  export type LessonExerciseCountAggregateOutputType = {
+    id: number
+    sectionId: number
+    type: number
+    question: number
+    options: number
+    correctAnswer: number
+    explanation: number
+    _all: number
+  }
+
+
+  export type LessonExerciseAvgAggregateInputType = {
+    id?: true
+    sectionId?: true
+  }
+
+  export type LessonExerciseSumAggregateInputType = {
+    id?: true
+    sectionId?: true
+  }
+
+  export type LessonExerciseMinAggregateInputType = {
+    id?: true
+    sectionId?: true
+    type?: true
+    question?: true
+    correctAnswer?: true
+    explanation?: true
+  }
+
+  export type LessonExerciseMaxAggregateInputType = {
+    id?: true
+    sectionId?: true
+    type?: true
+    question?: true
+    correctAnswer?: true
+    explanation?: true
+  }
+
+  export type LessonExerciseCountAggregateInputType = {
+    id?: true
+    sectionId?: true
+    type?: true
+    question?: true
+    options?: true
+    correctAnswer?: true
+    explanation?: true
+    _all?: true
+  }
+
+  export type LessonExerciseAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LessonExercise to aggregate.
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonExercises to fetch.
+     */
+    orderBy?: LessonExerciseOrderByWithRelationInput | LessonExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LessonExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonExercises.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LessonExercises
+    **/
+    _count?: true | LessonExerciseCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LessonExerciseAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LessonExerciseSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LessonExerciseMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LessonExerciseMaxAggregateInputType
+  }
+
+  export type GetLessonExerciseAggregateType<T extends LessonExerciseAggregateArgs> = {
+        [P in keyof T & keyof AggregateLessonExercise]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLessonExercise[P]>
+      : GetScalarType<T[P], AggregateLessonExercise[P]>
+  }
+
+
+
+
+  export type LessonExerciseGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonExerciseWhereInput
+    orderBy?: LessonExerciseOrderByWithAggregationInput | LessonExerciseOrderByWithAggregationInput[]
+    by: LessonExerciseScalarFieldEnum[] | LessonExerciseScalarFieldEnum
+    having?: LessonExerciseScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LessonExerciseCountAggregateInputType | true
+    _avg?: LessonExerciseAvgAggregateInputType
+    _sum?: LessonExerciseSumAggregateInputType
+    _min?: LessonExerciseMinAggregateInputType
+    _max?: LessonExerciseMaxAggregateInputType
+  }
+
+  export type LessonExerciseGroupByOutputType = {
+    id: number
+    sectionId: number
+    type: string
+    question: string
+    options: string[]
+    correctAnswer: string
+    explanation: string | null
+    _count: LessonExerciseCountAggregateOutputType | null
+    _avg: LessonExerciseAvgAggregateOutputType | null
+    _sum: LessonExerciseSumAggregateOutputType | null
+    _min: LessonExerciseMinAggregateOutputType | null
+    _max: LessonExerciseMaxAggregateOutputType | null
+  }
+
+  type GetLessonExerciseGroupByPayload<T extends LessonExerciseGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LessonExerciseGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LessonExerciseGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LessonExerciseGroupByOutputType[P]>
+            : GetScalarType<T[P], LessonExerciseGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LessonExerciseSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sectionId?: boolean
+    type?: boolean
+    question?: boolean
+    options?: boolean
+    correctAnswer?: boolean
+    explanation?: boolean
+    section?: boolean | LessonSectionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonExercise"]>
+
+  export type LessonExerciseSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sectionId?: boolean
+    type?: boolean
+    question?: boolean
+    options?: boolean
+    correctAnswer?: boolean
+    explanation?: boolean
+    section?: boolean | LessonSectionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonExercise"]>
+
+  export type LessonExerciseSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sectionId?: boolean
+    type?: boolean
+    question?: boolean
+    options?: boolean
+    correctAnswer?: boolean
+    explanation?: boolean
+    section?: boolean | LessonSectionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonExercise"]>
+
+  export type LessonExerciseSelectScalar = {
+    id?: boolean
+    sectionId?: boolean
+    type?: boolean
+    question?: boolean
+    options?: boolean
+    correctAnswer?: boolean
+    explanation?: boolean
+  }
+
+  export type LessonExerciseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sectionId" | "type" | "question" | "options" | "correctAnswer" | "explanation", ExtArgs["result"]["lessonExercise"]>
+  export type LessonExerciseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    section?: boolean | LessonSectionDefaultArgs<ExtArgs>
+  }
+  export type LessonExerciseIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    section?: boolean | LessonSectionDefaultArgs<ExtArgs>
+  }
+  export type LessonExerciseIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    section?: boolean | LessonSectionDefaultArgs<ExtArgs>
+  }
+
+  export type $LessonExercisePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LessonExercise"
+    objects: {
+      section: Prisma.$LessonSectionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      sectionId: number
+      type: string
+      question: string
+      options: string[]
+      correctAnswer: string
+      explanation: string | null
+    }, ExtArgs["result"]["lessonExercise"]>
+    composites: {}
+  }
+
+  type LessonExerciseGetPayload<S extends boolean | null | undefined | LessonExerciseDefaultArgs> = $Result.GetResult<Prisma.$LessonExercisePayload, S>
+
+  type LessonExerciseCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LessonExerciseFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LessonExerciseCountAggregateInputType | true
+    }
+
+  export interface LessonExerciseDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LessonExercise'], meta: { name: 'LessonExercise' } }
+    /**
+     * Find zero or one LessonExercise that matches the filter.
+     * @param {LessonExerciseFindUniqueArgs} args - Arguments to find a LessonExercise
+     * @example
+     * // Get one LessonExercise
+     * const lessonExercise = await prisma.lessonExercise.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LessonExerciseFindUniqueArgs>(args: SelectSubset<T, LessonExerciseFindUniqueArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LessonExercise that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LessonExerciseFindUniqueOrThrowArgs} args - Arguments to find a LessonExercise
+     * @example
+     * // Get one LessonExercise
+     * const lessonExercise = await prisma.lessonExercise.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LessonExerciseFindUniqueOrThrowArgs>(args: SelectSubset<T, LessonExerciseFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LessonExercise that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseFindFirstArgs} args - Arguments to find a LessonExercise
+     * @example
+     * // Get one LessonExercise
+     * const lessonExercise = await prisma.lessonExercise.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LessonExerciseFindFirstArgs>(args?: SelectSubset<T, LessonExerciseFindFirstArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LessonExercise that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseFindFirstOrThrowArgs} args - Arguments to find a LessonExercise
+     * @example
+     * // Get one LessonExercise
+     * const lessonExercise = await prisma.lessonExercise.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LessonExerciseFindFirstOrThrowArgs>(args?: SelectSubset<T, LessonExerciseFindFirstOrThrowArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LessonExercises that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LessonExercises
+     * const lessonExercises = await prisma.lessonExercise.findMany()
+     * 
+     * // Get first 10 LessonExercises
+     * const lessonExercises = await prisma.lessonExercise.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const lessonExerciseWithIdOnly = await prisma.lessonExercise.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LessonExerciseFindManyArgs>(args?: SelectSubset<T, LessonExerciseFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LessonExercise.
+     * @param {LessonExerciseCreateArgs} args - Arguments to create a LessonExercise.
+     * @example
+     * // Create one LessonExercise
+     * const LessonExercise = await prisma.lessonExercise.create({
+     *   data: {
+     *     // ... data to create a LessonExercise
+     *   }
+     * })
+     * 
+     */
+    create<T extends LessonExerciseCreateArgs>(args: SelectSubset<T, LessonExerciseCreateArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LessonExercises.
+     * @param {LessonExerciseCreateManyArgs} args - Arguments to create many LessonExercises.
+     * @example
+     * // Create many LessonExercises
+     * const lessonExercise = await prisma.lessonExercise.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LessonExerciseCreateManyArgs>(args?: SelectSubset<T, LessonExerciseCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LessonExercises and returns the data saved in the database.
+     * @param {LessonExerciseCreateManyAndReturnArgs} args - Arguments to create many LessonExercises.
+     * @example
+     * // Create many LessonExercises
+     * const lessonExercise = await prisma.lessonExercise.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LessonExercises and only return the `id`
+     * const lessonExerciseWithIdOnly = await prisma.lessonExercise.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LessonExerciseCreateManyAndReturnArgs>(args?: SelectSubset<T, LessonExerciseCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LessonExercise.
+     * @param {LessonExerciseDeleteArgs} args - Arguments to delete one LessonExercise.
+     * @example
+     * // Delete one LessonExercise
+     * const LessonExercise = await prisma.lessonExercise.delete({
+     *   where: {
+     *     // ... filter to delete one LessonExercise
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LessonExerciseDeleteArgs>(args: SelectSubset<T, LessonExerciseDeleteArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LessonExercise.
+     * @param {LessonExerciseUpdateArgs} args - Arguments to update one LessonExercise.
+     * @example
+     * // Update one LessonExercise
+     * const lessonExercise = await prisma.lessonExercise.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LessonExerciseUpdateArgs>(args: SelectSubset<T, LessonExerciseUpdateArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LessonExercises.
+     * @param {LessonExerciseDeleteManyArgs} args - Arguments to filter LessonExercises to delete.
+     * @example
+     * // Delete a few LessonExercises
+     * const { count } = await prisma.lessonExercise.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LessonExerciseDeleteManyArgs>(args?: SelectSubset<T, LessonExerciseDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LessonExercises.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LessonExercises
+     * const lessonExercise = await prisma.lessonExercise.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LessonExerciseUpdateManyArgs>(args: SelectSubset<T, LessonExerciseUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LessonExercises and returns the data updated in the database.
+     * @param {LessonExerciseUpdateManyAndReturnArgs} args - Arguments to update many LessonExercises.
+     * @example
+     * // Update many LessonExercises
+     * const lessonExercise = await prisma.lessonExercise.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LessonExercises and only return the `id`
+     * const lessonExerciseWithIdOnly = await prisma.lessonExercise.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LessonExerciseUpdateManyAndReturnArgs>(args: SelectSubset<T, LessonExerciseUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LessonExercise.
+     * @param {LessonExerciseUpsertArgs} args - Arguments to update or create a LessonExercise.
+     * @example
+     * // Update or create a LessonExercise
+     * const lessonExercise = await prisma.lessonExercise.upsert({
+     *   create: {
+     *     // ... data to create a LessonExercise
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LessonExercise we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LessonExerciseUpsertArgs>(args: SelectSubset<T, LessonExerciseUpsertArgs<ExtArgs>>): Prisma__LessonExerciseClient<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LessonExercises.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseCountArgs} args - Arguments to filter LessonExercises to count.
+     * @example
+     * // Count the number of LessonExercises
+     * const count = await prisma.lessonExercise.count({
+     *   where: {
+     *     // ... the filter for the LessonExercises we want to count
+     *   }
+     * })
+    **/
+    count<T extends LessonExerciseCountArgs>(
+      args?: Subset<T, LessonExerciseCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LessonExerciseCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LessonExercise.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LessonExerciseAggregateArgs>(args: Subset<T, LessonExerciseAggregateArgs>): Prisma.PrismaPromise<GetLessonExerciseAggregateType<T>>
+
+    /**
+     * Group by LessonExercise.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonExerciseGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LessonExerciseGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LessonExerciseGroupByArgs['orderBy'] }
+        : { orderBy?: LessonExerciseGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LessonExerciseGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLessonExerciseGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LessonExercise model
+   */
+  readonly fields: LessonExerciseFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LessonExercise.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LessonExerciseClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    section<T extends LessonSectionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonSectionDefaultArgs<ExtArgs>>): Prisma__LessonSectionClient<$Result.GetResult<Prisma.$LessonSectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LessonExercise model
+   */
+  interface LessonExerciseFieldRefs {
+    readonly id: FieldRef<"LessonExercise", 'Int'>
+    readonly sectionId: FieldRef<"LessonExercise", 'Int'>
+    readonly type: FieldRef<"LessonExercise", 'String'>
+    readonly question: FieldRef<"LessonExercise", 'String'>
+    readonly options: FieldRef<"LessonExercise", 'String[]'>
+    readonly correctAnswer: FieldRef<"LessonExercise", 'String'>
+    readonly explanation: FieldRef<"LessonExercise", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LessonExercise findUnique
+   */
+  export type LessonExerciseFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonExercise to fetch.
+     */
+    where: LessonExerciseWhereUniqueInput
+  }
+
+  /**
+   * LessonExercise findUniqueOrThrow
+   */
+  export type LessonExerciseFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonExercise to fetch.
+     */
+    where: LessonExerciseWhereUniqueInput
+  }
+
+  /**
+   * LessonExercise findFirst
+   */
+  export type LessonExerciseFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonExercise to fetch.
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonExercises to fetch.
+     */
+    orderBy?: LessonExerciseOrderByWithRelationInput | LessonExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LessonExercises.
+     */
+    cursor?: LessonExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonExercises.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonExercises.
+     */
+    distinct?: LessonExerciseScalarFieldEnum | LessonExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * LessonExercise findFirstOrThrow
+   */
+  export type LessonExerciseFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonExercise to fetch.
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonExercises to fetch.
+     */
+    orderBy?: LessonExerciseOrderByWithRelationInput | LessonExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LessonExercises.
+     */
+    cursor?: LessonExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonExercises.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonExercises.
+     */
+    distinct?: LessonExerciseScalarFieldEnum | LessonExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * LessonExercise findMany
+   */
+  export type LessonExerciseFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonExercises to fetch.
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonExercises to fetch.
+     */
+    orderBy?: LessonExerciseOrderByWithRelationInput | LessonExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LessonExercises.
+     */
+    cursor?: LessonExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonExercises.
+     */
+    skip?: number
+    distinct?: LessonExerciseScalarFieldEnum | LessonExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * LessonExercise create
+   */
+  export type LessonExerciseCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LessonExercise.
+     */
+    data: XOR<LessonExerciseCreateInput, LessonExerciseUncheckedCreateInput>
+  }
+
+  /**
+   * LessonExercise createMany
+   */
+  export type LessonExerciseCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LessonExercises.
+     */
+    data: LessonExerciseCreateManyInput | LessonExerciseCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LessonExercise createManyAndReturn
+   */
+  export type LessonExerciseCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * The data used to create many LessonExercises.
+     */
+    data: LessonExerciseCreateManyInput | LessonExerciseCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LessonExercise update
+   */
+  export type LessonExerciseUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LessonExercise.
+     */
+    data: XOR<LessonExerciseUpdateInput, LessonExerciseUncheckedUpdateInput>
+    /**
+     * Choose, which LessonExercise to update.
+     */
+    where: LessonExerciseWhereUniqueInput
+  }
+
+  /**
+   * LessonExercise updateMany
+   */
+  export type LessonExerciseUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LessonExercises.
+     */
+    data: XOR<LessonExerciseUpdateManyMutationInput, LessonExerciseUncheckedUpdateManyInput>
+    /**
+     * Filter which LessonExercises to update
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * Limit how many LessonExercises to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LessonExercise updateManyAndReturn
+   */
+  export type LessonExerciseUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * The data used to update LessonExercises.
+     */
+    data: XOR<LessonExerciseUpdateManyMutationInput, LessonExerciseUncheckedUpdateManyInput>
+    /**
+     * Filter which LessonExercises to update
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * Limit how many LessonExercises to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LessonExercise upsert
+   */
+  export type LessonExerciseUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LessonExercise to update in case it exists.
+     */
+    where: LessonExerciseWhereUniqueInput
+    /**
+     * In case the LessonExercise found by the `where` argument doesn't exist, create a new LessonExercise with this data.
+     */
+    create: XOR<LessonExerciseCreateInput, LessonExerciseUncheckedCreateInput>
+    /**
+     * In case the LessonExercise was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LessonExerciseUpdateInput, LessonExerciseUncheckedUpdateInput>
+  }
+
+  /**
+   * LessonExercise delete
+   */
+  export type LessonExerciseDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
+    /**
+     * Filter which LessonExercise to delete.
+     */
+    where: LessonExerciseWhereUniqueInput
+  }
+
+  /**
+   * LessonExercise deleteMany
+   */
+  export type LessonExerciseDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LessonExercises to delete
+     */
+    where?: LessonExerciseWhereInput
+    /**
+     * Limit how many LessonExercises to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LessonExercise without action
+   */
+  export type LessonExerciseDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonExercise
+     */
+    select?: LessonExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonExercise
+     */
+    omit?: LessonExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonExerciseInclude<ExtArgs> | null
   }
 
 
@@ -5531,6 +8683,9 @@ export namespace Prisma {
     translation: string | null
     example: string | null
     level: string | null
+    pronunciation: string | null
+    audioUrl: string | null
+    category: string | null
   }
 
   export type VocabularyMaxAggregateOutputType = {
@@ -5539,6 +8694,9 @@ export namespace Prisma {
     translation: string | null
     example: string | null
     level: string | null
+    pronunciation: string | null
+    audioUrl: string | null
+    category: string | null
   }
 
   export type VocabularyCountAggregateOutputType = {
@@ -5547,6 +8705,10 @@ export namespace Prisma {
     translation: number
     example: number
     level: number
+    pronunciation: number
+    audioUrl: number
+    usageContext: number
+    category: number
     _all: number
   }
 
@@ -5565,6 +8727,9 @@ export namespace Prisma {
     translation?: true
     example?: true
     level?: true
+    pronunciation?: true
+    audioUrl?: true
+    category?: true
   }
 
   export type VocabularyMaxAggregateInputType = {
@@ -5573,6 +8738,9 @@ export namespace Prisma {
     translation?: true
     example?: true
     level?: true
+    pronunciation?: true
+    audioUrl?: true
+    category?: true
   }
 
   export type VocabularyCountAggregateInputType = {
@@ -5581,6 +8749,10 @@ export namespace Prisma {
     translation?: true
     example?: true
     level?: true
+    pronunciation?: true
+    audioUrl?: true
+    usageContext?: true
+    category?: true
     _all?: true
   }
 
@@ -5676,6 +8848,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation: string | null
+    audioUrl: string | null
+    usageContext: string[]
+    category: string | null
     _count: VocabularyCountAggregateOutputType | null
     _avg: VocabularyAvgAggregateOutputType | null
     _sum: VocabularySumAggregateOutputType | null
@@ -5703,6 +8879,10 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
+    pronunciation?: boolean
+    audioUrl?: boolean
+    usageContext?: boolean
+    category?: boolean
     userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
     practiceItems?: boolean | Vocabulary$practiceItemsArgs<ExtArgs>
     _count?: boolean | VocabularyCountOutputTypeDefaultArgs<ExtArgs>
@@ -5714,6 +8894,10 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
+    pronunciation?: boolean
+    audioUrl?: boolean
+    usageContext?: boolean
+    category?: boolean
   }, ExtArgs["result"]["vocabulary"]>
 
   export type VocabularySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5722,6 +8906,10 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
+    pronunciation?: boolean
+    audioUrl?: boolean
+    usageContext?: boolean
+    category?: boolean
   }, ExtArgs["result"]["vocabulary"]>
 
   export type VocabularySelectScalar = {
@@ -5730,9 +8918,13 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
+    pronunciation?: boolean
+    audioUrl?: boolean
+    usageContext?: boolean
+    category?: boolean
   }
 
-  export type VocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "word" | "translation" | "example" | "level", ExtArgs["result"]["vocabulary"]>
+  export type VocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "word" | "translation" | "example" | "level" | "pronunciation" | "audioUrl" | "usageContext" | "category", ExtArgs["result"]["vocabulary"]>
   export type VocabularyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
     practiceItems?: boolean | Vocabulary$practiceItemsArgs<ExtArgs>
@@ -5753,6 +8945,10 @@ export namespace Prisma {
       translation: string
       example: string
       level: string
+      pronunciation: string | null
+      audioUrl: string | null
+      usageContext: string[]
+      category: string | null
     }, ExtArgs["result"]["vocabulary"]>
     composites: {}
   }
@@ -6183,6 +9379,10 @@ export namespace Prisma {
     readonly translation: FieldRef<"Vocabulary", 'String'>
     readonly example: FieldRef<"Vocabulary", 'String'>
     readonly level: FieldRef<"Vocabulary", 'String'>
+    readonly pronunciation: FieldRef<"Vocabulary", 'String'>
+    readonly audioUrl: FieldRef<"Vocabulary", 'String'>
+    readonly usageContext: FieldRef<"Vocabulary", 'String[]'>
+    readonly category: FieldRef<"Vocabulary", 'String'>
   }
     
 
@@ -6653,12 +9853,14 @@ export namespace Prisma {
     id: number | null
     userId: number | null
     vocabularyId: number | null
+    repetitionStage: number | null
   }
 
   export type UserVocabularySumAggregateOutputType = {
     id: number | null
     userId: number | null
     vocabularyId: number | null
+    repetitionStage: number | null
   }
 
   export type UserVocabularyMinAggregateOutputType = {
@@ -6667,6 +9869,8 @@ export namespace Prisma {
     vocabularyId: number | null
     learned: boolean | null
     lastPracticed: Date | null
+    repetitionStage: number | null
+    nextReviewDate: Date | null
   }
 
   export type UserVocabularyMaxAggregateOutputType = {
@@ -6675,6 +9879,8 @@ export namespace Prisma {
     vocabularyId: number | null
     learned: boolean | null
     lastPracticed: Date | null
+    repetitionStage: number | null
+    nextReviewDate: Date | null
   }
 
   export type UserVocabularyCountAggregateOutputType = {
@@ -6683,6 +9889,8 @@ export namespace Prisma {
     vocabularyId: number
     learned: number
     lastPracticed: number
+    repetitionStage: number
+    nextReviewDate: number
     _all: number
   }
 
@@ -6691,12 +9899,14 @@ export namespace Prisma {
     id?: true
     userId?: true
     vocabularyId?: true
+    repetitionStage?: true
   }
 
   export type UserVocabularySumAggregateInputType = {
     id?: true
     userId?: true
     vocabularyId?: true
+    repetitionStage?: true
   }
 
   export type UserVocabularyMinAggregateInputType = {
@@ -6705,6 +9915,8 @@ export namespace Prisma {
     vocabularyId?: true
     learned?: true
     lastPracticed?: true
+    repetitionStage?: true
+    nextReviewDate?: true
   }
 
   export type UserVocabularyMaxAggregateInputType = {
@@ -6713,6 +9925,8 @@ export namespace Prisma {
     vocabularyId?: true
     learned?: true
     lastPracticed?: true
+    repetitionStage?: true
+    nextReviewDate?: true
   }
 
   export type UserVocabularyCountAggregateInputType = {
@@ -6721,6 +9935,8 @@ export namespace Prisma {
     vocabularyId?: true
     learned?: true
     lastPracticed?: true
+    repetitionStage?: true
+    nextReviewDate?: true
     _all?: true
   }
 
@@ -6816,6 +10032,8 @@ export namespace Prisma {
     vocabularyId: number
     learned: boolean
     lastPracticed: Date | null
+    repetitionStage: number
+    nextReviewDate: Date | null
     _count: UserVocabularyCountAggregateOutputType | null
     _avg: UserVocabularyAvgAggregateOutputType | null
     _sum: UserVocabularySumAggregateOutputType | null
@@ -6843,6 +10061,8 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
+    repetitionStage?: boolean
+    nextReviewDate?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userVocabulary"]>
@@ -6853,6 +10073,8 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
+    repetitionStage?: boolean
+    nextReviewDate?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userVocabulary"]>
@@ -6863,6 +10085,8 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
+    repetitionStage?: boolean
+    nextReviewDate?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userVocabulary"]>
@@ -6873,9 +10097,11 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
+    repetitionStage?: boolean
+    nextReviewDate?: boolean
   }
 
-  export type UserVocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "vocabularyId" | "learned" | "lastPracticed", ExtArgs["result"]["userVocabulary"]>
+  export type UserVocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "vocabularyId" | "learned" | "lastPracticed" | "repetitionStage" | "nextReviewDate", ExtArgs["result"]["userVocabulary"]>
   export type UserVocabularyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
@@ -6901,6 +10127,8 @@ export namespace Prisma {
       vocabularyId: number
       learned: boolean
       lastPracticed: Date | null
+      repetitionStage: number
+      nextReviewDate: Date | null
     }, ExtArgs["result"]["userVocabulary"]>
     composites: {}
   }
@@ -7331,6 +10559,8 @@ export namespace Prisma {
     readonly vocabularyId: FieldRef<"UserVocabulary", 'Int'>
     readonly learned: FieldRef<"UserVocabulary", 'Boolean'>
     readonly lastPracticed: FieldRef<"UserVocabulary", 'DateTime'>
+    readonly repetitionStage: FieldRef<"UserVocabulary", 'Int'>
+    readonly nextReviewDate: FieldRef<"UserVocabulary", 'DateTime'>
   }
     
 
@@ -7759,10 +10989,12 @@ export namespace Prisma {
 
   export type ConversationAvgAggregateOutputType = {
     userId: number | null
+    templateId: number | null
   }
 
   export type ConversationSumAggregateOutputType = {
     userId: number | null
+    templateId: number | null
   }
 
   export type ConversationMinAggregateOutputType = {
@@ -7772,6 +11004,7 @@ export namespace Prisma {
     context: string | null
     startedAt: Date | null
     lastMessageAt: Date | null
+    templateId: number | null
   }
 
   export type ConversationMaxAggregateOutputType = {
@@ -7781,6 +11014,7 @@ export namespace Prisma {
     context: string | null
     startedAt: Date | null
     lastMessageAt: Date | null
+    templateId: number | null
   }
 
   export type ConversationCountAggregateOutputType = {
@@ -7790,16 +11024,19 @@ export namespace Prisma {
     context: number
     startedAt: number
     lastMessageAt: number
+    templateId: number
     _all: number
   }
 
 
   export type ConversationAvgAggregateInputType = {
     userId?: true
+    templateId?: true
   }
 
   export type ConversationSumAggregateInputType = {
     userId?: true
+    templateId?: true
   }
 
   export type ConversationMinAggregateInputType = {
@@ -7809,6 +11046,7 @@ export namespace Prisma {
     context?: true
     startedAt?: true
     lastMessageAt?: true
+    templateId?: true
   }
 
   export type ConversationMaxAggregateInputType = {
@@ -7818,6 +11056,7 @@ export namespace Prisma {
     context?: true
     startedAt?: true
     lastMessageAt?: true
+    templateId?: true
   }
 
   export type ConversationCountAggregateInputType = {
@@ -7827,6 +11066,7 @@ export namespace Prisma {
     context?: true
     startedAt?: true
     lastMessageAt?: true
+    templateId?: true
     _all?: true
   }
 
@@ -7923,6 +11163,7 @@ export namespace Prisma {
     context: string
     startedAt: Date
     lastMessageAt: Date
+    templateId: number | null
     _count: ConversationCountAggregateOutputType | null
     _avg: ConversationAvgAggregateOutputType | null
     _sum: ConversationSumAggregateOutputType | null
@@ -7951,8 +11192,10 @@ export namespace Prisma {
     context?: boolean
     startedAt?: boolean
     lastMessageAt?: boolean
+    templateId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     messages?: boolean | Conversation$messagesArgs<ExtArgs>
+    template?: boolean | Conversation$templateArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -7963,7 +11206,9 @@ export namespace Prisma {
     context?: boolean
     startedAt?: boolean
     lastMessageAt?: boolean
+    templateId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | Conversation$templateArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
   export type ConversationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -7973,7 +11218,9 @@ export namespace Prisma {
     context?: boolean
     startedAt?: boolean
     lastMessageAt?: boolean
+    templateId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | Conversation$templateArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
   export type ConversationSelectScalar = {
@@ -7983,19 +11230,23 @@ export namespace Prisma {
     context?: boolean
     startedAt?: boolean
     lastMessageAt?: boolean
+    templateId?: boolean
   }
 
-  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "context" | "startedAt" | "lastMessageAt", ExtArgs["result"]["conversation"]>
+  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "context" | "startedAt" | "lastMessageAt" | "templateId", ExtArgs["result"]["conversation"]>
   export type ConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     messages?: boolean | Conversation$messagesArgs<ExtArgs>
+    template?: boolean | Conversation$templateArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | Conversation$templateArgs<ExtArgs>
   }
   export type ConversationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | Conversation$templateArgs<ExtArgs>
   }
 
   export type $ConversationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8003,6 +11254,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       messages: Prisma.$MessagePayload<ExtArgs>[]
+      template: Prisma.$ConversationTemplatePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8011,6 +11263,7 @@ export namespace Prisma {
       context: string
       startedAt: Date
       lastMessageAt: Date
+      templateId: number | null
     }, ExtArgs["result"]["conversation"]>
     composites: {}
   }
@@ -8407,6 +11660,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     messages<T extends Conversation$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    template<T extends Conversation$templateArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$templateArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8442,6 +11696,7 @@ export namespace Prisma {
     readonly context: FieldRef<"Conversation", 'String'>
     readonly startedAt: FieldRef<"Conversation", 'DateTime'>
     readonly lastMessageAt: FieldRef<"Conversation", 'DateTime'>
+    readonly templateId: FieldRef<"Conversation", 'Int'>
   }
     
 
@@ -8862,6 +12117,25 @@ export namespace Prisma {
   }
 
   /**
+   * Conversation.template
+   */
+  export type Conversation$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    where?: ConversationTemplateWhereInput
+  }
+
+  /**
    * Conversation without action
    */
   export type ConversationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8906,6 +12180,7 @@ export namespace Prisma {
     role: string | null
     content: string | null
     timestamp: Date | null
+    audioUrl: string | null
   }
 
   export type MessageMaxAggregateOutputType = {
@@ -8914,6 +12189,7 @@ export namespace Prisma {
     role: string | null
     content: string | null
     timestamp: Date | null
+    audioUrl: string | null
   }
 
   export type MessageCountAggregateOutputType = {
@@ -8922,6 +12198,9 @@ export namespace Prisma {
     role: number
     content: number
     timestamp: number
+    corrections: number
+    suggestedVocabulary: number
+    audioUrl: number
     _all: number
   }
 
@@ -8940,6 +12219,7 @@ export namespace Prisma {
     role?: true
     content?: true
     timestamp?: true
+    audioUrl?: true
   }
 
   export type MessageMaxAggregateInputType = {
@@ -8948,6 +12228,7 @@ export namespace Prisma {
     role?: true
     content?: true
     timestamp?: true
+    audioUrl?: true
   }
 
   export type MessageCountAggregateInputType = {
@@ -8956,6 +12237,9 @@ export namespace Prisma {
     role?: true
     content?: true
     timestamp?: true
+    corrections?: true
+    suggestedVocabulary?: true
+    audioUrl?: true
     _all?: true
   }
 
@@ -9051,6 +12335,9 @@ export namespace Prisma {
     role: string
     content: string
     timestamp: Date
+    corrections: JsonValue | null
+    suggestedVocabulary: JsonValue | null
+    audioUrl: string | null
     _count: MessageCountAggregateOutputType | null
     _avg: MessageAvgAggregateOutputType | null
     _sum: MessageSumAggregateOutputType | null
@@ -9078,6 +12365,9 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    corrections?: boolean
+    suggestedVocabulary?: boolean
+    audioUrl?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
@@ -9087,6 +12377,9 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    corrections?: boolean
+    suggestedVocabulary?: boolean
+    audioUrl?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
@@ -9096,6 +12389,9 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    corrections?: boolean
+    suggestedVocabulary?: boolean
+    audioUrl?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
@@ -9105,9 +12401,12 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    corrections?: boolean
+    suggestedVocabulary?: boolean
+    audioUrl?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "timestamp", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "timestamp" | "corrections" | "suggestedVocabulary" | "audioUrl", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }
@@ -9129,6 +12428,9 @@ export namespace Prisma {
       role: string
       content: string
       timestamp: Date
+      corrections: Prisma.JsonValue | null
+      suggestedVocabulary: Prisma.JsonValue | null
+      audioUrl: string | null
     }, ExtArgs["result"]["message"]>
     composites: {}
   }
@@ -9558,6 +12860,9 @@ export namespace Prisma {
     readonly role: FieldRef<"Message", 'String'>
     readonly content: FieldRef<"Message", 'String'>
     readonly timestamp: FieldRef<"Message", 'DateTime'>
+    readonly corrections: FieldRef<"Message", 'Json'>
+    readonly suggestedVocabulary: FieldRef<"Message", 'Json'>
+    readonly audioUrl: FieldRef<"Message", 'String'>
   }
     
 
@@ -9973,6 +13278,2255 @@ export namespace Prisma {
 
 
   /**
+   * Model ConversationTemplate
+   */
+
+  export type AggregateConversationTemplate = {
+    _count: ConversationTemplateCountAggregateOutputType | null
+    _avg: ConversationTemplateAvgAggregateOutputType | null
+    _sum: ConversationTemplateSumAggregateOutputType | null
+    _min: ConversationTemplateMinAggregateOutputType | null
+    _max: ConversationTemplateMaxAggregateOutputType | null
+  }
+
+  export type ConversationTemplateAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type ConversationTemplateSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type ConversationTemplateMinAggregateOutputType = {
+    id: number | null
+    title: string | null
+    description: string | null
+    systemPrompt: string | null
+    initialMessage: string | null
+    level: string | null
+  }
+
+  export type ConversationTemplateMaxAggregateOutputType = {
+    id: number | null
+    title: string | null
+    description: string | null
+    systemPrompt: string | null
+    initialMessage: string | null
+    level: string | null
+  }
+
+  export type ConversationTemplateCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    systemPrompt: number
+    initialMessage: number
+    topics: number
+    level: number
+    _all: number
+  }
+
+
+  export type ConversationTemplateAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type ConversationTemplateSumAggregateInputType = {
+    id?: true
+  }
+
+  export type ConversationTemplateMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    systemPrompt?: true
+    initialMessage?: true
+    level?: true
+  }
+
+  export type ConversationTemplateMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    systemPrompt?: true
+    initialMessage?: true
+    level?: true
+  }
+
+  export type ConversationTemplateCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    systemPrompt?: true
+    initialMessage?: true
+    topics?: true
+    level?: true
+    _all?: true
+  }
+
+  export type ConversationTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConversationTemplate to aggregate.
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationTemplates to fetch.
+     */
+    orderBy?: ConversationTemplateOrderByWithRelationInput | ConversationTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ConversationTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ConversationTemplates
+    **/
+    _count?: true | ConversationTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ConversationTemplateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ConversationTemplateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ConversationTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ConversationTemplateMaxAggregateInputType
+  }
+
+  export type GetConversationTemplateAggregateType<T extends ConversationTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateConversationTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConversationTemplate[P]>
+      : GetScalarType<T[P], AggregateConversationTemplate[P]>
+  }
+
+
+
+
+  export type ConversationTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConversationTemplateWhereInput
+    orderBy?: ConversationTemplateOrderByWithAggregationInput | ConversationTemplateOrderByWithAggregationInput[]
+    by: ConversationTemplateScalarFieldEnum[] | ConversationTemplateScalarFieldEnum
+    having?: ConversationTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ConversationTemplateCountAggregateInputType | true
+    _avg?: ConversationTemplateAvgAggregateInputType
+    _sum?: ConversationTemplateSumAggregateInputType
+    _min?: ConversationTemplateMinAggregateInputType
+    _max?: ConversationTemplateMaxAggregateInputType
+  }
+
+  export type ConversationTemplateGroupByOutputType = {
+    id: number
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics: string[]
+    level: string
+    _count: ConversationTemplateCountAggregateOutputType | null
+    _avg: ConversationTemplateAvgAggregateOutputType | null
+    _sum: ConversationTemplateSumAggregateOutputType | null
+    _min: ConversationTemplateMinAggregateOutputType | null
+    _max: ConversationTemplateMaxAggregateOutputType | null
+  }
+
+  type GetConversationTemplateGroupByPayload<T extends ConversationTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ConversationTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ConversationTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConversationTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], ConversationTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ConversationTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    systemPrompt?: boolean
+    initialMessage?: boolean
+    topics?: boolean
+    level?: boolean
+    userTemplateUsage?: boolean | ConversationTemplate$userTemplateUsageArgs<ExtArgs>
+    conversations?: boolean | ConversationTemplate$conversationsArgs<ExtArgs>
+    _count?: boolean | ConversationTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conversationTemplate"]>
+
+  export type ConversationTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    systemPrompt?: boolean
+    initialMessage?: boolean
+    topics?: boolean
+    level?: boolean
+  }, ExtArgs["result"]["conversationTemplate"]>
+
+  export type ConversationTemplateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    systemPrompt?: boolean
+    initialMessage?: boolean
+    topics?: boolean
+    level?: boolean
+  }, ExtArgs["result"]["conversationTemplate"]>
+
+  export type ConversationTemplateSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    systemPrompt?: boolean
+    initialMessage?: boolean
+    topics?: boolean
+    level?: boolean
+  }
+
+  export type ConversationTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "systemPrompt" | "initialMessage" | "topics" | "level", ExtArgs["result"]["conversationTemplate"]>
+  export type ConversationTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userTemplateUsage?: boolean | ConversationTemplate$userTemplateUsageArgs<ExtArgs>
+    conversations?: boolean | ConversationTemplate$conversationsArgs<ExtArgs>
+    _count?: boolean | ConversationTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ConversationTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ConversationTemplateIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ConversationTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ConversationTemplate"
+    objects: {
+      userTemplateUsage: Prisma.$UserTemplateUsagePayload<ExtArgs>[]
+      conversations: Prisma.$ConversationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      title: string
+      description: string
+      systemPrompt: string
+      initialMessage: string
+      topics: string[]
+      level: string
+    }, ExtArgs["result"]["conversationTemplate"]>
+    composites: {}
+  }
+
+  type ConversationTemplateGetPayload<S extends boolean | null | undefined | ConversationTemplateDefaultArgs> = $Result.GetResult<Prisma.$ConversationTemplatePayload, S>
+
+  type ConversationTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ConversationTemplateFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ConversationTemplateCountAggregateInputType | true
+    }
+
+  export interface ConversationTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ConversationTemplate'], meta: { name: 'ConversationTemplate' } }
+    /**
+     * Find zero or one ConversationTemplate that matches the filter.
+     * @param {ConversationTemplateFindUniqueArgs} args - Arguments to find a ConversationTemplate
+     * @example
+     * // Get one ConversationTemplate
+     * const conversationTemplate = await prisma.conversationTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConversationTemplateFindUniqueArgs>(args: SelectSubset<T, ConversationTemplateFindUniqueArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ConversationTemplate that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConversationTemplateFindUniqueOrThrowArgs} args - Arguments to find a ConversationTemplate
+     * @example
+     * // Get one ConversationTemplate
+     * const conversationTemplate = await prisma.conversationTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConversationTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, ConversationTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConversationTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateFindFirstArgs} args - Arguments to find a ConversationTemplate
+     * @example
+     * // Get one ConversationTemplate
+     * const conversationTemplate = await prisma.conversationTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConversationTemplateFindFirstArgs>(args?: SelectSubset<T, ConversationTemplateFindFirstArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConversationTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateFindFirstOrThrowArgs} args - Arguments to find a ConversationTemplate
+     * @example
+     * // Get one ConversationTemplate
+     * const conversationTemplate = await prisma.conversationTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConversationTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, ConversationTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ConversationTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ConversationTemplates
+     * const conversationTemplates = await prisma.conversationTemplate.findMany()
+     * 
+     * // Get first 10 ConversationTemplates
+     * const conversationTemplates = await prisma.conversationTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const conversationTemplateWithIdOnly = await prisma.conversationTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ConversationTemplateFindManyArgs>(args?: SelectSubset<T, ConversationTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ConversationTemplate.
+     * @param {ConversationTemplateCreateArgs} args - Arguments to create a ConversationTemplate.
+     * @example
+     * // Create one ConversationTemplate
+     * const ConversationTemplate = await prisma.conversationTemplate.create({
+     *   data: {
+     *     // ... data to create a ConversationTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends ConversationTemplateCreateArgs>(args: SelectSubset<T, ConversationTemplateCreateArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ConversationTemplates.
+     * @param {ConversationTemplateCreateManyArgs} args - Arguments to create many ConversationTemplates.
+     * @example
+     * // Create many ConversationTemplates
+     * const conversationTemplate = await prisma.conversationTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ConversationTemplateCreateManyArgs>(args?: SelectSubset<T, ConversationTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ConversationTemplates and returns the data saved in the database.
+     * @param {ConversationTemplateCreateManyAndReturnArgs} args - Arguments to create many ConversationTemplates.
+     * @example
+     * // Create many ConversationTemplates
+     * const conversationTemplate = await prisma.conversationTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ConversationTemplates and only return the `id`
+     * const conversationTemplateWithIdOnly = await prisma.conversationTemplate.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ConversationTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, ConversationTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ConversationTemplate.
+     * @param {ConversationTemplateDeleteArgs} args - Arguments to delete one ConversationTemplate.
+     * @example
+     * // Delete one ConversationTemplate
+     * const ConversationTemplate = await prisma.conversationTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one ConversationTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ConversationTemplateDeleteArgs>(args: SelectSubset<T, ConversationTemplateDeleteArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ConversationTemplate.
+     * @param {ConversationTemplateUpdateArgs} args - Arguments to update one ConversationTemplate.
+     * @example
+     * // Update one ConversationTemplate
+     * const conversationTemplate = await prisma.conversationTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ConversationTemplateUpdateArgs>(args: SelectSubset<T, ConversationTemplateUpdateArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ConversationTemplates.
+     * @param {ConversationTemplateDeleteManyArgs} args - Arguments to filter ConversationTemplates to delete.
+     * @example
+     * // Delete a few ConversationTemplates
+     * const { count } = await prisma.conversationTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ConversationTemplateDeleteManyArgs>(args?: SelectSubset<T, ConversationTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConversationTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ConversationTemplates
+     * const conversationTemplate = await prisma.conversationTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ConversationTemplateUpdateManyArgs>(args: SelectSubset<T, ConversationTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConversationTemplates and returns the data updated in the database.
+     * @param {ConversationTemplateUpdateManyAndReturnArgs} args - Arguments to update many ConversationTemplates.
+     * @example
+     * // Update many ConversationTemplates
+     * const conversationTemplate = await prisma.conversationTemplate.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ConversationTemplates and only return the `id`
+     * const conversationTemplateWithIdOnly = await prisma.conversationTemplate.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ConversationTemplateUpdateManyAndReturnArgs>(args: SelectSubset<T, ConversationTemplateUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ConversationTemplate.
+     * @param {ConversationTemplateUpsertArgs} args - Arguments to update or create a ConversationTemplate.
+     * @example
+     * // Update or create a ConversationTemplate
+     * const conversationTemplate = await prisma.conversationTemplate.upsert({
+     *   create: {
+     *     // ... data to create a ConversationTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ConversationTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConversationTemplateUpsertArgs>(args: SelectSubset<T, ConversationTemplateUpsertArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ConversationTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateCountArgs} args - Arguments to filter ConversationTemplates to count.
+     * @example
+     * // Count the number of ConversationTemplates
+     * const count = await prisma.conversationTemplate.count({
+     *   where: {
+     *     // ... the filter for the ConversationTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends ConversationTemplateCountArgs>(
+      args?: Subset<T, ConversationTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConversationTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ConversationTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ConversationTemplateAggregateArgs>(args: Subset<T, ConversationTemplateAggregateArgs>): Prisma.PrismaPromise<GetConversationTemplateAggregateType<T>>
+
+    /**
+     * Group by ConversationTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ConversationTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConversationTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: ConversationTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ConversationTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetConversationTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ConversationTemplate model
+   */
+  readonly fields: ConversationTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ConversationTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConversationTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    userTemplateUsage<T extends ConversationTemplate$userTemplateUsageArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplate$userTemplateUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    conversations<T extends ConversationTemplate$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplate$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ConversationTemplate model
+   */
+  interface ConversationTemplateFieldRefs {
+    readonly id: FieldRef<"ConversationTemplate", 'Int'>
+    readonly title: FieldRef<"ConversationTemplate", 'String'>
+    readonly description: FieldRef<"ConversationTemplate", 'String'>
+    readonly systemPrompt: FieldRef<"ConversationTemplate", 'String'>
+    readonly initialMessage: FieldRef<"ConversationTemplate", 'String'>
+    readonly topics: FieldRef<"ConversationTemplate", 'String[]'>
+    readonly level: FieldRef<"ConversationTemplate", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ConversationTemplate findUnique
+   */
+  export type ConversationTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationTemplate to fetch.
+     */
+    where: ConversationTemplateWhereUniqueInput
+  }
+
+  /**
+   * ConversationTemplate findUniqueOrThrow
+   */
+  export type ConversationTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationTemplate to fetch.
+     */
+    where: ConversationTemplateWhereUniqueInput
+  }
+
+  /**
+   * ConversationTemplate findFirst
+   */
+  export type ConversationTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationTemplate to fetch.
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationTemplates to fetch.
+     */
+    orderBy?: ConversationTemplateOrderByWithRelationInput | ConversationTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConversationTemplates.
+     */
+    cursor?: ConversationTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConversationTemplates.
+     */
+    distinct?: ConversationTemplateScalarFieldEnum | ConversationTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationTemplate findFirstOrThrow
+   */
+  export type ConversationTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationTemplate to fetch.
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationTemplates to fetch.
+     */
+    orderBy?: ConversationTemplateOrderByWithRelationInput | ConversationTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConversationTemplates.
+     */
+    cursor?: ConversationTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConversationTemplates.
+     */
+    distinct?: ConversationTemplateScalarFieldEnum | ConversationTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationTemplate findMany
+   */
+  export type ConversationTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationTemplates to fetch.
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationTemplates to fetch.
+     */
+    orderBy?: ConversationTemplateOrderByWithRelationInput | ConversationTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ConversationTemplates.
+     */
+    cursor?: ConversationTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationTemplates.
+     */
+    skip?: number
+    distinct?: ConversationTemplateScalarFieldEnum | ConversationTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationTemplate create
+   */
+  export type ConversationTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ConversationTemplate.
+     */
+    data: XOR<ConversationTemplateCreateInput, ConversationTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * ConversationTemplate createMany
+   */
+  export type ConversationTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ConversationTemplates.
+     */
+    data: ConversationTemplateCreateManyInput | ConversationTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConversationTemplate createManyAndReturn
+   */
+  export type ConversationTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to create many ConversationTemplates.
+     */
+    data: ConversationTemplateCreateManyInput | ConversationTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConversationTemplate update
+   */
+  export type ConversationTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ConversationTemplate.
+     */
+    data: XOR<ConversationTemplateUpdateInput, ConversationTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which ConversationTemplate to update.
+     */
+    where: ConversationTemplateWhereUniqueInput
+  }
+
+  /**
+   * ConversationTemplate updateMany
+   */
+  export type ConversationTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ConversationTemplates.
+     */
+    data: XOR<ConversationTemplateUpdateManyMutationInput, ConversationTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which ConversationTemplates to update
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * Limit how many ConversationTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConversationTemplate updateManyAndReturn
+   */
+  export type ConversationTemplateUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to update ConversationTemplates.
+     */
+    data: XOR<ConversationTemplateUpdateManyMutationInput, ConversationTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which ConversationTemplates to update
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * Limit how many ConversationTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConversationTemplate upsert
+   */
+  export type ConversationTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ConversationTemplate to update in case it exists.
+     */
+    where: ConversationTemplateWhereUniqueInput
+    /**
+     * In case the ConversationTemplate found by the `where` argument doesn't exist, create a new ConversationTemplate with this data.
+     */
+    create: XOR<ConversationTemplateCreateInput, ConversationTemplateUncheckedCreateInput>
+    /**
+     * In case the ConversationTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConversationTemplateUpdateInput, ConversationTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * ConversationTemplate delete
+   */
+  export type ConversationTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which ConversationTemplate to delete.
+     */
+    where: ConversationTemplateWhereUniqueInput
+  }
+
+  /**
+   * ConversationTemplate deleteMany
+   */
+  export type ConversationTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConversationTemplates to delete
+     */
+    where?: ConversationTemplateWhereInput
+    /**
+     * Limit how many ConversationTemplates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConversationTemplate.userTemplateUsage
+   */
+  export type ConversationTemplate$userTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    where?: UserTemplateUsageWhereInput
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    cursor?: UserTemplateUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationTemplate.conversations
+   */
+  export type ConversationTemplate$conversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conversation
+     */
+    select?: ConversationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conversation
+     */
+    omit?: ConversationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationInclude<ExtArgs> | null
+    where?: ConversationWhereInput
+    orderBy?: ConversationOrderByWithRelationInput | ConversationOrderByWithRelationInput[]
+    cursor?: ConversationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationTemplate without action
+   */
+  export type ConversationTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserTemplateUsage
+   */
+
+  export type AggregateUserTemplateUsage = {
+    _count: UserTemplateUsageCountAggregateOutputType | null
+    _avg: UserTemplateUsageAvgAggregateOutputType | null
+    _sum: UserTemplateUsageSumAggregateOutputType | null
+    _min: UserTemplateUsageMinAggregateOutputType | null
+    _max: UserTemplateUsageMaxAggregateOutputType | null
+  }
+
+  export type UserTemplateUsageAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    templateId: number | null
+  }
+
+  export type UserTemplateUsageSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    templateId: number | null
+  }
+
+  export type UserTemplateUsageMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    templateId: number | null
+    usedAt: Date | null
+  }
+
+  export type UserTemplateUsageMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    templateId: number | null
+    usedAt: Date | null
+  }
+
+  export type UserTemplateUsageCountAggregateOutputType = {
+    id: number
+    userId: number
+    templateId: number
+    usedAt: number
+    _all: number
+  }
+
+
+  export type UserTemplateUsageAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+  }
+
+  export type UserTemplateUsageSumAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+  }
+
+  export type UserTemplateUsageMinAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+    usedAt?: true
+  }
+
+  export type UserTemplateUsageMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+    usedAt?: true
+  }
+
+  export type UserTemplateUsageCountAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+    usedAt?: true
+    _all?: true
+  }
+
+  export type UserTemplateUsageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserTemplateUsage to aggregate.
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateUsages to fetch.
+     */
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserTemplateUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserTemplateUsages
+    **/
+    _count?: true | UserTemplateUsageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserTemplateUsageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserTemplateUsageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserTemplateUsageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserTemplateUsageMaxAggregateInputType
+  }
+
+  export type GetUserTemplateUsageAggregateType<T extends UserTemplateUsageAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserTemplateUsage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserTemplateUsage[P]>
+      : GetScalarType<T[P], AggregateUserTemplateUsage[P]>
+  }
+
+
+
+
+  export type UserTemplateUsageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateUsageWhereInput
+    orderBy?: UserTemplateUsageOrderByWithAggregationInput | UserTemplateUsageOrderByWithAggregationInput[]
+    by: UserTemplateUsageScalarFieldEnum[] | UserTemplateUsageScalarFieldEnum
+    having?: UserTemplateUsageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserTemplateUsageCountAggregateInputType | true
+    _avg?: UserTemplateUsageAvgAggregateInputType
+    _sum?: UserTemplateUsageSumAggregateInputType
+    _min?: UserTemplateUsageMinAggregateInputType
+    _max?: UserTemplateUsageMaxAggregateInputType
+  }
+
+  export type UserTemplateUsageGroupByOutputType = {
+    id: number
+    userId: number
+    templateId: number
+    usedAt: Date
+    _count: UserTemplateUsageCountAggregateOutputType | null
+    _avg: UserTemplateUsageAvgAggregateOutputType | null
+    _sum: UserTemplateUsageSumAggregateOutputType | null
+    _min: UserTemplateUsageMinAggregateOutputType | null
+    _max: UserTemplateUsageMaxAggregateOutputType | null
+  }
+
+  type GetUserTemplateUsageGroupByPayload<T extends UserTemplateUsageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserTemplateUsageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserTemplateUsageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserTemplateUsageGroupByOutputType[P]>
+            : GetScalarType<T[P], UserTemplateUsageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserTemplateUsageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    usedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTemplateUsage"]>
+
+  export type UserTemplateUsageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    usedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTemplateUsage"]>
+
+  export type UserTemplateUsageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    usedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTemplateUsage"]>
+
+  export type UserTemplateUsageSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    usedAt?: boolean
+  }
+
+  export type UserTemplateUsageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "templateId" | "usedAt", ExtArgs["result"]["userTemplateUsage"]>
+  export type UserTemplateUsageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+  }
+  export type UserTemplateUsageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+  }
+  export type UserTemplateUsageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $UserTemplateUsagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserTemplateUsage"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      template: Prisma.$ConversationTemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      templateId: number
+      usedAt: Date
+    }, ExtArgs["result"]["userTemplateUsage"]>
+    composites: {}
+  }
+
+  type UserTemplateUsageGetPayload<S extends boolean | null | undefined | UserTemplateUsageDefaultArgs> = $Result.GetResult<Prisma.$UserTemplateUsagePayload, S>
+
+  type UserTemplateUsageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserTemplateUsageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserTemplateUsageCountAggregateInputType | true
+    }
+
+  export interface UserTemplateUsageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserTemplateUsage'], meta: { name: 'UserTemplateUsage' } }
+    /**
+     * Find zero or one UserTemplateUsage that matches the filter.
+     * @param {UserTemplateUsageFindUniqueArgs} args - Arguments to find a UserTemplateUsage
+     * @example
+     * // Get one UserTemplateUsage
+     * const userTemplateUsage = await prisma.userTemplateUsage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserTemplateUsageFindUniqueArgs>(args: SelectSubset<T, UserTemplateUsageFindUniqueArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserTemplateUsage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserTemplateUsageFindUniqueOrThrowArgs} args - Arguments to find a UserTemplateUsage
+     * @example
+     * // Get one UserTemplateUsage
+     * const userTemplateUsage = await prisma.userTemplateUsage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserTemplateUsageFindUniqueOrThrowArgs>(args: SelectSubset<T, UserTemplateUsageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserTemplateUsage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageFindFirstArgs} args - Arguments to find a UserTemplateUsage
+     * @example
+     * // Get one UserTemplateUsage
+     * const userTemplateUsage = await prisma.userTemplateUsage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserTemplateUsageFindFirstArgs>(args?: SelectSubset<T, UserTemplateUsageFindFirstArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserTemplateUsage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageFindFirstOrThrowArgs} args - Arguments to find a UserTemplateUsage
+     * @example
+     * // Get one UserTemplateUsage
+     * const userTemplateUsage = await prisma.userTemplateUsage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserTemplateUsageFindFirstOrThrowArgs>(args?: SelectSubset<T, UserTemplateUsageFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserTemplateUsages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserTemplateUsages
+     * const userTemplateUsages = await prisma.userTemplateUsage.findMany()
+     * 
+     * // Get first 10 UserTemplateUsages
+     * const userTemplateUsages = await prisma.userTemplateUsage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userTemplateUsageWithIdOnly = await prisma.userTemplateUsage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserTemplateUsageFindManyArgs>(args?: SelectSubset<T, UserTemplateUsageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserTemplateUsage.
+     * @param {UserTemplateUsageCreateArgs} args - Arguments to create a UserTemplateUsage.
+     * @example
+     * // Create one UserTemplateUsage
+     * const UserTemplateUsage = await prisma.userTemplateUsage.create({
+     *   data: {
+     *     // ... data to create a UserTemplateUsage
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserTemplateUsageCreateArgs>(args: SelectSubset<T, UserTemplateUsageCreateArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserTemplateUsages.
+     * @param {UserTemplateUsageCreateManyArgs} args - Arguments to create many UserTemplateUsages.
+     * @example
+     * // Create many UserTemplateUsages
+     * const userTemplateUsage = await prisma.userTemplateUsage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserTemplateUsageCreateManyArgs>(args?: SelectSubset<T, UserTemplateUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserTemplateUsages and returns the data saved in the database.
+     * @param {UserTemplateUsageCreateManyAndReturnArgs} args - Arguments to create many UserTemplateUsages.
+     * @example
+     * // Create many UserTemplateUsages
+     * const userTemplateUsage = await prisma.userTemplateUsage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserTemplateUsages and only return the `id`
+     * const userTemplateUsageWithIdOnly = await prisma.userTemplateUsage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserTemplateUsageCreateManyAndReturnArgs>(args?: SelectSubset<T, UserTemplateUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserTemplateUsage.
+     * @param {UserTemplateUsageDeleteArgs} args - Arguments to delete one UserTemplateUsage.
+     * @example
+     * // Delete one UserTemplateUsage
+     * const UserTemplateUsage = await prisma.userTemplateUsage.delete({
+     *   where: {
+     *     // ... filter to delete one UserTemplateUsage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserTemplateUsageDeleteArgs>(args: SelectSubset<T, UserTemplateUsageDeleteArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserTemplateUsage.
+     * @param {UserTemplateUsageUpdateArgs} args - Arguments to update one UserTemplateUsage.
+     * @example
+     * // Update one UserTemplateUsage
+     * const userTemplateUsage = await prisma.userTemplateUsage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserTemplateUsageUpdateArgs>(args: SelectSubset<T, UserTemplateUsageUpdateArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserTemplateUsages.
+     * @param {UserTemplateUsageDeleteManyArgs} args - Arguments to filter UserTemplateUsages to delete.
+     * @example
+     * // Delete a few UserTemplateUsages
+     * const { count } = await prisma.userTemplateUsage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserTemplateUsageDeleteManyArgs>(args?: SelectSubset<T, UserTemplateUsageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserTemplateUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserTemplateUsages
+     * const userTemplateUsage = await prisma.userTemplateUsage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserTemplateUsageUpdateManyArgs>(args: SelectSubset<T, UserTemplateUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserTemplateUsages and returns the data updated in the database.
+     * @param {UserTemplateUsageUpdateManyAndReturnArgs} args - Arguments to update many UserTemplateUsages.
+     * @example
+     * // Update many UserTemplateUsages
+     * const userTemplateUsage = await prisma.userTemplateUsage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserTemplateUsages and only return the `id`
+     * const userTemplateUsageWithIdOnly = await prisma.userTemplateUsage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserTemplateUsageUpdateManyAndReturnArgs>(args: SelectSubset<T, UserTemplateUsageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserTemplateUsage.
+     * @param {UserTemplateUsageUpsertArgs} args - Arguments to update or create a UserTemplateUsage.
+     * @example
+     * // Update or create a UserTemplateUsage
+     * const userTemplateUsage = await prisma.userTemplateUsage.upsert({
+     *   create: {
+     *     // ... data to create a UserTemplateUsage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserTemplateUsage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserTemplateUsageUpsertArgs>(args: SelectSubset<T, UserTemplateUsageUpsertArgs<ExtArgs>>): Prisma__UserTemplateUsageClient<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserTemplateUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageCountArgs} args - Arguments to filter UserTemplateUsages to count.
+     * @example
+     * // Count the number of UserTemplateUsages
+     * const count = await prisma.userTemplateUsage.count({
+     *   where: {
+     *     // ... the filter for the UserTemplateUsages we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserTemplateUsageCountArgs>(
+      args?: Subset<T, UserTemplateUsageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserTemplateUsageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserTemplateUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserTemplateUsageAggregateArgs>(args: Subset<T, UserTemplateUsageAggregateArgs>): Prisma.PrismaPromise<GetUserTemplateUsageAggregateType<T>>
+
+    /**
+     * Group by UserTemplateUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateUsageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserTemplateUsageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserTemplateUsageGroupByArgs['orderBy'] }
+        : { orderBy?: UserTemplateUsageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserTemplateUsageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserTemplateUsageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserTemplateUsage model
+   */
+  readonly fields: UserTemplateUsageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserTemplateUsage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserTemplateUsageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    template<T extends ConversationTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplateDefaultArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserTemplateUsage model
+   */
+  interface UserTemplateUsageFieldRefs {
+    readonly id: FieldRef<"UserTemplateUsage", 'Int'>
+    readonly userId: FieldRef<"UserTemplateUsage", 'Int'>
+    readonly templateId: FieldRef<"UserTemplateUsage", 'Int'>
+    readonly usedAt: FieldRef<"UserTemplateUsage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserTemplateUsage findUnique
+   */
+  export type UserTemplateUsageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateUsage to fetch.
+     */
+    where: UserTemplateUsageWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateUsage findUniqueOrThrow
+   */
+  export type UserTemplateUsageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateUsage to fetch.
+     */
+    where: UserTemplateUsageWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateUsage findFirst
+   */
+  export type UserTemplateUsageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateUsage to fetch.
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateUsages to fetch.
+     */
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserTemplateUsages.
+     */
+    cursor?: UserTemplateUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserTemplateUsages.
+     */
+    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
+  }
+
+  /**
+   * UserTemplateUsage findFirstOrThrow
+   */
+  export type UserTemplateUsageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateUsage to fetch.
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateUsages to fetch.
+     */
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserTemplateUsages.
+     */
+    cursor?: UserTemplateUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserTemplateUsages.
+     */
+    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
+  }
+
+  /**
+   * UserTemplateUsage findMany
+   */
+  export type UserTemplateUsageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateUsages to fetch.
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateUsages to fetch.
+     */
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserTemplateUsages.
+     */
+    cursor?: UserTemplateUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateUsages.
+     */
+    skip?: number
+    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
+  }
+
+  /**
+   * UserTemplateUsage create
+   */
+  export type UserTemplateUsageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserTemplateUsage.
+     */
+    data: XOR<UserTemplateUsageCreateInput, UserTemplateUsageUncheckedCreateInput>
+  }
+
+  /**
+   * UserTemplateUsage createMany
+   */
+  export type UserTemplateUsageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserTemplateUsages.
+     */
+    data: UserTemplateUsageCreateManyInput | UserTemplateUsageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserTemplateUsage createManyAndReturn
+   */
+  export type UserTemplateUsageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserTemplateUsages.
+     */
+    data: UserTemplateUsageCreateManyInput | UserTemplateUsageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserTemplateUsage update
+   */
+  export type UserTemplateUsageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserTemplateUsage.
+     */
+    data: XOR<UserTemplateUsageUpdateInput, UserTemplateUsageUncheckedUpdateInput>
+    /**
+     * Choose, which UserTemplateUsage to update.
+     */
+    where: UserTemplateUsageWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateUsage updateMany
+   */
+  export type UserTemplateUsageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserTemplateUsages.
+     */
+    data: XOR<UserTemplateUsageUpdateManyMutationInput, UserTemplateUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which UserTemplateUsages to update
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * Limit how many UserTemplateUsages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserTemplateUsage updateManyAndReturn
+   */
+  export type UserTemplateUsageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * The data used to update UserTemplateUsages.
+     */
+    data: XOR<UserTemplateUsageUpdateManyMutationInput, UserTemplateUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which UserTemplateUsages to update
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * Limit how many UserTemplateUsages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserTemplateUsage upsert
+   */
+  export type UserTemplateUsageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserTemplateUsage to update in case it exists.
+     */
+    where: UserTemplateUsageWhereUniqueInput
+    /**
+     * In case the UserTemplateUsage found by the `where` argument doesn't exist, create a new UserTemplateUsage with this data.
+     */
+    create: XOR<UserTemplateUsageCreateInput, UserTemplateUsageUncheckedCreateInput>
+    /**
+     * In case the UserTemplateUsage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserTemplateUsageUpdateInput, UserTemplateUsageUncheckedUpdateInput>
+  }
+
+  /**
+   * UserTemplateUsage delete
+   */
+  export type UserTemplateUsageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    /**
+     * Filter which UserTemplateUsage to delete.
+     */
+    where: UserTemplateUsageWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateUsage deleteMany
+   */
+  export type UserTemplateUsageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserTemplateUsages to delete
+     */
+    where?: UserTemplateUsageWhereInput
+    /**
+     * Limit how many UserTemplateUsages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserTemplateUsage without action
+   */
+  export type UserTemplateUsageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model ExamResult
    */
 
@@ -9988,12 +15542,14 @@ export namespace Prisma {
     id: number | null
     userId: number | null
     score: number | null
+    timeSpent: number | null
   }
 
   export type ExamResultSumAggregateOutputType = {
     id: number | null
     userId: number | null
     score: number | null
+    timeSpent: number | null
   }
 
   export type ExamResultMinAggregateOutputType = {
@@ -10004,6 +15560,7 @@ export namespace Prisma {
     level: string | null
     score: number | null
     completedAt: Date | null
+    timeSpent: number | null
   }
 
   export type ExamResultMaxAggregateOutputType = {
@@ -10014,6 +15571,7 @@ export namespace Prisma {
     level: string | null
     score: number | null
     completedAt: Date | null
+    timeSpent: number | null
   }
 
   export type ExamResultCountAggregateOutputType = {
@@ -10025,6 +15583,7 @@ export namespace Prisma {
     score: number
     details: number
     completedAt: number
+    timeSpent: number
     _all: number
   }
 
@@ -10033,12 +15592,14 @@ export namespace Prisma {
     id?: true
     userId?: true
     score?: true
+    timeSpent?: true
   }
 
   export type ExamResultSumAggregateInputType = {
     id?: true
     userId?: true
     score?: true
+    timeSpent?: true
   }
 
   export type ExamResultMinAggregateInputType = {
@@ -10049,6 +15610,7 @@ export namespace Prisma {
     level?: true
     score?: true
     completedAt?: true
+    timeSpent?: true
   }
 
   export type ExamResultMaxAggregateInputType = {
@@ -10059,6 +15621,7 @@ export namespace Prisma {
     level?: true
     score?: true
     completedAt?: true
+    timeSpent?: true
   }
 
   export type ExamResultCountAggregateInputType = {
@@ -10070,6 +15633,7 @@ export namespace Prisma {
     score?: true
     details?: true
     completedAt?: true
+    timeSpent?: true
     _all?: true
   }
 
@@ -10168,6 +15732,7 @@ export namespace Prisma {
     score: number
     details: JsonValue
     completedAt: Date
+    timeSpent: number
     _count: ExamResultCountAggregateOutputType | null
     _avg: ExamResultAvgAggregateOutputType | null
     _sum: ExamResultSumAggregateOutputType | null
@@ -10198,6 +15763,7 @@ export namespace Prisma {
     score?: boolean
     details?: boolean
     completedAt?: boolean
+    timeSpent?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["examResult"]>
 
@@ -10210,6 +15776,7 @@ export namespace Prisma {
     score?: boolean
     details?: boolean
     completedAt?: boolean
+    timeSpent?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["examResult"]>
 
@@ -10222,6 +15789,7 @@ export namespace Prisma {
     score?: boolean
     details?: boolean
     completedAt?: boolean
+    timeSpent?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["examResult"]>
 
@@ -10234,9 +15802,10 @@ export namespace Prisma {
     score?: boolean
     details?: boolean
     completedAt?: boolean
+    timeSpent?: boolean
   }
 
-  export type ExamResultOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "examId" | "section" | "level" | "score" | "details" | "completedAt", ExtArgs["result"]["examResult"]>
+  export type ExamResultOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "examId" | "section" | "level" | "score" | "details" | "completedAt" | "timeSpent", ExtArgs["result"]["examResult"]>
   export type ExamResultInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -10261,6 +15830,7 @@ export namespace Prisma {
       score: number
       details: Prisma.JsonValue
       completedAt: Date
+      timeSpent: number
     }, ExtArgs["result"]["examResult"]>
     composites: {}
   }
@@ -10693,6 +16263,7 @@ export namespace Prisma {
     readonly score: FieldRef<"ExamResult", 'Int'>
     readonly details: FieldRef<"ExamResult", 'Json'>
     readonly completedAt: FieldRef<"ExamResult", 'DateTime'>
+    readonly timeSpent: FieldRef<"ExamResult", 'Int'>
   }
     
 
@@ -11122,11 +16693,13 @@ export namespace Prisma {
   export type PracticeSessionAvgAggregateOutputType = {
     userId: number | null
     duration: number | null
+    score: number | null
   }
 
   export type PracticeSessionSumAggregateOutputType = {
     userId: number | null
     duration: number | null
+    score: number | null
   }
 
   export type PracticeSessionMinAggregateOutputType = {
@@ -11135,6 +16708,9 @@ export namespace Prisma {
     type: string | null
     duration: number | null
     createdAt: Date | null
+    aiGenerated: boolean | null
+    difficulty: string | null
+    score: number | null
   }
 
   export type PracticeSessionMaxAggregateOutputType = {
@@ -11143,6 +16719,9 @@ export namespace Prisma {
     type: string | null
     duration: number | null
     createdAt: Date | null
+    aiGenerated: boolean | null
+    difficulty: string | null
+    score: number | null
   }
 
   export type PracticeSessionCountAggregateOutputType = {
@@ -11151,6 +16730,9 @@ export namespace Prisma {
     type: number
     duration: number
     createdAt: number
+    aiGenerated: number
+    difficulty: number
+    score: number
     _all: number
   }
 
@@ -11158,11 +16740,13 @@ export namespace Prisma {
   export type PracticeSessionAvgAggregateInputType = {
     userId?: true
     duration?: true
+    score?: true
   }
 
   export type PracticeSessionSumAggregateInputType = {
     userId?: true
     duration?: true
+    score?: true
   }
 
   export type PracticeSessionMinAggregateInputType = {
@@ -11171,6 +16755,9 @@ export namespace Prisma {
     type?: true
     duration?: true
     createdAt?: true
+    aiGenerated?: true
+    difficulty?: true
+    score?: true
   }
 
   export type PracticeSessionMaxAggregateInputType = {
@@ -11179,6 +16766,9 @@ export namespace Prisma {
     type?: true
     duration?: true
     createdAt?: true
+    aiGenerated?: true
+    difficulty?: true
+    score?: true
   }
 
   export type PracticeSessionCountAggregateInputType = {
@@ -11187,6 +16777,9 @@ export namespace Prisma {
     type?: true
     duration?: true
     createdAt?: true
+    aiGenerated?: true
+    difficulty?: true
+    score?: true
     _all?: true
   }
 
@@ -11282,6 +16875,9 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt: Date
+    aiGenerated: boolean
+    difficulty: string | null
+    score: number | null
     _count: PracticeSessionCountAggregateOutputType | null
     _avg: PracticeSessionAvgAggregateOutputType | null
     _sum: PracticeSessionSumAggregateOutputType | null
@@ -11309,8 +16905,12 @@ export namespace Prisma {
     type?: boolean
     duration?: boolean
     createdAt?: boolean
+    aiGenerated?: boolean
+    difficulty?: boolean
+    score?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     practiceItems?: boolean | PracticeSession$practiceItemsArgs<ExtArgs>
+    pronunciationItems?: boolean | PracticeSession$pronunciationItemsArgs<ExtArgs>
     _count?: boolean | PracticeSessionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["practiceSession"]>
 
@@ -11320,6 +16920,9 @@ export namespace Prisma {
     type?: boolean
     duration?: boolean
     createdAt?: boolean
+    aiGenerated?: boolean
+    difficulty?: boolean
+    score?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["practiceSession"]>
 
@@ -11329,6 +16932,9 @@ export namespace Prisma {
     type?: boolean
     duration?: boolean
     createdAt?: boolean
+    aiGenerated?: boolean
+    difficulty?: boolean
+    score?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["practiceSession"]>
 
@@ -11338,12 +16944,16 @@ export namespace Prisma {
     type?: boolean
     duration?: boolean
     createdAt?: boolean
+    aiGenerated?: boolean
+    difficulty?: boolean
+    score?: boolean
   }
 
-  export type PracticeSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "duration" | "createdAt", ExtArgs["result"]["practiceSession"]>
+  export type PracticeSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "duration" | "createdAt" | "aiGenerated" | "difficulty" | "score", ExtArgs["result"]["practiceSession"]>
   export type PracticeSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     practiceItems?: boolean | PracticeSession$practiceItemsArgs<ExtArgs>
+    pronunciationItems?: boolean | PracticeSession$pronunciationItemsArgs<ExtArgs>
     _count?: boolean | PracticeSessionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PracticeSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11358,6 +16968,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       practiceItems: Prisma.$PracticeItemPayload<ExtArgs>[]
+      pronunciationItems: Prisma.$PronunciationPracticeItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11365,6 +16976,9 @@ export namespace Prisma {
       type: string
       duration: number
       createdAt: Date
+      aiGenerated: boolean
+      difficulty: string | null
+      score: number | null
     }, ExtArgs["result"]["practiceSession"]>
     composites: {}
   }
@@ -11761,6 +17375,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     practiceItems<T extends PracticeSession$practiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSession$practiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pronunciationItems<T extends PracticeSession$pronunciationItemsArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSession$pronunciationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11795,6 +17410,9 @@ export namespace Prisma {
     readonly type: FieldRef<"PracticeSession", 'String'>
     readonly duration: FieldRef<"PracticeSession", 'Int'>
     readonly createdAt: FieldRef<"PracticeSession", 'DateTime'>
+    readonly aiGenerated: FieldRef<"PracticeSession", 'Boolean'>
+    readonly difficulty: FieldRef<"PracticeSession", 'String'>
+    readonly score: FieldRef<"PracticeSession", 'Int'>
   }
     
 
@@ -12212,6 +17830,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeSession.pronunciationItems
+   */
+  export type PracticeSession$pronunciationItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    where?: PronunciationPracticeItemWhereInput
+    orderBy?: PronunciationPracticeItemOrderByWithRelationInput | PronunciationPracticeItemOrderByWithRelationInput[]
+    cursor?: PronunciationPracticeItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PronunciationPracticeItemScalarFieldEnum | PronunciationPracticeItemScalarFieldEnum[]
   }
 
   /**
@@ -13364,6 +19006,3304 @@ export namespace Prisma {
 
 
   /**
+   * Model PronunciationExercise
+   */
+
+  export type AggregatePronunciationExercise = {
+    _count: PronunciationExerciseCountAggregateOutputType | null
+    _avg: PronunciationExerciseAvgAggregateOutputType | null
+    _sum: PronunciationExerciseSumAggregateOutputType | null
+    _min: PronunciationExerciseMinAggregateOutputType | null
+    _max: PronunciationExerciseMaxAggregateOutputType | null
+  }
+
+  export type PronunciationExerciseAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type PronunciationExerciseSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type PronunciationExerciseMinAggregateOutputType = {
+    id: number | null
+    text: string | null
+    translation: string | null
+    audioUrl: string | null
+    difficulty: string | null
+    category: string | null
+    expectedPronunciation: string | null
+  }
+
+  export type PronunciationExerciseMaxAggregateOutputType = {
+    id: number | null
+    text: string | null
+    translation: string | null
+    audioUrl: string | null
+    difficulty: string | null
+    category: string | null
+    expectedPronunciation: string | null
+  }
+
+  export type PronunciationExerciseCountAggregateOutputType = {
+    id: number
+    text: number
+    translation: number
+    audioUrl: number
+    difficulty: number
+    category: number
+    expectedPronunciation: number
+    _all: number
+  }
+
+
+  export type PronunciationExerciseAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type PronunciationExerciseSumAggregateInputType = {
+    id?: true
+  }
+
+  export type PronunciationExerciseMinAggregateInputType = {
+    id?: true
+    text?: true
+    translation?: true
+    audioUrl?: true
+    difficulty?: true
+    category?: true
+    expectedPronunciation?: true
+  }
+
+  export type PronunciationExerciseMaxAggregateInputType = {
+    id?: true
+    text?: true
+    translation?: true
+    audioUrl?: true
+    difficulty?: true
+    category?: true
+    expectedPronunciation?: true
+  }
+
+  export type PronunciationExerciseCountAggregateInputType = {
+    id?: true
+    text?: true
+    translation?: true
+    audioUrl?: true
+    difficulty?: true
+    category?: true
+    expectedPronunciation?: true
+    _all?: true
+  }
+
+  export type PronunciationExerciseAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PronunciationExercise to aggregate.
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationExercises to fetch.
+     */
+    orderBy?: PronunciationExerciseOrderByWithRelationInput | PronunciationExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PronunciationExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationExercises.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PronunciationExercises
+    **/
+    _count?: true | PronunciationExerciseCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PronunciationExerciseAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PronunciationExerciseSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PronunciationExerciseMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PronunciationExerciseMaxAggregateInputType
+  }
+
+  export type GetPronunciationExerciseAggregateType<T extends PronunciationExerciseAggregateArgs> = {
+        [P in keyof T & keyof AggregatePronunciationExercise]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePronunciationExercise[P]>
+      : GetScalarType<T[P], AggregatePronunciationExercise[P]>
+  }
+
+
+
+
+  export type PronunciationExerciseGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PronunciationExerciseWhereInput
+    orderBy?: PronunciationExerciseOrderByWithAggregationInput | PronunciationExerciseOrderByWithAggregationInput[]
+    by: PronunciationExerciseScalarFieldEnum[] | PronunciationExerciseScalarFieldEnum
+    having?: PronunciationExerciseScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PronunciationExerciseCountAggregateInputType | true
+    _avg?: PronunciationExerciseAvgAggregateInputType
+    _sum?: PronunciationExerciseSumAggregateInputType
+    _min?: PronunciationExerciseMinAggregateInputType
+    _max?: PronunciationExerciseMaxAggregateInputType
+  }
+
+  export type PronunciationExerciseGroupByOutputType = {
+    id: number
+    text: string
+    translation: string | null
+    audioUrl: string | null
+    difficulty: string
+    category: string | null
+    expectedPronunciation: string | null
+    _count: PronunciationExerciseCountAggregateOutputType | null
+    _avg: PronunciationExerciseAvgAggregateOutputType | null
+    _sum: PronunciationExerciseSumAggregateOutputType | null
+    _min: PronunciationExerciseMinAggregateOutputType | null
+    _max: PronunciationExerciseMaxAggregateOutputType | null
+  }
+
+  type GetPronunciationExerciseGroupByPayload<T extends PronunciationExerciseGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PronunciationExerciseGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PronunciationExerciseGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PronunciationExerciseGroupByOutputType[P]>
+            : GetScalarType<T[P], PronunciationExerciseGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PronunciationExerciseSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    text?: boolean
+    translation?: boolean
+    audioUrl?: boolean
+    difficulty?: boolean
+    category?: boolean
+    expectedPronunciation?: boolean
+    practiceItems?: boolean | PronunciationExercise$practiceItemsArgs<ExtArgs>
+    _count?: boolean | PronunciationExerciseCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pronunciationExercise"]>
+
+  export type PronunciationExerciseSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    text?: boolean
+    translation?: boolean
+    audioUrl?: boolean
+    difficulty?: boolean
+    category?: boolean
+    expectedPronunciation?: boolean
+  }, ExtArgs["result"]["pronunciationExercise"]>
+
+  export type PronunciationExerciseSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    text?: boolean
+    translation?: boolean
+    audioUrl?: boolean
+    difficulty?: boolean
+    category?: boolean
+    expectedPronunciation?: boolean
+  }, ExtArgs["result"]["pronunciationExercise"]>
+
+  export type PronunciationExerciseSelectScalar = {
+    id?: boolean
+    text?: boolean
+    translation?: boolean
+    audioUrl?: boolean
+    difficulty?: boolean
+    category?: boolean
+    expectedPronunciation?: boolean
+  }
+
+  export type PronunciationExerciseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "translation" | "audioUrl" | "difficulty" | "category" | "expectedPronunciation", ExtArgs["result"]["pronunciationExercise"]>
+  export type PronunciationExerciseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    practiceItems?: boolean | PronunciationExercise$practiceItemsArgs<ExtArgs>
+    _count?: boolean | PronunciationExerciseCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PronunciationExerciseIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type PronunciationExerciseIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $PronunciationExercisePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PronunciationExercise"
+    objects: {
+      practiceItems: Prisma.$PronunciationPracticeItemPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      text: string
+      translation: string | null
+      audioUrl: string | null
+      difficulty: string
+      category: string | null
+      expectedPronunciation: string | null
+    }, ExtArgs["result"]["pronunciationExercise"]>
+    composites: {}
+  }
+
+  type PronunciationExerciseGetPayload<S extends boolean | null | undefined | PronunciationExerciseDefaultArgs> = $Result.GetResult<Prisma.$PronunciationExercisePayload, S>
+
+  type PronunciationExerciseCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PronunciationExerciseFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PronunciationExerciseCountAggregateInputType | true
+    }
+
+  export interface PronunciationExerciseDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PronunciationExercise'], meta: { name: 'PronunciationExercise' } }
+    /**
+     * Find zero or one PronunciationExercise that matches the filter.
+     * @param {PronunciationExerciseFindUniqueArgs} args - Arguments to find a PronunciationExercise
+     * @example
+     * // Get one PronunciationExercise
+     * const pronunciationExercise = await prisma.pronunciationExercise.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PronunciationExerciseFindUniqueArgs>(args: SelectSubset<T, PronunciationExerciseFindUniqueArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PronunciationExercise that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PronunciationExerciseFindUniqueOrThrowArgs} args - Arguments to find a PronunciationExercise
+     * @example
+     * // Get one PronunciationExercise
+     * const pronunciationExercise = await prisma.pronunciationExercise.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PronunciationExerciseFindUniqueOrThrowArgs>(args: SelectSubset<T, PronunciationExerciseFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PronunciationExercise that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseFindFirstArgs} args - Arguments to find a PronunciationExercise
+     * @example
+     * // Get one PronunciationExercise
+     * const pronunciationExercise = await prisma.pronunciationExercise.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PronunciationExerciseFindFirstArgs>(args?: SelectSubset<T, PronunciationExerciseFindFirstArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PronunciationExercise that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseFindFirstOrThrowArgs} args - Arguments to find a PronunciationExercise
+     * @example
+     * // Get one PronunciationExercise
+     * const pronunciationExercise = await prisma.pronunciationExercise.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PronunciationExerciseFindFirstOrThrowArgs>(args?: SelectSubset<T, PronunciationExerciseFindFirstOrThrowArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PronunciationExercises that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PronunciationExercises
+     * const pronunciationExercises = await prisma.pronunciationExercise.findMany()
+     * 
+     * // Get first 10 PronunciationExercises
+     * const pronunciationExercises = await prisma.pronunciationExercise.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pronunciationExerciseWithIdOnly = await prisma.pronunciationExercise.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PronunciationExerciseFindManyArgs>(args?: SelectSubset<T, PronunciationExerciseFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PronunciationExercise.
+     * @param {PronunciationExerciseCreateArgs} args - Arguments to create a PronunciationExercise.
+     * @example
+     * // Create one PronunciationExercise
+     * const PronunciationExercise = await prisma.pronunciationExercise.create({
+     *   data: {
+     *     // ... data to create a PronunciationExercise
+     *   }
+     * })
+     * 
+     */
+    create<T extends PronunciationExerciseCreateArgs>(args: SelectSubset<T, PronunciationExerciseCreateArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PronunciationExercises.
+     * @param {PronunciationExerciseCreateManyArgs} args - Arguments to create many PronunciationExercises.
+     * @example
+     * // Create many PronunciationExercises
+     * const pronunciationExercise = await prisma.pronunciationExercise.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PronunciationExerciseCreateManyArgs>(args?: SelectSubset<T, PronunciationExerciseCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PronunciationExercises and returns the data saved in the database.
+     * @param {PronunciationExerciseCreateManyAndReturnArgs} args - Arguments to create many PronunciationExercises.
+     * @example
+     * // Create many PronunciationExercises
+     * const pronunciationExercise = await prisma.pronunciationExercise.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PronunciationExercises and only return the `id`
+     * const pronunciationExerciseWithIdOnly = await prisma.pronunciationExercise.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PronunciationExerciseCreateManyAndReturnArgs>(args?: SelectSubset<T, PronunciationExerciseCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PronunciationExercise.
+     * @param {PronunciationExerciseDeleteArgs} args - Arguments to delete one PronunciationExercise.
+     * @example
+     * // Delete one PronunciationExercise
+     * const PronunciationExercise = await prisma.pronunciationExercise.delete({
+     *   where: {
+     *     // ... filter to delete one PronunciationExercise
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PronunciationExerciseDeleteArgs>(args: SelectSubset<T, PronunciationExerciseDeleteArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PronunciationExercise.
+     * @param {PronunciationExerciseUpdateArgs} args - Arguments to update one PronunciationExercise.
+     * @example
+     * // Update one PronunciationExercise
+     * const pronunciationExercise = await prisma.pronunciationExercise.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PronunciationExerciseUpdateArgs>(args: SelectSubset<T, PronunciationExerciseUpdateArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PronunciationExercises.
+     * @param {PronunciationExerciseDeleteManyArgs} args - Arguments to filter PronunciationExercises to delete.
+     * @example
+     * // Delete a few PronunciationExercises
+     * const { count } = await prisma.pronunciationExercise.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PronunciationExerciseDeleteManyArgs>(args?: SelectSubset<T, PronunciationExerciseDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PronunciationExercises.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PronunciationExercises
+     * const pronunciationExercise = await prisma.pronunciationExercise.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PronunciationExerciseUpdateManyArgs>(args: SelectSubset<T, PronunciationExerciseUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PronunciationExercises and returns the data updated in the database.
+     * @param {PronunciationExerciseUpdateManyAndReturnArgs} args - Arguments to update many PronunciationExercises.
+     * @example
+     * // Update many PronunciationExercises
+     * const pronunciationExercise = await prisma.pronunciationExercise.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PronunciationExercises and only return the `id`
+     * const pronunciationExerciseWithIdOnly = await prisma.pronunciationExercise.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PronunciationExerciseUpdateManyAndReturnArgs>(args: SelectSubset<T, PronunciationExerciseUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PronunciationExercise.
+     * @param {PronunciationExerciseUpsertArgs} args - Arguments to update or create a PronunciationExercise.
+     * @example
+     * // Update or create a PronunciationExercise
+     * const pronunciationExercise = await prisma.pronunciationExercise.upsert({
+     *   create: {
+     *     // ... data to create a PronunciationExercise
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PronunciationExercise we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PronunciationExerciseUpsertArgs>(args: SelectSubset<T, PronunciationExerciseUpsertArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PronunciationExercises.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseCountArgs} args - Arguments to filter PronunciationExercises to count.
+     * @example
+     * // Count the number of PronunciationExercises
+     * const count = await prisma.pronunciationExercise.count({
+     *   where: {
+     *     // ... the filter for the PronunciationExercises we want to count
+     *   }
+     * })
+    **/
+    count<T extends PronunciationExerciseCountArgs>(
+      args?: Subset<T, PronunciationExerciseCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PronunciationExerciseCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PronunciationExercise.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PronunciationExerciseAggregateArgs>(args: Subset<T, PronunciationExerciseAggregateArgs>): Prisma.PrismaPromise<GetPronunciationExerciseAggregateType<T>>
+
+    /**
+     * Group by PronunciationExercise.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationExerciseGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PronunciationExerciseGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PronunciationExerciseGroupByArgs['orderBy'] }
+        : { orderBy?: PronunciationExerciseGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PronunciationExerciseGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPronunciationExerciseGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PronunciationExercise model
+   */
+  readonly fields: PronunciationExerciseFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PronunciationExercise.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PronunciationExerciseClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    practiceItems<T extends PronunciationExercise$practiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, PronunciationExercise$practiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PronunciationExercise model
+   */
+  interface PronunciationExerciseFieldRefs {
+    readonly id: FieldRef<"PronunciationExercise", 'Int'>
+    readonly text: FieldRef<"PronunciationExercise", 'String'>
+    readonly translation: FieldRef<"PronunciationExercise", 'String'>
+    readonly audioUrl: FieldRef<"PronunciationExercise", 'String'>
+    readonly difficulty: FieldRef<"PronunciationExercise", 'String'>
+    readonly category: FieldRef<"PronunciationExercise", 'String'>
+    readonly expectedPronunciation: FieldRef<"PronunciationExercise", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PronunciationExercise findUnique
+   */
+  export type PronunciationExerciseFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationExercise to fetch.
+     */
+    where: PronunciationExerciseWhereUniqueInput
+  }
+
+  /**
+   * PronunciationExercise findUniqueOrThrow
+   */
+  export type PronunciationExerciseFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationExercise to fetch.
+     */
+    where: PronunciationExerciseWhereUniqueInput
+  }
+
+  /**
+   * PronunciationExercise findFirst
+   */
+  export type PronunciationExerciseFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationExercise to fetch.
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationExercises to fetch.
+     */
+    orderBy?: PronunciationExerciseOrderByWithRelationInput | PronunciationExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PronunciationExercises.
+     */
+    cursor?: PronunciationExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationExercises.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PronunciationExercises.
+     */
+    distinct?: PronunciationExerciseScalarFieldEnum | PronunciationExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationExercise findFirstOrThrow
+   */
+  export type PronunciationExerciseFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationExercise to fetch.
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationExercises to fetch.
+     */
+    orderBy?: PronunciationExerciseOrderByWithRelationInput | PronunciationExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PronunciationExercises.
+     */
+    cursor?: PronunciationExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationExercises.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PronunciationExercises.
+     */
+    distinct?: PronunciationExerciseScalarFieldEnum | PronunciationExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationExercise findMany
+   */
+  export type PronunciationExerciseFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationExercises to fetch.
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationExercises to fetch.
+     */
+    orderBy?: PronunciationExerciseOrderByWithRelationInput | PronunciationExerciseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PronunciationExercises.
+     */
+    cursor?: PronunciationExerciseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationExercises from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationExercises.
+     */
+    skip?: number
+    distinct?: PronunciationExerciseScalarFieldEnum | PronunciationExerciseScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationExercise create
+   */
+  export type PronunciationExerciseCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PronunciationExercise.
+     */
+    data: XOR<PronunciationExerciseCreateInput, PronunciationExerciseUncheckedCreateInput>
+  }
+
+  /**
+   * PronunciationExercise createMany
+   */
+  export type PronunciationExerciseCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PronunciationExercises.
+     */
+    data: PronunciationExerciseCreateManyInput | PronunciationExerciseCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PronunciationExercise createManyAndReturn
+   */
+  export type PronunciationExerciseCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * The data used to create many PronunciationExercises.
+     */
+    data: PronunciationExerciseCreateManyInput | PronunciationExerciseCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PronunciationExercise update
+   */
+  export type PronunciationExerciseUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PronunciationExercise.
+     */
+    data: XOR<PronunciationExerciseUpdateInput, PronunciationExerciseUncheckedUpdateInput>
+    /**
+     * Choose, which PronunciationExercise to update.
+     */
+    where: PronunciationExerciseWhereUniqueInput
+  }
+
+  /**
+   * PronunciationExercise updateMany
+   */
+  export type PronunciationExerciseUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PronunciationExercises.
+     */
+    data: XOR<PronunciationExerciseUpdateManyMutationInput, PronunciationExerciseUncheckedUpdateManyInput>
+    /**
+     * Filter which PronunciationExercises to update
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * Limit how many PronunciationExercises to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PronunciationExercise updateManyAndReturn
+   */
+  export type PronunciationExerciseUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * The data used to update PronunciationExercises.
+     */
+    data: XOR<PronunciationExerciseUpdateManyMutationInput, PronunciationExerciseUncheckedUpdateManyInput>
+    /**
+     * Filter which PronunciationExercises to update
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * Limit how many PronunciationExercises to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PronunciationExercise upsert
+   */
+  export type PronunciationExerciseUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PronunciationExercise to update in case it exists.
+     */
+    where: PronunciationExerciseWhereUniqueInput
+    /**
+     * In case the PronunciationExercise found by the `where` argument doesn't exist, create a new PronunciationExercise with this data.
+     */
+    create: XOR<PronunciationExerciseCreateInput, PronunciationExerciseUncheckedCreateInput>
+    /**
+     * In case the PronunciationExercise was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PronunciationExerciseUpdateInput, PronunciationExerciseUncheckedUpdateInput>
+  }
+
+  /**
+   * PronunciationExercise delete
+   */
+  export type PronunciationExerciseDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+    /**
+     * Filter which PronunciationExercise to delete.
+     */
+    where: PronunciationExerciseWhereUniqueInput
+  }
+
+  /**
+   * PronunciationExercise deleteMany
+   */
+  export type PronunciationExerciseDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PronunciationExercises to delete
+     */
+    where?: PronunciationExerciseWhereInput
+    /**
+     * Limit how many PronunciationExercises to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PronunciationExercise.practiceItems
+   */
+  export type PronunciationExercise$practiceItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    where?: PronunciationPracticeItemWhereInput
+    orderBy?: PronunciationPracticeItemOrderByWithRelationInput | PronunciationPracticeItemOrderByWithRelationInput[]
+    cursor?: PronunciationPracticeItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PronunciationPracticeItemScalarFieldEnum | PronunciationPracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationExercise without action
+   */
+  export type PronunciationExerciseDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationExercise
+     */
+    select?: PronunciationExerciseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationExercise
+     */
+    omit?: PronunciationExerciseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationExerciseInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PronunciationPracticeItem
+   */
+
+  export type AggregatePronunciationPracticeItem = {
+    _count: PronunciationPracticeItemCountAggregateOutputType | null
+    _avg: PronunciationPracticeItemAvgAggregateOutputType | null
+    _sum: PronunciationPracticeItemSumAggregateOutputType | null
+    _min: PronunciationPracticeItemMinAggregateOutputType | null
+    _max: PronunciationPracticeItemMaxAggregateOutputType | null
+  }
+
+  export type PronunciationPracticeItemAvgAggregateOutputType = {
+    id: number | null
+    exerciseId: number | null
+    similarityScore: number | null
+  }
+
+  export type PronunciationPracticeItemSumAggregateOutputType = {
+    id: number | null
+    exerciseId: number | null
+    similarityScore: number | null
+  }
+
+  export type PronunciationPracticeItemMinAggregateOutputType = {
+    id: number | null
+    sessionId: string | null
+    exerciseId: number | null
+    userAudioUrl: string | null
+    transcript: string | null
+    similarityScore: number | null
+  }
+
+  export type PronunciationPracticeItemMaxAggregateOutputType = {
+    id: number | null
+    sessionId: string | null
+    exerciseId: number | null
+    userAudioUrl: string | null
+    transcript: string | null
+    similarityScore: number | null
+  }
+
+  export type PronunciationPracticeItemCountAggregateOutputType = {
+    id: number
+    sessionId: number
+    exerciseId: number
+    userAudioUrl: number
+    transcript: number
+    similarityScore: number
+    feedback: number
+    _all: number
+  }
+
+
+  export type PronunciationPracticeItemAvgAggregateInputType = {
+    id?: true
+    exerciseId?: true
+    similarityScore?: true
+  }
+
+  export type PronunciationPracticeItemSumAggregateInputType = {
+    id?: true
+    exerciseId?: true
+    similarityScore?: true
+  }
+
+  export type PronunciationPracticeItemMinAggregateInputType = {
+    id?: true
+    sessionId?: true
+    exerciseId?: true
+    userAudioUrl?: true
+    transcript?: true
+    similarityScore?: true
+  }
+
+  export type PronunciationPracticeItemMaxAggregateInputType = {
+    id?: true
+    sessionId?: true
+    exerciseId?: true
+    userAudioUrl?: true
+    transcript?: true
+    similarityScore?: true
+  }
+
+  export type PronunciationPracticeItemCountAggregateInputType = {
+    id?: true
+    sessionId?: true
+    exerciseId?: true
+    userAudioUrl?: true
+    transcript?: true
+    similarityScore?: true
+    feedback?: true
+    _all?: true
+  }
+
+  export type PronunciationPracticeItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PronunciationPracticeItem to aggregate.
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationPracticeItems to fetch.
+     */
+    orderBy?: PronunciationPracticeItemOrderByWithRelationInput | PronunciationPracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PronunciationPracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationPracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationPracticeItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PronunciationPracticeItems
+    **/
+    _count?: true | PronunciationPracticeItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PronunciationPracticeItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PronunciationPracticeItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PronunciationPracticeItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PronunciationPracticeItemMaxAggregateInputType
+  }
+
+  export type GetPronunciationPracticeItemAggregateType<T extends PronunciationPracticeItemAggregateArgs> = {
+        [P in keyof T & keyof AggregatePronunciationPracticeItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePronunciationPracticeItem[P]>
+      : GetScalarType<T[P], AggregatePronunciationPracticeItem[P]>
+  }
+
+
+
+
+  export type PronunciationPracticeItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PronunciationPracticeItemWhereInput
+    orderBy?: PronunciationPracticeItemOrderByWithAggregationInput | PronunciationPracticeItemOrderByWithAggregationInput[]
+    by: PronunciationPracticeItemScalarFieldEnum[] | PronunciationPracticeItemScalarFieldEnum
+    having?: PronunciationPracticeItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PronunciationPracticeItemCountAggregateInputType | true
+    _avg?: PronunciationPracticeItemAvgAggregateInputType
+    _sum?: PronunciationPracticeItemSumAggregateInputType
+    _min?: PronunciationPracticeItemMinAggregateInputType
+    _max?: PronunciationPracticeItemMaxAggregateInputType
+  }
+
+  export type PronunciationPracticeItemGroupByOutputType = {
+    id: number
+    sessionId: string
+    exerciseId: number
+    userAudioUrl: string | null
+    transcript: string | null
+    similarityScore: number | null
+    feedback: JsonValue | null
+    _count: PronunciationPracticeItemCountAggregateOutputType | null
+    _avg: PronunciationPracticeItemAvgAggregateOutputType | null
+    _sum: PronunciationPracticeItemSumAggregateOutputType | null
+    _min: PronunciationPracticeItemMinAggregateOutputType | null
+    _max: PronunciationPracticeItemMaxAggregateOutputType | null
+  }
+
+  type GetPronunciationPracticeItemGroupByPayload<T extends PronunciationPracticeItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PronunciationPracticeItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PronunciationPracticeItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PronunciationPracticeItemGroupByOutputType[P]>
+            : GetScalarType<T[P], PronunciationPracticeItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PronunciationPracticeItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    exerciseId?: boolean
+    userAudioUrl?: boolean
+    transcript?: boolean
+    similarityScore?: boolean
+    feedback?: boolean
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pronunciationPracticeItem"]>
+
+  export type PronunciationPracticeItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    exerciseId?: boolean
+    userAudioUrl?: boolean
+    transcript?: boolean
+    similarityScore?: boolean
+    feedback?: boolean
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pronunciationPracticeItem"]>
+
+  export type PronunciationPracticeItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    exerciseId?: boolean
+    userAudioUrl?: boolean
+    transcript?: boolean
+    similarityScore?: boolean
+    feedback?: boolean
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pronunciationPracticeItem"]>
+
+  export type PronunciationPracticeItemSelectScalar = {
+    id?: boolean
+    sessionId?: boolean
+    exerciseId?: boolean
+    userAudioUrl?: boolean
+    transcript?: boolean
+    similarityScore?: boolean
+    feedback?: boolean
+  }
+
+  export type PronunciationPracticeItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionId" | "exerciseId" | "userAudioUrl" | "transcript" | "similarityScore" | "feedback", ExtArgs["result"]["pronunciationPracticeItem"]>
+  export type PronunciationPracticeItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+  }
+  export type PronunciationPracticeItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+  }
+  export type PronunciationPracticeItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
+    exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+  }
+
+  export type $PronunciationPracticeItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PronunciationPracticeItem"
+    objects: {
+      session: Prisma.$PracticeSessionPayload<ExtArgs>
+      exercise: Prisma.$PronunciationExercisePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      sessionId: string
+      exerciseId: number
+      userAudioUrl: string | null
+      transcript: string | null
+      similarityScore: number | null
+      feedback: Prisma.JsonValue | null
+    }, ExtArgs["result"]["pronunciationPracticeItem"]>
+    composites: {}
+  }
+
+  type PronunciationPracticeItemGetPayload<S extends boolean | null | undefined | PronunciationPracticeItemDefaultArgs> = $Result.GetResult<Prisma.$PronunciationPracticeItemPayload, S>
+
+  type PronunciationPracticeItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PronunciationPracticeItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PronunciationPracticeItemCountAggregateInputType | true
+    }
+
+  export interface PronunciationPracticeItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PronunciationPracticeItem'], meta: { name: 'PronunciationPracticeItem' } }
+    /**
+     * Find zero or one PronunciationPracticeItem that matches the filter.
+     * @param {PronunciationPracticeItemFindUniqueArgs} args - Arguments to find a PronunciationPracticeItem
+     * @example
+     * // Get one PronunciationPracticeItem
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PronunciationPracticeItemFindUniqueArgs>(args: SelectSubset<T, PronunciationPracticeItemFindUniqueArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PronunciationPracticeItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PronunciationPracticeItemFindUniqueOrThrowArgs} args - Arguments to find a PronunciationPracticeItem
+     * @example
+     * // Get one PronunciationPracticeItem
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PronunciationPracticeItemFindUniqueOrThrowArgs>(args: SelectSubset<T, PronunciationPracticeItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PronunciationPracticeItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemFindFirstArgs} args - Arguments to find a PronunciationPracticeItem
+     * @example
+     * // Get one PronunciationPracticeItem
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PronunciationPracticeItemFindFirstArgs>(args?: SelectSubset<T, PronunciationPracticeItemFindFirstArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PronunciationPracticeItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemFindFirstOrThrowArgs} args - Arguments to find a PronunciationPracticeItem
+     * @example
+     * // Get one PronunciationPracticeItem
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PronunciationPracticeItemFindFirstOrThrowArgs>(args?: SelectSubset<T, PronunciationPracticeItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PronunciationPracticeItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PronunciationPracticeItems
+     * const pronunciationPracticeItems = await prisma.pronunciationPracticeItem.findMany()
+     * 
+     * // Get first 10 PronunciationPracticeItems
+     * const pronunciationPracticeItems = await prisma.pronunciationPracticeItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pronunciationPracticeItemWithIdOnly = await prisma.pronunciationPracticeItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PronunciationPracticeItemFindManyArgs>(args?: SelectSubset<T, PronunciationPracticeItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PronunciationPracticeItem.
+     * @param {PronunciationPracticeItemCreateArgs} args - Arguments to create a PronunciationPracticeItem.
+     * @example
+     * // Create one PronunciationPracticeItem
+     * const PronunciationPracticeItem = await prisma.pronunciationPracticeItem.create({
+     *   data: {
+     *     // ... data to create a PronunciationPracticeItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends PronunciationPracticeItemCreateArgs>(args: SelectSubset<T, PronunciationPracticeItemCreateArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PronunciationPracticeItems.
+     * @param {PronunciationPracticeItemCreateManyArgs} args - Arguments to create many PronunciationPracticeItems.
+     * @example
+     * // Create many PronunciationPracticeItems
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PronunciationPracticeItemCreateManyArgs>(args?: SelectSubset<T, PronunciationPracticeItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PronunciationPracticeItems and returns the data saved in the database.
+     * @param {PronunciationPracticeItemCreateManyAndReturnArgs} args - Arguments to create many PronunciationPracticeItems.
+     * @example
+     * // Create many PronunciationPracticeItems
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PronunciationPracticeItems and only return the `id`
+     * const pronunciationPracticeItemWithIdOnly = await prisma.pronunciationPracticeItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PronunciationPracticeItemCreateManyAndReturnArgs>(args?: SelectSubset<T, PronunciationPracticeItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PronunciationPracticeItem.
+     * @param {PronunciationPracticeItemDeleteArgs} args - Arguments to delete one PronunciationPracticeItem.
+     * @example
+     * // Delete one PronunciationPracticeItem
+     * const PronunciationPracticeItem = await prisma.pronunciationPracticeItem.delete({
+     *   where: {
+     *     // ... filter to delete one PronunciationPracticeItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PronunciationPracticeItemDeleteArgs>(args: SelectSubset<T, PronunciationPracticeItemDeleteArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PronunciationPracticeItem.
+     * @param {PronunciationPracticeItemUpdateArgs} args - Arguments to update one PronunciationPracticeItem.
+     * @example
+     * // Update one PronunciationPracticeItem
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PronunciationPracticeItemUpdateArgs>(args: SelectSubset<T, PronunciationPracticeItemUpdateArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PronunciationPracticeItems.
+     * @param {PronunciationPracticeItemDeleteManyArgs} args - Arguments to filter PronunciationPracticeItems to delete.
+     * @example
+     * // Delete a few PronunciationPracticeItems
+     * const { count } = await prisma.pronunciationPracticeItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PronunciationPracticeItemDeleteManyArgs>(args?: SelectSubset<T, PronunciationPracticeItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PronunciationPracticeItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PronunciationPracticeItems
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PronunciationPracticeItemUpdateManyArgs>(args: SelectSubset<T, PronunciationPracticeItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PronunciationPracticeItems and returns the data updated in the database.
+     * @param {PronunciationPracticeItemUpdateManyAndReturnArgs} args - Arguments to update many PronunciationPracticeItems.
+     * @example
+     * // Update many PronunciationPracticeItems
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PronunciationPracticeItems and only return the `id`
+     * const pronunciationPracticeItemWithIdOnly = await prisma.pronunciationPracticeItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PronunciationPracticeItemUpdateManyAndReturnArgs>(args: SelectSubset<T, PronunciationPracticeItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PronunciationPracticeItem.
+     * @param {PronunciationPracticeItemUpsertArgs} args - Arguments to update or create a PronunciationPracticeItem.
+     * @example
+     * // Update or create a PronunciationPracticeItem
+     * const pronunciationPracticeItem = await prisma.pronunciationPracticeItem.upsert({
+     *   create: {
+     *     // ... data to create a PronunciationPracticeItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PronunciationPracticeItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PronunciationPracticeItemUpsertArgs>(args: SelectSubset<T, PronunciationPracticeItemUpsertArgs<ExtArgs>>): Prisma__PronunciationPracticeItemClient<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PronunciationPracticeItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemCountArgs} args - Arguments to filter PronunciationPracticeItems to count.
+     * @example
+     * // Count the number of PronunciationPracticeItems
+     * const count = await prisma.pronunciationPracticeItem.count({
+     *   where: {
+     *     // ... the filter for the PronunciationPracticeItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends PronunciationPracticeItemCountArgs>(
+      args?: Subset<T, PronunciationPracticeItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PronunciationPracticeItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PronunciationPracticeItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PronunciationPracticeItemAggregateArgs>(args: Subset<T, PronunciationPracticeItemAggregateArgs>): Prisma.PrismaPromise<GetPronunciationPracticeItemAggregateType<T>>
+
+    /**
+     * Group by PronunciationPracticeItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PronunciationPracticeItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PronunciationPracticeItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PronunciationPracticeItemGroupByArgs['orderBy'] }
+        : { orderBy?: PronunciationPracticeItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PronunciationPracticeItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPronunciationPracticeItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PronunciationPracticeItem model
+   */
+  readonly fields: PronunciationPracticeItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PronunciationPracticeItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PronunciationPracticeItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    session<T extends PracticeSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSessionDefaultArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    exercise<T extends PronunciationExerciseDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PronunciationExerciseDefaultArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PronunciationPracticeItem model
+   */
+  interface PronunciationPracticeItemFieldRefs {
+    readonly id: FieldRef<"PronunciationPracticeItem", 'Int'>
+    readonly sessionId: FieldRef<"PronunciationPracticeItem", 'String'>
+    readonly exerciseId: FieldRef<"PronunciationPracticeItem", 'Int'>
+    readonly userAudioUrl: FieldRef<"PronunciationPracticeItem", 'String'>
+    readonly transcript: FieldRef<"PronunciationPracticeItem", 'String'>
+    readonly similarityScore: FieldRef<"PronunciationPracticeItem", 'Float'>
+    readonly feedback: FieldRef<"PronunciationPracticeItem", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PronunciationPracticeItem findUnique
+   */
+  export type PronunciationPracticeItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationPracticeItem to fetch.
+     */
+    where: PronunciationPracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PronunciationPracticeItem findUniqueOrThrow
+   */
+  export type PronunciationPracticeItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationPracticeItem to fetch.
+     */
+    where: PronunciationPracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PronunciationPracticeItem findFirst
+   */
+  export type PronunciationPracticeItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationPracticeItem to fetch.
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationPracticeItems to fetch.
+     */
+    orderBy?: PronunciationPracticeItemOrderByWithRelationInput | PronunciationPracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PronunciationPracticeItems.
+     */
+    cursor?: PronunciationPracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationPracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationPracticeItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PronunciationPracticeItems.
+     */
+    distinct?: PronunciationPracticeItemScalarFieldEnum | PronunciationPracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationPracticeItem findFirstOrThrow
+   */
+  export type PronunciationPracticeItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationPracticeItem to fetch.
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationPracticeItems to fetch.
+     */
+    orderBy?: PronunciationPracticeItemOrderByWithRelationInput | PronunciationPracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PronunciationPracticeItems.
+     */
+    cursor?: PronunciationPracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationPracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationPracticeItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PronunciationPracticeItems.
+     */
+    distinct?: PronunciationPracticeItemScalarFieldEnum | PronunciationPracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationPracticeItem findMany
+   */
+  export type PronunciationPracticeItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PronunciationPracticeItems to fetch.
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PronunciationPracticeItems to fetch.
+     */
+    orderBy?: PronunciationPracticeItemOrderByWithRelationInput | PronunciationPracticeItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PronunciationPracticeItems.
+     */
+    cursor?: PronunciationPracticeItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PronunciationPracticeItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PronunciationPracticeItems.
+     */
+    skip?: number
+    distinct?: PronunciationPracticeItemScalarFieldEnum | PronunciationPracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * PronunciationPracticeItem create
+   */
+  export type PronunciationPracticeItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PronunciationPracticeItem.
+     */
+    data: XOR<PronunciationPracticeItemCreateInput, PronunciationPracticeItemUncheckedCreateInput>
+  }
+
+  /**
+   * PronunciationPracticeItem createMany
+   */
+  export type PronunciationPracticeItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PronunciationPracticeItems.
+     */
+    data: PronunciationPracticeItemCreateManyInput | PronunciationPracticeItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PronunciationPracticeItem createManyAndReturn
+   */
+  export type PronunciationPracticeItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many PronunciationPracticeItems.
+     */
+    data: PronunciationPracticeItemCreateManyInput | PronunciationPracticeItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PronunciationPracticeItem update
+   */
+  export type PronunciationPracticeItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PronunciationPracticeItem.
+     */
+    data: XOR<PronunciationPracticeItemUpdateInput, PronunciationPracticeItemUncheckedUpdateInput>
+    /**
+     * Choose, which PronunciationPracticeItem to update.
+     */
+    where: PronunciationPracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PronunciationPracticeItem updateMany
+   */
+  export type PronunciationPracticeItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PronunciationPracticeItems.
+     */
+    data: XOR<PronunciationPracticeItemUpdateManyMutationInput, PronunciationPracticeItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PronunciationPracticeItems to update
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * Limit how many PronunciationPracticeItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PronunciationPracticeItem updateManyAndReturn
+   */
+  export type PronunciationPracticeItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * The data used to update PronunciationPracticeItems.
+     */
+    data: XOR<PronunciationPracticeItemUpdateManyMutationInput, PronunciationPracticeItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PronunciationPracticeItems to update
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * Limit how many PronunciationPracticeItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PronunciationPracticeItem upsert
+   */
+  export type PronunciationPracticeItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PronunciationPracticeItem to update in case it exists.
+     */
+    where: PronunciationPracticeItemWhereUniqueInput
+    /**
+     * In case the PronunciationPracticeItem found by the `where` argument doesn't exist, create a new PronunciationPracticeItem with this data.
+     */
+    create: XOR<PronunciationPracticeItemCreateInput, PronunciationPracticeItemUncheckedCreateInput>
+    /**
+     * In case the PronunciationPracticeItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PronunciationPracticeItemUpdateInput, PronunciationPracticeItemUncheckedUpdateInput>
+  }
+
+  /**
+   * PronunciationPracticeItem delete
+   */
+  export type PronunciationPracticeItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+    /**
+     * Filter which PronunciationPracticeItem to delete.
+     */
+    where: PronunciationPracticeItemWhereUniqueInput
+  }
+
+  /**
+   * PronunciationPracticeItem deleteMany
+   */
+  export type PronunciationPracticeItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PronunciationPracticeItems to delete
+     */
+    where?: PronunciationPracticeItemWhereInput
+    /**
+     * Limit how many PronunciationPracticeItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PronunciationPracticeItem without action
+   */
+  export type PronunciationPracticeItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PronunciationPracticeItem
+     */
+    select?: PronunciationPracticeItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PronunciationPracticeItem
+     */
+    omit?: PronunciationPracticeItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PronunciationPracticeItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GrammarRule
+   */
+
+  export type AggregateGrammarRule = {
+    _count: GrammarRuleCountAggregateOutputType | null
+    _avg: GrammarRuleAvgAggregateOutputType | null
+    _sum: GrammarRuleSumAggregateOutputType | null
+    _min: GrammarRuleMinAggregateOutputType | null
+    _max: GrammarRuleMaxAggregateOutputType | null
+  }
+
+  export type GrammarRuleAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type GrammarRuleSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type GrammarRuleMinAggregateOutputType = {
+    id: number | null
+    title: string | null
+    description: string | null
+    level: string | null
+    category: string | null
+  }
+
+  export type GrammarRuleMaxAggregateOutputType = {
+    id: number | null
+    title: string | null
+    description: string | null
+    level: string | null
+    category: string | null
+  }
+
+  export type GrammarRuleCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    examples: number
+    level: number
+    category: number
+    _all: number
+  }
+
+
+  export type GrammarRuleAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type GrammarRuleSumAggregateInputType = {
+    id?: true
+  }
+
+  export type GrammarRuleMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    level?: true
+    category?: true
+  }
+
+  export type GrammarRuleMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    level?: true
+    category?: true
+  }
+
+  export type GrammarRuleCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    examples?: true
+    level?: true
+    category?: true
+    _all?: true
+  }
+
+  export type GrammarRuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GrammarRule to aggregate.
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GrammarRules to fetch.
+     */
+    orderBy?: GrammarRuleOrderByWithRelationInput | GrammarRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GrammarRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GrammarRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GrammarRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GrammarRules
+    **/
+    _count?: true | GrammarRuleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GrammarRuleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GrammarRuleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GrammarRuleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GrammarRuleMaxAggregateInputType
+  }
+
+  export type GetGrammarRuleAggregateType<T extends GrammarRuleAggregateArgs> = {
+        [P in keyof T & keyof AggregateGrammarRule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGrammarRule[P]>
+      : GetScalarType<T[P], AggregateGrammarRule[P]>
+  }
+
+
+
+
+  export type GrammarRuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GrammarRuleWhereInput
+    orderBy?: GrammarRuleOrderByWithAggregationInput | GrammarRuleOrderByWithAggregationInput[]
+    by: GrammarRuleScalarFieldEnum[] | GrammarRuleScalarFieldEnum
+    having?: GrammarRuleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GrammarRuleCountAggregateInputType | true
+    _avg?: GrammarRuleAvgAggregateInputType
+    _sum?: GrammarRuleSumAggregateInputType
+    _min?: GrammarRuleMinAggregateInputType
+    _max?: GrammarRuleMaxAggregateInputType
+  }
+
+  export type GrammarRuleGroupByOutputType = {
+    id: number
+    title: string
+    description: string
+    examples: string[]
+    level: string
+    category: string
+    _count: GrammarRuleCountAggregateOutputType | null
+    _avg: GrammarRuleAvgAggregateOutputType | null
+    _sum: GrammarRuleSumAggregateOutputType | null
+    _min: GrammarRuleMinAggregateOutputType | null
+    _max: GrammarRuleMaxAggregateOutputType | null
+  }
+
+  type GetGrammarRuleGroupByPayload<T extends GrammarRuleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GrammarRuleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GrammarRuleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GrammarRuleGroupByOutputType[P]>
+            : GetScalarType<T[P], GrammarRuleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GrammarRuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    examples?: boolean
+    level?: boolean
+    category?: boolean
+  }, ExtArgs["result"]["grammarRule"]>
+
+  export type GrammarRuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    examples?: boolean
+    level?: boolean
+    category?: boolean
+  }, ExtArgs["result"]["grammarRule"]>
+
+  export type GrammarRuleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    examples?: boolean
+    level?: boolean
+    category?: boolean
+  }, ExtArgs["result"]["grammarRule"]>
+
+  export type GrammarRuleSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    examples?: boolean
+    level?: boolean
+    category?: boolean
+  }
+
+  export type GrammarRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "examples" | "level" | "category", ExtArgs["result"]["grammarRule"]>
+
+  export type $GrammarRulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GrammarRule"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      title: string
+      description: string
+      examples: string[]
+      level: string
+      category: string
+    }, ExtArgs["result"]["grammarRule"]>
+    composites: {}
+  }
+
+  type GrammarRuleGetPayload<S extends boolean | null | undefined | GrammarRuleDefaultArgs> = $Result.GetResult<Prisma.$GrammarRulePayload, S>
+
+  type GrammarRuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GrammarRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GrammarRuleCountAggregateInputType | true
+    }
+
+  export interface GrammarRuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GrammarRule'], meta: { name: 'GrammarRule' } }
+    /**
+     * Find zero or one GrammarRule that matches the filter.
+     * @param {GrammarRuleFindUniqueArgs} args - Arguments to find a GrammarRule
+     * @example
+     * // Get one GrammarRule
+     * const grammarRule = await prisma.grammarRule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GrammarRuleFindUniqueArgs>(args: SelectSubset<T, GrammarRuleFindUniqueArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GrammarRule that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GrammarRuleFindUniqueOrThrowArgs} args - Arguments to find a GrammarRule
+     * @example
+     * // Get one GrammarRule
+     * const grammarRule = await prisma.grammarRule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GrammarRuleFindUniqueOrThrowArgs>(args: SelectSubset<T, GrammarRuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GrammarRule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleFindFirstArgs} args - Arguments to find a GrammarRule
+     * @example
+     * // Get one GrammarRule
+     * const grammarRule = await prisma.grammarRule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GrammarRuleFindFirstArgs>(args?: SelectSubset<T, GrammarRuleFindFirstArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GrammarRule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleFindFirstOrThrowArgs} args - Arguments to find a GrammarRule
+     * @example
+     * // Get one GrammarRule
+     * const grammarRule = await prisma.grammarRule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GrammarRuleFindFirstOrThrowArgs>(args?: SelectSubset<T, GrammarRuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GrammarRules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GrammarRules
+     * const grammarRules = await prisma.grammarRule.findMany()
+     * 
+     * // Get first 10 GrammarRules
+     * const grammarRules = await prisma.grammarRule.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const grammarRuleWithIdOnly = await prisma.grammarRule.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GrammarRuleFindManyArgs>(args?: SelectSubset<T, GrammarRuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GrammarRule.
+     * @param {GrammarRuleCreateArgs} args - Arguments to create a GrammarRule.
+     * @example
+     * // Create one GrammarRule
+     * const GrammarRule = await prisma.grammarRule.create({
+     *   data: {
+     *     // ... data to create a GrammarRule
+     *   }
+     * })
+     * 
+     */
+    create<T extends GrammarRuleCreateArgs>(args: SelectSubset<T, GrammarRuleCreateArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GrammarRules.
+     * @param {GrammarRuleCreateManyArgs} args - Arguments to create many GrammarRules.
+     * @example
+     * // Create many GrammarRules
+     * const grammarRule = await prisma.grammarRule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GrammarRuleCreateManyArgs>(args?: SelectSubset<T, GrammarRuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GrammarRules and returns the data saved in the database.
+     * @param {GrammarRuleCreateManyAndReturnArgs} args - Arguments to create many GrammarRules.
+     * @example
+     * // Create many GrammarRules
+     * const grammarRule = await prisma.grammarRule.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GrammarRules and only return the `id`
+     * const grammarRuleWithIdOnly = await prisma.grammarRule.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GrammarRuleCreateManyAndReturnArgs>(args?: SelectSubset<T, GrammarRuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GrammarRule.
+     * @param {GrammarRuleDeleteArgs} args - Arguments to delete one GrammarRule.
+     * @example
+     * // Delete one GrammarRule
+     * const GrammarRule = await prisma.grammarRule.delete({
+     *   where: {
+     *     // ... filter to delete one GrammarRule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GrammarRuleDeleteArgs>(args: SelectSubset<T, GrammarRuleDeleteArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GrammarRule.
+     * @param {GrammarRuleUpdateArgs} args - Arguments to update one GrammarRule.
+     * @example
+     * // Update one GrammarRule
+     * const grammarRule = await prisma.grammarRule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GrammarRuleUpdateArgs>(args: SelectSubset<T, GrammarRuleUpdateArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GrammarRules.
+     * @param {GrammarRuleDeleteManyArgs} args - Arguments to filter GrammarRules to delete.
+     * @example
+     * // Delete a few GrammarRules
+     * const { count } = await prisma.grammarRule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GrammarRuleDeleteManyArgs>(args?: SelectSubset<T, GrammarRuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GrammarRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GrammarRules
+     * const grammarRule = await prisma.grammarRule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GrammarRuleUpdateManyArgs>(args: SelectSubset<T, GrammarRuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GrammarRules and returns the data updated in the database.
+     * @param {GrammarRuleUpdateManyAndReturnArgs} args - Arguments to update many GrammarRules.
+     * @example
+     * // Update many GrammarRules
+     * const grammarRule = await prisma.grammarRule.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GrammarRules and only return the `id`
+     * const grammarRuleWithIdOnly = await prisma.grammarRule.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GrammarRuleUpdateManyAndReturnArgs>(args: SelectSubset<T, GrammarRuleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GrammarRule.
+     * @param {GrammarRuleUpsertArgs} args - Arguments to update or create a GrammarRule.
+     * @example
+     * // Update or create a GrammarRule
+     * const grammarRule = await prisma.grammarRule.upsert({
+     *   create: {
+     *     // ... data to create a GrammarRule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GrammarRule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GrammarRuleUpsertArgs>(args: SelectSubset<T, GrammarRuleUpsertArgs<ExtArgs>>): Prisma__GrammarRuleClient<$Result.GetResult<Prisma.$GrammarRulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GrammarRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleCountArgs} args - Arguments to filter GrammarRules to count.
+     * @example
+     * // Count the number of GrammarRules
+     * const count = await prisma.grammarRule.count({
+     *   where: {
+     *     // ... the filter for the GrammarRules we want to count
+     *   }
+     * })
+    **/
+    count<T extends GrammarRuleCountArgs>(
+      args?: Subset<T, GrammarRuleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GrammarRuleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GrammarRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GrammarRuleAggregateArgs>(args: Subset<T, GrammarRuleAggregateArgs>): Prisma.PrismaPromise<GetGrammarRuleAggregateType<T>>
+
+    /**
+     * Group by GrammarRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GrammarRuleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GrammarRuleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GrammarRuleGroupByArgs['orderBy'] }
+        : { orderBy?: GrammarRuleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GrammarRuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGrammarRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GrammarRule model
+   */
+  readonly fields: GrammarRuleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GrammarRule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GrammarRuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GrammarRule model
+   */
+  interface GrammarRuleFieldRefs {
+    readonly id: FieldRef<"GrammarRule", 'Int'>
+    readonly title: FieldRef<"GrammarRule", 'String'>
+    readonly description: FieldRef<"GrammarRule", 'String'>
+    readonly examples: FieldRef<"GrammarRule", 'String[]'>
+    readonly level: FieldRef<"GrammarRule", 'String'>
+    readonly category: FieldRef<"GrammarRule", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GrammarRule findUnique
+   */
+  export type GrammarRuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * Filter, which GrammarRule to fetch.
+     */
+    where: GrammarRuleWhereUniqueInput
+  }
+
+  /**
+   * GrammarRule findUniqueOrThrow
+   */
+  export type GrammarRuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * Filter, which GrammarRule to fetch.
+     */
+    where: GrammarRuleWhereUniqueInput
+  }
+
+  /**
+   * GrammarRule findFirst
+   */
+  export type GrammarRuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * Filter, which GrammarRule to fetch.
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GrammarRules to fetch.
+     */
+    orderBy?: GrammarRuleOrderByWithRelationInput | GrammarRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GrammarRules.
+     */
+    cursor?: GrammarRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GrammarRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GrammarRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GrammarRules.
+     */
+    distinct?: GrammarRuleScalarFieldEnum | GrammarRuleScalarFieldEnum[]
+  }
+
+  /**
+   * GrammarRule findFirstOrThrow
+   */
+  export type GrammarRuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * Filter, which GrammarRule to fetch.
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GrammarRules to fetch.
+     */
+    orderBy?: GrammarRuleOrderByWithRelationInput | GrammarRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GrammarRules.
+     */
+    cursor?: GrammarRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GrammarRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GrammarRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GrammarRules.
+     */
+    distinct?: GrammarRuleScalarFieldEnum | GrammarRuleScalarFieldEnum[]
+  }
+
+  /**
+   * GrammarRule findMany
+   */
+  export type GrammarRuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * Filter, which GrammarRules to fetch.
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GrammarRules to fetch.
+     */
+    orderBy?: GrammarRuleOrderByWithRelationInput | GrammarRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GrammarRules.
+     */
+    cursor?: GrammarRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GrammarRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GrammarRules.
+     */
+    skip?: number
+    distinct?: GrammarRuleScalarFieldEnum | GrammarRuleScalarFieldEnum[]
+  }
+
+  /**
+   * GrammarRule create
+   */
+  export type GrammarRuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * The data needed to create a GrammarRule.
+     */
+    data: XOR<GrammarRuleCreateInput, GrammarRuleUncheckedCreateInput>
+  }
+
+  /**
+   * GrammarRule createMany
+   */
+  export type GrammarRuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GrammarRules.
+     */
+    data: GrammarRuleCreateManyInput | GrammarRuleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GrammarRule createManyAndReturn
+   */
+  export type GrammarRuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * The data used to create many GrammarRules.
+     */
+    data: GrammarRuleCreateManyInput | GrammarRuleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GrammarRule update
+   */
+  export type GrammarRuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * The data needed to update a GrammarRule.
+     */
+    data: XOR<GrammarRuleUpdateInput, GrammarRuleUncheckedUpdateInput>
+    /**
+     * Choose, which GrammarRule to update.
+     */
+    where: GrammarRuleWhereUniqueInput
+  }
+
+  /**
+   * GrammarRule updateMany
+   */
+  export type GrammarRuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GrammarRules.
+     */
+    data: XOR<GrammarRuleUpdateManyMutationInput, GrammarRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which GrammarRules to update
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * Limit how many GrammarRules to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GrammarRule updateManyAndReturn
+   */
+  export type GrammarRuleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * The data used to update GrammarRules.
+     */
+    data: XOR<GrammarRuleUpdateManyMutationInput, GrammarRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which GrammarRules to update
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * Limit how many GrammarRules to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GrammarRule upsert
+   */
+  export type GrammarRuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * The filter to search for the GrammarRule to update in case it exists.
+     */
+    where: GrammarRuleWhereUniqueInput
+    /**
+     * In case the GrammarRule found by the `where` argument doesn't exist, create a new GrammarRule with this data.
+     */
+    create: XOR<GrammarRuleCreateInput, GrammarRuleUncheckedCreateInput>
+    /**
+     * In case the GrammarRule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GrammarRuleUpdateInput, GrammarRuleUncheckedUpdateInput>
+  }
+
+  /**
+   * GrammarRule delete
+   */
+  export type GrammarRuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+    /**
+     * Filter which GrammarRule to delete.
+     */
+    where: GrammarRuleWhereUniqueInput
+  }
+
+  /**
+   * GrammarRule deleteMany
+   */
+  export type GrammarRuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GrammarRules to delete
+     */
+    where?: GrammarRuleWhereInput
+    /**
+     * Limit how many GrammarRules to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GrammarRule without action
+   */
+  export type GrammarRuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GrammarRule
+     */
+    select?: GrammarRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GrammarRule
+     */
+    omit?: GrammarRuleOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13391,7 +22331,11 @@ export namespace Prisma {
     lastActive: 'lastActive',
     dailyGoal: 'dailyGoal',
     notifications: 'notifications',
-    theme: 'theme'
+    theme: 'theme',
+    aiCorrectionEnabled: 'aiCorrectionEnabled',
+    aiVocabSuggestionsEnabled: 'aiVocabSuggestionsEnabled',
+    preferredVoice: 'preferredVoice',
+    speechRecognitionEnabled: 'speechRecognitionEnabled'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -13403,11 +22347,37 @@ export namespace Prisma {
     description: 'description',
     level: 'level',
     duration: 'duration',
-    topics: 'topics',
-    content: 'content'
+    topics: 'topics'
   };
 
   export type LessonScalarFieldEnum = (typeof LessonScalarFieldEnum)[keyof typeof LessonScalarFieldEnum]
+
+
+  export const LessonSectionScalarFieldEnum: {
+    id: 'id',
+    lessonId: 'lessonId',
+    title: 'title',
+    type: 'type',
+    content: 'content',
+    audioUrl: 'audioUrl',
+    videoUrl: 'videoUrl',
+    order: 'order'
+  };
+
+  export type LessonSectionScalarFieldEnum = (typeof LessonSectionScalarFieldEnum)[keyof typeof LessonSectionScalarFieldEnum]
+
+
+  export const LessonExerciseScalarFieldEnum: {
+    id: 'id',
+    sectionId: 'sectionId',
+    type: 'type',
+    question: 'question',
+    options: 'options',
+    correctAnswer: 'correctAnswer',
+    explanation: 'explanation'
+  };
+
+  export type LessonExerciseScalarFieldEnum = (typeof LessonExerciseScalarFieldEnum)[keyof typeof LessonExerciseScalarFieldEnum]
 
 
   export const LessonProgressScalarFieldEnum: {
@@ -13429,7 +22399,11 @@ export namespace Prisma {
     word: 'word',
     translation: 'translation',
     example: 'example',
-    level: 'level'
+    level: 'level',
+    pronunciation: 'pronunciation',
+    audioUrl: 'audioUrl',
+    usageContext: 'usageContext',
+    category: 'category'
   };
 
   export type VocabularyScalarFieldEnum = (typeof VocabularyScalarFieldEnum)[keyof typeof VocabularyScalarFieldEnum]
@@ -13440,7 +22414,9 @@ export namespace Prisma {
     userId: 'userId',
     vocabularyId: 'vocabularyId',
     learned: 'learned',
-    lastPracticed: 'lastPracticed'
+    lastPracticed: 'lastPracticed',
+    repetitionStage: 'repetitionStage',
+    nextReviewDate: 'nextReviewDate'
   };
 
   export type UserVocabularyScalarFieldEnum = (typeof UserVocabularyScalarFieldEnum)[keyof typeof UserVocabularyScalarFieldEnum]
@@ -13452,7 +22428,8 @@ export namespace Prisma {
     title: 'title',
     context: 'context',
     startedAt: 'startedAt',
-    lastMessageAt: 'lastMessageAt'
+    lastMessageAt: 'lastMessageAt',
+    templateId: 'templateId'
   };
 
   export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
@@ -13463,10 +22440,36 @@ export namespace Prisma {
     conversationId: 'conversationId',
     role: 'role',
     content: 'content',
-    timestamp: 'timestamp'
+    timestamp: 'timestamp',
+    corrections: 'corrections',
+    suggestedVocabulary: 'suggestedVocabulary',
+    audioUrl: 'audioUrl'
   };
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+  export const ConversationTemplateScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    systemPrompt: 'systemPrompt',
+    initialMessage: 'initialMessage',
+    topics: 'topics',
+    level: 'level'
+  };
+
+  export type ConversationTemplateScalarFieldEnum = (typeof ConversationTemplateScalarFieldEnum)[keyof typeof ConversationTemplateScalarFieldEnum]
+
+
+  export const UserTemplateUsageScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    templateId: 'templateId',
+    usedAt: 'usedAt'
+  };
+
+  export type UserTemplateUsageScalarFieldEnum = (typeof UserTemplateUsageScalarFieldEnum)[keyof typeof UserTemplateUsageScalarFieldEnum]
 
 
   export const ExamResultScalarFieldEnum: {
@@ -13477,7 +22480,8 @@ export namespace Prisma {
     level: 'level',
     score: 'score',
     details: 'details',
-    completedAt: 'completedAt'
+    completedAt: 'completedAt',
+    timeSpent: 'timeSpent'
   };
 
   export type ExamResultScalarFieldEnum = (typeof ExamResultScalarFieldEnum)[keyof typeof ExamResultScalarFieldEnum]
@@ -13488,7 +22492,10 @@ export namespace Prisma {
     userId: 'userId',
     type: 'type',
     duration: 'duration',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    aiGenerated: 'aiGenerated',
+    difficulty: 'difficulty',
+    score: 'score'
   };
 
   export type PracticeSessionScalarFieldEnum = (typeof PracticeSessionScalarFieldEnum)[keyof typeof PracticeSessionScalarFieldEnum]
@@ -13507,6 +22514,44 @@ export namespace Prisma {
   export type PracticeItemScalarFieldEnum = (typeof PracticeItemScalarFieldEnum)[keyof typeof PracticeItemScalarFieldEnum]
 
 
+  export const PronunciationExerciseScalarFieldEnum: {
+    id: 'id',
+    text: 'text',
+    translation: 'translation',
+    audioUrl: 'audioUrl',
+    difficulty: 'difficulty',
+    category: 'category',
+    expectedPronunciation: 'expectedPronunciation'
+  };
+
+  export type PronunciationExerciseScalarFieldEnum = (typeof PronunciationExerciseScalarFieldEnum)[keyof typeof PronunciationExerciseScalarFieldEnum]
+
+
+  export const PronunciationPracticeItemScalarFieldEnum: {
+    id: 'id',
+    sessionId: 'sessionId',
+    exerciseId: 'exerciseId',
+    userAudioUrl: 'userAudioUrl',
+    transcript: 'transcript',
+    similarityScore: 'similarityScore',
+    feedback: 'feedback'
+  };
+
+  export type PronunciationPracticeItemScalarFieldEnum = (typeof PronunciationPracticeItemScalarFieldEnum)[keyof typeof PronunciationPracticeItemScalarFieldEnum]
+
+
+  export const GrammarRuleScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    examples: 'examples',
+    level: 'level',
+    category: 'category'
+  };
+
+  export type GrammarRuleScalarFieldEnum = (typeof GrammarRuleScalarFieldEnum)[keyof typeof GrammarRuleScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -13515,19 +22560,19 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const JsonNullValueInput: {
-    JsonNull: typeof JsonNull
-  };
-
-  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
   export const NullableJsonNullValueInput: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull
   };
 
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -13658,11 +22703,16 @@ export namespace Prisma {
     dailyGoal?: IntFilter<"User"> | number
     notifications?: BoolFilter<"User"> | boolean
     theme?: StringFilter<"User"> | string
+    aiCorrectionEnabled?: BoolFilter<"User"> | boolean
+    aiVocabSuggestionsEnabled?: BoolFilter<"User"> | boolean
+    preferredVoice?: StringNullableFilter<"User"> | string | null
+    speechRecognitionEnabled?: BoolFilter<"User"> | boolean
     lessonProgress?: LessonProgressListRelationFilter
     vocabulary?: UserVocabularyListRelationFilter
     examResults?: ExamResultListRelationFilter
     conversations?: ConversationListRelationFilter
     practiceSessions?: PracticeSessionListRelationFilter
+    templateUsage?: UserTemplateUsageListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -13680,11 +22730,16 @@ export namespace Prisma {
     dailyGoal?: SortOrder
     notifications?: SortOrder
     theme?: SortOrder
+    aiCorrectionEnabled?: SortOrder
+    aiVocabSuggestionsEnabled?: SortOrder
+    preferredVoice?: SortOrderInput | SortOrder
+    speechRecognitionEnabled?: SortOrder
     lessonProgress?: LessonProgressOrderByRelationAggregateInput
     vocabulary?: UserVocabularyOrderByRelationAggregateInput
     examResults?: ExamResultOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
     practiceSessions?: PracticeSessionOrderByRelationAggregateInput
+    templateUsage?: UserTemplateUsageOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -13705,11 +22760,16 @@ export namespace Prisma {
     dailyGoal?: IntFilter<"User"> | number
     notifications?: BoolFilter<"User"> | boolean
     theme?: StringFilter<"User"> | string
+    aiCorrectionEnabled?: BoolFilter<"User"> | boolean
+    aiVocabSuggestionsEnabled?: BoolFilter<"User"> | boolean
+    preferredVoice?: StringNullableFilter<"User"> | string | null
+    speechRecognitionEnabled?: BoolFilter<"User"> | boolean
     lessonProgress?: LessonProgressListRelationFilter
     vocabulary?: UserVocabularyListRelationFilter
     examResults?: ExamResultListRelationFilter
     conversations?: ConversationListRelationFilter
     practiceSessions?: PracticeSessionListRelationFilter
+    templateUsage?: UserTemplateUsageListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -13727,6 +22787,10 @@ export namespace Prisma {
     dailyGoal?: SortOrder
     notifications?: SortOrder
     theme?: SortOrder
+    aiCorrectionEnabled?: SortOrder
+    aiVocabSuggestionsEnabled?: SortOrder
+    preferredVoice?: SortOrderInput | SortOrder
+    speechRecognitionEnabled?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -13752,6 +22816,10 @@ export namespace Prisma {
     dailyGoal?: IntWithAggregatesFilter<"User"> | number
     notifications?: BoolWithAggregatesFilter<"User"> | boolean
     theme?: StringWithAggregatesFilter<"User"> | string
+    aiCorrectionEnabled?: BoolWithAggregatesFilter<"User"> | boolean
+    aiVocabSuggestionsEnabled?: BoolWithAggregatesFilter<"User"> | boolean
+    preferredVoice?: StringNullableWithAggregatesFilter<"User"> | string | null
+    speechRecognitionEnabled?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type LessonWhereInput = {
@@ -13764,8 +22832,8 @@ export namespace Prisma {
     level?: StringFilter<"Lesson"> | string
     duration?: IntFilter<"Lesson"> | number
     topics?: StringNullableListFilter<"Lesson">
-    content?: JsonFilter<"Lesson">
     progress?: LessonProgressListRelationFilter
+    sections?: LessonSectionListRelationFilter
   }
 
   export type LessonOrderByWithRelationInput = {
@@ -13775,8 +22843,8 @@ export namespace Prisma {
     level?: SortOrder
     duration?: SortOrder
     topics?: SortOrder
-    content?: SortOrder
     progress?: LessonProgressOrderByRelationAggregateInput
+    sections?: LessonSectionOrderByRelationAggregateInput
   }
 
   export type LessonWhereUniqueInput = Prisma.AtLeast<{
@@ -13789,8 +22857,8 @@ export namespace Prisma {
     level?: StringFilter<"Lesson"> | string
     duration?: IntFilter<"Lesson"> | number
     topics?: StringNullableListFilter<"Lesson">
-    content?: JsonFilter<"Lesson">
     progress?: LessonProgressListRelationFilter
+    sections?: LessonSectionListRelationFilter
   }, "id">
 
   export type LessonOrderByWithAggregationInput = {
@@ -13800,7 +22868,6 @@ export namespace Prisma {
     level?: SortOrder
     duration?: SortOrder
     topics?: SortOrder
-    content?: SortOrder
     _count?: LessonCountOrderByAggregateInput
     _avg?: LessonAvgOrderByAggregateInput
     _max?: LessonMaxOrderByAggregateInput
@@ -13818,7 +22885,148 @@ export namespace Prisma {
     level?: StringWithAggregatesFilter<"Lesson"> | string
     duration?: IntWithAggregatesFilter<"Lesson"> | number
     topics?: StringNullableListFilter<"Lesson">
-    content?: JsonWithAggregatesFilter<"Lesson">
+  }
+
+  export type LessonSectionWhereInput = {
+    AND?: LessonSectionWhereInput | LessonSectionWhereInput[]
+    OR?: LessonSectionWhereInput[]
+    NOT?: LessonSectionWhereInput | LessonSectionWhereInput[]
+    id?: IntFilter<"LessonSection"> | number
+    lessonId?: IntFilter<"LessonSection"> | number
+    title?: StringFilter<"LessonSection"> | string
+    type?: StringFilter<"LessonSection"> | string
+    content?: StringNullableFilter<"LessonSection"> | string | null
+    audioUrl?: StringNullableFilter<"LessonSection"> | string | null
+    videoUrl?: StringNullableFilter<"LessonSection"> | string | null
+    order?: IntFilter<"LessonSection"> | number
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
+    exercises?: LessonExerciseListRelationFilter
+  }
+
+  export type LessonSectionOrderByWithRelationInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    title?: SortOrder
+    type?: SortOrder
+    content?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    videoUrl?: SortOrderInput | SortOrder
+    order?: SortOrder
+    lesson?: LessonOrderByWithRelationInput
+    exercises?: LessonExerciseOrderByRelationAggregateInput
+  }
+
+  export type LessonSectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: LessonSectionWhereInput | LessonSectionWhereInput[]
+    OR?: LessonSectionWhereInput[]
+    NOT?: LessonSectionWhereInput | LessonSectionWhereInput[]
+    lessonId?: IntFilter<"LessonSection"> | number
+    title?: StringFilter<"LessonSection"> | string
+    type?: StringFilter<"LessonSection"> | string
+    content?: StringNullableFilter<"LessonSection"> | string | null
+    audioUrl?: StringNullableFilter<"LessonSection"> | string | null
+    videoUrl?: StringNullableFilter<"LessonSection"> | string | null
+    order?: IntFilter<"LessonSection"> | number
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
+    exercises?: LessonExerciseListRelationFilter
+  }, "id">
+
+  export type LessonSectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    title?: SortOrder
+    type?: SortOrder
+    content?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    videoUrl?: SortOrderInput | SortOrder
+    order?: SortOrder
+    _count?: LessonSectionCountOrderByAggregateInput
+    _avg?: LessonSectionAvgOrderByAggregateInput
+    _max?: LessonSectionMaxOrderByAggregateInput
+    _min?: LessonSectionMinOrderByAggregateInput
+    _sum?: LessonSectionSumOrderByAggregateInput
+  }
+
+  export type LessonSectionScalarWhereWithAggregatesInput = {
+    AND?: LessonSectionScalarWhereWithAggregatesInput | LessonSectionScalarWhereWithAggregatesInput[]
+    OR?: LessonSectionScalarWhereWithAggregatesInput[]
+    NOT?: LessonSectionScalarWhereWithAggregatesInput | LessonSectionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"LessonSection"> | number
+    lessonId?: IntWithAggregatesFilter<"LessonSection"> | number
+    title?: StringWithAggregatesFilter<"LessonSection"> | string
+    type?: StringWithAggregatesFilter<"LessonSection"> | string
+    content?: StringNullableWithAggregatesFilter<"LessonSection"> | string | null
+    audioUrl?: StringNullableWithAggregatesFilter<"LessonSection"> | string | null
+    videoUrl?: StringNullableWithAggregatesFilter<"LessonSection"> | string | null
+    order?: IntWithAggregatesFilter<"LessonSection"> | number
+  }
+
+  export type LessonExerciseWhereInput = {
+    AND?: LessonExerciseWhereInput | LessonExerciseWhereInput[]
+    OR?: LessonExerciseWhereInput[]
+    NOT?: LessonExerciseWhereInput | LessonExerciseWhereInput[]
+    id?: IntFilter<"LessonExercise"> | number
+    sectionId?: IntFilter<"LessonExercise"> | number
+    type?: StringFilter<"LessonExercise"> | string
+    question?: StringFilter<"LessonExercise"> | string
+    options?: StringNullableListFilter<"LessonExercise">
+    correctAnswer?: StringFilter<"LessonExercise"> | string
+    explanation?: StringNullableFilter<"LessonExercise"> | string | null
+    section?: XOR<LessonSectionScalarRelationFilter, LessonSectionWhereInput>
+  }
+
+  export type LessonExerciseOrderByWithRelationInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
+    type?: SortOrder
+    question?: SortOrder
+    options?: SortOrder
+    correctAnswer?: SortOrder
+    explanation?: SortOrderInput | SortOrder
+    section?: LessonSectionOrderByWithRelationInput
+  }
+
+  export type LessonExerciseWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: LessonExerciseWhereInput | LessonExerciseWhereInput[]
+    OR?: LessonExerciseWhereInput[]
+    NOT?: LessonExerciseWhereInput | LessonExerciseWhereInput[]
+    sectionId?: IntFilter<"LessonExercise"> | number
+    type?: StringFilter<"LessonExercise"> | string
+    question?: StringFilter<"LessonExercise"> | string
+    options?: StringNullableListFilter<"LessonExercise">
+    correctAnswer?: StringFilter<"LessonExercise"> | string
+    explanation?: StringNullableFilter<"LessonExercise"> | string | null
+    section?: XOR<LessonSectionScalarRelationFilter, LessonSectionWhereInput>
+  }, "id">
+
+  export type LessonExerciseOrderByWithAggregationInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
+    type?: SortOrder
+    question?: SortOrder
+    options?: SortOrder
+    correctAnswer?: SortOrder
+    explanation?: SortOrderInput | SortOrder
+    _count?: LessonExerciseCountOrderByAggregateInput
+    _avg?: LessonExerciseAvgOrderByAggregateInput
+    _max?: LessonExerciseMaxOrderByAggregateInput
+    _min?: LessonExerciseMinOrderByAggregateInput
+    _sum?: LessonExerciseSumOrderByAggregateInput
+  }
+
+  export type LessonExerciseScalarWhereWithAggregatesInput = {
+    AND?: LessonExerciseScalarWhereWithAggregatesInput | LessonExerciseScalarWhereWithAggregatesInput[]
+    OR?: LessonExerciseScalarWhereWithAggregatesInput[]
+    NOT?: LessonExerciseScalarWhereWithAggregatesInput | LessonExerciseScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"LessonExercise"> | number
+    sectionId?: IntWithAggregatesFilter<"LessonExercise"> | number
+    type?: StringWithAggregatesFilter<"LessonExercise"> | string
+    question?: StringWithAggregatesFilter<"LessonExercise"> | string
+    options?: StringNullableListFilter<"LessonExercise">
+    correctAnswer?: StringWithAggregatesFilter<"LessonExercise"> | string
+    explanation?: StringNullableWithAggregatesFilter<"LessonExercise"> | string | null
   }
 
   export type LessonProgressWhereInput = {
@@ -13906,6 +23114,10 @@ export namespace Prisma {
     translation?: StringFilter<"Vocabulary"> | string
     example?: StringFilter<"Vocabulary"> | string
     level?: StringFilter<"Vocabulary"> | string
+    pronunciation?: StringNullableFilter<"Vocabulary"> | string | null
+    audioUrl?: StringNullableFilter<"Vocabulary"> | string | null
+    usageContext?: StringNullableListFilter<"Vocabulary">
+    category?: StringNullableFilter<"Vocabulary"> | string | null
     userVocabulary?: UserVocabularyListRelationFilter
     practiceItems?: PracticeItemListRelationFilter
   }
@@ -13916,6 +23128,10 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
+    pronunciation?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    usageContext?: SortOrder
+    category?: SortOrderInput | SortOrder
     userVocabulary?: UserVocabularyOrderByRelationAggregateInput
     practiceItems?: PracticeItemOrderByRelationAggregateInput
   }
@@ -13929,6 +23145,10 @@ export namespace Prisma {
     translation?: StringFilter<"Vocabulary"> | string
     example?: StringFilter<"Vocabulary"> | string
     level?: StringFilter<"Vocabulary"> | string
+    pronunciation?: StringNullableFilter<"Vocabulary"> | string | null
+    audioUrl?: StringNullableFilter<"Vocabulary"> | string | null
+    usageContext?: StringNullableListFilter<"Vocabulary">
+    category?: StringNullableFilter<"Vocabulary"> | string | null
     userVocabulary?: UserVocabularyListRelationFilter
     practiceItems?: PracticeItemListRelationFilter
   }, "id" | "word">
@@ -13939,6 +23159,10 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
+    pronunciation?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    usageContext?: SortOrder
+    category?: SortOrderInput | SortOrder
     _count?: VocabularyCountOrderByAggregateInput
     _avg?: VocabularyAvgOrderByAggregateInput
     _max?: VocabularyMaxOrderByAggregateInput
@@ -13955,6 +23179,10 @@ export namespace Prisma {
     translation?: StringWithAggregatesFilter<"Vocabulary"> | string
     example?: StringWithAggregatesFilter<"Vocabulary"> | string
     level?: StringWithAggregatesFilter<"Vocabulary"> | string
+    pronunciation?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
+    audioUrl?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
+    usageContext?: StringNullableListFilter<"Vocabulary">
+    category?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
   }
 
   export type UserVocabularyWhereInput = {
@@ -13966,6 +23194,8 @@ export namespace Prisma {
     vocabularyId?: IntFilter<"UserVocabulary"> | number
     learned?: BoolFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntFilter<"UserVocabulary"> | number
+    nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     vocabulary?: XOR<VocabularyScalarRelationFilter, VocabularyWhereInput>
   }
@@ -13976,6 +23206,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrderInput | SortOrder
+    repetitionStage?: SortOrder
+    nextReviewDate?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     vocabulary?: VocabularyOrderByWithRelationInput
   }
@@ -13990,6 +23222,8 @@ export namespace Prisma {
     vocabularyId?: IntFilter<"UserVocabulary"> | number
     learned?: BoolFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntFilter<"UserVocabulary"> | number
+    nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     vocabulary?: XOR<VocabularyScalarRelationFilter, VocabularyWhereInput>
   }, "id" | "userId_vocabularyId">
@@ -14000,6 +23234,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrderInput | SortOrder
+    repetitionStage?: SortOrder
+    nextReviewDate?: SortOrderInput | SortOrder
     _count?: UserVocabularyCountOrderByAggregateInput
     _avg?: UserVocabularyAvgOrderByAggregateInput
     _max?: UserVocabularyMaxOrderByAggregateInput
@@ -14016,6 +23252,8 @@ export namespace Prisma {
     vocabularyId?: IntWithAggregatesFilter<"UserVocabulary"> | number
     learned?: BoolWithAggregatesFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableWithAggregatesFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntWithAggregatesFilter<"UserVocabulary"> | number
+    nextReviewDate?: DateTimeNullableWithAggregatesFilter<"UserVocabulary"> | Date | string | null
   }
 
   export type ConversationWhereInput = {
@@ -14028,8 +23266,10 @@ export namespace Prisma {
     context?: StringFilter<"Conversation"> | string
     startedAt?: DateTimeFilter<"Conversation"> | Date | string
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
+    templateId?: IntNullableFilter<"Conversation"> | number | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     messages?: MessageListRelationFilter
+    template?: XOR<ConversationTemplateNullableScalarRelationFilter, ConversationTemplateWhereInput> | null
   }
 
   export type ConversationOrderByWithRelationInput = {
@@ -14039,8 +23279,10 @@ export namespace Prisma {
     context?: SortOrder
     startedAt?: SortOrder
     lastMessageAt?: SortOrder
+    templateId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     messages?: MessageOrderByRelationAggregateInput
+    template?: ConversationTemplateOrderByWithRelationInput
   }
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -14053,8 +23295,10 @@ export namespace Prisma {
     context?: StringFilter<"Conversation"> | string
     startedAt?: DateTimeFilter<"Conversation"> | Date | string
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
+    templateId?: IntNullableFilter<"Conversation"> | number | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     messages?: MessageListRelationFilter
+    template?: XOR<ConversationTemplateNullableScalarRelationFilter, ConversationTemplateWhereInput> | null
   }, "id">
 
   export type ConversationOrderByWithAggregationInput = {
@@ -14064,6 +23308,7 @@ export namespace Prisma {
     context?: SortOrder
     startedAt?: SortOrder
     lastMessageAt?: SortOrder
+    templateId?: SortOrderInput | SortOrder
     _count?: ConversationCountOrderByAggregateInput
     _avg?: ConversationAvgOrderByAggregateInput
     _max?: ConversationMaxOrderByAggregateInput
@@ -14081,6 +23326,7 @@ export namespace Prisma {
     context?: StringWithAggregatesFilter<"Conversation"> | string
     startedAt?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
     lastMessageAt?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
+    templateId?: IntNullableWithAggregatesFilter<"Conversation"> | number | null
   }
 
   export type MessageWhereInput = {
@@ -14092,6 +23338,9 @@ export namespace Prisma {
     role?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     timestamp?: DateTimeFilter<"Message"> | Date | string
+    corrections?: JsonNullableFilter<"Message">
+    suggestedVocabulary?: JsonNullableFilter<"Message">
+    audioUrl?: StringNullableFilter<"Message"> | string | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
   }
 
@@ -14101,6 +23350,9 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    corrections?: SortOrderInput | SortOrder
+    suggestedVocabulary?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
     conversation?: ConversationOrderByWithRelationInput
   }
 
@@ -14113,6 +23365,9 @@ export namespace Prisma {
     role?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     timestamp?: DateTimeFilter<"Message"> | Date | string
+    corrections?: JsonNullableFilter<"Message">
+    suggestedVocabulary?: JsonNullableFilter<"Message">
+    audioUrl?: StringNullableFilter<"Message"> | string | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
   }, "id">
 
@@ -14122,6 +23377,9 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    corrections?: SortOrderInput | SortOrder
+    suggestedVocabulary?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
     _count?: MessageCountOrderByAggregateInput
     _avg?: MessageAvgOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
@@ -14138,6 +23396,134 @@ export namespace Prisma {
     role?: StringWithAggregatesFilter<"Message"> | string
     content?: StringWithAggregatesFilter<"Message"> | string
     timestamp?: DateTimeWithAggregatesFilter<"Message"> | Date | string
+    corrections?: JsonNullableWithAggregatesFilter<"Message">
+    suggestedVocabulary?: JsonNullableWithAggregatesFilter<"Message">
+    audioUrl?: StringNullableWithAggregatesFilter<"Message"> | string | null
+  }
+
+  export type ConversationTemplateWhereInput = {
+    AND?: ConversationTemplateWhereInput | ConversationTemplateWhereInput[]
+    OR?: ConversationTemplateWhereInput[]
+    NOT?: ConversationTemplateWhereInput | ConversationTemplateWhereInput[]
+    id?: IntFilter<"ConversationTemplate"> | number
+    title?: StringFilter<"ConversationTemplate"> | string
+    description?: StringFilter<"ConversationTemplate"> | string
+    systemPrompt?: StringFilter<"ConversationTemplate"> | string
+    initialMessage?: StringFilter<"ConversationTemplate"> | string
+    topics?: StringNullableListFilter<"ConversationTemplate">
+    level?: StringFilter<"ConversationTemplate"> | string
+    userTemplateUsage?: UserTemplateUsageListRelationFilter
+    conversations?: ConversationListRelationFilter
+  }
+
+  export type ConversationTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    systemPrompt?: SortOrder
+    initialMessage?: SortOrder
+    topics?: SortOrder
+    level?: SortOrder
+    userTemplateUsage?: UserTemplateUsageOrderByRelationAggregateInput
+    conversations?: ConversationOrderByRelationAggregateInput
+  }
+
+  export type ConversationTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ConversationTemplateWhereInput | ConversationTemplateWhereInput[]
+    OR?: ConversationTemplateWhereInput[]
+    NOT?: ConversationTemplateWhereInput | ConversationTemplateWhereInput[]
+    title?: StringFilter<"ConversationTemplate"> | string
+    description?: StringFilter<"ConversationTemplate"> | string
+    systemPrompt?: StringFilter<"ConversationTemplate"> | string
+    initialMessage?: StringFilter<"ConversationTemplate"> | string
+    topics?: StringNullableListFilter<"ConversationTemplate">
+    level?: StringFilter<"ConversationTemplate"> | string
+    userTemplateUsage?: UserTemplateUsageListRelationFilter
+    conversations?: ConversationListRelationFilter
+  }, "id">
+
+  export type ConversationTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    systemPrompt?: SortOrder
+    initialMessage?: SortOrder
+    topics?: SortOrder
+    level?: SortOrder
+    _count?: ConversationTemplateCountOrderByAggregateInput
+    _avg?: ConversationTemplateAvgOrderByAggregateInput
+    _max?: ConversationTemplateMaxOrderByAggregateInput
+    _min?: ConversationTemplateMinOrderByAggregateInput
+    _sum?: ConversationTemplateSumOrderByAggregateInput
+  }
+
+  export type ConversationTemplateScalarWhereWithAggregatesInput = {
+    AND?: ConversationTemplateScalarWhereWithAggregatesInput | ConversationTemplateScalarWhereWithAggregatesInput[]
+    OR?: ConversationTemplateScalarWhereWithAggregatesInput[]
+    NOT?: ConversationTemplateScalarWhereWithAggregatesInput | ConversationTemplateScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ConversationTemplate"> | number
+    title?: StringWithAggregatesFilter<"ConversationTemplate"> | string
+    description?: StringWithAggregatesFilter<"ConversationTemplate"> | string
+    systemPrompt?: StringWithAggregatesFilter<"ConversationTemplate"> | string
+    initialMessage?: StringWithAggregatesFilter<"ConversationTemplate"> | string
+    topics?: StringNullableListFilter<"ConversationTemplate">
+    level?: StringWithAggregatesFilter<"ConversationTemplate"> | string
+  }
+
+  export type UserTemplateUsageWhereInput = {
+    AND?: UserTemplateUsageWhereInput | UserTemplateUsageWhereInput[]
+    OR?: UserTemplateUsageWhereInput[]
+    NOT?: UserTemplateUsageWhereInput | UserTemplateUsageWhereInput[]
+    id?: IntFilter<"UserTemplateUsage"> | number
+    userId?: IntFilter<"UserTemplateUsage"> | number
+    templateId?: IntFilter<"UserTemplateUsage"> | number
+    usedAt?: DateTimeFilter<"UserTemplateUsage"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    template?: XOR<ConversationTemplateScalarRelationFilter, ConversationTemplateWhereInput>
+  }
+
+  export type UserTemplateUsageOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    usedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    template?: ConversationTemplateOrderByWithRelationInput
+  }
+
+  export type UserTemplateUsageWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: UserTemplateUsageWhereInput | UserTemplateUsageWhereInput[]
+    OR?: UserTemplateUsageWhereInput[]
+    NOT?: UserTemplateUsageWhereInput | UserTemplateUsageWhereInput[]
+    userId?: IntFilter<"UserTemplateUsage"> | number
+    templateId?: IntFilter<"UserTemplateUsage"> | number
+    usedAt?: DateTimeFilter<"UserTemplateUsage"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    template?: XOR<ConversationTemplateScalarRelationFilter, ConversationTemplateWhereInput>
+  }, "id">
+
+  export type UserTemplateUsageOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    usedAt?: SortOrder
+    _count?: UserTemplateUsageCountOrderByAggregateInput
+    _avg?: UserTemplateUsageAvgOrderByAggregateInput
+    _max?: UserTemplateUsageMaxOrderByAggregateInput
+    _min?: UserTemplateUsageMinOrderByAggregateInput
+    _sum?: UserTemplateUsageSumOrderByAggregateInput
+  }
+
+  export type UserTemplateUsageScalarWhereWithAggregatesInput = {
+    AND?: UserTemplateUsageScalarWhereWithAggregatesInput | UserTemplateUsageScalarWhereWithAggregatesInput[]
+    OR?: UserTemplateUsageScalarWhereWithAggregatesInput[]
+    NOT?: UserTemplateUsageScalarWhereWithAggregatesInput | UserTemplateUsageScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"UserTemplateUsage"> | number
+    userId?: IntWithAggregatesFilter<"UserTemplateUsage"> | number
+    templateId?: IntWithAggregatesFilter<"UserTemplateUsage"> | number
+    usedAt?: DateTimeWithAggregatesFilter<"UserTemplateUsage"> | Date | string
   }
 
   export type ExamResultWhereInput = {
@@ -14152,6 +23538,7 @@ export namespace Prisma {
     score?: IntFilter<"ExamResult"> | number
     details?: JsonFilter<"ExamResult">
     completedAt?: DateTimeFilter<"ExamResult"> | Date | string
+    timeSpent?: IntFilter<"ExamResult"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -14164,6 +23551,7 @@ export namespace Prisma {
     score?: SortOrder
     details?: SortOrder
     completedAt?: SortOrder
+    timeSpent?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -14179,6 +23567,7 @@ export namespace Prisma {
     score?: IntFilter<"ExamResult"> | number
     details?: JsonFilter<"ExamResult">
     completedAt?: DateTimeFilter<"ExamResult"> | Date | string
+    timeSpent?: IntFilter<"ExamResult"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -14191,6 +23580,7 @@ export namespace Prisma {
     score?: SortOrder
     details?: SortOrder
     completedAt?: SortOrder
+    timeSpent?: SortOrder
     _count?: ExamResultCountOrderByAggregateInput
     _avg?: ExamResultAvgOrderByAggregateInput
     _max?: ExamResultMaxOrderByAggregateInput
@@ -14210,6 +23600,7 @@ export namespace Prisma {
     score?: IntWithAggregatesFilter<"ExamResult"> | number
     details?: JsonWithAggregatesFilter<"ExamResult">
     completedAt?: DateTimeWithAggregatesFilter<"ExamResult"> | Date | string
+    timeSpent?: IntWithAggregatesFilter<"ExamResult"> | number
   }
 
   export type PracticeSessionWhereInput = {
@@ -14221,8 +23612,12 @@ export namespace Prisma {
     type?: StringFilter<"PracticeSession"> | string
     duration?: IntFilter<"PracticeSession"> | number
     createdAt?: DateTimeFilter<"PracticeSession"> | Date | string
+    aiGenerated?: BoolFilter<"PracticeSession"> | boolean
+    difficulty?: StringNullableFilter<"PracticeSession"> | string | null
+    score?: IntNullableFilter<"PracticeSession"> | number | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     practiceItems?: PracticeItemListRelationFilter
+    pronunciationItems?: PronunciationPracticeItemListRelationFilter
   }
 
   export type PracticeSessionOrderByWithRelationInput = {
@@ -14231,8 +23626,12 @@ export namespace Prisma {
     type?: SortOrder
     duration?: SortOrder
     createdAt?: SortOrder
+    aiGenerated?: SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    score?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     practiceItems?: PracticeItemOrderByRelationAggregateInput
+    pronunciationItems?: PronunciationPracticeItemOrderByRelationAggregateInput
   }
 
   export type PracticeSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -14244,8 +23643,12 @@ export namespace Prisma {
     type?: StringFilter<"PracticeSession"> | string
     duration?: IntFilter<"PracticeSession"> | number
     createdAt?: DateTimeFilter<"PracticeSession"> | Date | string
+    aiGenerated?: BoolFilter<"PracticeSession"> | boolean
+    difficulty?: StringNullableFilter<"PracticeSession"> | string | null
+    score?: IntNullableFilter<"PracticeSession"> | number | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     practiceItems?: PracticeItemListRelationFilter
+    pronunciationItems?: PronunciationPracticeItemListRelationFilter
   }, "id">
 
   export type PracticeSessionOrderByWithAggregationInput = {
@@ -14254,6 +23657,9 @@ export namespace Prisma {
     type?: SortOrder
     duration?: SortOrder
     createdAt?: SortOrder
+    aiGenerated?: SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    score?: SortOrderInput | SortOrder
     _count?: PracticeSessionCountOrderByAggregateInput
     _avg?: PracticeSessionAvgOrderByAggregateInput
     _max?: PracticeSessionMaxOrderByAggregateInput
@@ -14270,6 +23676,9 @@ export namespace Prisma {
     type?: StringWithAggregatesFilter<"PracticeSession"> | string
     duration?: IntWithAggregatesFilter<"PracticeSession"> | number
     createdAt?: DateTimeWithAggregatesFilter<"PracticeSession"> | Date | string
+    aiGenerated?: BoolWithAggregatesFilter<"PracticeSession"> | boolean
+    difficulty?: StringNullableWithAggregatesFilter<"PracticeSession"> | string | null
+    score?: IntNullableWithAggregatesFilter<"PracticeSession"> | number | null
   }
 
   export type PracticeItemWhereInput = {
@@ -14342,6 +23751,202 @@ export namespace Prisma {
     expectedAnswer?: StringWithAggregatesFilter<"PracticeItem"> | string
   }
 
+  export type PronunciationExerciseWhereInput = {
+    AND?: PronunciationExerciseWhereInput | PronunciationExerciseWhereInput[]
+    OR?: PronunciationExerciseWhereInput[]
+    NOT?: PronunciationExerciseWhereInput | PronunciationExerciseWhereInput[]
+    id?: IntFilter<"PronunciationExercise"> | number
+    text?: StringFilter<"PronunciationExercise"> | string
+    translation?: StringNullableFilter<"PronunciationExercise"> | string | null
+    audioUrl?: StringNullableFilter<"PronunciationExercise"> | string | null
+    difficulty?: StringFilter<"PronunciationExercise"> | string
+    category?: StringNullableFilter<"PronunciationExercise"> | string | null
+    expectedPronunciation?: StringNullableFilter<"PronunciationExercise"> | string | null
+    practiceItems?: PronunciationPracticeItemListRelationFilter
+  }
+
+  export type PronunciationExerciseOrderByWithRelationInput = {
+    id?: SortOrder
+    text?: SortOrder
+    translation?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    difficulty?: SortOrder
+    category?: SortOrderInput | SortOrder
+    expectedPronunciation?: SortOrderInput | SortOrder
+    practiceItems?: PronunciationPracticeItemOrderByRelationAggregateInput
+  }
+
+  export type PronunciationExerciseWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: PronunciationExerciseWhereInput | PronunciationExerciseWhereInput[]
+    OR?: PronunciationExerciseWhereInput[]
+    NOT?: PronunciationExerciseWhereInput | PronunciationExerciseWhereInput[]
+    text?: StringFilter<"PronunciationExercise"> | string
+    translation?: StringNullableFilter<"PronunciationExercise"> | string | null
+    audioUrl?: StringNullableFilter<"PronunciationExercise"> | string | null
+    difficulty?: StringFilter<"PronunciationExercise"> | string
+    category?: StringNullableFilter<"PronunciationExercise"> | string | null
+    expectedPronunciation?: StringNullableFilter<"PronunciationExercise"> | string | null
+    practiceItems?: PronunciationPracticeItemListRelationFilter
+  }, "id">
+
+  export type PronunciationExerciseOrderByWithAggregationInput = {
+    id?: SortOrder
+    text?: SortOrder
+    translation?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    difficulty?: SortOrder
+    category?: SortOrderInput | SortOrder
+    expectedPronunciation?: SortOrderInput | SortOrder
+    _count?: PronunciationExerciseCountOrderByAggregateInput
+    _avg?: PronunciationExerciseAvgOrderByAggregateInput
+    _max?: PronunciationExerciseMaxOrderByAggregateInput
+    _min?: PronunciationExerciseMinOrderByAggregateInput
+    _sum?: PronunciationExerciseSumOrderByAggregateInput
+  }
+
+  export type PronunciationExerciseScalarWhereWithAggregatesInput = {
+    AND?: PronunciationExerciseScalarWhereWithAggregatesInput | PronunciationExerciseScalarWhereWithAggregatesInput[]
+    OR?: PronunciationExerciseScalarWhereWithAggregatesInput[]
+    NOT?: PronunciationExerciseScalarWhereWithAggregatesInput | PronunciationExerciseScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"PronunciationExercise"> | number
+    text?: StringWithAggregatesFilter<"PronunciationExercise"> | string
+    translation?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
+    audioUrl?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
+    difficulty?: StringWithAggregatesFilter<"PronunciationExercise"> | string
+    category?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
+    expectedPronunciation?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
+  }
+
+  export type PronunciationPracticeItemWhereInput = {
+    AND?: PronunciationPracticeItemWhereInput | PronunciationPracticeItemWhereInput[]
+    OR?: PronunciationPracticeItemWhereInput[]
+    NOT?: PronunciationPracticeItemWhereInput | PronunciationPracticeItemWhereInput[]
+    id?: IntFilter<"PronunciationPracticeItem"> | number
+    sessionId?: StringFilter<"PronunciationPracticeItem"> | string
+    exerciseId?: IntFilter<"PronunciationPracticeItem"> | number
+    userAudioUrl?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
+    transcript?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
+    similarityScore?: FloatNullableFilter<"PronunciationPracticeItem"> | number | null
+    feedback?: JsonNullableFilter<"PronunciationPracticeItem">
+    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
+    exercise?: XOR<PronunciationExerciseScalarRelationFilter, PronunciationExerciseWhereInput>
+  }
+
+  export type PronunciationPracticeItemOrderByWithRelationInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    exerciseId?: SortOrder
+    userAudioUrl?: SortOrderInput | SortOrder
+    transcript?: SortOrderInput | SortOrder
+    similarityScore?: SortOrderInput | SortOrder
+    feedback?: SortOrderInput | SortOrder
+    session?: PracticeSessionOrderByWithRelationInput
+    exercise?: PronunciationExerciseOrderByWithRelationInput
+  }
+
+  export type PronunciationPracticeItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: PronunciationPracticeItemWhereInput | PronunciationPracticeItemWhereInput[]
+    OR?: PronunciationPracticeItemWhereInput[]
+    NOT?: PronunciationPracticeItemWhereInput | PronunciationPracticeItemWhereInput[]
+    sessionId?: StringFilter<"PronunciationPracticeItem"> | string
+    exerciseId?: IntFilter<"PronunciationPracticeItem"> | number
+    userAudioUrl?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
+    transcript?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
+    similarityScore?: FloatNullableFilter<"PronunciationPracticeItem"> | number | null
+    feedback?: JsonNullableFilter<"PronunciationPracticeItem">
+    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
+    exercise?: XOR<PronunciationExerciseScalarRelationFilter, PronunciationExerciseWhereInput>
+  }, "id">
+
+  export type PronunciationPracticeItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    exerciseId?: SortOrder
+    userAudioUrl?: SortOrderInput | SortOrder
+    transcript?: SortOrderInput | SortOrder
+    similarityScore?: SortOrderInput | SortOrder
+    feedback?: SortOrderInput | SortOrder
+    _count?: PronunciationPracticeItemCountOrderByAggregateInput
+    _avg?: PronunciationPracticeItemAvgOrderByAggregateInput
+    _max?: PronunciationPracticeItemMaxOrderByAggregateInput
+    _min?: PronunciationPracticeItemMinOrderByAggregateInput
+    _sum?: PronunciationPracticeItemSumOrderByAggregateInput
+  }
+
+  export type PronunciationPracticeItemScalarWhereWithAggregatesInput = {
+    AND?: PronunciationPracticeItemScalarWhereWithAggregatesInput | PronunciationPracticeItemScalarWhereWithAggregatesInput[]
+    OR?: PronunciationPracticeItemScalarWhereWithAggregatesInput[]
+    NOT?: PronunciationPracticeItemScalarWhereWithAggregatesInput | PronunciationPracticeItemScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"PronunciationPracticeItem"> | number
+    sessionId?: StringWithAggregatesFilter<"PronunciationPracticeItem"> | string
+    exerciseId?: IntWithAggregatesFilter<"PronunciationPracticeItem"> | number
+    userAudioUrl?: StringNullableWithAggregatesFilter<"PronunciationPracticeItem"> | string | null
+    transcript?: StringNullableWithAggregatesFilter<"PronunciationPracticeItem"> | string | null
+    similarityScore?: FloatNullableWithAggregatesFilter<"PronunciationPracticeItem"> | number | null
+    feedback?: JsonNullableWithAggregatesFilter<"PronunciationPracticeItem">
+  }
+
+  export type GrammarRuleWhereInput = {
+    AND?: GrammarRuleWhereInput | GrammarRuleWhereInput[]
+    OR?: GrammarRuleWhereInput[]
+    NOT?: GrammarRuleWhereInput | GrammarRuleWhereInput[]
+    id?: IntFilter<"GrammarRule"> | number
+    title?: StringFilter<"GrammarRule"> | string
+    description?: StringFilter<"GrammarRule"> | string
+    examples?: StringNullableListFilter<"GrammarRule">
+    level?: StringFilter<"GrammarRule"> | string
+    category?: StringFilter<"GrammarRule"> | string
+  }
+
+  export type GrammarRuleOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    examples?: SortOrder
+    level?: SortOrder
+    category?: SortOrder
+  }
+
+  export type GrammarRuleWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: GrammarRuleWhereInput | GrammarRuleWhereInput[]
+    OR?: GrammarRuleWhereInput[]
+    NOT?: GrammarRuleWhereInput | GrammarRuleWhereInput[]
+    title?: StringFilter<"GrammarRule"> | string
+    description?: StringFilter<"GrammarRule"> | string
+    examples?: StringNullableListFilter<"GrammarRule">
+    level?: StringFilter<"GrammarRule"> | string
+    category?: StringFilter<"GrammarRule"> | string
+  }, "id">
+
+  export type GrammarRuleOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    examples?: SortOrder
+    level?: SortOrder
+    category?: SortOrder
+    _count?: GrammarRuleCountOrderByAggregateInput
+    _avg?: GrammarRuleAvgOrderByAggregateInput
+    _max?: GrammarRuleMaxOrderByAggregateInput
+    _min?: GrammarRuleMinOrderByAggregateInput
+    _sum?: GrammarRuleSumOrderByAggregateInput
+  }
+
+  export type GrammarRuleScalarWhereWithAggregatesInput = {
+    AND?: GrammarRuleScalarWhereWithAggregatesInput | GrammarRuleScalarWhereWithAggregatesInput[]
+    OR?: GrammarRuleScalarWhereWithAggregatesInput[]
+    NOT?: GrammarRuleScalarWhereWithAggregatesInput | GrammarRuleScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"GrammarRule"> | number
+    title?: StringWithAggregatesFilter<"GrammarRule"> | string
+    description?: StringWithAggregatesFilter<"GrammarRule"> | string
+    examples?: StringNullableListFilter<"GrammarRule">
+    level?: StringWithAggregatesFilter<"GrammarRule"> | string
+    category?: StringWithAggregatesFilter<"GrammarRule"> | string
+  }
+
   export type UserCreateInput = {
     email: string
     name: string
@@ -14356,11 +23961,16 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -14378,11 +23988,16 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -14399,11 +24014,16 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -14421,11 +24041,16 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -14443,6 +24068,10 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -14459,6 +24088,10 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -14476,6 +24109,10 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type LessonCreateInput = {
@@ -14484,8 +24121,8 @@ export namespace Prisma {
     level: string
     duration: number
     topics?: LessonCreatetopicsInput | string[]
-    content: JsonNullValueInput | InputJsonValue
     progress?: LessonProgressCreateNestedManyWithoutLessonInput
+    sections?: LessonSectionCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUncheckedCreateInput = {
@@ -14495,8 +24132,8 @@ export namespace Prisma {
     level: string
     duration: number
     topics?: LessonCreatetopicsInput | string[]
-    content: JsonNullValueInput | InputJsonValue
     progress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+    sections?: LessonSectionUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUpdateInput = {
@@ -14505,8 +24142,8 @@ export namespace Prisma {
     level?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
-    content?: JsonNullValueInput | InputJsonValue
     progress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    sections?: LessonSectionUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateInput = {
@@ -14516,8 +24153,8 @@ export namespace Prisma {
     level?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
-    content?: JsonNullValueInput | InputJsonValue
     progress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+    sections?: LessonSectionUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonCreateManyInput = {
@@ -14527,7 +24164,6 @@ export namespace Prisma {
     level: string
     duration: number
     topics?: LessonCreatetopicsInput | string[]
-    content: JsonNullValueInput | InputJsonValue
   }
 
   export type LessonUpdateManyMutationInput = {
@@ -14536,7 +24172,6 @@ export namespace Prisma {
     level?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
-    content?: JsonNullValueInput | InputJsonValue
   }
 
   export type LessonUncheckedUpdateManyInput = {
@@ -14546,7 +24181,149 @@ export namespace Prisma {
     level?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
-    content?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LessonSectionCreateInput = {
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+    lesson: LessonCreateNestedOneWithoutSectionsInput
+    exercises?: LessonExerciseCreateNestedManyWithoutSectionInput
+  }
+
+  export type LessonSectionUncheckedCreateInput = {
+    id?: number
+    lessonId: number
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+    exercises?: LessonExerciseUncheckedCreateNestedManyWithoutSectionInput
+  }
+
+  export type LessonSectionUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    lesson?: LessonUpdateOneRequiredWithoutSectionsNestedInput
+    exercises?: LessonExerciseUpdateManyWithoutSectionNestedInput
+  }
+
+  export type LessonSectionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lessonId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    exercises?: LessonExerciseUncheckedUpdateManyWithoutSectionNestedInput
+  }
+
+  export type LessonSectionCreateManyInput = {
+    id?: number
+    lessonId: number
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+  }
+
+  export type LessonSectionUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LessonSectionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lessonId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LessonExerciseCreateInput = {
+    type: string
+    question: string
+    options?: LessonExerciseCreateoptionsInput | string[]
+    correctAnswer: string
+    explanation?: string | null
+    section: LessonSectionCreateNestedOneWithoutExercisesInput
+  }
+
+  export type LessonExerciseUncheckedCreateInput = {
+    id?: number
+    sectionId: number
+    type: string
+    question: string
+    options?: LessonExerciseCreateoptionsInput | string[]
+    correctAnswer: string
+    explanation?: string | null
+  }
+
+  export type LessonExerciseUpdateInput = {
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: LessonSectionUpdateOneRequiredWithoutExercisesNestedInput
+  }
+
+  export type LessonExerciseUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sectionId?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LessonExerciseCreateManyInput = {
+    id?: number
+    sectionId: number
+    type: string
+    question: string
+    options?: LessonExerciseCreateoptionsInput | string[]
+    correctAnswer: string
+    explanation?: string | null
+  }
+
+  export type LessonExerciseUpdateManyMutationInput = {
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LessonExerciseUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sectionId?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LessonProgressCreateInput = {
@@ -14626,6 +24403,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
     userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
     practiceItems?: PracticeItemCreateNestedManyWithoutVocabularyInput
   }
@@ -14636,6 +24417,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
     userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
     practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput
   }
@@ -14645,6 +24430,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
     practiceItems?: PracticeItemUpdateManyWithoutVocabularyNestedInput
   }
@@ -14655,6 +24444,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput
   }
@@ -14665,6 +24458,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
   }
 
   export type VocabularyUpdateManyMutationInput = {
@@ -14672,6 +24469,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VocabularyUncheckedUpdateManyInput = {
@@ -14680,11 +24481,17 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserVocabularyCreateInput = {
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
     user: UserCreateNestedOneWithoutVocabularyInput
     vocabulary: VocabularyCreateNestedOneWithoutUserVocabularyInput
   }
@@ -14695,11 +24502,15 @@ export namespace Prisma {
     vocabularyId: number
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
   }
 
   export type UserVocabularyUpdateInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutVocabularyNestedInput
     vocabulary?: VocabularyUpdateOneRequiredWithoutUserVocabularyNestedInput
   }
@@ -14710,6 +24521,8 @@ export namespace Prisma {
     vocabularyId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserVocabularyCreateManyInput = {
@@ -14718,11 +24531,15 @@ export namespace Prisma {
     vocabularyId: number
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
   }
 
   export type UserVocabularyUpdateManyMutationInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserVocabularyUncheckedUpdateManyInput = {
@@ -14731,6 +24548,8 @@ export namespace Prisma {
     vocabularyId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ConversationCreateInput = {
@@ -14741,6 +24560,7 @@ export namespace Prisma {
     lastMessageAt?: Date | string
     user: UserCreateNestedOneWithoutConversationsInput
     messages?: MessageCreateNestedManyWithoutConversationInput
+    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
   }
 
   export type ConversationUncheckedCreateInput = {
@@ -14750,6 +24570,7 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+    templateId?: number | null
     messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
   }
 
@@ -14761,6 +24582,7 @@ export namespace Prisma {
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutConversationsNestedInput
     messages?: MessageUpdateManyWithoutConversationNestedInput
+    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
   }
 
   export type ConversationUncheckedUpdateInput = {
@@ -14770,6 +24592,7 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
@@ -14780,6 +24603,7 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+    templateId?: number | null
   }
 
   export type ConversationUpdateManyMutationInput = {
@@ -14797,12 +24621,16 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MessageCreateInput = {
     role: string
     content: string
     timestamp?: Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: string | null
     conversation: ConversationCreateNestedOneWithoutMessagesInput
   }
 
@@ -14812,12 +24640,18 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: string | null
   }
 
   export type MessageUpdateInput = {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
   }
 
@@ -14827,6 +24661,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageCreateManyInput = {
@@ -14835,12 +24672,18 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: string | null
   }
 
   export type MessageUpdateManyMutationInput = {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUncheckedUpdateManyInput = {
@@ -14849,6 +24692,128 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ConversationTemplateCreateInput = {
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+    userTemplateUsage?: UserTemplateUsageCreateNestedManyWithoutTemplateInput
+    conversations?: ConversationCreateNestedManyWithoutTemplateInput
+  }
+
+  export type ConversationTemplateUncheckedCreateInput = {
+    id?: number
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+    userTemplateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type ConversationTemplateUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    userTemplateUsage?: UserTemplateUsageUpdateManyWithoutTemplateNestedInput
+    conversations?: ConversationUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type ConversationTemplateUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    userTemplateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type ConversationTemplateCreateManyInput = {
+    id?: number
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+  }
+
+  export type ConversationTemplateUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConversationTemplateUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserTemplateUsageCreateInput = {
+    usedAt?: Date | string
+    user: UserCreateNestedOneWithoutTemplateUsageInput
+    template: ConversationTemplateCreateNestedOneWithoutUserTemplateUsageInput
+  }
+
+  export type UserTemplateUsageUncheckedCreateInput = {
+    id?: number
+    userId: number
+    templateId: number
+    usedAt?: Date | string
+  }
+
+  export type UserTemplateUsageUpdateInput = {
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTemplateUsageNestedInput
+    template?: ConversationTemplateUpdateOneRequiredWithoutUserTemplateUsageNestedInput
+  }
+
+  export type UserTemplateUsageUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    templateId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateUsageCreateManyInput = {
+    id?: number
+    userId: number
+    templateId: number
+    usedAt?: Date | string
+  }
+
+  export type UserTemplateUsageUpdateManyMutationInput = {
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateUsageUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    templateId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ExamResultCreateInput = {
@@ -14858,6 +24823,7 @@ export namespace Prisma {
     score: number
     details: JsonNullValueInput | InputJsonValue
     completedAt: Date | string
+    timeSpent: number
     user: UserCreateNestedOneWithoutExamResultsInput
   }
 
@@ -14870,6 +24836,7 @@ export namespace Prisma {
     score: number
     details: JsonNullValueInput | InputJsonValue
     completedAt: Date | string
+    timeSpent: number
   }
 
   export type ExamResultUpdateInput = {
@@ -14879,6 +24846,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutExamResultsNestedInput
   }
 
@@ -14891,6 +24859,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
   export type ExamResultCreateManyInput = {
@@ -14902,6 +24871,7 @@ export namespace Prisma {
     score: number
     details: JsonNullValueInput | InputJsonValue
     completedAt: Date | string
+    timeSpent: number
   }
 
   export type ExamResultUpdateManyMutationInput = {
@@ -14911,6 +24881,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
   export type ExamResultUncheckedUpdateManyInput = {
@@ -14922,6 +24893,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
   export type PracticeSessionCreateInput = {
@@ -14929,8 +24901,12 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
     user: UserCreateNestedOneWithoutPracticeSessionsInput
     practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+    pronunciationItems?: PronunciationPracticeItemCreateNestedManyWithoutSessionInput
   }
 
   export type PracticeSessionUncheckedCreateInput = {
@@ -14939,7 +24915,11 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
     practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutSessionInput
+    pronunciationItems?: PronunciationPracticeItemUncheckedCreateNestedManyWithoutSessionInput
   }
 
   export type PracticeSessionUpdateInput = {
@@ -14947,8 +24927,12 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
     user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
     practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+    pronunciationItems?: PronunciationPracticeItemUpdateManyWithoutSessionNestedInput
   }
 
   export type PracticeSessionUncheckedUpdateInput = {
@@ -14957,7 +24941,11 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutSessionNestedInput
+    pronunciationItems?: PronunciationPracticeItemUncheckedUpdateManyWithoutSessionNestedInput
   }
 
   export type PracticeSessionCreateManyInput = {
@@ -14966,6 +24954,9 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
   }
 
   export type PracticeSessionUpdateManyMutationInput = {
@@ -14973,6 +24964,9 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PracticeSessionUncheckedUpdateManyInput = {
@@ -14981,6 +24975,9 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PracticeItemCreateInput = {
@@ -15046,6 +25043,202 @@ export namespace Prisma {
     isCorrect?: BoolFieldUpdateOperationsInput | boolean
     userAnswer?: StringFieldUpdateOperationsInput | string
     expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PronunciationExerciseCreateInput = {
+    text: string
+    translation?: string | null
+    audioUrl?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+    practiceItems?: PronunciationPracticeItemCreateNestedManyWithoutExerciseInput
+  }
+
+  export type PronunciationExerciseUncheckedCreateInput = {
+    id?: number
+    text: string
+    translation?: string | null
+    audioUrl?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+    practiceItems?: PronunciationPracticeItemUncheckedCreateNestedManyWithoutExerciseInput
+  }
+
+  export type PronunciationExerciseUpdateInput = {
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceItems?: PronunciationPracticeItemUpdateManyWithoutExerciseNestedInput
+  }
+
+  export type PronunciationExerciseUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceItems?: PronunciationPracticeItemUncheckedUpdateManyWithoutExerciseNestedInput
+  }
+
+  export type PronunciationExerciseCreateManyInput = {
+    id?: number
+    text: string
+    translation?: string | null
+    audioUrl?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+  }
+
+  export type PronunciationExerciseUpdateManyMutationInput = {
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PronunciationExerciseUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PronunciationPracticeItemCreateInput = {
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+    session: PracticeSessionCreateNestedOneWithoutPronunciationItemsInput
+    exercise: PronunciationExerciseCreateNestedOneWithoutPracticeItemsInput
+  }
+
+  export type PronunciationPracticeItemUncheckedCreateInput = {
+    id?: number
+    sessionId: string
+    exerciseId: number
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemUpdateInput = {
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+    session?: PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput
+    exercise?: PronunciationExerciseUpdateOneRequiredWithoutPracticeItemsNestedInput
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    exerciseId?: IntFieldUpdateOperationsInput | number
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemCreateManyInput = {
+    id?: number
+    sessionId: string
+    exerciseId: number
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemUpdateManyMutationInput = {
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    exerciseId?: IntFieldUpdateOperationsInput | number
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GrammarRuleCreateInput = {
+    title: string
+    description: string
+    examples?: GrammarRuleCreateexamplesInput | string[]
+    level: string
+    category: string
+  }
+
+  export type GrammarRuleUncheckedCreateInput = {
+    id?: number
+    title: string
+    description: string
+    examples?: GrammarRuleCreateexamplesInput | string[]
+    level: string
+    category: string
+  }
+
+  export type GrammarRuleUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    examples?: GrammarRuleUpdateexamplesInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type GrammarRuleUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    examples?: GrammarRuleUpdateexamplesInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type GrammarRuleCreateManyInput = {
+    id?: number
+    title: string
+    description: string
+    examples?: GrammarRuleCreateexamplesInput | string[]
+    level: string
+    category: string
+  }
+
+  export type GrammarRuleUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    examples?: GrammarRuleUpdateexamplesInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type GrammarRuleUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    examples?: GrammarRuleUpdateexamplesInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -15143,6 +25336,12 @@ export namespace Prisma {
     none?: PracticeSessionWhereInput
   }
 
+  export type UserTemplateUsageListRelationFilter = {
+    every?: UserTemplateUsageWhereInput
+    some?: UserTemplateUsageWhereInput
+    none?: UserTemplateUsageWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -15168,6 +25367,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type UserTemplateUsageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
@@ -15183,6 +25386,10 @@ export namespace Prisma {
     dailyGoal?: SortOrder
     notifications?: SortOrder
     theme?: SortOrder
+    aiCorrectionEnabled?: SortOrder
+    aiVocabSuggestionsEnabled?: SortOrder
+    preferredVoice?: SortOrder
+    speechRecognitionEnabled?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -15207,6 +25414,10 @@ export namespace Prisma {
     dailyGoal?: SortOrder
     notifications?: SortOrder
     theme?: SortOrder
+    aiCorrectionEnabled?: SortOrder
+    aiVocabSuggestionsEnabled?: SortOrder
+    preferredVoice?: SortOrder
+    speechRecognitionEnabled?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -15223,6 +25434,10 @@ export namespace Prisma {
     dailyGoal?: SortOrder
     notifications?: SortOrder
     theme?: SortOrder
+    aiCorrectionEnabled?: SortOrder
+    aiVocabSuggestionsEnabled?: SortOrder
+    preferredVoice?: SortOrder
+    speechRecognitionEnabled?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -15306,28 +25521,15 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
-  export type JsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type LessonSectionListRelationFilter = {
+    every?: LessonSectionWhereInput
+    some?: LessonSectionWhereInput
+    none?: LessonSectionWhereInput
+  }
+
+  export type LessonSectionOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type LessonCountOrderByAggregateInput = {
@@ -15337,7 +25539,6 @@ export namespace Prisma {
     level?: SortOrder
     duration?: SortOrder
     topics?: SortOrder
-    content?: SortOrder
   }
 
   export type LessonAvgOrderByAggregateInput = {
@@ -15365,31 +25566,108 @@ export namespace Prisma {
     id?: SortOrder
     duration?: SortOrder
   }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
+  export type LessonScalarRelationFilter = {
+    is?: LessonWhereInput
+    isNot?: LessonWhereInput
+  }
+
+  export type LessonExerciseListRelationFilter = {
+    every?: LessonExerciseWhereInput
+    some?: LessonExerciseWhereInput
+    none?: LessonExerciseWhereInput
+  }
+
+  export type LessonExerciseOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LessonSectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    title?: SortOrder
+    type?: SortOrder
+    content?: SortOrder
+    audioUrl?: SortOrder
+    videoUrl?: SortOrder
+    order?: SortOrder
+  }
+
+  export type LessonSectionAvgOrderByAggregateInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    order?: SortOrder
+  }
+
+  export type LessonSectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    title?: SortOrder
+    type?: SortOrder
+    content?: SortOrder
+    audioUrl?: SortOrder
+    videoUrl?: SortOrder
+    order?: SortOrder
+  }
+
+  export type LessonSectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    title?: SortOrder
+    type?: SortOrder
+    content?: SortOrder
+    audioUrl?: SortOrder
+    videoUrl?: SortOrder
+    order?: SortOrder
+  }
+
+  export type LessonSectionSumOrderByAggregateInput = {
+    id?: SortOrder
+    lessonId?: SortOrder
+    order?: SortOrder
+  }
+
+  export type LessonSectionScalarRelationFilter = {
+    is?: LessonSectionWhereInput
+    isNot?: LessonSectionWhereInput
+  }
+
+  export type LessonExerciseCountOrderByAggregateInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
+    type?: SortOrder
+    question?: SortOrder
+    options?: SortOrder
+    correctAnswer?: SortOrder
+    explanation?: SortOrder
+  }
+
+  export type LessonExerciseAvgOrderByAggregateInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
+  }
+
+  export type LessonExerciseMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
+    type?: SortOrder
+    question?: SortOrder
+    correctAnswer?: SortOrder
+    explanation?: SortOrder
+  }
+
+  export type LessonExerciseMinOrderByAggregateInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
+    type?: SortOrder
+    question?: SortOrder
+    correctAnswer?: SortOrder
+    explanation?: SortOrder
+  }
+
+  export type LessonExerciseSumOrderByAggregateInput = {
+    id?: SortOrder
+    sectionId?: SortOrder
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -15424,11 +25702,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type LessonScalarRelationFilter = {
-    is?: LessonWhereInput
-    isNot?: LessonWhereInput
   }
 
   export type UserScalarRelationFilter = {
@@ -15542,6 +25815,10 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
+    pronunciation?: SortOrder
+    audioUrl?: SortOrder
+    usageContext?: SortOrder
+    category?: SortOrder
   }
 
   export type VocabularyAvgOrderByAggregateInput = {
@@ -15554,6 +25831,9 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
+    pronunciation?: SortOrder
+    audioUrl?: SortOrder
+    category?: SortOrder
   }
 
   export type VocabularyMinOrderByAggregateInput = {
@@ -15562,6 +25842,9 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
+    pronunciation?: SortOrder
+    audioUrl?: SortOrder
+    category?: SortOrder
   }
 
   export type VocabularySumOrderByAggregateInput = {
@@ -15584,12 +25867,15 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrder
+    repetitionStage?: SortOrder
+    nextReviewDate?: SortOrder
   }
 
   export type UserVocabularyAvgOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     vocabularyId?: SortOrder
+    repetitionStage?: SortOrder
   }
 
   export type UserVocabularyMaxOrderByAggregateInput = {
@@ -15598,6 +25884,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrder
+    repetitionStage?: SortOrder
+    nextReviewDate?: SortOrder
   }
 
   export type UserVocabularyMinOrderByAggregateInput = {
@@ -15606,18 +25894,37 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrder
+    repetitionStage?: SortOrder
+    nextReviewDate?: SortOrder
   }
 
   export type UserVocabularySumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     vocabularyId?: SortOrder
+    repetitionStage?: SortOrder
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type MessageListRelationFilter = {
     every?: MessageWhereInput
     some?: MessageWhereInput
     none?: MessageWhereInput
+  }
+
+  export type ConversationTemplateNullableScalarRelationFilter = {
+    is?: ConversationTemplateWhereInput | null
+    isNot?: ConversationTemplateWhereInput | null
   }
 
   export type MessageOrderByRelationAggregateInput = {
@@ -15631,10 +25938,12 @@ export namespace Prisma {
     context?: SortOrder
     startedAt?: SortOrder
     lastMessageAt?: SortOrder
+    templateId?: SortOrder
   }
 
   export type ConversationAvgOrderByAggregateInput = {
     userId?: SortOrder
+    templateId?: SortOrder
   }
 
   export type ConversationMaxOrderByAggregateInput = {
@@ -15644,6 +25953,7 @@ export namespace Prisma {
     context?: SortOrder
     startedAt?: SortOrder
     lastMessageAt?: SortOrder
+    templateId?: SortOrder
   }
 
   export type ConversationMinOrderByAggregateInput = {
@@ -15653,10 +25963,28 @@ export namespace Prisma {
     context?: SortOrder
     startedAt?: SortOrder
     lastMessageAt?: SortOrder
+    templateId?: SortOrder
   }
 
   export type ConversationSumOrderByAggregateInput = {
     userId?: SortOrder
+    templateId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type ConversationScalarRelationFilter = {
@@ -15670,6 +25998,9 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    corrections?: SortOrder
+    suggestedVocabulary?: SortOrder
+    audioUrl?: SortOrder
   }
 
   export type MessageAvgOrderByAggregateInput = {
@@ -15682,6 +26013,7 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    audioUrl?: SortOrder
   }
 
   export type MessageMinOrderByAggregateInput = {
@@ -15690,10 +26022,108 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    audioUrl?: SortOrder
   }
 
   export type MessageSumOrderByAggregateInput = {
     id?: SortOrder
+  }
+
+  export type ConversationTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    systemPrompt?: SortOrder
+    initialMessage?: SortOrder
+    topics?: SortOrder
+    level?: SortOrder
+  }
+
+  export type ConversationTemplateAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type ConversationTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    systemPrompt?: SortOrder
+    initialMessage?: SortOrder
+    level?: SortOrder
+  }
+
+  export type ConversationTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    systemPrompt?: SortOrder
+    initialMessage?: SortOrder
+    level?: SortOrder
+  }
+
+  export type ConversationTemplateSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type ConversationTemplateScalarRelationFilter = {
+    is?: ConversationTemplateWhereInput
+    isNot?: ConversationTemplateWhereInput
+  }
+
+  export type UserTemplateUsageCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    usedAt?: SortOrder
+  }
+
+  export type UserTemplateUsageAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+  }
+
+  export type UserTemplateUsageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    usedAt?: SortOrder
+  }
+
+  export type UserTemplateUsageMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    usedAt?: SortOrder
+  }
+
+  export type UserTemplateUsageSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type ExamResultCountOrderByAggregateInput = {
@@ -15705,12 +26135,14 @@ export namespace Prisma {
     score?: SortOrder
     details?: SortOrder
     completedAt?: SortOrder
+    timeSpent?: SortOrder
   }
 
   export type ExamResultAvgOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     score?: SortOrder
+    timeSpent?: SortOrder
   }
 
   export type ExamResultMaxOrderByAggregateInput = {
@@ -15721,6 +26153,7 @@ export namespace Prisma {
     level?: SortOrder
     score?: SortOrder
     completedAt?: SortOrder
+    timeSpent?: SortOrder
   }
 
   export type ExamResultMinOrderByAggregateInput = {
@@ -15731,12 +26164,50 @@ export namespace Prisma {
     level?: SortOrder
     score?: SortOrder
     completedAt?: SortOrder
+    timeSpent?: SortOrder
   }
 
   export type ExamResultSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     score?: SortOrder
+    timeSpent?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type PronunciationPracticeItemListRelationFilter = {
+    every?: PronunciationPracticeItemWhereInput
+    some?: PronunciationPracticeItemWhereInput
+    none?: PronunciationPracticeItemWhereInput
+  }
+
+  export type PronunciationPracticeItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type PracticeSessionCountOrderByAggregateInput = {
@@ -15745,11 +26216,15 @@ export namespace Prisma {
     type?: SortOrder
     duration?: SortOrder
     createdAt?: SortOrder
+    aiGenerated?: SortOrder
+    difficulty?: SortOrder
+    score?: SortOrder
   }
 
   export type PracticeSessionAvgOrderByAggregateInput = {
     userId?: SortOrder
     duration?: SortOrder
+    score?: SortOrder
   }
 
   export type PracticeSessionMaxOrderByAggregateInput = {
@@ -15758,6 +26233,9 @@ export namespace Prisma {
     type?: SortOrder
     duration?: SortOrder
     createdAt?: SortOrder
+    aiGenerated?: SortOrder
+    difficulty?: SortOrder
+    score?: SortOrder
   }
 
   export type PracticeSessionMinOrderByAggregateInput = {
@@ -15766,11 +26244,15 @@ export namespace Prisma {
     type?: SortOrder
     duration?: SortOrder
     createdAt?: SortOrder
+    aiGenerated?: SortOrder
+    difficulty?: SortOrder
+    score?: SortOrder
   }
 
   export type PracticeSessionSumOrderByAggregateInput = {
     userId?: SortOrder
     duration?: SortOrder
+    score?: SortOrder
   }
 
   export type PracticeSessionScalarRelationFilter = {
@@ -15818,6 +26300,149 @@ export namespace Prisma {
     vocabularyId?: SortOrder
   }
 
+  export type PronunciationExerciseCountOrderByAggregateInput = {
+    id?: SortOrder
+    text?: SortOrder
+    translation?: SortOrder
+    audioUrl?: SortOrder
+    difficulty?: SortOrder
+    category?: SortOrder
+    expectedPronunciation?: SortOrder
+  }
+
+  export type PronunciationExerciseAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type PronunciationExerciseMaxOrderByAggregateInput = {
+    id?: SortOrder
+    text?: SortOrder
+    translation?: SortOrder
+    audioUrl?: SortOrder
+    difficulty?: SortOrder
+    category?: SortOrder
+    expectedPronunciation?: SortOrder
+  }
+
+  export type PronunciationExerciseMinOrderByAggregateInput = {
+    id?: SortOrder
+    text?: SortOrder
+    translation?: SortOrder
+    audioUrl?: SortOrder
+    difficulty?: SortOrder
+    category?: SortOrder
+    expectedPronunciation?: SortOrder
+  }
+
+  export type PronunciationExerciseSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type PronunciationExerciseScalarRelationFilter = {
+    is?: PronunciationExerciseWhereInput
+    isNot?: PronunciationExerciseWhereInput
+  }
+
+  export type PronunciationPracticeItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    exerciseId?: SortOrder
+    userAudioUrl?: SortOrder
+    transcript?: SortOrder
+    similarityScore?: SortOrder
+    feedback?: SortOrder
+  }
+
+  export type PronunciationPracticeItemAvgOrderByAggregateInput = {
+    id?: SortOrder
+    exerciseId?: SortOrder
+    similarityScore?: SortOrder
+  }
+
+  export type PronunciationPracticeItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    exerciseId?: SortOrder
+    userAudioUrl?: SortOrder
+    transcript?: SortOrder
+    similarityScore?: SortOrder
+  }
+
+  export type PronunciationPracticeItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    exerciseId?: SortOrder
+    userAudioUrl?: SortOrder
+    transcript?: SortOrder
+    similarityScore?: SortOrder
+  }
+
+  export type PronunciationPracticeItemSumOrderByAggregateInput = {
+    id?: SortOrder
+    exerciseId?: SortOrder
+    similarityScore?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type GrammarRuleCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    examples?: SortOrder
+    level?: SortOrder
+    category?: SortOrder
+  }
+
+  export type GrammarRuleAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type GrammarRuleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    level?: SortOrder
+    category?: SortOrder
+  }
+
+  export type GrammarRuleMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    level?: SortOrder
+    category?: SortOrder
+  }
+
+  export type GrammarRuleSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type UserCreatelearningGoalsInput = {
     set: string[]
   }
@@ -15857,6 +26482,13 @@ export namespace Prisma {
     connect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
   }
 
+  export type UserTemplateUsageCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutUserInput, UserTemplateUsageUncheckedCreateWithoutUserInput> | UserTemplateUsageCreateWithoutUserInput[] | UserTemplateUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutUserInput | UserTemplateUsageCreateOrConnectWithoutUserInput[]
+    createMany?: UserTemplateUsageCreateManyUserInputEnvelope
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+  }
+
   export type LessonProgressUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
@@ -15890,6 +26522,13 @@ export namespace Prisma {
     connectOrCreate?: PracticeSessionCreateOrConnectWithoutUserInput | PracticeSessionCreateOrConnectWithoutUserInput[]
     createMany?: PracticeSessionCreateManyUserInputEnvelope
     connect?: PracticeSessionWhereUniqueInput | PracticeSessionWhereUniqueInput[]
+  }
+
+  export type UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutUserInput, UserTemplateUsageUncheckedCreateWithoutUserInput> | UserTemplateUsageCreateWithoutUserInput[] | UserTemplateUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutUserInput | UserTemplateUsageCreateOrConnectWithoutUserInput[]
+    createMany?: UserTemplateUsageCreateManyUserInputEnvelope
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -15991,6 +26630,20 @@ export namespace Prisma {
     deleteMany?: PracticeSessionScalarWhereInput | PracticeSessionScalarWhereInput[]
   }
 
+  export type UserTemplateUsageUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutUserInput, UserTemplateUsageUncheckedCreateWithoutUserInput> | UserTemplateUsageCreateWithoutUserInput[] | UserTemplateUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutUserInput | UserTemplateUsageCreateOrConnectWithoutUserInput[]
+    upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutUserInput | UserTemplateUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserTemplateUsageCreateManyUserInputEnvelope
+    set?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    disconnect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    delete?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    update?: UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput | UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutUserInput | UserTemplateUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+  }
+
   export type LessonProgressUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
@@ -16061,6 +26714,20 @@ export namespace Prisma {
     deleteMany?: PracticeSessionScalarWhereInput | PracticeSessionScalarWhereInput[]
   }
 
+  export type UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutUserInput, UserTemplateUsageUncheckedCreateWithoutUserInput> | UserTemplateUsageCreateWithoutUserInput[] | UserTemplateUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutUserInput | UserTemplateUsageCreateOrConnectWithoutUserInput[]
+    upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutUserInput | UserTemplateUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserTemplateUsageCreateManyUserInputEnvelope
+    set?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    disconnect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    delete?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    update?: UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput | UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutUserInput | UserTemplateUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+  }
+
   export type LessonCreatetopicsInput = {
     set: string[]
   }
@@ -16072,11 +26739,25 @@ export namespace Prisma {
     connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
   }
 
+  export type LessonSectionCreateNestedManyWithoutLessonInput = {
+    create?: XOR<LessonSectionCreateWithoutLessonInput, LessonSectionUncheckedCreateWithoutLessonInput> | LessonSectionCreateWithoutLessonInput[] | LessonSectionUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonSectionCreateOrConnectWithoutLessonInput | LessonSectionCreateOrConnectWithoutLessonInput[]
+    createMany?: LessonSectionCreateManyLessonInputEnvelope
+    connect?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+  }
+
   export type LessonProgressUncheckedCreateNestedManyWithoutLessonInput = {
     create?: XOR<LessonProgressCreateWithoutLessonInput, LessonProgressUncheckedCreateWithoutLessonInput> | LessonProgressCreateWithoutLessonInput[] | LessonProgressUncheckedCreateWithoutLessonInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutLessonInput | LessonProgressCreateOrConnectWithoutLessonInput[]
     createMany?: LessonProgressCreateManyLessonInputEnvelope
     connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+  }
+
+  export type LessonSectionUncheckedCreateNestedManyWithoutLessonInput = {
+    create?: XOR<LessonSectionCreateWithoutLessonInput, LessonSectionUncheckedCreateWithoutLessonInput> | LessonSectionCreateWithoutLessonInput[] | LessonSectionUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonSectionCreateOrConnectWithoutLessonInput | LessonSectionCreateOrConnectWithoutLessonInput[]
+    createMany?: LessonSectionCreateManyLessonInputEnvelope
+    connect?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
   }
 
   export type LessonUpdatetopicsInput = {
@@ -16098,6 +26779,20 @@ export namespace Prisma {
     deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
   }
 
+  export type LessonSectionUpdateManyWithoutLessonNestedInput = {
+    create?: XOR<LessonSectionCreateWithoutLessonInput, LessonSectionUncheckedCreateWithoutLessonInput> | LessonSectionCreateWithoutLessonInput[] | LessonSectionUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonSectionCreateOrConnectWithoutLessonInput | LessonSectionCreateOrConnectWithoutLessonInput[]
+    upsert?: LessonSectionUpsertWithWhereUniqueWithoutLessonInput | LessonSectionUpsertWithWhereUniqueWithoutLessonInput[]
+    createMany?: LessonSectionCreateManyLessonInputEnvelope
+    set?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    disconnect?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    delete?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    connect?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    update?: LessonSectionUpdateWithWhereUniqueWithoutLessonInput | LessonSectionUpdateWithWhereUniqueWithoutLessonInput[]
+    updateMany?: LessonSectionUpdateManyWithWhereWithoutLessonInput | LessonSectionUpdateManyWithWhereWithoutLessonInput[]
+    deleteMany?: LessonSectionScalarWhereInput | LessonSectionScalarWhereInput[]
+  }
+
   export type LessonProgressUncheckedUpdateManyWithoutLessonNestedInput = {
     create?: XOR<LessonProgressCreateWithoutLessonInput, LessonProgressUncheckedCreateWithoutLessonInput> | LessonProgressCreateWithoutLessonInput[] | LessonProgressUncheckedCreateWithoutLessonInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutLessonInput | LessonProgressCreateOrConnectWithoutLessonInput[]
@@ -16110,6 +26805,99 @@ export namespace Prisma {
     update?: LessonProgressUpdateWithWhereUniqueWithoutLessonInput | LessonProgressUpdateWithWhereUniqueWithoutLessonInput[]
     updateMany?: LessonProgressUpdateManyWithWhereWithoutLessonInput | LessonProgressUpdateManyWithWhereWithoutLessonInput[]
     deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
+  }
+
+  export type LessonSectionUncheckedUpdateManyWithoutLessonNestedInput = {
+    create?: XOR<LessonSectionCreateWithoutLessonInput, LessonSectionUncheckedCreateWithoutLessonInput> | LessonSectionCreateWithoutLessonInput[] | LessonSectionUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonSectionCreateOrConnectWithoutLessonInput | LessonSectionCreateOrConnectWithoutLessonInput[]
+    upsert?: LessonSectionUpsertWithWhereUniqueWithoutLessonInput | LessonSectionUpsertWithWhereUniqueWithoutLessonInput[]
+    createMany?: LessonSectionCreateManyLessonInputEnvelope
+    set?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    disconnect?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    delete?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    connect?: LessonSectionWhereUniqueInput | LessonSectionWhereUniqueInput[]
+    update?: LessonSectionUpdateWithWhereUniqueWithoutLessonInput | LessonSectionUpdateWithWhereUniqueWithoutLessonInput[]
+    updateMany?: LessonSectionUpdateManyWithWhereWithoutLessonInput | LessonSectionUpdateManyWithWhereWithoutLessonInput[]
+    deleteMany?: LessonSectionScalarWhereInput | LessonSectionScalarWhereInput[]
+  }
+
+  export type LessonCreateNestedOneWithoutSectionsInput = {
+    create?: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutSectionsInput
+    connect?: LessonWhereUniqueInput
+  }
+
+  export type LessonExerciseCreateNestedManyWithoutSectionInput = {
+    create?: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput> | LessonExerciseCreateWithoutSectionInput[] | LessonExerciseUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: LessonExerciseCreateOrConnectWithoutSectionInput | LessonExerciseCreateOrConnectWithoutSectionInput[]
+    createMany?: LessonExerciseCreateManySectionInputEnvelope
+    connect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+  }
+
+  export type LessonExerciseUncheckedCreateNestedManyWithoutSectionInput = {
+    create?: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput> | LessonExerciseCreateWithoutSectionInput[] | LessonExerciseUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: LessonExerciseCreateOrConnectWithoutSectionInput | LessonExerciseCreateOrConnectWithoutSectionInput[]
+    createMany?: LessonExerciseCreateManySectionInputEnvelope
+    connect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+  }
+
+  export type LessonUpdateOneRequiredWithoutSectionsNestedInput = {
+    create?: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutSectionsInput
+    upsert?: LessonUpsertWithoutSectionsInput
+    connect?: LessonWhereUniqueInput
+    update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutSectionsInput, LessonUpdateWithoutSectionsInput>, LessonUncheckedUpdateWithoutSectionsInput>
+  }
+
+  export type LessonExerciseUpdateManyWithoutSectionNestedInput = {
+    create?: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput> | LessonExerciseCreateWithoutSectionInput[] | LessonExerciseUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: LessonExerciseCreateOrConnectWithoutSectionInput | LessonExerciseCreateOrConnectWithoutSectionInput[]
+    upsert?: LessonExerciseUpsertWithWhereUniqueWithoutSectionInput | LessonExerciseUpsertWithWhereUniqueWithoutSectionInput[]
+    createMany?: LessonExerciseCreateManySectionInputEnvelope
+    set?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    disconnect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    delete?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    connect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    update?: LessonExerciseUpdateWithWhereUniqueWithoutSectionInput | LessonExerciseUpdateWithWhereUniqueWithoutSectionInput[]
+    updateMany?: LessonExerciseUpdateManyWithWhereWithoutSectionInput | LessonExerciseUpdateManyWithWhereWithoutSectionInput[]
+    deleteMany?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+  }
+
+  export type LessonExerciseUncheckedUpdateManyWithoutSectionNestedInput = {
+    create?: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput> | LessonExerciseCreateWithoutSectionInput[] | LessonExerciseUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: LessonExerciseCreateOrConnectWithoutSectionInput | LessonExerciseCreateOrConnectWithoutSectionInput[]
+    upsert?: LessonExerciseUpsertWithWhereUniqueWithoutSectionInput | LessonExerciseUpsertWithWhereUniqueWithoutSectionInput[]
+    createMany?: LessonExerciseCreateManySectionInputEnvelope
+    set?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    disconnect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    delete?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    connect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
+    update?: LessonExerciseUpdateWithWhereUniqueWithoutSectionInput | LessonExerciseUpdateWithWhereUniqueWithoutSectionInput[]
+    updateMany?: LessonExerciseUpdateManyWithWhereWithoutSectionInput | LessonExerciseUpdateManyWithWhereWithoutSectionInput[]
+    deleteMany?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+  }
+
+  export type LessonExerciseCreateoptionsInput = {
+    set: string[]
+  }
+
+  export type LessonSectionCreateNestedOneWithoutExercisesInput = {
+    create?: XOR<LessonSectionCreateWithoutExercisesInput, LessonSectionUncheckedCreateWithoutExercisesInput>
+    connectOrCreate?: LessonSectionCreateOrConnectWithoutExercisesInput
+    connect?: LessonSectionWhereUniqueInput
+  }
+
+  export type LessonExerciseUpdateoptionsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type LessonSectionUpdateOneRequiredWithoutExercisesNestedInput = {
+    create?: XOR<LessonSectionCreateWithoutExercisesInput, LessonSectionUncheckedCreateWithoutExercisesInput>
+    connectOrCreate?: LessonSectionCreateOrConnectWithoutExercisesInput
+    upsert?: LessonSectionUpsertWithoutExercisesInput
+    connect?: LessonSectionWhereUniqueInput
+    update?: XOR<XOR<LessonSectionUpdateToOneWithWhereWithoutExercisesInput, LessonSectionUpdateWithoutExercisesInput>, LessonSectionUncheckedUpdateWithoutExercisesInput>
   }
 
   export type LessonCreateNestedOneWithoutProgressInput = {
@@ -16144,6 +26932,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLessonProgressInput, UserUpdateWithoutLessonProgressInput>, UserUncheckedUpdateWithoutLessonProgressInput>
   }
 
+  export type VocabularyCreateusageContextInput = {
+    set: string[]
+  }
+
   export type UserVocabularyCreateNestedManyWithoutVocabularyInput = {
     create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
@@ -16170,6 +26962,11 @@ export namespace Prisma {
     connectOrCreate?: PracticeItemCreateOrConnectWithoutVocabularyInput | PracticeItemCreateOrConnectWithoutVocabularyInput[]
     createMany?: PracticeItemCreateManyVocabularyInputEnvelope
     connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+  }
+
+  export type VocabularyUpdateusageContextInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserVocabularyUpdateManyWithoutVocabularyNestedInput = {
@@ -16269,6 +27066,12 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type ConversationTemplateCreateNestedOneWithoutConversationsInput = {
+    create?: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
+    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutConversationsInput
+    connect?: ConversationTemplateWhereUniqueInput
+  }
+
   export type MessageUncheckedCreateNestedManyWithoutConversationInput = {
     create?: XOR<MessageCreateWithoutConversationInput, MessageUncheckedCreateWithoutConversationInput> | MessageCreateWithoutConversationInput[] | MessageUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutConversationInput | MessageCreateOrConnectWithoutConversationInput[]
@@ -16296,6 +27099,24 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutConversationInput | MessageUpdateWithWhereUniqueWithoutConversationInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutConversationInput | MessageUpdateManyWithWhereWithoutConversationInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type ConversationTemplateUpdateOneWithoutConversationsNestedInput = {
+    create?: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
+    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutConversationsInput
+    upsert?: ConversationTemplateUpsertWithoutConversationsInput
+    disconnect?: ConversationTemplateWhereInput | boolean
+    delete?: ConversationTemplateWhereInput | boolean
+    connect?: ConversationTemplateWhereUniqueInput
+    update?: XOR<XOR<ConversationTemplateUpdateToOneWithWhereWithoutConversationsInput, ConversationTemplateUpdateWithoutConversationsInput>, ConversationTemplateUncheckedUpdateWithoutConversationsInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type MessageUncheckedUpdateManyWithoutConversationNestedInput = {
@@ -16326,6 +27147,127 @@ export namespace Prisma {
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutMessagesInput, ConversationUpdateWithoutMessagesInput>, ConversationUncheckedUpdateWithoutMessagesInput>
   }
 
+  export type ConversationTemplateCreatetopicsInput = {
+    set: string[]
+  }
+
+  export type UserTemplateUsageCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
+    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+  }
+
+  export type ConversationCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput> | ConversationCreateWithoutTemplateInput[] | ConversationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutTemplateInput | ConversationCreateOrConnectWithoutTemplateInput[]
+    createMany?: ConversationCreateManyTemplateInputEnvelope
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  }
+
+  export type UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
+    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+  }
+
+  export type ConversationUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput> | ConversationCreateWithoutTemplateInput[] | ConversationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutTemplateInput | ConversationCreateOrConnectWithoutTemplateInput[]
+    createMany?: ConversationCreateManyTemplateInputEnvelope
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  }
+
+  export type ConversationTemplateUpdatetopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserTemplateUsageUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
+    upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
+    set?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    disconnect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    delete?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    update?: UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput | UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+  }
+
+  export type ConversationUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput> | ConversationCreateWithoutTemplateInput[] | ConversationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutTemplateInput | ConversationCreateOrConnectWithoutTemplateInput[]
+    upsert?: ConversationUpsertWithWhereUniqueWithoutTemplateInput | ConversationUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: ConversationCreateManyTemplateInputEnvelope
+    set?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    disconnect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    delete?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    update?: ConversationUpdateWithWhereUniqueWithoutTemplateInput | ConversationUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: ConversationUpdateManyWithWhereWithoutTemplateInput | ConversationUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  }
+
+  export type UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
+    upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
+    set?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    disconnect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    delete?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    update?: UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput | UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+  }
+
+  export type ConversationUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput> | ConversationCreateWithoutTemplateInput[] | ConversationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutTemplateInput | ConversationCreateOrConnectWithoutTemplateInput[]
+    upsert?: ConversationUpsertWithWhereUniqueWithoutTemplateInput | ConversationUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: ConversationCreateManyTemplateInputEnvelope
+    set?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    disconnect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    delete?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    update?: ConversationUpdateWithWhereUniqueWithoutTemplateInput | ConversationUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: ConversationUpdateManyWithWhereWithoutTemplateInput | ConversationUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutTemplateUsageInput = {
+    create?: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTemplateUsageInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ConversationTemplateCreateNestedOneWithoutUserTemplateUsageInput = {
+    create?: XOR<ConversationTemplateCreateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedCreateWithoutUserTemplateUsageInput>
+    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutUserTemplateUsageInput
+    connect?: ConversationTemplateWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutTemplateUsageNestedInput = {
+    create?: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTemplateUsageInput
+    upsert?: UserUpsertWithoutTemplateUsageInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTemplateUsageInput, UserUpdateWithoutTemplateUsageInput>, UserUncheckedUpdateWithoutTemplateUsageInput>
+  }
+
+  export type ConversationTemplateUpdateOneRequiredWithoutUserTemplateUsageNestedInput = {
+    create?: XOR<ConversationTemplateCreateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedCreateWithoutUserTemplateUsageInput>
+    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutUserTemplateUsageInput
+    upsert?: ConversationTemplateUpsertWithoutUserTemplateUsageInput
+    connect?: ConversationTemplateWhereUniqueInput
+    update?: XOR<XOR<ConversationTemplateUpdateToOneWithWhereWithoutUserTemplateUsageInput, ConversationTemplateUpdateWithoutUserTemplateUsageInput>, ConversationTemplateUncheckedUpdateWithoutUserTemplateUsageInput>
+  }
+
   export type UserCreateNestedOneWithoutExamResultsInput = {
     create?: XOR<UserCreateWithoutExamResultsInput, UserUncheckedCreateWithoutExamResultsInput>
     connectOrCreate?: UserCreateOrConnectWithoutExamResultsInput
@@ -16353,11 +27295,25 @@ export namespace Prisma {
     connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
   }
 
+  export type PronunciationPracticeItemCreateNestedManyWithoutSessionInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutSessionInput, PronunciationPracticeItemUncheckedCreateWithoutSessionInput> | PronunciationPracticeItemCreateWithoutSessionInput[] | PronunciationPracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutSessionInput | PronunciationPracticeItemCreateOrConnectWithoutSessionInput[]
+    createMany?: PronunciationPracticeItemCreateManySessionInputEnvelope
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+  }
+
   export type PracticeItemUncheckedCreateNestedManyWithoutSessionInput = {
     create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
     connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
     createMany?: PracticeItemCreateManySessionInputEnvelope
     connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+  }
+
+  export type PronunciationPracticeItemUncheckedCreateNestedManyWithoutSessionInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutSessionInput, PronunciationPracticeItemUncheckedCreateWithoutSessionInput> | PronunciationPracticeItemCreateWithoutSessionInput[] | PronunciationPracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutSessionInput | PronunciationPracticeItemCreateOrConnectWithoutSessionInput[]
+    createMany?: PronunciationPracticeItemCreateManySessionInputEnvelope
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
@@ -16382,6 +27338,20 @@ export namespace Prisma {
     deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
   }
 
+  export type PronunciationPracticeItemUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutSessionInput, PronunciationPracticeItemUncheckedCreateWithoutSessionInput> | PronunciationPracticeItemCreateWithoutSessionInput[] | PronunciationPracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutSessionInput | PronunciationPracticeItemCreateOrConnectWithoutSessionInput[]
+    upsert?: PronunciationPracticeItemUpsertWithWhereUniqueWithoutSessionInput | PronunciationPracticeItemUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: PronunciationPracticeItemCreateManySessionInputEnvelope
+    set?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    disconnect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    delete?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    update?: PronunciationPracticeItemUpdateWithWhereUniqueWithoutSessionInput | PronunciationPracticeItemUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: PronunciationPracticeItemUpdateManyWithWhereWithoutSessionInput | PronunciationPracticeItemUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
+  }
+
   export type PracticeItemUncheckedUpdateManyWithoutSessionNestedInput = {
     create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
     connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
@@ -16394,6 +27364,20 @@ export namespace Prisma {
     update?: PracticeItemUpdateWithWhereUniqueWithoutSessionInput | PracticeItemUpdateWithWhereUniqueWithoutSessionInput[]
     updateMany?: PracticeItemUpdateManyWithWhereWithoutSessionInput | PracticeItemUpdateManyWithWhereWithoutSessionInput[]
     deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutSessionInput, PronunciationPracticeItemUncheckedCreateWithoutSessionInput> | PronunciationPracticeItemCreateWithoutSessionInput[] | PronunciationPracticeItemUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutSessionInput | PronunciationPracticeItemCreateOrConnectWithoutSessionInput[]
+    upsert?: PronunciationPracticeItemUpsertWithWhereUniqueWithoutSessionInput | PronunciationPracticeItemUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: PronunciationPracticeItemCreateManySessionInputEnvelope
+    set?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    disconnect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    delete?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    update?: PronunciationPracticeItemUpdateWithWhereUniqueWithoutSessionInput | PronunciationPracticeItemUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: PronunciationPracticeItemUpdateManyWithWhereWithoutSessionInput | PronunciationPracticeItemUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
   }
 
   export type PracticeSessionCreateNestedOneWithoutPracticeItemsInput = {
@@ -16422,6 +27406,93 @@ export namespace Prisma {
     upsert?: VocabularyUpsertWithoutPracticeItemsInput
     connect?: VocabularyWhereUniqueInput
     update?: XOR<XOR<VocabularyUpdateToOneWithWhereWithoutPracticeItemsInput, VocabularyUpdateWithoutPracticeItemsInput>, VocabularyUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type PronunciationPracticeItemCreateNestedManyWithoutExerciseInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutExerciseInput, PronunciationPracticeItemUncheckedCreateWithoutExerciseInput> | PronunciationPracticeItemCreateWithoutExerciseInput[] | PronunciationPracticeItemUncheckedCreateWithoutExerciseInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutExerciseInput | PronunciationPracticeItemCreateOrConnectWithoutExerciseInput[]
+    createMany?: PronunciationPracticeItemCreateManyExerciseInputEnvelope
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+  }
+
+  export type PronunciationPracticeItemUncheckedCreateNestedManyWithoutExerciseInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutExerciseInput, PronunciationPracticeItemUncheckedCreateWithoutExerciseInput> | PronunciationPracticeItemCreateWithoutExerciseInput[] | PronunciationPracticeItemUncheckedCreateWithoutExerciseInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutExerciseInput | PronunciationPracticeItemCreateOrConnectWithoutExerciseInput[]
+    createMany?: PronunciationPracticeItemCreateManyExerciseInputEnvelope
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+  }
+
+  export type PronunciationPracticeItemUpdateManyWithoutExerciseNestedInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutExerciseInput, PronunciationPracticeItemUncheckedCreateWithoutExerciseInput> | PronunciationPracticeItemCreateWithoutExerciseInput[] | PronunciationPracticeItemUncheckedCreateWithoutExerciseInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutExerciseInput | PronunciationPracticeItemCreateOrConnectWithoutExerciseInput[]
+    upsert?: PronunciationPracticeItemUpsertWithWhereUniqueWithoutExerciseInput | PronunciationPracticeItemUpsertWithWhereUniqueWithoutExerciseInput[]
+    createMany?: PronunciationPracticeItemCreateManyExerciseInputEnvelope
+    set?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    disconnect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    delete?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    update?: PronunciationPracticeItemUpdateWithWhereUniqueWithoutExerciseInput | PronunciationPracticeItemUpdateWithWhereUniqueWithoutExerciseInput[]
+    updateMany?: PronunciationPracticeItemUpdateManyWithWhereWithoutExerciseInput | PronunciationPracticeItemUpdateManyWithWhereWithoutExerciseInput[]
+    deleteMany?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateManyWithoutExerciseNestedInput = {
+    create?: XOR<PronunciationPracticeItemCreateWithoutExerciseInput, PronunciationPracticeItemUncheckedCreateWithoutExerciseInput> | PronunciationPracticeItemCreateWithoutExerciseInput[] | PronunciationPracticeItemUncheckedCreateWithoutExerciseInput[]
+    connectOrCreate?: PronunciationPracticeItemCreateOrConnectWithoutExerciseInput | PronunciationPracticeItemCreateOrConnectWithoutExerciseInput[]
+    upsert?: PronunciationPracticeItemUpsertWithWhereUniqueWithoutExerciseInput | PronunciationPracticeItemUpsertWithWhereUniqueWithoutExerciseInput[]
+    createMany?: PronunciationPracticeItemCreateManyExerciseInputEnvelope
+    set?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    disconnect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    delete?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
+    update?: PronunciationPracticeItemUpdateWithWhereUniqueWithoutExerciseInput | PronunciationPracticeItemUpdateWithWhereUniqueWithoutExerciseInput[]
+    updateMany?: PronunciationPracticeItemUpdateManyWithWhereWithoutExerciseInput | PronunciationPracticeItemUpdateManyWithWhereWithoutExerciseInput[]
+    deleteMany?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
+  }
+
+  export type PracticeSessionCreateNestedOneWithoutPronunciationItemsInput = {
+    create?: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPronunciationItemsInput
+    connect?: PracticeSessionWhereUniqueInput
+  }
+
+  export type PronunciationExerciseCreateNestedOneWithoutPracticeItemsInput = {
+    create?: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
+    connectOrCreate?: PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput
+    connect?: PronunciationExerciseWhereUniqueInput
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput = {
+    create?: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPronunciationItemsInput
+    upsert?: PracticeSessionUpsertWithoutPronunciationItemsInput
+    connect?: PracticeSessionWhereUniqueInput
+    update?: XOR<XOR<PracticeSessionUpdateToOneWithWhereWithoutPronunciationItemsInput, PracticeSessionUpdateWithoutPronunciationItemsInput>, PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput>
+  }
+
+  export type PronunciationExerciseUpdateOneRequiredWithoutPracticeItemsNestedInput = {
+    create?: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
+    connectOrCreate?: PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput
+    upsert?: PronunciationExerciseUpsertWithoutPracticeItemsInput
+    connect?: PronunciationExerciseWhereUniqueInput
+    update?: XOR<XOR<PronunciationExerciseUpdateToOneWithWhereWithoutPracticeItemsInput, PronunciationExerciseUpdateWithoutPracticeItemsInput>, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type GrammarRuleCreateexamplesInput = {
+    set: string[]
+  }
+
+  export type GrammarRuleUpdateexamplesInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -16572,29 +27643,6 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
-  export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
@@ -16644,6 +27692,72 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type LessonProgressCreateWithoutUserInput = {
     completed?: boolean
     score?: number
@@ -16676,6 +27790,8 @@ export namespace Prisma {
   export type UserVocabularyCreateWithoutUserInput = {
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
     vocabulary: VocabularyCreateNestedOneWithoutUserVocabularyInput
   }
 
@@ -16684,6 +27800,8 @@ export namespace Prisma {
     vocabularyId: number
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
   }
 
   export type UserVocabularyCreateOrConnectWithoutUserInput = {
@@ -16703,6 +27821,7 @@ export namespace Prisma {
     score: number
     details: JsonNullValueInput | InputJsonValue
     completedAt: Date | string
+    timeSpent: number
   }
 
   export type ExamResultUncheckedCreateWithoutUserInput = {
@@ -16713,6 +27832,7 @@ export namespace Prisma {
     score: number
     details: JsonNullValueInput | InputJsonValue
     completedAt: Date | string
+    timeSpent: number
   }
 
   export type ExamResultCreateOrConnectWithoutUserInput = {
@@ -16732,6 +27852,7 @@ export namespace Prisma {
     startedAt?: Date | string
     lastMessageAt?: Date | string
     messages?: MessageCreateNestedManyWithoutConversationInput
+    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
   }
 
   export type ConversationUncheckedCreateWithoutUserInput = {
@@ -16740,6 +27861,7 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+    templateId?: number | null
     messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
   }
 
@@ -16758,7 +27880,11 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
     practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+    pronunciationItems?: PronunciationPracticeItemCreateNestedManyWithoutSessionInput
   }
 
   export type PracticeSessionUncheckedCreateWithoutUserInput = {
@@ -16766,7 +27892,11 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
     practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutSessionInput
+    pronunciationItems?: PronunciationPracticeItemUncheckedCreateNestedManyWithoutSessionInput
   }
 
   export type PracticeSessionCreateOrConnectWithoutUserInput = {
@@ -16776,6 +27906,27 @@ export namespace Prisma {
 
   export type PracticeSessionCreateManyUserInputEnvelope = {
     data: PracticeSessionCreateManyUserInput | PracticeSessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserTemplateUsageCreateWithoutUserInput = {
+    usedAt?: Date | string
+    template: ConversationTemplateCreateNestedOneWithoutUserTemplateUsageInput
+  }
+
+  export type UserTemplateUsageUncheckedCreateWithoutUserInput = {
+    id?: number
+    templateId: number
+    usedAt?: Date | string
+  }
+
+  export type UserTemplateUsageCreateOrConnectWithoutUserInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    create: XOR<UserTemplateUsageCreateWithoutUserInput, UserTemplateUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserTemplateUsageCreateManyUserInputEnvelope = {
+    data: UserTemplateUsageCreateManyUserInput | UserTemplateUsageCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -16834,6 +27985,8 @@ export namespace Prisma {
     vocabularyId?: IntFilter<"UserVocabulary"> | number
     learned?: BoolFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntFilter<"UserVocabulary"> | number
+    nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
   }
 
   export type ExamResultUpsertWithWhereUniqueWithoutUserInput = {
@@ -16864,6 +28017,7 @@ export namespace Prisma {
     score?: IntFilter<"ExamResult"> | number
     details?: JsonFilter<"ExamResult">
     completedAt?: DateTimeFilter<"ExamResult"> | Date | string
+    timeSpent?: IntFilter<"ExamResult"> | number
   }
 
   export type ConversationUpsertWithWhereUniqueWithoutUserInput = {
@@ -16892,6 +28046,7 @@ export namespace Prisma {
     context?: StringFilter<"Conversation"> | string
     startedAt?: DateTimeFilter<"Conversation"> | Date | string
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
+    templateId?: IntNullableFilter<"Conversation"> | number | null
   }
 
   export type PracticeSessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -16919,6 +28074,35 @@ export namespace Prisma {
     type?: StringFilter<"PracticeSession"> | string
     duration?: IntFilter<"PracticeSession"> | number
     createdAt?: DateTimeFilter<"PracticeSession"> | Date | string
+    aiGenerated?: BoolFilter<"PracticeSession"> | boolean
+    difficulty?: StringNullableFilter<"PracticeSession"> | string | null
+    score?: IntNullableFilter<"PracticeSession"> | number | null
+  }
+
+  export type UserTemplateUsageUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    update: XOR<UserTemplateUsageUpdateWithoutUserInput, UserTemplateUsageUncheckedUpdateWithoutUserInput>
+    create: XOR<UserTemplateUsageCreateWithoutUserInput, UserTemplateUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    data: XOR<UserTemplateUsageUpdateWithoutUserInput, UserTemplateUsageUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserTemplateUsageUpdateManyWithWhereWithoutUserInput = {
+    where: UserTemplateUsageScalarWhereInput
+    data: XOR<UserTemplateUsageUpdateManyMutationInput, UserTemplateUsageUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserTemplateUsageScalarWhereInput = {
+    AND?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+    OR?: UserTemplateUsageScalarWhereInput[]
+    NOT?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+    id?: IntFilter<"UserTemplateUsage"> | number
+    userId?: IntFilter<"UserTemplateUsage"> | number
+    templateId?: IntFilter<"UserTemplateUsage"> | number
+    usedAt?: DateTimeFilter<"UserTemplateUsage"> | Date | string
   }
 
   export type LessonProgressCreateWithoutLessonInput = {
@@ -16950,6 +28134,37 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LessonSectionCreateWithoutLessonInput = {
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+    exercises?: LessonExerciseCreateNestedManyWithoutSectionInput
+  }
+
+  export type LessonSectionUncheckedCreateWithoutLessonInput = {
+    id?: number
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+    exercises?: LessonExerciseUncheckedCreateNestedManyWithoutSectionInput
+  }
+
+  export type LessonSectionCreateOrConnectWithoutLessonInput = {
+    where: LessonSectionWhereUniqueInput
+    create: XOR<LessonSectionCreateWithoutLessonInput, LessonSectionUncheckedCreateWithoutLessonInput>
+  }
+
+  export type LessonSectionCreateManyLessonInputEnvelope = {
+    data: LessonSectionCreateManyLessonInput | LessonSectionCreateManyLessonInput[]
+    skipDuplicates?: boolean
+  }
+
   export type LessonProgressUpsertWithWhereUniqueWithoutLessonInput = {
     where: LessonProgressWhereUniqueInput
     update: XOR<LessonProgressUpdateWithoutLessonInput, LessonProgressUncheckedUpdateWithoutLessonInput>
@@ -16966,13 +28181,211 @@ export namespace Prisma {
     data: XOR<LessonProgressUpdateManyMutationInput, LessonProgressUncheckedUpdateManyWithoutLessonInput>
   }
 
+  export type LessonSectionUpsertWithWhereUniqueWithoutLessonInput = {
+    where: LessonSectionWhereUniqueInput
+    update: XOR<LessonSectionUpdateWithoutLessonInput, LessonSectionUncheckedUpdateWithoutLessonInput>
+    create: XOR<LessonSectionCreateWithoutLessonInput, LessonSectionUncheckedCreateWithoutLessonInput>
+  }
+
+  export type LessonSectionUpdateWithWhereUniqueWithoutLessonInput = {
+    where: LessonSectionWhereUniqueInput
+    data: XOR<LessonSectionUpdateWithoutLessonInput, LessonSectionUncheckedUpdateWithoutLessonInput>
+  }
+
+  export type LessonSectionUpdateManyWithWhereWithoutLessonInput = {
+    where: LessonSectionScalarWhereInput
+    data: XOR<LessonSectionUpdateManyMutationInput, LessonSectionUncheckedUpdateManyWithoutLessonInput>
+  }
+
+  export type LessonSectionScalarWhereInput = {
+    AND?: LessonSectionScalarWhereInput | LessonSectionScalarWhereInput[]
+    OR?: LessonSectionScalarWhereInput[]
+    NOT?: LessonSectionScalarWhereInput | LessonSectionScalarWhereInput[]
+    id?: IntFilter<"LessonSection"> | number
+    lessonId?: IntFilter<"LessonSection"> | number
+    title?: StringFilter<"LessonSection"> | string
+    type?: StringFilter<"LessonSection"> | string
+    content?: StringNullableFilter<"LessonSection"> | string | null
+    audioUrl?: StringNullableFilter<"LessonSection"> | string | null
+    videoUrl?: StringNullableFilter<"LessonSection"> | string | null
+    order?: IntFilter<"LessonSection"> | number
+  }
+
+  export type LessonCreateWithoutSectionsInput = {
+    title: string
+    description: string
+    level: string
+    duration: number
+    topics?: LessonCreatetopicsInput | string[]
+    progress?: LessonProgressCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonUncheckedCreateWithoutSectionsInput = {
+    id?: number
+    title: string
+    description: string
+    level: string
+    duration: number
+    topics?: LessonCreatetopicsInput | string[]
+    progress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonCreateOrConnectWithoutSectionsInput = {
+    where: LessonWhereUniqueInput
+    create: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+  }
+
+  export type LessonExerciseCreateWithoutSectionInput = {
+    type: string
+    question: string
+    options?: LessonExerciseCreateoptionsInput | string[]
+    correctAnswer: string
+    explanation?: string | null
+  }
+
+  export type LessonExerciseUncheckedCreateWithoutSectionInput = {
+    id?: number
+    type: string
+    question: string
+    options?: LessonExerciseCreateoptionsInput | string[]
+    correctAnswer: string
+    explanation?: string | null
+  }
+
+  export type LessonExerciseCreateOrConnectWithoutSectionInput = {
+    where: LessonExerciseWhereUniqueInput
+    create: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput>
+  }
+
+  export type LessonExerciseCreateManySectionInputEnvelope = {
+    data: LessonExerciseCreateManySectionInput | LessonExerciseCreateManySectionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LessonUpsertWithoutSectionsInput = {
+    update: XOR<LessonUpdateWithoutSectionsInput, LessonUncheckedUpdateWithoutSectionsInput>
+    create: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+    where?: LessonWhereInput
+  }
+
+  export type LessonUpdateToOneWithWhereWithoutSectionsInput = {
+    where?: LessonWhereInput
+    data: XOR<LessonUpdateWithoutSectionsInput, LessonUncheckedUpdateWithoutSectionsInput>
+  }
+
+  export type LessonUpdateWithoutSectionsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    topics?: LessonUpdatetopicsInput | string[]
+    progress?: LessonProgressUpdateManyWithoutLessonNestedInput
+  }
+
+  export type LessonUncheckedUpdateWithoutSectionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    topics?: LessonUpdatetopicsInput | string[]
+    progress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+  }
+
+  export type LessonExerciseUpsertWithWhereUniqueWithoutSectionInput = {
+    where: LessonExerciseWhereUniqueInput
+    update: XOR<LessonExerciseUpdateWithoutSectionInput, LessonExerciseUncheckedUpdateWithoutSectionInput>
+    create: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput>
+  }
+
+  export type LessonExerciseUpdateWithWhereUniqueWithoutSectionInput = {
+    where: LessonExerciseWhereUniqueInput
+    data: XOR<LessonExerciseUpdateWithoutSectionInput, LessonExerciseUncheckedUpdateWithoutSectionInput>
+  }
+
+  export type LessonExerciseUpdateManyWithWhereWithoutSectionInput = {
+    where: LessonExerciseScalarWhereInput
+    data: XOR<LessonExerciseUpdateManyMutationInput, LessonExerciseUncheckedUpdateManyWithoutSectionInput>
+  }
+
+  export type LessonExerciseScalarWhereInput = {
+    AND?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+    OR?: LessonExerciseScalarWhereInput[]
+    NOT?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+    id?: IntFilter<"LessonExercise"> | number
+    sectionId?: IntFilter<"LessonExercise"> | number
+    type?: StringFilter<"LessonExercise"> | string
+    question?: StringFilter<"LessonExercise"> | string
+    options?: StringNullableListFilter<"LessonExercise">
+    correctAnswer?: StringFilter<"LessonExercise"> | string
+    explanation?: StringNullableFilter<"LessonExercise"> | string | null
+  }
+
+  export type LessonSectionCreateWithoutExercisesInput = {
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+    lesson: LessonCreateNestedOneWithoutSectionsInput
+  }
+
+  export type LessonSectionUncheckedCreateWithoutExercisesInput = {
+    id?: number
+    lessonId: number
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
+  }
+
+  export type LessonSectionCreateOrConnectWithoutExercisesInput = {
+    where: LessonSectionWhereUniqueInput
+    create: XOR<LessonSectionCreateWithoutExercisesInput, LessonSectionUncheckedCreateWithoutExercisesInput>
+  }
+
+  export type LessonSectionUpsertWithoutExercisesInput = {
+    update: XOR<LessonSectionUpdateWithoutExercisesInput, LessonSectionUncheckedUpdateWithoutExercisesInput>
+    create: XOR<LessonSectionCreateWithoutExercisesInput, LessonSectionUncheckedCreateWithoutExercisesInput>
+    where?: LessonSectionWhereInput
+  }
+
+  export type LessonSectionUpdateToOneWithWhereWithoutExercisesInput = {
+    where?: LessonSectionWhereInput
+    data: XOR<LessonSectionUpdateWithoutExercisesInput, LessonSectionUncheckedUpdateWithoutExercisesInput>
+  }
+
+  export type LessonSectionUpdateWithoutExercisesInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    lesson?: LessonUpdateOneRequiredWithoutSectionsNestedInput
+  }
+
+  export type LessonSectionUncheckedUpdateWithoutExercisesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lessonId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+  }
+
   export type LessonCreateWithoutProgressInput = {
     title: string
     description: string
     level: string
     duration: number
     topics?: LessonCreatetopicsInput | string[]
-    content: JsonNullValueInput | InputJsonValue
+    sections?: LessonSectionCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUncheckedCreateWithoutProgressInput = {
@@ -16982,7 +28395,7 @@ export namespace Prisma {
     level: string
     duration: number
     topics?: LessonCreatetopicsInput | string[]
-    content: JsonNullValueInput | InputJsonValue
+    sections?: LessonSectionUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonCreateOrConnectWithoutProgressInput = {
@@ -17004,10 +28417,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -17025,10 +28443,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -17053,7 +28476,7 @@ export namespace Prisma {
     level?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
-    content?: JsonNullValueInput | InputJsonValue
+    sections?: LessonSectionUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateWithoutProgressInput = {
@@ -17063,7 +28486,7 @@ export namespace Prisma {
     level?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
-    content?: JsonNullValueInput | InputJsonValue
+    sections?: LessonSectionUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type UserUpsertWithoutLessonProgressInput = {
@@ -17091,10 +28514,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -17112,15 +28540,22 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserVocabularyCreateWithoutVocabularyInput = {
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
     user: UserCreateNestedOneWithoutVocabularyInput
   }
 
@@ -17129,6 +28564,8 @@ export namespace Prisma {
     userId: number
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
   }
 
   export type UserVocabularyCreateOrConnectWithoutVocabularyInput = {
@@ -17227,10 +28664,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVocabularyInput = {
@@ -17248,10 +28690,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVocabularyInput = {
@@ -17264,6 +28711,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
     practiceItems?: PracticeItemCreateNestedManyWithoutVocabularyInput
   }
 
@@ -17273,6 +28724,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
     practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
@@ -17306,10 +28761,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVocabularyInput = {
@@ -17327,10 +28787,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type VocabularyUpsertWithoutUserVocabularyInput = {
@@ -17349,6 +28814,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     practiceItems?: PracticeItemUpdateManyWithoutVocabularyNestedInput
   }
 
@@ -17358,6 +28827,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput
   }
 
@@ -17375,10 +28848,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationsInput = {
@@ -17396,10 +28874,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationsInput = {
@@ -17411,6 +28894,9 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: string | null
   }
 
   export type MessageUncheckedCreateWithoutConversationInput = {
@@ -17418,6 +28904,9 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: string | null
   }
 
   export type MessageCreateOrConnectWithoutConversationInput = {
@@ -17428,6 +28917,32 @@ export namespace Prisma {
   export type MessageCreateManyConversationInputEnvelope = {
     data: MessageCreateManyConversationInput | MessageCreateManyConversationInput[]
     skipDuplicates?: boolean
+  }
+
+  export type ConversationTemplateCreateWithoutConversationsInput = {
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+    userTemplateUsage?: UserTemplateUsageCreateNestedManyWithoutTemplateInput
+  }
+
+  export type ConversationTemplateUncheckedCreateWithoutConversationsInput = {
+    id?: number
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+    userTemplateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type ConversationTemplateCreateOrConnectWithoutConversationsInput = {
+    where: ConversationTemplateWhereUniqueInput
+    create: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
   }
 
   export type UserUpsertWithoutConversationsInput = {
@@ -17455,10 +28970,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationsInput = {
@@ -17476,10 +28996,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -17507,6 +29032,41 @@ export namespace Prisma {
     role?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     timestamp?: DateTimeFilter<"Message"> | Date | string
+    corrections?: JsonNullableFilter<"Message">
+    suggestedVocabulary?: JsonNullableFilter<"Message">
+    audioUrl?: StringNullableFilter<"Message"> | string | null
+  }
+
+  export type ConversationTemplateUpsertWithoutConversationsInput = {
+    update: XOR<ConversationTemplateUpdateWithoutConversationsInput, ConversationTemplateUncheckedUpdateWithoutConversationsInput>
+    create: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
+    where?: ConversationTemplateWhereInput
+  }
+
+  export type ConversationTemplateUpdateToOneWithWhereWithoutConversationsInput = {
+    where?: ConversationTemplateWhereInput
+    data: XOR<ConversationTemplateUpdateWithoutConversationsInput, ConversationTemplateUncheckedUpdateWithoutConversationsInput>
+  }
+
+  export type ConversationTemplateUpdateWithoutConversationsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    userTemplateUsage?: UserTemplateUsageUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type ConversationTemplateUncheckedUpdateWithoutConversationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    userTemplateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
   export type ConversationCreateWithoutMessagesInput = {
@@ -17516,6 +29076,7 @@ export namespace Prisma {
     startedAt?: Date | string
     lastMessageAt?: Date | string
     user: UserCreateNestedOneWithoutConversationsInput
+    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
   }
 
   export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -17525,6 +29086,7 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+    templateId?: number | null
   }
 
   export type ConversationCreateOrConnectWithoutMessagesInput = {
@@ -17550,6 +29112,7 @@ export namespace Prisma {
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutConversationsNestedInput
+    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -17559,6 +29122,266 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type UserTemplateUsageCreateWithoutTemplateInput = {
+    usedAt?: Date | string
+    user: UserCreateNestedOneWithoutTemplateUsageInput
+  }
+
+  export type UserTemplateUsageUncheckedCreateWithoutTemplateInput = {
+    id?: number
+    userId: number
+    usedAt?: Date | string
+  }
+
+  export type UserTemplateUsageCreateOrConnectWithoutTemplateInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    create: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type UserTemplateUsageCreateManyTemplateInputEnvelope = {
+    data: UserTemplateUsageCreateManyTemplateInput | UserTemplateUsageCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ConversationCreateWithoutTemplateInput = {
+    id?: string
+    title: string
+    context: string
+    startedAt?: Date | string
+    lastMessageAt?: Date | string
+    user: UserCreateNestedOneWithoutConversationsInput
+    messages?: MessageCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationUncheckedCreateWithoutTemplateInput = {
+    id?: string
+    userId: number
+    title: string
+    context: string
+    startedAt?: Date | string
+    lastMessageAt?: Date | string
+    messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationCreateOrConnectWithoutTemplateInput = {
+    where: ConversationWhereUniqueInput
+    create: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type ConversationCreateManyTemplateInputEnvelope = {
+    data: ConversationCreateManyTemplateInput | ConversationCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    update: XOR<UserTemplateUsageUpdateWithoutTemplateInput, UserTemplateUsageUncheckedUpdateWithoutTemplateInput>
+    create: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    data: XOR<UserTemplateUsageUpdateWithoutTemplateInput, UserTemplateUsageUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput = {
+    where: UserTemplateUsageScalarWhereInput
+    data: XOR<UserTemplateUsageUpdateManyMutationInput, UserTemplateUsageUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type ConversationUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: ConversationWhereUniqueInput
+    update: XOR<ConversationUpdateWithoutTemplateInput, ConversationUncheckedUpdateWithoutTemplateInput>
+    create: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type ConversationUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: ConversationWhereUniqueInput
+    data: XOR<ConversationUpdateWithoutTemplateInput, ConversationUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type ConversationUpdateManyWithWhereWithoutTemplateInput = {
+    where: ConversationScalarWhereInput
+    data: XOR<ConversationUpdateManyMutationInput, ConversationUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type UserCreateWithoutTemplateUsageInput = {
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    conversations?: ConversationCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTemplateUsageInput = {
+    id?: number
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTemplateUsageInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+  }
+
+  export type ConversationTemplateCreateWithoutUserTemplateUsageInput = {
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+    conversations?: ConversationCreateNestedManyWithoutTemplateInput
+  }
+
+  export type ConversationTemplateUncheckedCreateWithoutUserTemplateUsageInput = {
+    id?: number
+    title: string
+    description: string
+    systemPrompt: string
+    initialMessage: string
+    topics?: ConversationTemplateCreatetopicsInput | string[]
+    level: string
+    conversations?: ConversationUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type ConversationTemplateCreateOrConnectWithoutUserTemplateUsageInput = {
+    where: ConversationTemplateWhereUniqueInput
+    create: XOR<ConversationTemplateCreateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedCreateWithoutUserTemplateUsageInput>
+  }
+
+  export type UserUpsertWithoutTemplateUsageInput = {
+    update: XOR<UserUpdateWithoutTemplateUsageInput, UserUncheckedUpdateWithoutTemplateUsageInput>
+    create: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTemplateUsageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTemplateUsageInput, UserUncheckedUpdateWithoutTemplateUsageInput>
+  }
+
+  export type UserUpdateWithoutTemplateUsageInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    conversations?: ConversationUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTemplateUsageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ConversationTemplateUpsertWithoutUserTemplateUsageInput = {
+    update: XOR<ConversationTemplateUpdateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedUpdateWithoutUserTemplateUsageInput>
+    create: XOR<ConversationTemplateCreateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedCreateWithoutUserTemplateUsageInput>
+    where?: ConversationTemplateWhereInput
+  }
+
+  export type ConversationTemplateUpdateToOneWithWhereWithoutUserTemplateUsageInput = {
+    where?: ConversationTemplateWhereInput
+    data: XOR<ConversationTemplateUpdateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedUpdateWithoutUserTemplateUsageInput>
+  }
+
+  export type ConversationTemplateUpdateWithoutUserTemplateUsageInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    conversations?: ConversationUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type ConversationTemplateUncheckedUpdateWithoutUserTemplateUsageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    systemPrompt?: StringFieldUpdateOperationsInput | string
+    initialMessage?: StringFieldUpdateOperationsInput | string
+    topics?: ConversationTemplateUpdatetopicsInput | string[]
+    level?: StringFieldUpdateOperationsInput | string
+    conversations?: ConversationUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
   export type UserCreateWithoutExamResultsInput = {
@@ -17575,10 +29398,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutExamResultsInput = {
@@ -17596,10 +29424,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutExamResultsInput = {
@@ -17632,10 +29465,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExamResultsInput = {
@@ -17653,10 +29491,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPracticeSessionsInput = {
@@ -17673,10 +29516,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPracticeSessionsInput = {
@@ -17694,10 +29542,15 @@ export namespace Prisma {
     dailyGoal?: number
     notifications?: boolean
     theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPracticeSessionsInput = {
@@ -17732,6 +29585,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PronunciationPracticeItemCreateWithoutSessionInput = {
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+    exercise: PronunciationExerciseCreateNestedOneWithoutPracticeItemsInput
+  }
+
+  export type PronunciationPracticeItemUncheckedCreateWithoutSessionInput = {
+    id?: number
+    exerciseId: number
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemCreateOrConnectWithoutSessionInput = {
+    where: PronunciationPracticeItemWhereUniqueInput
+    create: XOR<PronunciationPracticeItemCreateWithoutSessionInput, PronunciationPracticeItemUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PronunciationPracticeItemCreateManySessionInputEnvelope = {
+    data: PronunciationPracticeItemCreateManySessionInput | PronunciationPracticeItemCreateManySessionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutPracticeSessionsInput = {
     update: XOR<UserUpdateWithoutPracticeSessionsInput, UserUncheckedUpdateWithoutPracticeSessionsInput>
     create: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
@@ -17757,10 +29637,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPracticeSessionsInput = {
@@ -17778,10 +29663,15 @@ export namespace Prisma {
     dailyGoal?: IntFieldUpdateOperationsInput | number
     notifications?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PracticeItemUpsertWithWhereUniqueWithoutSessionInput = {
@@ -17800,12 +29690,45 @@ export namespace Prisma {
     data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyWithoutSessionInput>
   }
 
+  export type PronunciationPracticeItemUpsertWithWhereUniqueWithoutSessionInput = {
+    where: PronunciationPracticeItemWhereUniqueInput
+    update: XOR<PronunciationPracticeItemUpdateWithoutSessionInput, PronunciationPracticeItemUncheckedUpdateWithoutSessionInput>
+    create: XOR<PronunciationPracticeItemCreateWithoutSessionInput, PronunciationPracticeItemUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PronunciationPracticeItemUpdateWithWhereUniqueWithoutSessionInput = {
+    where: PronunciationPracticeItemWhereUniqueInput
+    data: XOR<PronunciationPracticeItemUpdateWithoutSessionInput, PronunciationPracticeItemUncheckedUpdateWithoutSessionInput>
+  }
+
+  export type PronunciationPracticeItemUpdateManyWithWhereWithoutSessionInput = {
+    where: PronunciationPracticeItemScalarWhereInput
+    data: XOR<PronunciationPracticeItemUpdateManyMutationInput, PronunciationPracticeItemUncheckedUpdateManyWithoutSessionInput>
+  }
+
+  export type PronunciationPracticeItemScalarWhereInput = {
+    AND?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
+    OR?: PronunciationPracticeItemScalarWhereInput[]
+    NOT?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
+    id?: IntFilter<"PronunciationPracticeItem"> | number
+    sessionId?: StringFilter<"PronunciationPracticeItem"> | string
+    exerciseId?: IntFilter<"PronunciationPracticeItem"> | number
+    userAudioUrl?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
+    transcript?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
+    similarityScore?: FloatNullableFilter<"PronunciationPracticeItem"> | number | null
+    feedback?: JsonNullableFilter<"PronunciationPracticeItem">
+  }
+
   export type PracticeSessionCreateWithoutPracticeItemsInput = {
     id?: string
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
     user: UserCreateNestedOneWithoutPracticeSessionsInput
+    pronunciationItems?: PronunciationPracticeItemCreateNestedManyWithoutSessionInput
   }
 
   export type PracticeSessionUncheckedCreateWithoutPracticeItemsInput = {
@@ -17814,6 +29737,10 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
+    pronunciationItems?: PronunciationPracticeItemUncheckedCreateNestedManyWithoutSessionInput
   }
 
   export type PracticeSessionCreateOrConnectWithoutPracticeItemsInput = {
@@ -17826,6 +29753,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
     userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
   }
 
@@ -17835,6 +29766,10 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
+    pronunciation?: string | null
+    audioUrl?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
+    category?: string | null
     userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
@@ -17859,7 +29794,11 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
     user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
+    pronunciationItems?: PronunciationPracticeItemUpdateManyWithoutSessionNestedInput
   }
 
   export type PracticeSessionUncheckedUpdateWithoutPracticeItemsInput = {
@@ -17868,6 +29807,10 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
+    pronunciationItems?: PronunciationPracticeItemUncheckedUpdateManyWithoutSessionNestedInput
   }
 
   export type VocabularyUpsertWithoutPracticeItemsInput = {
@@ -17886,6 +29829,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
   }
 
@@ -17895,7 +29842,172 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
+  }
+
+  export type PronunciationPracticeItemCreateWithoutExerciseInput = {
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+    session: PracticeSessionCreateNestedOneWithoutPronunciationItemsInput
+  }
+
+  export type PronunciationPracticeItemUncheckedCreateWithoutExerciseInput = {
+    id?: number
+    sessionId: string
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemCreateOrConnectWithoutExerciseInput = {
+    where: PronunciationPracticeItemWhereUniqueInput
+    create: XOR<PronunciationPracticeItemCreateWithoutExerciseInput, PronunciationPracticeItemUncheckedCreateWithoutExerciseInput>
+  }
+
+  export type PronunciationPracticeItemCreateManyExerciseInputEnvelope = {
+    data: PronunciationPracticeItemCreateManyExerciseInput | PronunciationPracticeItemCreateManyExerciseInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PronunciationPracticeItemUpsertWithWhereUniqueWithoutExerciseInput = {
+    where: PronunciationPracticeItemWhereUniqueInput
+    update: XOR<PronunciationPracticeItemUpdateWithoutExerciseInput, PronunciationPracticeItemUncheckedUpdateWithoutExerciseInput>
+    create: XOR<PronunciationPracticeItemCreateWithoutExerciseInput, PronunciationPracticeItemUncheckedCreateWithoutExerciseInput>
+  }
+
+  export type PronunciationPracticeItemUpdateWithWhereUniqueWithoutExerciseInput = {
+    where: PronunciationPracticeItemWhereUniqueInput
+    data: XOR<PronunciationPracticeItemUpdateWithoutExerciseInput, PronunciationPracticeItemUncheckedUpdateWithoutExerciseInput>
+  }
+
+  export type PronunciationPracticeItemUpdateManyWithWhereWithoutExerciseInput = {
+    where: PronunciationPracticeItemScalarWhereInput
+    data: XOR<PronunciationPracticeItemUpdateManyMutationInput, PronunciationPracticeItemUncheckedUpdateManyWithoutExerciseInput>
+  }
+
+  export type PracticeSessionCreateWithoutPronunciationItemsInput = {
+    id?: string
+    type: string
+    duration: number
+    createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
+    user: UserCreateNestedOneWithoutPracticeSessionsInput
+    practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+  }
+
+  export type PracticeSessionUncheckedCreateWithoutPronunciationItemsInput = {
+    id?: string
+    userId: number
+    type: string
+    duration: number
+    createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
+    practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutSessionInput
+  }
+
+  export type PracticeSessionCreateOrConnectWithoutPronunciationItemsInput = {
+    where: PracticeSessionWhereUniqueInput
+    create: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
+  }
+
+  export type PronunciationExerciseCreateWithoutPracticeItemsInput = {
+    text: string
+    translation?: string | null
+    audioUrl?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+  }
+
+  export type PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput = {
+    id?: number
+    text: string
+    translation?: string | null
+    audioUrl?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+  }
+
+  export type PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput = {
+    where: PronunciationExerciseWhereUniqueInput
+    create: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
+  }
+
+  export type PracticeSessionUpsertWithoutPronunciationItemsInput = {
+    update: XOR<PracticeSessionUpdateWithoutPronunciationItemsInput, PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput>
+    create: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
+    where?: PracticeSessionWhereInput
+  }
+
+  export type PracticeSessionUpdateToOneWithWhereWithoutPronunciationItemsInput = {
+    where?: PracticeSessionWhereInput
+    data: XOR<PracticeSessionUpdateWithoutPronunciationItemsInput, PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput>
+  }
+
+  export type PracticeSessionUpdateWithoutPronunciationItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
+    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
+    practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+  }
+
+  export type PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    duration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
+    practiceItems?: PracticeItemUncheckedUpdateManyWithoutSessionNestedInput
+  }
+
+  export type PronunciationExerciseUpsertWithoutPracticeItemsInput = {
+    update: XOR<PronunciationExerciseUpdateWithoutPracticeItemsInput, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
+    create: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
+    where?: PronunciationExerciseWhereInput
+  }
+
+  export type PronunciationExerciseUpdateToOneWithWhereWithoutPracticeItemsInput = {
+    where?: PronunciationExerciseWhereInput
+    data: XOR<PronunciationExerciseUpdateWithoutPracticeItemsInput, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type PronunciationExerciseUpdateWithoutPracticeItemsInput = {
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LessonProgressCreateManyUserInput = {
@@ -17913,6 +30025,8 @@ export namespace Prisma {
     vocabularyId: number
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
   }
 
   export type ExamResultCreateManyUserInput = {
@@ -17923,6 +30037,7 @@ export namespace Prisma {
     score: number
     details: JsonNullValueInput | InputJsonValue
     completedAt: Date | string
+    timeSpent: number
   }
 
   export type ConversationCreateManyUserInput = {
@@ -17931,6 +30046,7 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+    templateId?: number | null
   }
 
   export type PracticeSessionCreateManyUserInput = {
@@ -17938,6 +30054,15 @@ export namespace Prisma {
     type: string
     duration: number
     createdAt?: Date | string
+    aiGenerated?: boolean
+    difficulty?: string | null
+    score?: number | null
+  }
+
+  export type UserTemplateUsageCreateManyUserInput = {
+    id?: number
+    templateId: number
+    usedAt?: Date | string
   }
 
   export type LessonProgressUpdateWithoutUserInput = {
@@ -17972,6 +30097,8 @@ export namespace Prisma {
   export type UserVocabularyUpdateWithoutUserInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vocabulary?: VocabularyUpdateOneRequiredWithoutUserVocabularyNestedInput
   }
 
@@ -17980,6 +30107,8 @@ export namespace Prisma {
     vocabularyId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserVocabularyUncheckedUpdateManyWithoutUserInput = {
@@ -17987,6 +30116,8 @@ export namespace Prisma {
     vocabularyId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ExamResultUpdateWithoutUserInput = {
@@ -17996,6 +30127,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
   export type ExamResultUncheckedUpdateWithoutUserInput = {
@@ -18006,6 +30138,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
   export type ExamResultUncheckedUpdateManyWithoutUserInput = {
@@ -18016,6 +30149,7 @@ export namespace Prisma {
     score?: IntFieldUpdateOperationsInput | number
     details?: JsonNullValueInput | InputJsonValue
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
   export type ConversationUpdateWithoutUserInput = {
@@ -18025,6 +30159,7 @@ export namespace Prisma {
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
     messages?: MessageUpdateManyWithoutConversationNestedInput
+    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutUserInput = {
@@ -18033,6 +30168,7 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
@@ -18042,6 +30178,7 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PracticeSessionUpdateWithoutUserInput = {
@@ -18049,7 +30186,11 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
     practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+    pronunciationItems?: PronunciationPracticeItemUpdateManyWithoutSessionNestedInput
   }
 
   export type PracticeSessionUncheckedUpdateWithoutUserInput = {
@@ -18057,7 +30198,11 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutSessionNestedInput
+    pronunciationItems?: PronunciationPracticeItemUncheckedUpdateManyWithoutSessionNestedInput
   }
 
   export type PracticeSessionUncheckedUpdateManyWithoutUserInput = {
@@ -18065,6 +30210,26 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiGenerated?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    score?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type UserTemplateUsageUpdateWithoutUserInput = {
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: ConversationTemplateUpdateOneRequiredWithoutUserTemplateUsageNestedInput
+  }
+
+  export type UserTemplateUsageUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    templateId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateUsageUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    templateId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LessonProgressCreateManyLessonInput = {
@@ -18075,6 +30240,16 @@ export namespace Prisma {
     startedAt?: Date | string | null
     completedAt?: Date | string | null
     answers?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type LessonSectionCreateManyLessonInput = {
+    id?: number
+    title: string
+    type: string
+    content?: string | null
+    audioUrl?: string | null
+    videoUrl?: string | null
+    order: number
   }
 
   export type LessonProgressUpdateWithoutLessonInput = {
@@ -18106,11 +30281,79 @@ export namespace Prisma {
     answers?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type LessonSectionUpdateWithoutLessonInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    exercises?: LessonExerciseUpdateManyWithoutSectionNestedInput
+  }
+
+  export type LessonSectionUncheckedUpdateWithoutLessonInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    exercises?: LessonExerciseUncheckedUpdateManyWithoutSectionNestedInput
+  }
+
+  export type LessonSectionUncheckedUpdateManyWithoutLessonInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LessonExerciseCreateManySectionInput = {
+    id?: number
+    type: string
+    question: string
+    options?: LessonExerciseCreateoptionsInput | string[]
+    correctAnswer: string
+    explanation?: string | null
+  }
+
+  export type LessonExerciseUpdateWithoutSectionInput = {
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LessonExerciseUncheckedUpdateWithoutSectionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LessonExerciseUncheckedUpdateManyWithoutSectionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    options?: LessonExerciseUpdateoptionsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type UserVocabularyCreateManyVocabularyInput = {
     id?: number
     userId: number
     learned?: boolean
     lastPracticed?: Date | string | null
+    repetitionStage?: number
+    nextReviewDate?: Date | string | null
   }
 
   export type PracticeItemCreateManyVocabularyInput = {
@@ -18125,6 +30368,8 @@ export namespace Prisma {
   export type UserVocabularyUpdateWithoutVocabularyInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutVocabularyNestedInput
   }
 
@@ -18133,6 +30378,8 @@ export namespace Prisma {
     userId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserVocabularyUncheckedUpdateManyWithoutVocabularyInput = {
@@ -18140,6 +30387,8 @@ export namespace Prisma {
     userId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PracticeItemUpdateWithoutVocabularyInput = {
@@ -18173,12 +30422,18 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: string | null
   }
 
   export type MessageUpdateWithoutConversationInput = {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUncheckedUpdateWithoutConversationInput = {
@@ -18186,6 +30441,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUncheckedUpdateManyWithoutConversationInput = {
@@ -18193,6 +30451,70 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserTemplateUsageCreateManyTemplateInput = {
+    id?: number
+    userId: number
+    usedAt?: Date | string
+  }
+
+  export type ConversationCreateManyTemplateInput = {
+    id?: string
+    userId: number
+    title: string
+    context: string
+    startedAt?: Date | string
+    lastMessageAt?: Date | string
+  }
+
+  export type UserTemplateUsageUpdateWithoutTemplateInput = {
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTemplateUsageNestedInput
+  }
+
+  export type UserTemplateUsageUncheckedUpdateWithoutTemplateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateUsageUncheckedUpdateManyWithoutTemplateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    context?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutConversationsNestedInput
+    messages?: MessageUpdateManyWithoutConversationNestedInput
+  }
+
+  export type ConversationUncheckedUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    context?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
+  export type ConversationUncheckedUpdateManyWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    context?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PracticeItemCreateManySessionInput = {
@@ -18202,6 +30524,15 @@ export namespace Prisma {
     isCorrect: boolean
     userAnswer: string
     expectedAnswer: string
+  }
+
+  export type PronunciationPracticeItemCreateManySessionInput = {
+    id?: number
+    exerciseId: number
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type PracticeItemUpdateWithoutSessionInput = {
@@ -18228,6 +30559,67 @@ export namespace Prisma {
     isCorrect?: BoolFieldUpdateOperationsInput | boolean
     userAnswer?: StringFieldUpdateOperationsInput | string
     expectedAnswer?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PronunciationPracticeItemUpdateWithoutSessionInput = {
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+    exercise?: PronunciationExerciseUpdateOneRequiredWithoutPracticeItemsNestedInput
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateWithoutSessionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    exerciseId?: IntFieldUpdateOperationsInput | number
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateManyWithoutSessionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    exerciseId?: IntFieldUpdateOperationsInput | number
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemCreateManyExerciseInput = {
+    id?: number
+    sessionId: string
+    userAudioUrl?: string | null
+    transcript?: string | null
+    similarityScore?: number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemUpdateWithoutExerciseInput = {
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+    session?: PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateWithoutExerciseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type PronunciationPracticeItemUncheckedUpdateManyWithoutExerciseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sessionId?: StringFieldUpdateOperationsInput | string
+    userAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    feedback?: NullableJsonNullValueInput | InputJsonValue
   }
 
 

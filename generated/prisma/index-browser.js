@@ -131,7 +131,11 @@ exports.Prisma.UserScalarFieldEnum = {
   lastActive: 'lastActive',
   dailyGoal: 'dailyGoal',
   notifications: 'notifications',
-  theme: 'theme'
+  theme: 'theme',
+  aiCorrectionEnabled: 'aiCorrectionEnabled',
+  aiVocabSuggestionsEnabled: 'aiVocabSuggestionsEnabled',
+  preferredVoice: 'preferredVoice',
+  speechRecognitionEnabled: 'speechRecognitionEnabled'
 };
 
 exports.Prisma.LessonScalarFieldEnum = {
@@ -140,8 +144,28 @@ exports.Prisma.LessonScalarFieldEnum = {
   description: 'description',
   level: 'level',
   duration: 'duration',
-  topics: 'topics',
-  content: 'content'
+  topics: 'topics'
+};
+
+exports.Prisma.LessonSectionScalarFieldEnum = {
+  id: 'id',
+  lessonId: 'lessonId',
+  title: 'title',
+  type: 'type',
+  content: 'content',
+  audioUrl: 'audioUrl',
+  videoUrl: 'videoUrl',
+  order: 'order'
+};
+
+exports.Prisma.LessonExerciseScalarFieldEnum = {
+  id: 'id',
+  sectionId: 'sectionId',
+  type: 'type',
+  question: 'question',
+  options: 'options',
+  correctAnswer: 'correctAnswer',
+  explanation: 'explanation'
 };
 
 exports.Prisma.LessonProgressScalarFieldEnum = {
@@ -160,7 +184,11 @@ exports.Prisma.VocabularyScalarFieldEnum = {
   word: 'word',
   translation: 'translation',
   example: 'example',
-  level: 'level'
+  level: 'level',
+  pronunciation: 'pronunciation',
+  audioUrl: 'audioUrl',
+  usageContext: 'usageContext',
+  category: 'category'
 };
 
 exports.Prisma.UserVocabularyScalarFieldEnum = {
@@ -168,7 +196,9 @@ exports.Prisma.UserVocabularyScalarFieldEnum = {
   userId: 'userId',
   vocabularyId: 'vocabularyId',
   learned: 'learned',
-  lastPracticed: 'lastPracticed'
+  lastPracticed: 'lastPracticed',
+  repetitionStage: 'repetitionStage',
+  nextReviewDate: 'nextReviewDate'
 };
 
 exports.Prisma.ConversationScalarFieldEnum = {
@@ -177,7 +207,8 @@ exports.Prisma.ConversationScalarFieldEnum = {
   title: 'title',
   context: 'context',
   startedAt: 'startedAt',
-  lastMessageAt: 'lastMessageAt'
+  lastMessageAt: 'lastMessageAt',
+  templateId: 'templateId'
 };
 
 exports.Prisma.MessageScalarFieldEnum = {
@@ -185,7 +216,27 @@ exports.Prisma.MessageScalarFieldEnum = {
   conversationId: 'conversationId',
   role: 'role',
   content: 'content',
-  timestamp: 'timestamp'
+  timestamp: 'timestamp',
+  corrections: 'corrections',
+  suggestedVocabulary: 'suggestedVocabulary',
+  audioUrl: 'audioUrl'
+};
+
+exports.Prisma.ConversationTemplateScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  systemPrompt: 'systemPrompt',
+  initialMessage: 'initialMessage',
+  topics: 'topics',
+  level: 'level'
+};
+
+exports.Prisma.UserTemplateUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  templateId: 'templateId',
+  usedAt: 'usedAt'
 };
 
 exports.Prisma.ExamResultScalarFieldEnum = {
@@ -196,7 +247,8 @@ exports.Prisma.ExamResultScalarFieldEnum = {
   level: 'level',
   score: 'score',
   details: 'details',
-  completedAt: 'completedAt'
+  completedAt: 'completedAt',
+  timeSpent: 'timeSpent'
 };
 
 exports.Prisma.PracticeSessionScalarFieldEnum = {
@@ -204,7 +256,10 @@ exports.Prisma.PracticeSessionScalarFieldEnum = {
   userId: 'userId',
   type: 'type',
   duration: 'duration',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  aiGenerated: 'aiGenerated',
+  difficulty: 'difficulty',
+  score: 'score'
 };
 
 exports.Prisma.PracticeItemScalarFieldEnum = {
@@ -217,17 +272,46 @@ exports.Prisma.PracticeItemScalarFieldEnum = {
   expectedAnswer: 'expectedAnswer'
 };
 
+exports.Prisma.PronunciationExerciseScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  translation: 'translation',
+  audioUrl: 'audioUrl',
+  difficulty: 'difficulty',
+  category: 'category',
+  expectedPronunciation: 'expectedPronunciation'
+};
+
+exports.Prisma.PronunciationPracticeItemScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  exerciseId: 'exerciseId',
+  userAudioUrl: 'userAudioUrl',
+  transcript: 'transcript',
+  similarityScore: 'similarityScore',
+  feedback: 'feedback'
+};
+
+exports.Prisma.GrammarRuleScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  examples: 'examples',
+  level: 'level',
+  category: 'category'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -251,14 +335,21 @@ exports.Prisma.JsonNullValueFilter = {
 exports.Prisma.ModelName = {
   User: 'User',
   Lesson: 'Lesson',
+  LessonSection: 'LessonSection',
+  LessonExercise: 'LessonExercise',
   LessonProgress: 'LessonProgress',
   Vocabulary: 'Vocabulary',
   UserVocabulary: 'UserVocabulary',
   Conversation: 'Conversation',
   Message: 'Message',
+  ConversationTemplate: 'ConversationTemplate',
+  UserTemplateUsage: 'UserTemplateUsage',
   ExamResult: 'ExamResult',
   PracticeSession: 'PracticeSession',
-  PracticeItem: 'PracticeItem'
+  PracticeItem: 'PracticeItem',
+  PronunciationExercise: 'PronunciationExercise',
+  PronunciationPracticeItem: 'PronunciationPracticeItem',
+  GrammarRule: 'GrammarRule'
 };
 
 /**
