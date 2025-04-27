@@ -77,9 +77,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(storedUser);
         }
 
-        // Then try to refresh user data from API
+        // For development, we'll skip the API call and just use the stored data
+        // In production, you would uncomment this to refresh user data from API
+        
         try {
           const response = await userApiService.getProfile();
+
           // Convert API user profile to our User type
           if (response.data) {
             setUser(convertApiUserToUser(response.data));

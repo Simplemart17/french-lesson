@@ -50,11 +50,8 @@ export const authApiService = {
    * Login user
    */
   login: async (data: LoginRequest): Promise<ApiResponse<AuthResponse>> => {
-    console.log(data, "><><><><><><><><<>>");
     const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, data);
-
-    console.log(response, "=====????=====");
-
+    
     // Store token in cookies and localStorage for redundancy
     if (response.data.token) {
       authApiService.setAuthToken(response.data.token);
@@ -168,7 +165,6 @@ export const authApiService = {
       try {
         return JSON.parse(userData);
       } catch (error) {
-        console.error('Error parsing user data:', error);
         return null;
       }
     }

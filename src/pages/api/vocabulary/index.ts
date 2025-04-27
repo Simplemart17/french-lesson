@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { prisma } from '../../../lib/prisma';
+import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
-  const userId = (req as any).user?.id;
-  
+  const userId = getUserId(req);
   if (!userId) {
     return res.status(401).json({
       success: false,

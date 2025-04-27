@@ -18,8 +18,6 @@ export function middleware(request: NextRequest) {
   
   // Get authentication token from cookies
   const token = request.cookies.get('auth_token')?.value;
-
-  console.log(token, "<><><><>");
   
   // Verify the token is valid
   let isAuthenticated = false;

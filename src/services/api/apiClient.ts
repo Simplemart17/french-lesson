@@ -84,7 +84,7 @@ class ApiClient {
         // Clear auth tokens
         document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         localStorage.removeItem('auth_token');
-        
+
         // Redirect to login page if not already there
         if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
           window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
@@ -95,7 +95,6 @@ class ApiClient {
       apiError.message = 'No response received from server. Please check your internet connection.';
     }
 
-    console.error('API Error:', apiError);
     return Promise.reject(apiError);
   }
 
@@ -104,7 +103,7 @@ class ApiClient {
     try {
       const response: AxiosResponse<T> = await this.client.request(config);
       return {
-        data: response.data,
+        data: (response.data as { data: T }).data,
         status: response.status,
       };
     } catch (error) {
@@ -159,7 +158,7 @@ class ApiClient {
 }
 
 // Create API client instance
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL as string;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 const apiClient = new ApiClient(API_BASE_URL);
 
 export default apiClient;
