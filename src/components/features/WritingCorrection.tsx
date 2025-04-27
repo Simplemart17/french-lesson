@@ -3,7 +3,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { LoadingState } from '../ui/LoadingState';
 import { ErrorMessage } from '../ui/ErrorMessage';
-import aiService from '@/services/aiService';
+import { aiService } from '@/services';
 
 interface WritingCorrectionProps {
   initialText?: string;

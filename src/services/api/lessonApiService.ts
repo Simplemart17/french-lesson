@@ -1,24 +1,6 @@
-import axios from 'axios';
 import { ApiResponse, Lesson, LessonProgress } from '@/types/api';
-import { AuthService } from '@/utils/authService';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 seconds timeout
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = AuthService.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import apiClient from '@/services/api/apiClient';
+import { API_ENDPOINTS } from './apiConfig';
 
 /**
  * Lesson API Service
@@ -32,7 +14,7 @@ export const lessonApiService = {
   getLessons: async (level?: string, topic?: string): Promise<Lesson[]> => {
     try {
       const params = { level, topic };
-      const response = await api.get<ApiResponse<Lesson[]>>('/lessons', { params });
+      const response = await apiClient.get<ApiResponse<Lesson[]>>(API_ENDPOINTS.LESSONS.LIST, { params });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -50,7 +32,7 @@ export const lessonApiService = {
    */
   getLesson: async (id: number): Promise<Lesson | null> => {
     try {
-      const response = await api.get<ApiResponse<Lesson>>(`/lessons/${id}`);
+      const response = await apiClient.get<ApiResponse<Lesson>>(API_ENDPOINTS.LESSONS.ITEM(id));
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -69,7 +51,7 @@ export const lessonApiService = {
   getLessonProgress: async (lessonId?: number): Promise<LessonProgress[]> => {
     try {
       const params = lessonId ? { lessonId } : {};
-      const response = await api.get<ApiResponse<LessonProgress[]>>('/lessons/progress', { params });
+      const response = await apiClient.get<ApiResponse<LessonProgress[]>>(API_ENDPOINTS.LESSONS.PROGRESS, { params });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -91,7 +73,7 @@ export const lessonApiService = {
     score: number
   ): Promise<LessonProgress> => {
     try {
-      const response = await api.post<ApiResponse<LessonProgress>>('/lessons/progress', {
+      const response = await apiClient.post<ApiResponse<LessonProgress>>(API_ENDPOINTS.LESSONS.PROGRESS, {
         lessonId,
         completed,
         score

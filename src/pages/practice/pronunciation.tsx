@@ -4,10 +4,21 @@ import Head from 'next/head';
 import Layout from '@/components/layout/Layout';
 import AdvancedPronunciationPractice from '@/components/features/AdvancedPronunciationPractice';
 import { Card } from '@/components/ui/Card';
-import { PronunciationResponse } from '@/types/api';
+// Define the response type based on what we're using
+interface PronunciationResponse {
+  transcript?: string;
+  expected?: string;
+  similarity?: number;
+  feedback: {
+    overallScore: number;
+    wordScores: Array<{ word: string; score: number; feedback: string }>;
+    problemSounds: Array<{ sound: string; description: string }>;
+    recommendations: string[];
+  };
+}
 import apiClient from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiConfig';
-import { PronunciationPhrase, PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationService';
+import { PronunciationPhrase, PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationApiService';
 
 interface ApiResponseData {
   success: boolean;
@@ -22,14 +33,14 @@ const PronunciationPracticePage: NextPage = () => {
   const [phrases, setPhrases] = useState<PronunciationPhrase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Fetch pronunciation phrases from API
   useEffect(() => {
     const fetchPhrases = async () => {
       try {
         setIsLoading(true);
         const response = await apiClient.get<ApiResponseData>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
-        
+
         if (response.data.success && response.data.data) {
           // Extract phrases from exercises
           const allPhrases = response.data.data.items.flatMap((exercise: PronunciationExercise) => exercise.phrases || []);
@@ -47,29 +58,29 @@ const PronunciationPracticePage: NextPage = () => {
 
     fetchPhrases();
   }, []);
-  
+
   const handlePracticeResult = (result: PronunciationResponse) => {
     setPracticeResults(prev => [...prev, result]);
   };
-  
+
   return (
     <>
       <Head>
         <title>Pronunciation Practice - French Learning</title>
         <meta name="description" content="Practice your French pronunciation with AI feedback" />
       </Head>
-      
+
       <Layout>
         <div className="container px-4 py-8 mx-auto">
           <h1 className="mb-6 text-3xl font-bold">Pronunciation Practice</h1>
-          
+
           <div className="mb-8">
             <p className="text-gray-600">
               Practice pronouncing these French phrases. Our AI will analyze your pronunciation and provide feedback.
               Record yourself saying each phrase, then click "Analyze Pronunciation" to see how you did.
             </p>
           </div>
-          
+
           {isLoading ? (
             <div className="flex items-center justify-center p-12">
               <div className="w-12 h-12 border-t-2 border-b-2 rounded-full border-primary-500 animate-spin"></div>
@@ -78,8 +89,8 @@ const PronunciationPracticePage: NextPage = () => {
           ) : error ? (
             <div className="p-4 mb-6 text-red-700 bg-red-100 rounded-lg">
               <p>{error}</p>
-              <button 
-                onClick={() => window.location.reload()} 
+              <button
+                onClick={() => window.location.reload()}
                 className="px-4 py-2 mt-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
               >
                 Try Again
@@ -91,8 +102,8 @@ const PronunciationPracticePage: NextPage = () => {
                 {phrases.length > 0 ? (
                   phrases.map((phrase) => (
                     <div key={phrase.id}>
-                      <AdvancedPronunciationPractice 
-                        phrase={phrase.text} 
+                      <AdvancedPronunciationPractice
+                        phrase={phrase.text}
                         translation={phrase.translation}
                         onResult={handlePracticeResult}
                         audioUrl={phrase.audioUrl}
@@ -105,11 +116,11 @@ const PronunciationPracticePage: NextPage = () => {
                   </div>
                 )}
               </div>
-              
+
               <div>
                 <Card className="sticky p-6 top-6">
                   <h2 className="mb-4 text-xl font-semibold">Progress</h2>
-                  
+
                   {practiceResults.length === 0 ? (
                     <p className="text-gray-500">No practice data yet. Complete some exercises to see your progress.</p>
                   ) : (
@@ -120,26 +131,26 @@ const PronunciationPracticePage: NextPage = () => {
                           <span>Average</span>
                           <span className="font-medium">
                             {Math.round(
-                              practiceResults.reduce((acc, curr) => acc + curr.feedback.overallScore, 0) / 
+                              practiceResults.reduce((acc, curr) => acc + curr.feedback.overallScore, 0) /
                               practiceResults.length
                             )}%
                           </span>
                         </div>
                         <div className="w-full h-2 bg-gray-200 rounded-full">
-                          <div 
+                          <div
                             className="h-2 rounded-full bg-primary-500"
-                            style={{ 
+                            style={{
                               width: `${
                                 Math.round(
-                                  practiceResults.reduce((acc, curr) => acc + curr.feedback.overallScore, 0) / 
+                                  practiceResults.reduce((acc, curr) => acc + curr.feedback.overallScore, 0) /
                                   practiceResults.length
                                 )
-                              }%` 
+                              }%`
                             }}
                           ></div>
                         </div>
                       </div>
-                      
+
                       <div>
                         <h3 className="mb-2 text-lg font-medium">Recent Practice</h3>
                         <div className="space-y-2">
@@ -148,8 +159,8 @@ const PronunciationPracticePage: NextPage = () => {
                               <div className="flex justify-between mb-1">
                                 <span className="text-sm font-medium">{result.expected}</span>
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                  result.feedback.overallScore >= 80 ? 'bg-green-100 text-green-800' : 
-                                  result.feedback.overallScore >= 60 ? 'bg-yellow-100 text-yellow-800' : 
+                                  result.feedback.overallScore >= 80 ? 'bg-green-100 text-green-800' :
+                                  result.feedback.overallScore >= 60 ? 'bg-yellow-100 text-yellow-800' :
                                   'bg-red-100 text-red-800'
                                 }`}>
                                   {result.feedback.overallScore}%
@@ -160,7 +171,7 @@ const PronunciationPracticePage: NextPage = () => {
                           ))}
                         </div>
                       </div>
-                      
+
                       {practiceResults.length > 0 && (
                         <div>
                           <h3 className="mb-2 text-lg font-medium">Common Issues</h3>
@@ -176,7 +187,7 @@ const PronunciationPracticePage: NextPage = () => {
                             const description = practiceResults
                               .flatMap(r => r.feedback.problemSounds)
                               .find(s => s.sound === sound)?.description;
-                              
+
                             return (
                               <div key={index} className="p-2 mb-2 border border-yellow-100 rounded bg-yellow-50">
                                 <span className="px-1.5 py-0.5 mr-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
@@ -200,4 +211,4 @@ const PronunciationPracticePage: NextPage = () => {
   );
 };
 
-export default PronunciationPracticePage; 
+export default PronunciationPracticePage;

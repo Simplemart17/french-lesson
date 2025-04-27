@@ -1,5 +1,6 @@
 // Import API services
-import { authService, userService } from './api';
+import authApiService from './api/authApiService';
+import userApiService from './api/userApiService';
 
 // Import wrapper services
 import vocabularyService from './vocabularyService';
@@ -13,19 +14,19 @@ import speakingService from './speakingService';
 import aiService from './aiService';
 
 // Import direct API services
-import vocabularyApiService from './api/vocabularyService';
-import lessonApiService from './api/lessonService';
-import conversationApiService from './api/conversationService';
-import pronunciationApiService from './api/pronunciationService';
-import grammarApiService from './api/grammarService';
-import examApiService from './api/examService';
-import listeningApiService from './api/listeningService';
-import speakingApiService from './api/speakingService';
+import vocabularyApiService from './api/vocabularyApiService';
+import lessonApiService from './api/lessonApiService';
+import conversationApiService from './api/conversationApiService';
+import pronunciationApiService from './api/pronunciationApiService';
+import grammarApiService from './api/grammarApiService';
+import examApiService from './api/examApiService';
+import listeningApiService from './api/listeningApiService';
+import speakingApiService from './api/speakingApiService';
 
 // Export API services
 export {
-  authService,
-  userService,
+  authApiService,
+  userApiService,
   vocabularyApiService,
   lessonApiService,
   conversationApiService,
@@ -51,8 +52,8 @@ export {
 // Export default object with all services
 export default {
   // Auth and user services
-  auth: authService,
-  user: userService,
+  auth: authApiService,
+  user: userApiService,
 
   // Main services with caching and offline support
   vocabulary: vocabularyService,

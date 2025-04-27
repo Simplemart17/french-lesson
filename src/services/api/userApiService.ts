@@ -88,39 +88,53 @@ export interface UpdatePreferencesRequest {
   marketingEmails?: boolean;
 }
 
-// User service class
-class UserService {
-  // Get user profile
-  public async getProfile(): Promise<ApiResponse<UserProfile>> {
+/**
+ * User API Service
+ *
+ * This service handles all user-related API calls.
+ */
+export const userApiService = {
+  /**
+   * Get user profile
+   */
+  getProfile: async (): Promise<ApiResponse<UserProfile>> => {
     return apiClient.get<UserProfile>(API_ENDPOINTS.USER.PROFILE);
-  }
+  },
   
-  // Update user profile
-  public async updateProfile(data: UpdateProfileRequest): Promise<ApiResponse<UserProfile>> {
+  /**
+   * Update user profile
+   */
+  updateProfile: async (data: UpdateProfileRequest): Promise<ApiResponse<UserProfile>> => {
     return apiClient.put<UserProfile>(API_ENDPOINTS.USER.UPDATE_PROFILE, data);
-  }
+  },
   
-  // Get user preferences
-  public async getPreferences(): Promise<ApiResponse<UserPreferences>> {
+  /**
+   * Get user preferences
+   */
+  getPreferences: async (): Promise<ApiResponse<UserPreferences>> => {
     return apiClient.get<UserPreferences>(API_ENDPOINTS.USER.PREFERENCES);
-  }
+  },
   
-  // Update user preferences
-  public async updatePreferences(data: UpdatePreferencesRequest): Promise<ApiResponse<UserPreferences>> {
+  /**
+   * Update user preferences
+   */
+  updatePreferences: async (data: UpdatePreferencesRequest): Promise<ApiResponse<UserPreferences>> => {
     return apiClient.put<UserPreferences>(API_ENDPOINTS.USER.PREFERENCES, data);
-  }
+  },
   
-  // Get user progress
-  public async getProgress(): Promise<ApiResponse<UserProgress>> {
+  /**
+   * Get user progress
+   */
+  getProgress: async (): Promise<ApiResponse<UserProgress>> => {
     return apiClient.get<UserProgress>(API_ENDPOINTS.USER.PROGRESS);
-  }
+  },
   
-  // Get user statistics
-  public async getStatistics(period?: 'week' | 'month' | 'year' | 'all'): Promise<ApiResponse<UserStatistics>> {
+  /**
+   * Get user statistics
+   */
+  getStatistics: async (period?: 'week' | 'month' | 'year' | 'all'): Promise<ApiResponse<UserStatistics>> => {
     return apiClient.get<UserStatistics>(API_ENDPOINTS.USER.STATISTICS, { period });
   }
-}
+};
 
-// Create and export user service instance
-const userService = new UserService();
-export default userService;
+export default userApiService;

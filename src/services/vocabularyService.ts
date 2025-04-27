@@ -1,31 +1,27 @@
 import { VocabularyWord } from '@/components/features/SpacedRepetition';
-import vocabularyApiService from './api/vocabularyService';
+import vocabularyApiService from './api/vocabularyApiService';
 
 // This is a wrapper service that provides compatibility between the API service and the local components
 class VocabularyService {
   // Get vocabulary from the API
-  async getVocabulary(params?: any): Promise<VocabularyWord[]> {
+  async getVocabulary(level?: string, category?: string): Promise<VocabularyWord[]> {
     try {
-      const response = await vocabularyApiService.getVocabulary(params);
+      const response = await vocabularyApiService.getVocabulary(level, category);
 
-      if (response.success && response.data.items) {
-        // Convert API vocabulary to VocabularyWord format
-        return response.data.items.map((item: any, index: number) => ({
-          id: item.id?.toString() || index.toString(),
-          word: item.word,
-          translation: item.translation,
-          example: item.example || '',
-          category: 'general', // Default category
-          pronunciation: '', // API doesn't provide pronunciation
-          level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
-                 item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
-          lastReviewed: item.lastPracticed,
-          nextReview: undefined,
-          repetitionStage: item.learned ? 3 : 0 // Estimate stage based on learned status
-        }));
-      }
-
-      return [];
+      // Convert API vocabulary to VocabularyWord format
+      return response.map((item: any, index: number) => ({
+        id: item.id?.toString() || index.toString(),
+        word: item.word,
+        translation: item.translation,
+        example: item.example || '',
+        category: item.category || 'general', // Default category
+        pronunciation: '', // API doesn't provide pronunciation
+        level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
+               item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
+        lastReviewed: item.lastPracticed,
+        nextReview: item.nextReview,
+        repetitionStage: item.learned ? 3 : 0 // Estimate stage based on learned status
+      }));
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
       return [];
@@ -35,7 +31,12 @@ class VocabularyService {
   // Update vocabulary progress in the API
   async updateVocabularyProgress(data: any): Promise<void> {
     try {
-      await vocabularyApiService.updateVocabularyProgress(data);
+      await vocabularyApiService.updateVocabularyProgress(
+        data.word,
+        data.learned || false,
+        data.lastPracticed,
+        data.nextReview
+      );
     } catch (error) {
       console.error('Error updating vocabulary progress:', error);
     }
@@ -49,13 +50,13 @@ class VocabularyService {
                       word.level === 'intermediate' ? 'B1' : 'C1';
 
       // Add the word to the API
-      await vocabularyApiService.updateVocabularyProgress({
-        word: word.word,
-        translation: word.translation,
-        example: word.example || '',
-        level: apiLevel,
-        learned: false
-      });
+      await vocabularyApiService.addVocabularyItem(
+        word.word,
+        word.translation,
+        word.example || '',
+        apiLevel,
+        word.category || 'general'
+      );
 
       // Return the word with a temporary ID
       return {
@@ -99,21 +100,8 @@ class VocabularyService {
   // Get vocabulary categories
   async getCategories(): Promise<string[]> {
     try {
-      const response = await vocabularyApiService.getVocabulary();
-
-      if (response.success && response.data.items) {
-        // Extract categories from vocabulary items
-        const categories = new Set<string>();
-        response.data.items.forEach((item: any) => {
-          // Use first letter as dummy category
-          const dummyCategory = item.word.charAt(0).toUpperCase();
-          categories.add(dummyCategory);
-        });
-
-        return Array.from(categories);
-      }
-
-      return [];
+      // Use the API's getCategories method
+      return await vocabularyApiService.getCategories();
     } catch (error) {
       console.error('Error fetching vocabulary categories:', error);
       return [];

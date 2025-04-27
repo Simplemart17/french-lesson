@@ -7,7 +7,7 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import DictationExercise from '@/components/exercises/DictationExercise';
 import ListeningComprehension from '@/components/exercises/ListeningComprehension';
 import { useAuth } from '@/context/AuthContext';
-import listeningService from '@/services/listeningService';
+import { listeningService } from '@/services';
 
 // Sample dictation exercises
 const dictationExercises = [

@@ -1,24 +1,6 @@
-import axios from 'axios';
 import { ApiResponse } from '@/types/api';
-import { AuthService } from '@/utils/authService';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 seconds timeout
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = AuthService.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import apiClient from '@/services/api/apiClient';
+import { API_ENDPOINTS } from './apiConfig';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
@@ -53,7 +35,10 @@ export const speakingApiService = {
   ): Promise<SpeakingExercise[]> => {
     try {
       const params = { difficulty, category };
-      const response = await api.get<ApiResponse<SpeakingExercise[]>>('/speaking/exercises', { params });
+      const response = await apiClient.get<ApiResponse<SpeakingExercise[]>>(
+        API_ENDPOINTS.SPEAKING.LIST, 
+        { params }
+      );
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -71,7 +56,9 @@ export const speakingApiService = {
    */
   getExercise: async (id: number): Promise<SpeakingExercise | null> => {
     try {
-      const response = await api.get<ApiResponse<SpeakingExercise>>(`/speaking/exercises?id=${id}`);
+      const response = await apiClient.get<ApiResponse<SpeakingExercise>>(
+        API_ENDPOINTS.SPEAKING.ITEM(id)
+      );
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -93,23 +80,21 @@ export const speakingApiService = {
     transcript: string
   ): Promise<SpeakingFeedback> => {
     try {
-      // Convert blob to base64 for API transmission
-      const reader = new FileReader();
-      const audioBase64Promise = new Promise<string>((resolve) => {
-        reader.onloadend = () => {
-          const base64data = reader.result as string;
-          resolve(base64data.split(',')[1]); // Remove the data URL part
-        };
-        reader.readAsDataURL(audioBlob);
-      });
+      // Create form data for file upload
+      const formData = new FormData();
+      formData.append('exerciseId', exerciseId.toString());
+      formData.append('audio', audioBlob);
+      formData.append('transcript', transcript);
 
-      const audioBase64 = await audioBase64Promise;
-
-      const response = await api.post<ApiResponse<SpeakingFeedback>>('/speaking/exercises', {
-        exerciseId,
-        audioData: audioBase64,
-        transcript
-      });
+      const response = await apiClient.post<ApiResponse<SpeakingFeedback>>(
+        API_ENDPOINTS.SPEAKING.CHECK, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
 
       if (response.data.success && response.data.data) {
         return response.data.data;

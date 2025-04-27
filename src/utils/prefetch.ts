@@ -1,4 +1,4 @@
-import { vocabularyService, lessonService, conversationService, grammarService, pronunciationService, examService } from '@/services/index';
+import { vocabularyService, lessonService, conversationService, grammarService, pronunciationService, examService } from '@/services';
 import { localStorageCache } from '@/utils/cache';
 
 /**

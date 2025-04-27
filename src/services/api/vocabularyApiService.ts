@@ -1,24 +1,5 @@
-import axios from 'axios';
 import { ApiResponse, VocabularyItem } from '@/types/api';
-import { AuthService } from '@/utils/authService';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 seconds timeout
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = AuthService.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import apiClient from '@/services/api/apiClient';
 
 /**
  * Vocabulary API Service
@@ -32,7 +13,7 @@ export const vocabularyApiService = {
   getVocabulary: async (level?: string, category?: string): Promise<VocabularyItem[]> => {
     try {
       const params = { level, category };
-      const response = await api.get<ApiResponse<VocabularyItem[]>>('/vocabulary', { params });
+      const response = await apiClient.get<ApiResponse<VocabularyItem[]>>('/vocabulary', { params });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -50,7 +31,7 @@ export const vocabularyApiService = {
    */
   getVocabularyProgress: async (): Promise<VocabularyItem[]> => {
     try {
-      const response = await api.get<ApiResponse<VocabularyItem[]>>('/vocabulary/progress');
+      const response = await apiClient.get<ApiResponse<VocabularyItem[]>>('/vocabulary/progress');
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -73,7 +54,7 @@ export const vocabularyApiService = {
     nextReview?: string
   ): Promise<VocabularyItem> => {
     try {
-      const response = await api.put<ApiResponse<VocabularyItem>>('/vocabulary/progress', {
+      const response = await apiClient.put<ApiResponse<VocabularyItem>>('/vocabulary/progress', {
         word,
         learned,
         lastPracticed: lastPracticed || new Date().toISOString(),
@@ -102,7 +83,7 @@ export const vocabularyApiService = {
     category: string
   ): Promise<VocabularyItem> => {
     try {
-      const response = await api.post<ApiResponse<VocabularyItem>>('/vocabulary', {
+      const response = await apiClient.post<ApiResponse<VocabularyItem>>('/vocabulary', {
         word,
         translation,
         example,

@@ -6,7 +6,7 @@ import PronunciationPractice, { PronunciationResult } from '@/components/feature
 import { useAuth } from '@/context/AuthContext';
 import apiClient from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiConfig';
-import { PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationService';
+import { PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationApiService';
 
 interface ApiResponseData {
   success: boolean;
@@ -23,14 +23,14 @@ export default function PronunciationPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<PronunciationResult[]>([]);
-  
+
   // Fetch pronunciation exercises from API
   useEffect(() => {
     const fetchExercises = async () => {
       try {
         setIsLoading(true);
         const response = await apiClient.get<ApiResponseData>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
-        
+
         if (response.data.success && response.data.data) {
           setExercises(response.data.data.items);
           if (response.data.data.items.length > 0) {
@@ -49,29 +49,29 @@ export default function PronunciationPage() {
 
     fetchExercises();
   }, []);
-  
+
   const handleResultUpdate = (result: PronunciationResult) => {
     setResults(prev => [...prev, result]);
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
         <title>French Pronunciation Practice</title>
         <meta name="description" content="Practice your French pronunciation with AI feedback" />
       </Head>
-      
+
       <main className="container p-4 mx-auto max-w-7xl">
         <header className="py-8">
           <h1 className="mb-4 text-3xl font-bold text-center text-indigo-800">
             French Pronunciation Practice
           </h1>
           <p className="max-w-2xl mx-auto text-center text-gray-600">
-            Improve your French pronunciation with these exercises. Listen to the audio, 
+            Improve your French pronunciation with these exercises. Listen to the audio,
             repeat the phrase, and get feedback on your pronunciation.
           </p>
         </header>
-        
+
         {isLoading ? (
           <div className="flex items-center justify-center p-12">
             <div className="w-12 h-12 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin"></div>
@@ -80,8 +80,8 @@ export default function PronunciationPage() {
         ) : error ? (
           <div className="p-4 mb-6 text-red-700 bg-red-100 rounded-lg">
             <p>{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
             >
               Try Again
@@ -93,7 +93,7 @@ export default function PronunciationPage() {
             <div>
               <Card className="p-4">
                 <h2 className="mb-4 text-xl font-semibold">Exercises</h2>
-                
+
                 <div className="space-y-2">
                   {exercises.map((exercise) => (
                     <button
@@ -109,8 +109,8 @@ export default function PronunciationPage() {
                       <div className="text-sm text-gray-500">{exercise.description}</div>
                       <div className="mt-1 text-xs">
                         <span className={`px-2 py-1 rounded-full ${
-                          exercise.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : 
-                          exercise.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : 
+                          exercise.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
+                          exercise.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-red-100 text-red-800'
                         }`}>
                           {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
@@ -118,7 +118,7 @@ export default function PronunciationPage() {
                       </div>
                     </button>
                   ))}
-                  
+
                   {exercises.length === 0 && (
                     <div className="p-4 text-yellow-700 bg-yellow-100 rounded-lg">
                       No pronunciation exercises available. Please check back later.
@@ -127,7 +127,7 @@ export default function PronunciationPage() {
                 </div>
               </Card>
             </div>
-            
+
             {/* Practice area */}
             <div className="md:col-span-2">
               {selectedExercise ? (
@@ -135,12 +135,12 @@ export default function PronunciationPage() {
                   <Card className="p-6 mb-6">
                     <h2 className="mb-2 text-2xl font-bold">{selectedExercise.title}</h2>
                     <p className="mb-4 text-gray-600">{selectedExercise.description}</p>
-                    
+
                     <div className="p-2 text-sm text-indigo-800 bg-indigo-50 rounded-lg">
                       <span className="font-medium">Difficulty:</span> {selectedExercise.difficulty}
                     </div>
                   </Card>
-                  
+
                   <div className="space-y-6">
                     {selectedExercise.phrases.map((phrase) => (
                       <div key={phrase.id}>

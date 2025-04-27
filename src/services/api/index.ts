@@ -6,26 +6,32 @@ export * from './apiClient';
 export { default as API_ENDPOINTS, API_STATUS, API_ERRORS } from './apiConfig';
 
 // Export services
-export { default as authService } from './authService';
-export * from './authService';
+export { default as authApiService } from './authApiService';
+export * from './authApiService';
 
-export { default as userService } from './userService';
-export * from './userService';
+export { default as userApiService } from './userApiService';
+export * from './userApiService';
 
-export { default as vocabularyService } from './vocabularyService';
-export * from './vocabularyService';
+export { default as vocabularyApiService } from './vocabularyApiService';
+export * from './vocabularyApiService';
 
-export { default as lessonService } from './lessonService';
-export * from './lessonService';
+export { default as lessonApiService } from './lessonApiService';
+export * from './lessonApiService';
 
-export { default as pronunciationService } from './pronunciationService';
-export * from './pronunciationService';
+export { default as pronunciationApiService } from './pronunciationApiService';
+export * from './pronunciationApiService';
 
-export { default as grammarService } from './grammarService';
-export * from './grammarService';
+export { default as grammarApiService } from './grammarApiService';
+export * from './grammarApiService';
 
-export { default as examService } from './examService';
-export * from './examService';
+export { default as examApiService } from './examApiService';
+export * from './examApiService';
 
-export { default as conversationService } from './conversationService';
-export * from './conversationService';
+export { default as conversationApiService } from './conversationApiService';
+export * from './conversationApiService';
+
+export { default as listeningApiService } from './listeningApiService';
+export * from './listeningApiService';
+
+export { default as speakingApiService } from './speakingApiService';
+export * from './speakingApiService';

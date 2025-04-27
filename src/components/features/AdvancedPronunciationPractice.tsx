@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import aiService from '@/services/aiService';
+import { aiService } from '@/services';
 
 // Define the response type based on what we're using
 interface PronunciationResponse {

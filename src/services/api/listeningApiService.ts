@@ -1,24 +1,6 @@
-import axios from 'axios';
 import { ApiResponse } from '@/types/api';
-import { AuthService } from '@/utils/authService';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 seconds timeout
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = AuthService.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import apiClient from '@/services/api/apiClient';
+import { API_ENDPOINTS } from './apiConfig';
 
 // Define the listening exercise types
 interface DictationExercise {
@@ -64,7 +46,10 @@ export const listeningApiService = {
   ): Promise<ListeningExercise[]> => {
     try {
       const params = { type, difficulty };
-      const response = await api.get<ApiResponse<ListeningExercise[]>>('/listening/exercises', { params });
+      const response = await apiClient.get<ApiResponse<ListeningExercise[]>>(
+        API_ENDPOINTS.LISTENING.LIST, 
+        { params }
+      );
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -82,7 +67,9 @@ export const listeningApiService = {
    */
   getExercise: async (id: string): Promise<ListeningExercise | null> => {
     try {
-      const response = await api.get<ApiResponse<ListeningExercise>>(`/listening/exercises?id=${id}`);
+      const response = await apiClient.get<ApiResponse<ListeningExercise>>(
+        API_ENDPOINTS.LISTENING.ITEM(id)
+      );
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -107,12 +94,11 @@ export const listeningApiService = {
     feedback: string;
   }> => {
     try {
-      const response = await api.post<ApiResponse<{
+      const response = await apiClient.post<ApiResponse<{
         score: number;
         correctText: string;
         feedback: string;
-      }>>('/listening/dictation', {
-        exerciseId,
+      }>>(API_ENDPOINTS.LISTENING.SUBMIT(exerciseId), {
         userText
       });
 
@@ -140,13 +126,12 @@ export const listeningApiService = {
     feedback: { questionId: string; isCorrect: boolean; correctAnswer: string }[];
   }> => {
     try {
-      const response = await api.post<ApiResponse<{
+      const response = await apiClient.post<ApiResponse<{
         score: number;
         correctAnswers: number;
         totalQuestions: number;
         feedback: { questionId: string; isCorrect: boolean; correctAnswer: string }[];
-      }>>('/listening/comprehension', {
-        exerciseId,
+      }>>(API_ENDPOINTS.LISTENING.SUBMIT(exerciseId), {
         answers
       });
 

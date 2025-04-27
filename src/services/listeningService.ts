@@ -1,11 +1,10 @@
 import { localStorageCache } from '@/utils/cache';
-import { apiClient } from './api/apiClient';
+import listeningApiService from './api/listeningApiService';
 
 /**
  * Listening Service
  *
- * This service provides listening comprehension exercises.
- * Currently using mock data, but designed to be replaced with real API calls.
+ * This service provides listening comprehension exercises with caching.
  */
 class ListeningService {
   private cache = localStorageCache;
@@ -30,14 +29,11 @@ class ListeningService {
         params.difficulty = difficulty;
       }
 
-      // Call the API
-      const response = await apiClient.get('/api/listening/exercises', { params });
-
-      if (!response.data || !response.data.success) {
-        throw new Error('Failed to fetch listening exercises');
-      }
-
-      const exercises = response.data.data || [];
+      // Call the API service
+      const exercises = await listeningApiService.getExercises(
+        undefined, // type
+        difficulty
+      );
 
       // Cache the result
       this.cache.set(cacheKey, exercises, this.cacheDuration);
@@ -62,14 +58,8 @@ class ListeningService {
     }
 
     try {
-      // Call the API
-      const response = await apiClient.get(`/api/listening/exercises/${id}`);
-
-      if (!response.data || !response.data.success) {
-        throw new Error(`Failed to fetch listening exercise ${id}`);
-      }
-
-      const exercise = response.data.data;
+      // Call the API service
+      const exercise = await listeningApiService.getExercise(id.toString());
 
       if (!exercise) {
         return null;
@@ -97,21 +87,28 @@ class ListeningService {
     feedback: string;
   }> {
     try {
-      // Call the API to submit answers
-      const response = await apiClient.post(`/api/listening/exercises/${exerciseId}/submit`, {
-        answers
-      });
+      // For comprehension exercises, we need to format the answers
+      const formattedAnswers = answers.map((answer, index) => ({
+        questionId: `q${index + 1}`,
+        answer: answer.toString()
+      }));
 
-      if (!response.data || !response.data.success) {
-        throw new Error('Failed to submit listening answers');
-      }
+      // Call the API service
+      const result = await listeningApiService.submitComprehension(
+        exerciseId.toString(),
+        formattedAnswers
+      );
 
-      const result = response.data.data;
+      // Extract correct answers from the feedback
+      const correctAnswerIds = result.feedback
+        .filter(item => item.isCorrect)
+        .map(item => parseInt(item.questionId.replace('q', '')));
 
       return {
         score: result.score || 0,
-        correctAnswers: result.correctAnswers || [],
-        feedback: result.feedback || 'Your answers have been submitted.'
+        correctAnswers: correctAnswerIds,
+        feedback: 'Your answers have been submitted. You got ' +
+          result.correctAnswers + ' out of ' + result.totalQuestions + ' correct.'
       };
     } catch (error) {
       console.error('Error submitting listening answers:', error);

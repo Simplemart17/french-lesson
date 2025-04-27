@@ -1,12 +1,11 @@
 import { localStorageCache } from '@/utils/cache';
 import aiService from './aiService';
-import { apiClient } from './api/apiClient';
+import speakingApiService from './api/speakingApiService';
 
 /**
  * Speaking Service
  *
- * This service provides speaking practice exercises.
- * Currently using mock data, but designed to be replaced with real API calls.
+ * This service provides speaking practice exercises with caching.
  */
 class SpeakingService {
   private cache = localStorageCache;
@@ -31,14 +30,11 @@ class SpeakingService {
         params.difficulty = difficulty;
       }
 
-      // Call the API
-      const response = await apiClient.get('/api/speaking/exercises', { params });
-
-      if (!response.data || !response.data.success) {
-        throw new Error('Failed to fetch speaking exercises');
-      }
-
-      const exercises = response.data.data || [];
+      // Call the API service
+      const exercises = await speakingApiService.getExercises(
+        difficulty,
+        undefined // category
+      );
 
       // Cache the result
       this.cache.set(cacheKey, exercises, this.cacheDuration);
@@ -63,14 +59,8 @@ class SpeakingService {
     }
 
     try {
-      // Call the API
-      const response = await apiClient.get(`/api/speaking/exercises/${id}`);
-
-      if (!response.data || !response.data.success) {
-        throw new Error(`Failed to fetch speaking exercise ${id}`);
-      }
-
-      const exercise = response.data.data;
+      // Call the API service
+      const exercise = await speakingApiService.getExercise(id);
 
       if (!exercise) {
         return null;
@@ -99,18 +89,21 @@ class SpeakingService {
     }
 
     try {
-      // Call the API
-      const response = await apiClient.get(`/api/speaking/phrases/${id}`);
+      // For now, we'll use the exercise API since we don't have a separate phrase API
+      // In a real implementation, this would call a specific phrase endpoint
+      const exercise = await speakingApiService.getExercise(id);
 
-      if (!response.data || !response.data.success) {
-        throw new Error(`Failed to fetch phrase ${id}`);
-      }
-
-      const phrase = response.data.data;
-
-      if (!phrase) {
+      if (!exercise) {
         return null;
       }
+
+      // Convert exercise to phrase format
+      const phrase = {
+        id: exercise.id,
+        text: exercise.prompt,
+        translation: exercise.translation,
+        difficulty: exercise.difficulty
+      };
 
       // Cache the result
       this.cache.set(cacheKey, phrase, this.cacheDuration);
@@ -141,47 +134,67 @@ class SpeakingService {
         throw new Error(`Phrase ${phraseId} not found`);
       }
 
-      // Use AI service to analyze pronunciation
-      const result = await aiService.analyzePronunciation(audioBlob, phrase.text);
+      // First try to use the speaking API service
+      try {
+        const result = await speakingApiService.evaluateSpeaking(phraseId, audioBlob, phrase.text);
 
-      // Process the result
-      const accuracy = result.overallScore;
+        // Convert the API response to our format
+        const feedback = [result.feedback];
 
-      // Generate feedback based on accuracy
-      const feedback = [];
+        return {
+          accuracy: result.pronunciation,
+          feedback,
+          details: {
+            accuracy: result.accuracy,
+            fluency: result.fluency,
+            type: result.type
+          }
+        };
+      } catch (apiError) {
+        console.warn('Speaking API failed, falling back to AI service:', apiError);
 
-      if (accuracy >= 90) {
-        feedback.push('Excellent pronunciation!');
-      } else if (accuracy >= 70) {
-        feedback.push('Good pronunciation. Keep practicing!');
-      } else if (accuracy >= 50) {
-        feedback.push('Your pronunciation needs some work.');
-      } else {
-        feedback.push('You need to practice more on your pronunciation.');
-      }
+        // Fallback to AI service if the API fails
+        const result = await aiService.analyzePronunciation(audioBlob, phrase.text);
 
-      // Add specific feedback from the analysis
-      if (result.problemSounds && result.problemSounds.length > 0) {
-        result.problemSounds.forEach((problem: any) => {
-          feedback.push(`Work on the "${problem.sound}" sound: ${problem.description}`);
-        });
-      }
+        // Process the result
+        const accuracy = result.overallScore;
 
-      // Add recommendations
-      if (result.recommendations && result.recommendations.length > 0) {
-        result.recommendations.forEach((recommendation: string) => {
-          feedback.push(recommendation);
-        });
-      }
+        // Generate feedback based on accuracy
+        const feedback = [];
 
-      return {
-        accuracy,
-        feedback,
-        details: {
-          wordScores: result.wordScores,
-          problemSounds: result.problemSounds
+        if (accuracy >= 90) {
+          feedback.push('Excellent pronunciation!');
+        } else if (accuracy >= 70) {
+          feedback.push('Good pronunciation. Keep practicing!');
+        } else if (accuracy >= 50) {
+          feedback.push('Your pronunciation needs some work.');
+        } else {
+          feedback.push('You need to practice more on your pronunciation.');
         }
-      };
+
+        // Add specific feedback from the analysis
+        if (result.problemSounds && result.problemSounds.length > 0) {
+          result.problemSounds.forEach((problem: any) => {
+            feedback.push(`Work on the "${problem.sound}" sound: ${problem.description}`);
+          });
+        }
+
+        // Add recommendations
+        if (result.recommendations && result.recommendations.length > 0) {
+          result.recommendations.forEach((recommendation: string) => {
+            feedback.push(recommendation);
+          });
+        }
+
+        return {
+          accuracy,
+          feedback,
+          details: {
+            wordScores: result.wordScores,
+            problemSounds: result.problemSounds
+          }
+        };
+      }
     } catch (error) {
       console.error('Error checking pronunciation:', error);
 

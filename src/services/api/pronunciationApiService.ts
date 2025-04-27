@@ -98,20 +98,30 @@ export interface PronunciationResponse {
   };
 }
 
-// Pronunciation service class
-class PronunciationService {
-  // Get pronunciation exercises
-  public async getExercises(params?: PronunciationExerciseListParams): Promise<ApiResponse<PronunciationExerciseListResponse>> {
+/**
+ * Pronunciation API Service
+ *
+ * This service handles all pronunciation-related API calls.
+ */
+export const pronunciationApiService = {
+  /**
+   * Get pronunciation exercises
+   */
+  getExercises: async (params?: PronunciationExerciseListParams): Promise<ApiResponse<PronunciationExerciseListResponse>> => {
     return apiClient.get<PronunciationExerciseListResponse>(API_ENDPOINTS.PRONUNCIATION.EXERCISES, params);
-  }
+  },
   
-  // Get pronunciation exercise by ID
-  public async getExercise(id: number): Promise<ApiResponse<PronunciationExercise>> {
+  /**
+   * Get pronunciation exercise by ID
+   */
+  getExercise: async (id: number): Promise<ApiResponse<PronunciationExercise>> => {
     return apiClient.get<PronunciationExercise>(`${API_ENDPOINTS.PRONUNCIATION.EXERCISES}/${id}`);
-  }
+  },
   
-  // Check pronunciation
-  public async checkPronunciation(data: PronunciationCheckRequest): Promise<ApiResponse<PronunciationCheckResponse>> {
+  /**
+   * Check pronunciation
+   */
+  checkPronunciation: async (data: PronunciationCheckRequest): Promise<ApiResponse<PronunciationCheckResponse>> => {
     // If we have an audio blob, we need to use FormData
     if (data.audioBlob) {
       const formData = new FormData();
@@ -133,10 +143,12 @@ class PronunciationService {
       phraseId: data.phraseId,
       transcript: data.transcript,
     });
-  }
+  },
   
-  // AI-powered advanced pronunciation analysis
-  public async analyzePronunciation(audioBlob: Blob, text: string): Promise<PronunciationResponse> {
+  /**
+   * AI-powered advanced pronunciation analysis
+   */
+  analyzePronunciation: async (audioBlob: Blob, text: string): Promise<PronunciationResponse> => {
     try {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
@@ -157,28 +169,32 @@ class PronunciationService {
         }
       };
     }
-  }
+  },
   
-  // Get pronunciation audio
-  public getAudioUrl(id: number): string {
+  /**
+   * Get pronunciation audio
+   */
+  getAudioUrl: (id: number): string => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
     return `${baseURL}${API_ENDPOINTS.PRONUNCIATION.AUDIO(id)}`;
-  }
+  },
   
-  // Get pronunciation progress
-  public async getProgress(): Promise<ApiResponse<PronunciationProgress[]>> {
+  /**
+   * Get pronunciation progress
+   */
+  getProgress: async (): Promise<ApiResponse<PronunciationProgress[]>> => {
     return apiClient.get<PronunciationProgress[]>(API_ENDPOINTS.PRONUNCIATION.PROGRESS);
-  }
+  },
   
-  // Update pronunciation progress
-  public async updateProgress(phraseId: number, accuracy: number): Promise<ApiResponse<PronunciationProgress>> {
+  /**
+   * Update pronunciation progress
+   */
+  updateProgress: async (phraseId: number, accuracy: number): Promise<ApiResponse<PronunciationProgress>> => {
     return apiClient.post<PronunciationProgress>(API_ENDPOINTS.PRONUNCIATION.PROGRESS, {
       phraseId,
       accuracy,
     });
   }
-}
+};
 
-// Create and export pronunciation service instance
-const pronunciationService = new PronunciationService();
-export default pronunciationService;
+export default pronunciationApiService;

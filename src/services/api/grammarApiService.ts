@@ -1,50 +1,29 @@
-import axios from 'axios';
 import { ApiResponse } from '@/types/api';
-import { AuthService } from '@/utils/authService';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 seconds timeout
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = AuthService.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import apiClient from '@/services/api/apiClient';
 
 // Define the verb conjugation exercise type
 interface VerbConjugationExercise {
-  id: string;
+  id: number;
   verb: string;
   tense: string;
-  description: string;
+  group: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  group?: 1 | 2 | 3 | 'irregular';
   conjugations: {
     pronoun: string;
-    correctAnswer: string;
+    form: string;
   }[];
 }
 
-// Define the conjugation result type
-interface ConjugationResult {
-  results: {
-    pronoun: string;
-    isCorrect: boolean;
-    correctAnswer: string;
-    userAnswer: string;
-  }[];
-  score: number;
-  totalCorrect: number;
-  totalQuestions: number;
+// Define the grammar exercise type
+interface GrammarExercise {
+  id: number;
+  title: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  type: 'multiple-choice' | 'fill-in-blank' | 'reorder';
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
 }
 
 /**
@@ -64,7 +43,7 @@ export const grammarApiService = {
   ): Promise<VerbConjugationExercise[]> => {
     try {
       const params = { difficulty, verb, tense, group };
-      const response = await api.get<ApiResponse<VerbConjugationExercise[]>>('/grammar/verb-conjugation', { params });
+      const response = await apiClient.get<ApiResponse<VerbConjugationExercise[]>>('/grammar/verb-conjugation', { params });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -78,44 +57,48 @@ export const grammarApiService = {
   },
 
   /**
-   * Get a specific verb conjugation exercise by ID
+   * Get grammar exercises with optional filtering
    */
-  getVerbConjugationExercise: async (id: string): Promise<VerbConjugationExercise | null> => {
+  getGrammarExercises: async (
+    difficulty?: string,
+    type?: string
+  ): Promise<GrammarExercise[]> => {
     try {
-      const response = await api.get<ApiResponse<VerbConjugationExercise>>(`/grammar/verb-conjugation?id=${id}`);
+      const params = { difficulty, type };
+      const response = await apiClient.get<ApiResponse<GrammarExercise[]>>('/grammar/exercises', { params });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
 
-      return null;
+      return [];
     } catch (error) {
-      console.error(`Error fetching verb conjugation exercise ${id}:`, error);
-      return null;
+      console.error('Error fetching grammar exercises:', error);
+      return [];
     }
   },
 
   /**
-   * Check verb conjugation answers
+   * Check grammar in a text
    */
-  checkVerbConjugation: async (
-    exerciseId: string,
-    answers: { pronoun: string; answer: string }[]
-  ): Promise<ConjugationResult> => {
+  checkGrammar: async (text: string): Promise<any> => {
     try {
-      const response = await api.post<ApiResponse<ConjugationResult>>('/grammar/verb-conjugation', {
-        exerciseId,
-        answers
-      });
+      const response = await apiClient.post<ApiResponse<any>>('/grammar/check', { text });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
 
-      throw new Error('Failed to check verb conjugation');
+      return {
+        corrections: [],
+        score: 100
+      };
     } catch (error) {
-      console.error('Error checking verb conjugation:', error);
-      throw error;
+      console.error('Error checking grammar:', error);
+      return {
+        corrections: [],
+        score: 100
+      };
     }
   },
 
