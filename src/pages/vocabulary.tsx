@@ -35,7 +35,11 @@ export default function VocabularyPage() {
     error,
     refetch: refetchVocabulary
   } = useFetch<any>(
-    () => vocabularyService.getVocabulary({ level: selectedLevel }),
+    () => vocabularyService.getVocabulary(
+      // Convert the level to API format (A1, B1, C1)
+      selectedLevel === 'beginner' ? 'A1' :
+      selectedLevel === 'intermediate' ? 'B1' : 'C1'
+    ),
     {
       cacheKey: 'vocabulary',
       onError: (err) => {
@@ -149,17 +153,16 @@ export default function VocabularyPage() {
     if (!newWord.word || !newWord.translation) return;
 
     try {
-      // Convert level to API format
-      const apiLevel = newWord.level === 'beginner' ? 'A1' :
-                      newWord.level === 'intermediate' ? 'B1' : 'C1';
-
       // Add the word to the API
-      await vocabularyService.updateVocabularyProgress({
+      await vocabularyService.addVocabularyWord({
         word: newWord.word,
         translation: newWord.translation,
         example: newWord.example || '',
-        level: apiLevel,
-        learned: false
+        level: newWord.level || 'beginner',
+        category: newWord.category || 'general',
+        pronunciation: newWord.pronunciation || '',
+        lastReviewed: new Date().toISOString(),
+        repetitionStage: 0
       });
 
       // Add the word to local state
@@ -521,7 +524,7 @@ export default function VocabularyPage() {
                 </div>
               </div>
             ) : (
-              <div className="p-6 bg-white rounded-lg shadow-lg text-center">
+              <div className="p-6 text-center bg-white rounded-lg shadow-lg">
                 <p className="text-gray-600">No vocabulary words found for the selected category and level.</p>
                 <Button onClick={refetchVocabulary} className="mt-4">Refresh</Button>
               </div>

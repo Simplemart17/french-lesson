@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import ExamModule, { ExamResults } from '@/components/exam/ExamModule';
-import { ExamQuestionData } from '@/components/exam/ExamQuestion';
+import { ExamQuestionData, QuestionType } from '@/components/exam/ExamQuestion';
 import { Button } from '@/components/ui/Button';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorMessage from '@/components/ui/ErrorMessage';
 import { examService } from '@/services/index';
 
-type ExamType = 'tcf' | 'tef';
+// Define the exam section type
 type ExamSection = 'listening' | 'reading' | 'writing' | 'speaking';
 
 interface ExamModuleData {
@@ -17,7 +17,7 @@ interface ExamModuleData {
   description: string;
   duration: number; // in minutes
   section: ExamSection;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty?: 'easy' | 'medium' | 'hard'; // Make difficulty optional to match API response
   questions: ExamQuestionData[];
 }
 
@@ -40,7 +40,37 @@ export default function ExamModulePage() {
           const data = await examService.getExamModule(moduleId);
 
           if (data) {
-            setModuleData(data);
+            // Convert the API response to match our ExamModuleData interface
+            const convertedQuestions: ExamQuestionData[] = (data.questions || []).map(q => {
+              // Map the API question type to the component's QuestionType
+              let questionType: QuestionType = 'multiple-choice';
+              if (q.type === 'text-input' || q.type === 'audio-response') {
+                questionType = q.type;
+              }
+
+              return {
+                id: q.id,
+                type: questionType,
+                text: q.text,
+                options: q.options,
+                correctAnswer: q.correctAnswer,
+                audioUrl: q.audioUrl,
+                imageUrl: q.imageUrl,
+                explanation: q.explanation
+              };
+            });
+
+            const moduleData: ExamModuleData = {
+              id: data.id,
+              title: data.title,
+              description: data.description,
+              duration: data.duration,
+              section: data.section as ExamSection,
+              questions: convertedQuestions,
+              difficulty: (data.level === 'A1' || data.level === 'A2') ? 'easy' :
+                          (data.level === 'B1' || data.level === 'B2') ? 'medium' : 'hard'
+            };
+            setModuleData(moduleData);
           } else {
             // Module not found, redirect to exam practice page
             router.push('/exam-practice');
@@ -62,7 +92,7 @@ export default function ExamModulePage() {
 
     try {
       // Save the results to the database
-      await examService.saveExamResults(results);
+      await examService.submitExamResults(results);
       console.log('Exam results saved successfully');
     } catch (err) {
       console.error('Error saving exam results:', err);
@@ -149,15 +179,61 @@ export default function ExamModulePage() {
           </Button>
         </div>
 
-        <ExamModule
-          moduleId={moduleData.id}
-          title={moduleData.title}
-          description={moduleData.description}
-          section={moduleData.section}
-          duration={moduleData.duration}
-          questions={moduleData.questions}
-          onComplete={handleExamComplete}
-        />
+        {!examResults ? (
+          <ExamModule
+            moduleId={moduleData.id}
+            title={moduleData.title}
+            description={moduleData.description}
+            section={moduleData.section}
+            duration={moduleData.duration}
+            questions={moduleData.questions}
+            onComplete={handleExamComplete}
+          />
+        ) : (
+          <div className="p-6 space-y-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold text-gray-800">Exam Results</h2>
+
+            <div className="p-4 rounded-lg bg-indigo-50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-lg font-medium text-gray-700">Your Score</p>
+                  <p className="text-3xl font-bold text-indigo-600">{examResults.score}%</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Completed on</p>
+                  <p className="font-medium text-gray-800">
+                    {new Date(examResults.completedAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="mb-4 text-xl font-semibold text-gray-800">Summary</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg bg-gray-50">
+                  <p className="text-sm text-gray-600">Total Questions</p>
+                  <p className="text-xl font-bold text-gray-800">{examResults.totalQuestions}</p>
+                </div>
+                <div className="p-4 rounded-lg bg-gray-50">
+                  <p className="text-sm text-gray-600">Time Spent</p>
+                  <p className="text-xl font-bold text-gray-800">
+                    {Math.floor(examResults.timeSpent / 60)} min {examResults.timeSpent % 60} sec
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <Button onClick={() => router.push('/exam-practice')}>
+                Back to Exam Practice
+              </Button>
+              <Button onClick={() => setExamResults(null)}>
+                Retry Exam
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
