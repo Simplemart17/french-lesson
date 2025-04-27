@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorMessage from '@/components/ui/ErrorMessage';
 import DictationExercise from '@/components/exercises/DictationExercise';
 import ListeningComprehension from '@/components/exercises/ListeningComprehension';
 import { useAuth } from '@/context/AuthContext';
@@ -217,7 +217,7 @@ export default function ListeningPage() {
     .filter(ex => ex.type === 'comprehension' || (ex.questions && ex.questions.length > 0)) // Include exercises with questions
     .filter(ex => selectedDifficulty === 'all' || ex.difficulty === selectedDifficulty);
 
-  const handleExerciseComplete = async (score: number, answers?: Record<string, string>) => {
+  const handleExerciseComplete = async (score: number, answersOrText?: Record<string, string> | string) => {
     console.log('Exercise completed with score:', score);
 
     if (selectedExercise && isAuthenticated) {
@@ -227,7 +227,7 @@ export default function ListeningPage() {
         console.log('Submitting exercise results:', {
           exerciseId: selectedExercise.id,
           score,
-          answers
+          answersOrText
         });
 
         // Show a success message or update UI
@@ -237,6 +237,15 @@ export default function ListeningPage() {
         // Show an error message
       }
     }
+  };
+
+  // Create separate handlers for each exercise type to match their expected types
+  const handleDictationComplete = (score: number, userText: string) => {
+    handleExerciseComplete(score, userText);
+  };
+
+  const handleComprehensionComplete = (score: number, answers: Record<string, string>) => {
+    handleExerciseComplete(score, answers);
   };
 
   const renderExerciseSelector = () => (
@@ -471,7 +480,7 @@ export default function ListeningPage() {
                     audioUrl={selectedExercise.audioUrl}
                     text={selectedExercise.text}
                     difficulty={selectedExercise.difficulty}
-                    onComplete={handleExerciseComplete}
+                    onComplete={handleDictationComplete}
                   />
                 ) : (
                   <ListeningComprehension
@@ -481,7 +490,7 @@ export default function ListeningPage() {
                     questions={selectedExercise.questions}
                     difficulty={selectedExercise.difficulty}
                     transcript={selectedExercise.transcript}
-                    onComplete={handleExerciseComplete}
+                    onComplete={handleComprehensionComplete}
                   />
                 )}
               </div>

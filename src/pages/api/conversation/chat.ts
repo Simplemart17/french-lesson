@@ -1,11 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import { ApiResponse, Conversation, Message } from '@/types/api';
+import { prisma } from '@/lib/prisma';
+import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 import aiService from '@/services/aiService';
-
-// Initialize Prisma client
-const prisma = new PrismaClient();
 
 // Mock conversation contexts for new conversations
 const conversationContexts = {
@@ -67,9 +64,8 @@ export default async function handler(
           data: {
             userId: userId,
             title: `French conversation: ${context}`,
-            context: contextDescription,
-            createdAt: new Date(),
-            updatedAt: new Date()
+            context: contextDescription
+            // startedAt and lastMessageAt have default values in the schema
           }
         });
 
@@ -78,8 +74,8 @@ export default async function handler(
           data: {
             conversationId: conversation.id,
             role: 'user',
-            content: message,
-            createdAt: new Date()
+            content: message
+            // timestamp has a default value in the schema
           }
         });
 
@@ -88,7 +84,7 @@ export default async function handler(
         // Get existing conversation
         conversation = await prisma.conversation.findUnique({
           where: { id: conversationId },
-          include: { messages: { orderBy: { createdAt: 'asc' } } }
+          include: { messages: { orderBy: { timestamp: 'asc' } } }
         });
 
         if (!conversation) {
@@ -115,15 +111,15 @@ export default async function handler(
           data: {
             conversationId: conversation.id,
             role: 'user',
-            content: message,
-            createdAt: new Date()
+            content: message
+            // timestamp has a default value in the schema
           }
         });
 
-        // Update conversation's updatedAt timestamp
+        // Update conversation's lastMessageAt timestamp
         await prisma.conversation.update({
           where: { id: conversation.id },
-          data: { updatedAt: new Date() }
+          data: { lastMessageAt: new Date() }
         });
 
         messages = [...conversation.messages, { role: 'user', content: message }];
@@ -144,8 +140,8 @@ export default async function handler(
         data: {
           conversationId: conversation.id,
           role: 'assistant',
-          content: aiResponse,
-          createdAt: new Date()
+          content: typeof aiResponse === 'string' ? aiResponse : JSON.stringify(aiResponse)
+          // timestamp has a default value in the schema
         }
       });
 
@@ -179,7 +175,7 @@ export default async function handler(
         // Get specific conversation
         const conversation = await prisma.conversation.findUnique({
           where: { id },
-          include: { messages: { orderBy: { createdAt: 'asc' } } }
+          include: { messages: { orderBy: { timestamp: 'asc' } } }
         });
 
         if (!conversation) {
@@ -209,10 +205,10 @@ export default async function handler(
         // Get all user's conversations
         const conversations = await prisma.conversation.findMany({
           where: { userId },
-          orderBy: { updatedAt: 'desc' },
+          orderBy: { lastMessageAt: 'desc' },
           include: {
             messages: {
-              orderBy: { createdAt: 'desc' },
+              orderBy: { timestamp: 'desc' },
               take: 1 // Just get the last message for preview
             }
           }

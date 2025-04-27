@@ -8,14 +8,6 @@ import apiClient from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiConfig';
 import { PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationApiService';
 
-interface ApiResponseData {
-  success: boolean;
-  data?: PronunciationExerciseListResponse;
-  error?: {
-    message: string;
-  };
-}
-
 export default function PronunciationPage() {
   const { isAuthenticated } = useAuth();
   const [exercises, setExercises] = useState<PronunciationExercise[]>([]);
@@ -29,12 +21,11 @@ export default function PronunciationPage() {
     const fetchExercises = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.get<ApiResponseData>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
-
-        if (response.data.success && response.data.data) {
-          setExercises(response.data.data.items);
-          if (response.data.data.items.length > 0) {
-            setSelectedExercise(response.data.data.items[0]);
+        const response = await apiClient.get<PronunciationExerciseListResponse>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
+        if (response.data) {
+          setExercises(response.data.items);
+          if (response.data.items.length > 0) {
+            setSelectedExercise(response.data.items[0]);
           }
         } else {
           setError('Failed to load pronunciation exercises');
@@ -82,7 +73,7 @@ export default function PronunciationPage() {
             <p>{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+              className="px-4 py-2 mt-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
             >
               Try Again
             </button>
@@ -136,7 +127,7 @@ export default function PronunciationPage() {
                     <h2 className="mb-2 text-2xl font-bold">{selectedExercise.title}</h2>
                     <p className="mb-4 text-gray-600">{selectedExercise.description}</p>
 
-                    <div className="p-2 text-sm text-indigo-800 bg-indigo-50 rounded-lg">
+                    <div className="p-2 text-sm text-indigo-800 rounded-lg bg-indigo-50">
                       <span className="font-medium">Difficulty:</span> {selectedExercise.difficulty}
                     </div>
                   </Card>
