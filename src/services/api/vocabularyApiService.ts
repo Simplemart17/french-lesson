@@ -131,7 +131,7 @@ export const vocabularyApiService = {
     try {
       const vocabulary = await vocabularyApiService.getVocabulary();
       const categories = new Set(vocabulary.map(item => item.category));
-      return Array.from(categories);
+      return Array.from(categories).filter((category): category is string => category !== undefined);
     } catch (error) {
       console.error('Error getting vocabulary categories:', error);
       return [];

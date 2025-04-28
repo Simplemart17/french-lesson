@@ -16,7 +16,7 @@ interface SpeechRecognition extends EventTarget {
 }
 
 // Define the window with SpeechRecognition
-interface WindowWithSpeechRecognition extends Window {
+interface WindowWithSpeechRecognition {
   SpeechRecognition?: new () => SpeechRecognition;
   webkitSpeechRecognition?: new () => SpeechRecognition;
 }
@@ -53,23 +53,23 @@ const EnhancedSpeechRecognition = ({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const microphoneStreamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  
+
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const windowWithSpeech = window as WindowWithSpeechRecognition;
       const SpeechRecognition = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
-      
+
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = true;
         recognition.lang = language;
-        
+
         recognition.onresult = (event) => {
           let finalTranscript = '';
           let interimTranscript = '';
-          
+
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
               finalTranscript += event.results[i][0].transcript;
@@ -77,33 +77,33 @@ const EnhancedSpeechRecognition = ({
               interimTranscript += event.results[i][0].transcript;
             }
           }
-          
+
           if (finalTranscript) {
             setTranscript(finalTranscript);
           }
-          
+
           if (interimTranscript) {
             setInterimTranscript(interimTranscript);
           }
         };
-        
+
         recognition.onerror = (event) => {
           setError(`Error occurred in recognition: ${event.error}`);
           setIsListening(false);
           stopAudioAnalysis();
         };
-        
+
         recognition.onend = () => {
           setIsListening(false);
           stopAudioAnalysis();
         };
-        
+
         recognitionRef.current = recognition;
       } else {
         setError('Speech recognition is not supported in this browser.');
       }
     }
-    
+
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
@@ -111,32 +111,32 @@ const EnhancedSpeechRecognition = ({
       stopAudioAnalysis();
     };
   }, [language]);
-  
+
   // Start audio analysis for volume visualization
   const startAudioAnalysis = async () => {
     try {
       if (!audioContextRef.current) {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
       }
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       microphoneStreamRef.current = stream;
-      
+
       const analyser = audioContextRef.current.createAnalyser();
       analyser.fftSize = 256;
-      
+
       const source = audioContextRef.current.createMediaStreamSource(stream);
       source.connect(analyser);
-      
+
       analyserRef.current = analyser;
-      
+
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      
+
       const updateVolume = () => {
         if (!analyserRef.current) return;
-        
+
         analyserRef.current.getByteFrequencyData(dataArray);
-        
+
         // Calculate average volume
         let sum = 0;
         for (let i = 0; i < dataArray.length; i++) {
@@ -144,40 +144,40 @@ const EnhancedSpeechRecognition = ({
         }
         const avg = sum / dataArray.length;
         const normalizedVolume = Math.min(100, Math.max(0, avg * 2)); // Scale to 0-100
-        
+
         setVolume(normalizedVolume);
-        
+
         animationFrameRef.current = requestAnimationFrame(updateVolume);
       };
-      
+
       updateVolume();
     } catch (err) {
       console.error('Error accessing microphone:', err);
       setError('Error accessing microphone. Please check your permissions.');
     }
   };
-  
+
   const stopAudioAnalysis = () => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
-    
+
     if (microphoneStreamRef.current) {
       microphoneStreamRef.current.getTracks().forEach(track => track.stop());
       microphoneStreamRef.current = null;
     }
-    
+
     setVolume(0);
   };
-  
+
   const startListening = async () => {
     setError('');
     setTranscript('');
     setInterimTranscript('');
     setIsSubmitted(false);
     setFeedback([]);
-    
+
     if (recognitionRef.current) {
       try {
         await startAudioAnalysis();
@@ -193,7 +193,7 @@ const EnhancedSpeechRecognition = ({
       setError('Speech recognition is not supported in this browser.');
     }
   };
-  
+
   const stopListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -201,17 +201,17 @@ const EnhancedSpeechRecognition = ({
     setIsListening(false);
     stopAudioAnalysis();
   };
-  
+
   const analyzePronunciation = () => {
     setIsSubmitted(true);
-    
+
     // Split the target phrase and transcript into words
     const targetWords = targetPhrase.toLowerCase().split(/\s+/);
     const spokenWords = transcript.toLowerCase().split(/\s+/);
-    
+
     // Generate feedback for each word
     const wordFeedback: PronunciationFeedback[] = [];
-    
+
     // Common French pronunciation challenges
     const pronunciationTips: Record<string, string> = {
       'r': 'The French "r" is pronounced at the back of the throat, not with the tongue tip like in English.',
@@ -228,13 +228,13 @@ const EnhancedSpeechRecognition = ({
       'eu': 'The French "eu" has no English equivalent - try rounding your lips while saying "e".',
       'ch': 'The French "ch" is softer than in English, similar to "sh" in "ship".',
     };
-    
+
     // Compare words and generate feedback
     const maxWords = Math.max(targetWords.length, spokenWords.length);
     for (let i = 0; i < maxWords; i++) {
       const targetWord = i < targetWords.length ? targetWords[i] : '';
       const spokenWord = i < spokenWords.length ? spokenWords[i] : '';
-      
+
       if (!targetWord || !spokenWord) {
         // Missing or extra word
         wordFeedback.push({
@@ -246,10 +246,10 @@ const EnhancedSpeechRecognition = ({
         });
         continue;
       }
-      
+
       // Check if words match
       const isCorrect = targetWord === spokenWord;
-      
+
       // Generate pronunciation tips
       let tips = '';
       if (!isCorrect) {
@@ -260,13 +260,13 @@ const EnhancedSpeechRecognition = ({
             break;
           }
         }
-        
+
         // If no specific tip found, provide a general one
         if (!tips) {
           tips = `Try to pronounce "${targetWord}" more clearly.`;
         }
       }
-      
+
       wordFeedback.push({
         word: targetWord,
         expected: targetWord,
@@ -275,31 +275,31 @@ const EnhancedSpeechRecognition = ({
         tips: isCorrect ? undefined : tips
       });
     }
-    
+
     // Calculate overall score (percentage of correct words)
     const correctWords = wordFeedback.filter(fb => fb.isCorrect).length;
     const score = Math.round((correctWords / targetWords.length) * 100);
-    
+
     setPronunciationScore(score);
     setFeedback(wordFeedback);
-    
+
     if (onComplete) {
       onComplete(transcript, score, wordFeedback);
     }
   };
-  
+
   return (
     <Card className="overflow-hidden">
       <div className="p-6">
         <h3 className="mb-4 text-lg font-semibold text-gray-800">Pronunciation Practice</h3>
-        
+
         <div className="mb-6">
           <div className="mb-2 text-sm text-gray-500">Target phrase:</div>
           <div className="p-4 text-lg font-medium border border-gray-200 rounded-lg bg-gray-50">
             {targetPhrase}
           </div>
         </div>
-        
+
         <div className="mb-6">
           <div className="mb-2 text-sm text-gray-500">Your speech:</div>
           <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 min-h-[60px] relative">
@@ -312,18 +312,18 @@ const EnhancedSpeechRecognition = ({
                 {isListening ? 'Listening...' : 'Press the microphone button and speak'}
               </p>
             )}
-            
+
             {/* Volume visualization */}
             {isListening && (
               <div className="absolute flex items-center space-x-1 -translate-y-1/2 right-4 top-1/2">
                 {[1, 2, 3, 4, 5].map((level) => (
-                  <div 
+                  <div
                     key={level}
                     className={`w-1 rounded-full transition-all duration-100 ${
                       volume >= level * 20 ? 'bg-primary-500' : 'bg-gray-300'
                     }`}
-                    style={{ 
-                      height: `${Math.min(30, Math.max(5, level * 5 + (volume >= level * 20 ? volume / 10 : 0)))}px` 
+                    style={{
+                      height: `${Math.min(30, Math.max(5, level * 5 + (volume >= level * 20 ? volume / 10 : 0)))}px`
                     }}
                   ></div>
                 ))}
@@ -331,16 +331,16 @@ const EnhancedSpeechRecognition = ({
             )}
           </div>
         </div>
-        
+
         {error && (
           <div className="p-4 mb-6 text-red-700 border border-red-200 rounded-lg bg-red-50">
             {error}
           </div>
         )}
-        
+
         <div className="flex justify-center mb-6">
           {!isListening ? (
-            <Button 
+            <Button
               onClick={startListening}
               className="flex items-center justify-center w-16 h-16 rounded-full"
               disabled={isSubmitted}
@@ -350,7 +350,7 @@ const EnhancedSpeechRecognition = ({
               </svg>
             </Button>
           ) : (
-            <Button 
+            <Button
               onClick={stopListening}
               variant="destructive"
               className="flex items-center justify-center w-16 h-16 rounded-full animate-pulse"
@@ -362,7 +362,7 @@ const EnhancedSpeechRecognition = ({
             </Button>
           )}
         </div>
-        
+
         {transcript && !isSubmitted && (
           <div className="flex justify-center">
             <Button onClick={analyzePronunciation}>
@@ -370,7 +370,7 @@ const EnhancedSpeechRecognition = ({
             </Button>
           </div>
         )}
-        
+
         {/* Pronunciation Feedback */}
         {isSubmitted && (
           <div className="mt-8">
@@ -379,24 +379,24 @@ const EnhancedSpeechRecognition = ({
               <div className="flex items-center">
                 <div className="mr-2 text-sm text-gray-600">Score:</div>
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  pronunciationScore >= 80 
-                    ? 'bg-green-100 text-green-800' 
-                    : pronunciationScore >= 50 
-                    ? 'bg-yellow-100 text-yellow-800' 
+                  pronunciationScore >= 80
+                    ? 'bg-green-100 text-green-800'
+                    : pronunciationScore >= 50
+                    ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-red-100 text-red-800'
                 }`}>
                   {pronunciationScore}%
                 </div>
               </div>
             </div>
-            
+
             <div className="mb-6 space-y-3">
               {feedback.map((item, index) => (
-                <div 
+                <div
                   key={index}
                   className={`p-3 rounded-lg border ${
-                    item.isCorrect 
-                      ? 'bg-green-50 border-green-200' 
+                    item.isCorrect
+                      ? 'bg-green-50 border-green-200'
                       : 'bg-red-50 border-red-200'
                   }`}
                 >
@@ -435,18 +435,18 @@ const EnhancedSpeechRecognition = ({
                 </div>
               ))}
             </div>
-            
+
             <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
               <h5 className="mb-2 font-medium text-blue-800">Overall Assessment</h5>
               <p className="text-blue-700">
-                {pronunciationScore >= 80 
-                  ? 'Excellent pronunciation! Keep practicing to maintain your skills.' 
-                  : pronunciationScore >= 50 
-                  ? 'Good effort! Focus on the pronunciation tips to improve further.' 
+                {pronunciationScore >= 80
+                  ? 'Excellent pronunciation! Keep practicing to maintain your skills.'
+                  : pronunciationScore >= 50
+                  ? 'Good effort! Focus on the pronunciation tips to improve further.'
                   : 'Keep practicing! Pay attention to the pronunciation tips and try again.'}
               </p>
             </div>
-            
+
             <div className="flex justify-center mt-6">
               <Button onClick={startListening}>
                 Try Again

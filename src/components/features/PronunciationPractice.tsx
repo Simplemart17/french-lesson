@@ -113,9 +113,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
 
       // Use the service to speak the phrase
       await pronunciationService.speak(phrase, {
-        useAI: true,
-        voice: 'alloy',
-        cacheKey: phrase
+        voice: 'alloy'
       });
     } catch (error) {
       console.error('Error playing audio:', error);
