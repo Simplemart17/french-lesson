@@ -485,7 +485,7 @@ export default function ProfilePage() {
                   <div className="p-5">
                     <h3 className="mb-2 text-lg font-semibold text-gray-800">{resource.title}</h3>
                     <p className="mb-4 text-sm text-gray-600">{resource.description}</p>
-                    <Link href={resource.link}>
+                    <Link href={resource.link || '#'}>
                       <Button size="sm">
                         {resource.type === 'lesson' ? 'Start Lesson' :
                         resource.type === 'exercise' ? 'Start Practice' :

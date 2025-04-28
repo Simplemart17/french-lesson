@@ -32,10 +32,10 @@ const Layout = ({ children }: LayoutProps) => {
             <div>
               <h4 className="text-gray-800 font-semibold mb-3">Company</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-primary-600 transition-colors">About Us</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-primary-600 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-primary-600 transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-primary-600 transition-colors">Contact</a></li>
+                <li><a href="/about" className="text-gray-600 hover:text-primary-600 transition-colors">About Us</a></li>
+                <li><a href="/privacy" className="text-gray-600 hover:text-primary-600 transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-gray-600 hover:text-primary-600 transition-colors">Terms of Service</a></li>
+                <li><a href="/contact" className="text-gray-600 hover:text-primary-600 transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>
