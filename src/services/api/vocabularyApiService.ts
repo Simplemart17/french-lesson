@@ -14,7 +14,6 @@ export const vocabularyApiService = {
     try {
       const params = { level, category };
       const response = await apiClient.get<ApiResponse<VocabularyItem[]>>('/vocabulary', { params });
-
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
