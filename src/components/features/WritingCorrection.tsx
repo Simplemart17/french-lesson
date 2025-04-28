@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
-import { LoadingState } from '../ui/LoadingState';
-import { ErrorMessage } from '../ui/ErrorMessage';
+import LoadingState from '../ui/LoadingState';
+import ErrorMessage from '../ui/ErrorMessage';
 import { aiService } from '@/services';
 
 interface WritingCorrectionProps {

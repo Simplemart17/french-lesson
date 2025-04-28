@@ -15,7 +15,7 @@ interface SpeechRecognition extends EventTarget {
 }
 
 // Define the window with SpeechRecognition
-interface WindowWithSpeechRecognition extends Window {
+interface WindowWithSpeechRecognition {
   SpeechRecognition?: new () => SpeechRecognition;
   webkitSpeechRecognition?: new () => SpeechRecognition;
 }

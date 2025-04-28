@@ -16,7 +16,7 @@ interface SpeechRecognition extends EventTarget {
 }
 
 // Define the window with SpeechRecognition
-interface WindowWithSpeechRecognition extends Window {
+interface WindowWithSpeechRecognition {
   SpeechRecognition?: new () => SpeechRecognition;
   webkitSpeechRecognition?: new () => SpeechRecognition;
 }
@@ -64,27 +64,27 @@ const ConversationPractice = ({
   const [inputText, setInputText] = useState('');
   const [showHints, setShowHints] = useState(false);
   const [conversationEnded, setConversationEnded] = useState(false);
-  
+
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const windowWithSpeech = window as WindowWithSpeechRecognition;
       const SpeechRecognition = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
-      
+
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = true;
         recognition.lang = language;
-        
+
         recognition.onresult = (event) => {
           let finalTranscript = '';
           let interimTranscript = '';
-          
+
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
               finalTranscript += event.results[i][0].transcript;
@@ -92,44 +92,44 @@ const ConversationPractice = ({
               interimTranscript += event.results[i][0].transcript;
             }
           }
-          
+
           if (finalTranscript) {
             setTranscript(finalTranscript);
           }
-          
+
           if (interimTranscript) {
             setInterimTranscript(interimTranscript);
           }
         };
-        
+
         recognition.onerror = (event) => {
           setError(`Error occurred in recognition: ${event.error}`);
           setIsListening(false);
         };
-        
+
         recognition.onend = () => {
           setIsListening(false);
-          
+
           // If we have a final transcript, send it as a message
           if (transcript) {
             sendMessage(transcript);
             setTranscript('');
           }
         };
-        
+
         recognitionRef.current = recognition;
       } else {
         setError('Speech recognition is not supported in this browser.');
       }
     }
-    
+
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
     };
   }, [language, transcript]);
-  
+
   // Add initial message from the bot
   useEffect(() => {
     if (scenario) {
@@ -141,9 +141,9 @@ const ConversationPractice = ({
         translation: translateToEnglish(scenario.initialMessage),
         showTranslation: false
       };
-      
+
       setMessages([initialMessage]);
-      
+
       // Simulate typing effect for the initial message
       setIsTyping(true);
       setTimeout(() => {
@@ -152,17 +152,17 @@ const ConversationPractice = ({
       }, 1000);
     }
   }, [scenario]);
-  
+
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-  
+
   const startListening = () => {
     setError('');
     setTranscript('');
     setInterimTranscript('');
-    
+
     if (recognitionRef.current) {
       try {
         setIsListening(true);
@@ -176,13 +176,13 @@ const ConversationPractice = ({
       setError('Speech recognition is not supported in this browser.');
     }
   };
-  
+
   const stopListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
   };
-  
+
   const sendMessage = (text: string) => {
     // Add user message
     const userMessage: Message = {
@@ -191,41 +191,41 @@ const ConversationPractice = ({
       content: text,
       timestamp: new Date()
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
-    
+
     // Generate bot response
     generateBotResponse(text);
   };
-  
+
   const handleInputSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputText.trim()) {
       sendMessage(inputText.trim());
     }
   };
-  
+
   const generateBotResponse = (userInput: string) => {
     setIsTyping(true);
-    
+
     // In a real app, this would call an API
     setTimeout(() => {
       // Find a matching response or use a default
       let botReply = '';
-      
+
       if (scenario.possibleResponses) {
         // Try to find a matching response based on keywords
-        const matchingResponse = scenario.possibleResponses.find(response => 
+        const matchingResponse = scenario.possibleResponses.find(response =>
           userInput.toLowerCase().includes(response.userInput.toLowerCase())
         );
-        
+
         if (matchingResponse) {
           botReply = matchingResponse.botReply;
         } else {
           // Default responses based on conversation context
           const lastBotMessage = [...messages].reverse().find(m => m.role === 'assistant')?.content;
-          
+
           if (lastBotMessage?.includes('Comment allez-vous')) {
             botReply = "C'est bien! Qu'est-ce que vous aimez faire pendant votre temps libre?";
           } else if (lastBotMessage?.includes('temps libre')) {
@@ -242,7 +242,7 @@ const ConversationPractice = ({
       } else {
         botReply = "Je suis désolé, je ne sais pas comment répondre à cela.";
       }
-      
+
       // Add bot message
       const botMessage: Message = {
         id: Date.now().toString(),
@@ -252,42 +252,42 @@ const ConversationPractice = ({
         translation: translateToEnglish(botReply),
         showTranslation: false
       };
-      
+
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
-      
+
       // Speak the bot's response
       speakText(botReply);
-      
+
     }, 1500);
   };
-  
+
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
       setIsSpeaking(true);
-      
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = language;
       utterance.rate = 0.9; // Slightly slower for learning
-      
+
       utterance.onend = () => {
         setIsSpeaking(false);
       };
-      
+
       window.speechSynthesis.speak(utterance);
     }
   };
-  
+
   const toggleTranslation = (messageId: string) => {
-    setMessages(prev => 
-      prev.map(message => 
-        message.id === messageId 
-          ? { ...message, showTranslation: !message.showTranslation } 
+    setMessages(prev =>
+      prev.map(message =>
+        message.id === messageId
+          ? { ...message, showTranslation: !message.showTranslation }
           : message
       )
     );
   };
-  
+
   // Mock translation function (in a real app, this would call an API)
   const translateToEnglish = (text: string): string => {
     // This is a very simple mock translation - in a real app, use a translation API
@@ -303,31 +303,31 @@ const ConversationPractice = ({
       'Je ne suis pas sûr de comprendre. Pouvez-vous répéter d\'une autre façon?': 'I\'m not sure I understand. Can you repeat that in another way?',
       'Je suis désolé, je ne sais pas comment répondre à cela.': 'I\'m sorry, I don\'t know how to respond to that.',
     };
-    
+
     // Try to find an exact match
     if (translations[text]) {
       return translations[text];
     }
-    
+
     // Try to find partial matches
     for (const [french, english] of Object.entries(translations)) {
       if (text.includes(french)) {
         return english;
       }
     }
-    
+
     // Default response if no translation is found
     return 'Translation not available';
   };
-  
+
   const endConversation = () => {
     setConversationEnded(true);
-    
+
     if (onComplete) {
       onComplete(messages);
     }
   };
-  
+
   return (
     <div className="flex flex-col h-full">
       <Card className="flex flex-col flex-grow overflow-hidden">
@@ -337,7 +337,7 @@ const ConversationPractice = ({
             <p className="text-sm text-gray-500">{scenario.description}</p>
           </div>
           <div className="flex items-center space-x-2">
-            <button 
+            <button
               onClick={() => setShowHints(!showHints)}
               className={`p-2 rounded-full ${showHints ? 'bg-primary-100 text-primary-700' : 'text-gray-500 hover:bg-gray-100'}`}
               title={showHints ? 'Hide translations' : 'Show translations'}
@@ -346,7 +346,7 @@ const ConversationPractice = ({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
               </svg>
             </button>
-            <button 
+            <button
               onClick={endConversation}
               className="p-2 text-gray-500 rounded-full hover:bg-gray-100"
               title="End conversation"
@@ -357,10 +357,10 @@ const ConversationPractice = ({
             </button>
           </div>
         </div>
-        
+
         <div className="flex-grow p-4 space-y-4 overflow-y-auto">
           {messages.map((message) => (
-            <div 
+            <div
               key={message.id}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
@@ -368,7 +368,7 @@ const ConversationPractice = ({
                 <div className="flex items-start justify-between">
                   <p>{message.content}</p>
                   {message.role === 'assistant' && (
-                    <button 
+                    <button
                       onClick={() => speakText(message.content)}
                       className="p-1 ml-2 text-gray-500 rounded-full hover:text-primary-600 hover:bg-white/50"
                       title="Listen again"
@@ -379,32 +379,32 @@ const ConversationPractice = ({
                     </button>
                   )}
                 </div>
-                
+
                 {message.role === 'assistant' && message.translation && (showHints || message.showTranslation) && (
-                  <div 
+                  <div
                     className="pt-2 mt-2 text-sm text-gray-600 border-t border-gray-200 cursor-pointer"
                     onClick={() => toggleTranslation(message.id)}
                   >
                     {message.translation}
                   </div>
                 )}
-                
+
                 {message.role === 'assistant' && message.translation && !showHints && !message.showTranslation && (
-                  <button 
+                  <button
                     onClick={() => toggleTranslation(message.id)}
                     className="mt-1 text-xs text-gray-500 hover:text-primary-600"
                   >
                     Show translation
                   </button>
                 )}
-                
+
                 <div className="mt-1 text-xs text-gray-500">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
             </div>
           ))}
-          
+
           {isTyping && (
             <div className="flex justify-start">
               <div className="bg-gray-100 rounded-lg p-3 max-w-[80%]">
@@ -416,10 +416,10 @@ const ConversationPractice = ({
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
-        
+
         {!conversationEnded ? (
           <div className="p-4 border-t border-gray-200">
             {isListening && (
@@ -435,13 +435,13 @@ const ConversationPractice = ({
                 </div>
               </div>
             )}
-            
+
             {error && (
               <div className="p-3 mb-4 text-red-700 border border-red-200 rounded-lg bg-red-50">
                 {error}
               </div>
             )}
-            
+
             <div className="flex items-center space-x-2">
               <form onSubmit={handleInputSubmit} className="flex-grow">
                 <div className="relative">
@@ -464,13 +464,13 @@ const ConversationPractice = ({
                   </button>
                 </div>
               </form>
-              
+
               <button
                 onClick={isListening ? stopListening : startListening}
                 disabled={isSpeaking || isTyping}
                 className={`p-3 rounded-full ${
-                  isListening 
-                    ? 'bg-red-500 text-white animate-pulse' 
+                  isListening
+                    ? 'bg-red-500 text-white animate-pulse'
                     : 'bg-primary-500 text-white hover:bg-primary-600'
                 } ${(isSpeaking || isTyping) ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
@@ -496,7 +496,7 @@ const ConversationPractice = ({
           </div>
         )}
       </Card>
-      
+
       <audio ref={audioRef} className="hidden" />
     </div>
   );
