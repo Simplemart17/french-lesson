@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import PronunciationPractice, { PronunciationResult } from '@/components/features/PronunciationPractice';
@@ -61,6 +62,16 @@ export default function PronunciationPage() {
             Improve your French pronunciation with these exercises. Listen to the audio,
             repeat the phrase, and get feedback on your pronunciation.
           </p>
+          <div className="flex justify-center mt-4">
+            <Link href="/pronunciation-demo">
+              <Button variant="outline" className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                </svg>
+                Try AI-Powered Pronunciation
+              </Button>
+            </Link>
+          </div>
         </header>
 
         {isLoading ? (

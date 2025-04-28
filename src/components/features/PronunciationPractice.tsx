@@ -6,7 +6,6 @@ interface PronunciationPracticeProps {
   phrase: string;
   translation: string;
   onResult?: (result: PronunciationResult) => void;
-  audioUrl?: string;
 }
 
 export interface PronunciationResult {
@@ -19,8 +18,7 @@ export interface PronunciationResult {
 const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   phrase,
   translation,
-  onResult,
-  audioUrl
+  onResult
 }) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -30,7 +28,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
-  
+
   const recognitionRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -45,32 +43,32 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     // Create speech recognition instance
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
-    
+
     // Configure recognition
     recognitionRef.current.continuous = false;
     recognitionRef.current.interimResults = false;
     recognitionRef.current.lang = 'fr-FR'; // Set language to French
-    
+
     // Set up event handlers
     recognitionRef.current.onresult = (event: any) => {
       const result = event.results[0][0];
       const userTranscript = result.transcript.trim().toLowerCase();
       setTranscript(userTranscript);
-      
+
       // Evaluate pronunciation
       evaluatePronunciation(userTranscript);
     };
-    
+
     recognitionRef.current.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       setError(`Error: ${event.error}. Please try again.`);
       setIsListening(false);
     };
-    
+
     recognitionRef.current.onend = () => {
       setIsListening(false);
     };
-    
+
     // Clean up
     return () => {
       if (recognitionRef.current) {
@@ -79,12 +77,8 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     };
   }, []);
 
-  // Create audio element for TTS
-  useEffect(() => {
-    if (audioUrl) {
-      audioRef.current = new Audio(audioUrl);
-    }
-  }, [audioUrl]);
+  // No need to create audio element for TTS anymore
+  // We'll use the pronunciation service instead
 
   // Start listening
   const startListening = () => {
@@ -93,7 +87,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     setFeedback(null);
     setAccuracy(null);
     setIsCorrect(null);
-    
+
     try {
       recognitionRef.current.start();
       setIsListening(true);
@@ -111,12 +105,23 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     }
   };
 
-  // Play TTS audio
-  const playAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
-    } else {
-      // Fallback to browser TTS if no audio URL provided
+  // Play TTS audio using AI
+  const playAudio = async () => {
+    try {
+      // Import the pronunciation service
+      const pronunciationService = (await import('@/services/pronunciationService')).default;
+
+      // Use the service to speak the phrase
+      await pronunciationService.speak(phrase, {
+        useAI: true,
+        voice: 'alloy',
+        cacheKey: phrase
+      });
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setError('Failed to play audio. Please try again.');
+
+      // Fallback to browser TTS
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(phrase);
         utterance.lang = 'fr-FR';
@@ -130,24 +135,24 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   // Evaluate pronunciation using string similarity
   const evaluatePronunciation = (userTranscript: string) => {
     setIsLoading(true);
-    
+
     // Normalize strings for comparison
     const normalizedPhrase = phrase.toLowerCase().trim();
     const normalizedTranscript = userTranscript.toLowerCase().trim();
-    
+
     // Simple string similarity calculation (Levenshtein distance)
     const distance = levenshteinDistance(normalizedPhrase, normalizedTranscript);
     const maxLength = Math.max(normalizedPhrase.length, normalizedTranscript.length);
     const similarityScore = 1 - distance / maxLength;
-    
+
     // Convert to percentage
     const accuracyPercentage = Math.round(similarityScore * 100);
     setAccuracy(accuracyPercentage);
-    
+
     // Determine if pronunciation is correct
     const isCorrectPronunciation = accuracyPercentage >= 75;
     setIsCorrect(isCorrectPronunciation);
-    
+
     // Generate feedback
     let feedbackMessage = '';
     if (accuracyPercentage >= 90) {
@@ -159,10 +164,10 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     } else {
       feedbackMessage = 'Needs improvement. Listen to the audio and try again.';
     }
-    
+
     setFeedback(feedbackMessage);
     setIsLoading(false);
-    
+
     // Call onResult callback if provided
     if (onResult) {
       onResult({
@@ -178,18 +183,18 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const levenshteinDistance = (a: string, b: string): number => {
     if (a.length === 0) return b.length;
     if (b.length === 0) return a.length;
-    
+
     const matrix = [];
-    
+
     // Initialize matrix
     for (let i = 0; i <= b.length; i++) {
       matrix[i] = [i];
     }
-    
+
     for (let j = 0; j <= a.length; j++) {
       matrix[0][j] = j;
     }
-    
+
     // Fill matrix
     for (let i = 1; i <= b.length; i++) {
       for (let j = 1; j <= a.length; j++) {
@@ -201,7 +206,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
         );
       }
     }
-    
+
     return matrix[b.length][a.length];
   };
 
@@ -211,13 +216,13 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
         <h2 className="mb-2 text-xl font-semibold text-gray-800">Pronunciation Practice</h2>
         <p className="text-gray-600">Listen to the audio and repeat the phrase</p>
       </div>
-      
+
       <div className="p-4 mb-6 text-center bg-gray-50 rounded-lg">
         <div className="mb-2 text-2xl font-bold text-gray-800">{phrase}</div>
         {showTranslation ? (
           <div className="text-gray-600">{translation}</div>
         ) : (
-          <button 
+          <button
             onClick={() => setShowTranslation(true)}
             className="text-sm text-primary-600 hover:underline"
           >
@@ -225,9 +230,9 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
           </button>
         )}
       </div>
-      
+
       <div className="flex justify-center mb-6">
-        <Button 
+        <Button
           onClick={playAudio}
           className="flex items-center"
         >
@@ -237,11 +242,11 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
           Listen
         </Button>
       </div>
-      
+
       <div className="mb-6">
         <div className="flex justify-center mb-4">
           {isListening ? (
-            <Button 
+            <Button
               onClick={stopListening}
               variant="destructive"
               className="flex items-center"
@@ -252,7 +257,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
               Stop Recording
             </Button>
           ) : (
-            <Button 
+            <Button
               onClick={startListening}
               className="flex items-center"
             >
@@ -263,26 +268,26 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
             </Button>
           )}
         </div>
-        
+
         {isListening && (
           <div className="flex items-center justify-center p-3 mb-4 text-primary-600 bg-primary-50 rounded-lg">
             <div className="w-4 h-4 mr-2 bg-red-500 rounded-full animate-pulse"></div>
             Listening...
           </div>
         )}
-        
+
         {error && (
           <div className="p-3 mb-4 text-red-700 bg-red-50 rounded-lg">
             {error}
           </div>
         )}
-        
+
         {isLoading && (
           <div className="flex justify-center">
             <LoadingState message="Analyzing pronunciation..." size="small" />
           </div>
         )}
-        
+
         {transcript && !isLoading && (
           <div className="mb-4">
             <h3 className="mb-1 text-sm font-medium text-gray-700">Your pronunciation:</h3>
@@ -291,11 +296,11 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
             </div>
           </div>
         )}
-        
+
         {feedback && !isLoading && (
           <div className={`p-4 rounded-lg ${
-            isCorrect 
-              ? 'bg-green-50 border border-green-200' 
+            isCorrect
+              ? 'bg-green-50 border border-green-200'
               : 'bg-yellow-50 border border-yellow-200'
           }`}>
             <div className="flex items-start">
@@ -321,10 +326,10 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
                   <div className="mt-2">
                     <div className="text-xs font-medium text-gray-500">Accuracy</div>
                     <div className="w-full h-2 mt-1 bg-gray-200 rounded-full">
-                      <div 
+                      <div
                         className={`h-2 rounded-full ${
-                          accuracy >= 75 ? 'bg-green-500' : 
-                          accuracy >= 50 ? 'bg-yellow-500' : 
+                          accuracy >= 75 ? 'bg-green-500' :
+                          accuracy >= 50 ? 'bg-yellow-500' :
                           'bg-red-500'
                         }`}
                         style={{ width: `${accuracy}%` }}
@@ -338,15 +343,15 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
           </div>
         )}
       </div>
-      
+
       <div className="flex justify-between">
-        <Button 
+        <Button
           variant="outline"
           onClick={playAudio}
         >
           Listen Again
         </Button>
-        <Button 
+        <Button
           onClick={startListening}
           disabled={isListening}
         >

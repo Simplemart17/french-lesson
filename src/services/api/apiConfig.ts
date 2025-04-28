@@ -52,8 +52,8 @@ export const API_ENDPOINTS = {
   // Pronunciation endpoints
   PRONUNCIATION: {
     EXERCISES: '/pronunciation/exercises',
+    PHRASES: '/pronunciation/phrases',
     CHECK: '/pronunciation/check',
-    AUDIO: (id: number | string) => `/pronunciation/audio/${id}`,
     PROGRESS: '/pronunciation/progress',
   },
 

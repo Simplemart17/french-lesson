@@ -101,10 +101,30 @@ class ApiClient {
   // Generic request method
   public async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<T> = await this.client.request(config);
+      const response: AxiosResponse = await this.client.request(config);
+
+      // Handle our API response structure { success: boolean, data: T }
+      if (response.data && typeof response.data === 'object') {
+        if ('success' in response.data && 'data' in response.data) {
+          // Our API format
+          return {
+            data: response.data.data as T,
+            status: response.status,
+            message: response.data.message
+          };
+        } else if ('data' in response.data) {
+          // Nested data format
+          return {
+            data: response.data.data as T,
+            status: response.status
+          };
+        }
+      }
+
+      // Default case - return the data directly
       return {
-        data: (response.data as { data: T }).data,
-        status: response.status,
+        data: response.data as T,
+        status: response.status
       };
     } catch (error) {
       throw error;

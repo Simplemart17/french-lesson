@@ -1,0 +1,422 @@
+[
+  {
+    "text": "Bonjour, comment allez-vous?",
+    "translation": "Hello, how are you?",
+    "difficulty": "beginner",
+    "category": "greetings",
+    "expectedPronunciation": "bɔ̃.ʒuʁ, kɔ.mɑ̃ t‿a.le vu"
+  },
+  {
+    "text": "Je m'appelle Marie.",
+    "translation": "My name is Marie.",
+    "difficulty": "beginner",
+    "category": "introductions",
+    "expectedPronunciation": "ʒə ma.pɛl ma.ʁi"
+  },
+  {
+    "text": "Un, deux, trois, quatre, cinq.",
+    "translation": "One, two, three, four, five.",
+    "difficulty": "beginner",
+    "category": "numbers",
+    "expectedPronunciation": "œ̃, dø, tʁwa, katʁ, sɛ̃k"
+  },
+  {
+    "text": "Merci beaucoup.",
+    "translation": "Thank you very much.",
+    "difficulty": "beginner",
+    "category": "greetings",
+    "expectedPronunciation": "mɛʁ.si bo.ku"
+  },
+  {
+    "text": "Au revoir et à bientôt!",
+    "translation": "Goodbye and see you soon!",
+    "difficulty": "beginner",
+    "category": "greetings",
+    "expectedPronunciation": "o ʁə.vwaʁ e a bjɛ̃.to"
+  },
+  {
+    "text": "Enchanté de faire votre connaissance.",
+    "translation": "Pleased to meet you.",
+    "difficulty": "beginner",
+    "category": "introductions",
+    "expectedPronunciation": "ɑ̃.ʃɑ̃.te də fɛʁ vɔtʁ kɔ.nɛ.sɑ̃s"
+  },
+  {
+    "text": "Comment vous appelez-vous?",
+    "translation": "What is your name?",
+    "difficulty": "beginner",
+    "category": "introductions",
+    "expectedPronunciation": "kɔ.mɑ̃ vu za.ple vu"
+  },
+  {
+    "text": "Je suis français.",
+    "translation": "I am French.",
+    "difficulty": "beginner",
+    "category": "introductions",
+    "expectedPronunciation": "ʒə sɥi fʁɑ̃.sɛ"
+  },
+  {
+    "text": "Parlez-vous anglais?",
+    "translation": "Do you speak English?",
+    "difficulty": "beginner",
+    "category": "introductions",
+    "expectedPronunciation": "paʁ.le vu ɑ̃.glɛ"
+  },
+  {
+    "text": "Je ne comprends pas.",
+    "translation": "I don't understand.",
+    "difficulty": "beginner",
+    "category": "basics",
+    "expectedPronunciation": "ʒə nə kɔ̃.pʁɑ̃ pa"
+  },
+  {
+    "text": "Un bon vin blanc.",
+    "translation": "A good white wine.",
+    "difficulty": "beginner",
+    "category": "nasal sounds",
+    "expectedPronunciation": "œ̃ bɔ̃ vɛ̃ blɑ̃"
+  },
+  {
+    "text": "Demain matin, nous mangeons du pain.",
+    "translation": "Tomorrow morning, we are eating bread.",
+    "difficulty": "beginner",
+    "category": "nasal sounds",
+    "expectedPronunciation": "də.mɛ̃ ma.tɛ̃, nu mɑ̃.ʒɔ̃ dy pɛ̃"
+  },
+  {
+    "text": "Cinq singes sont dans le jardin.",
+    "translation": "Five monkeys are in the garden.",
+    "difficulty": "beginner",
+    "category": "nasal sounds",
+    "expectedPronunciation": "sɛ̃k sɛ̃ʒ sɔ̃ dɑ̃ lə ʒaʁ.dɛ̃"
+  },
+  {
+    "text": "Mon oncle est content.",
+    "translation": "My uncle is happy.",
+    "difficulty": "beginner",
+    "category": "nasal sounds",
+    "expectedPronunciation": "mɔ̃ n‿ɔ̃kl ɛ kɔ̃.tɑ̃"
+  },
+  {
+    "text": "Je voudrais un café, s'il vous plaît.",
+    "translation": "I would like a coffee, please.",
+    "difficulty": "beginner",
+    "category": "restaurant",
+    "expectedPronunciation": "ʒə vu.dʁɛ œ̃ ka.fe, sil vu plɛ"
+  },
+  {
+    "text": "L'addition, s'il vous plaît.",
+    "translation": "The bill, please.",
+    "difficulty": "beginner",
+    "category": "restaurant",
+    "expectedPronunciation": "la.di.sjɔ̃, sil vu plɛ"
+  },
+  {
+    "text": "Où sont les toilettes?",
+    "translation": "Where is the bathroom?",
+    "difficulty": "beginner",
+    "category": "restaurant",
+    "expectedPronunciation": "u sɔ̃ le twa.lɛt"
+  },
+  {
+    "text": "Je voudrais réserver une table pour deux personnes.",
+    "translation": "I would like to reserve a table for two people.",
+    "difficulty": "beginner",
+    "category": "restaurant",
+    "expectedPronunciation": "ʒə vu.dʁɛ ʁe.zɛʁ.ve yn tabl puʁ dø pɛʁ.sɔn"
+  },
+  {
+    "text": "Quelle heure est-il?",
+    "translation": "What time is it?",
+    "difficulty": "beginner",
+    "category": "time",
+    "expectedPronunciation": "kɛl œʁ ɛ til"
+  },
+  {
+    "text": "Il est trois heures et demie.",
+    "translation": "It's half past three.",
+    "difficulty": "beginner",
+    "category": "time",
+    "expectedPronunciation": "i.l‿ɛ tʁwa z‿œʁ e də.mi"
+  },
+  {
+    "text": "Le rat court sur la route.",
+    "translation": "The rat runs on the road.",
+    "difficulty": "intermediate",
+    "category": "r sound",
+    "expectedPronunciation": "lə ʁa kuʁ syʁ la ʁut"
+  },
+  {
+    "text": "Trois gros rats gris grimpent sur le mur.",
+    "translation": "Three big gray rats climb on the wall.",
+    "difficulty": "intermediate",
+    "category": "r sound",
+    "expectedPronunciation": "tʁwa gʁo ʁa gʁi gʁɛ̃p syʁ lə myʁ"
+  },
+  {
+    "text": "La roue rouge roule rapidement.",
+    "translation": "The red wheel rolls quickly.",
+    "difficulty": "intermediate",
+    "category": "r sound",
+    "expectedPronunciation": "la ʁu ʁuʒ ʁul ʁa.pid.mɑ̃"
+  },
+  {
+    "text": "Le garçon regarde la grenouille.",
+    "translation": "The boy watches the frog.",
+    "difficulty": "intermediate",
+    "category": "r sound",
+    "expectedPronunciation": "lə gaʁ.sɔ̃ ʁə.gaʁd la gʁə.nuj"
+  },
+  {
+    "text": "Tu as vu la rue?",
+    "translation": "Did you see the street?",
+    "difficulty": "intermediate",
+    "category": "u vs ou sounds",
+    "expectedPronunciation": "ty a vy la ʁy"
+  },
+  {
+    "text": "Nous avons beaucoup de sous pour vous.",
+    "translation": "We have a lot of money for you.",
+    "difficulty": "intermediate",
+    "category": "u vs ou sounds",
+    "expectedPronunciation": "nu z‿a.vɔ̃ bo.ku də su puʁ vu"
+  },
+  {
+    "text": "Tu as bu tout le jus.",
+    "translation": "You drank all the juice.",
+    "difficulty": "intermediate",
+    "category": "u vs ou sounds",
+    "expectedPronunciation": "ty a by tu lə ʒy"
+  },
+  {
+    "text": "Où est la voiture de Louis?",
+    "translation": "Where is Louis's car?",
+    "difficulty": "intermediate",
+    "category": "u vs ou sounds",
+    "expectedPronunciation": "u ɛ la vwa.tyʁ də lwi"
+  },
+  {
+    "text": "Les enfants ont un ami.",
+    "translation": "The children have a friend.",
+    "difficulty": "intermediate",
+    "category": "liaisons",
+    "expectedPronunciation": "le z‿ɑ̃.fɑ̃ z‿ɔ̃ t‿œ̃ n‿a.mi"
+  },
+  {
+    "text": "Ils arrivent à huit heures.",
+    "translation": "They arrive at eight o'clock.",
+    "difficulty": "intermediate",
+    "category": "liaisons",
+    "expectedPronunciation": "il z‿a.ʁiv a ɥi t‿œʁ"
+  },
+  {
+    "text": "Nous avons été en France.",
+    "translation": "We have been to France.",
+    "difficulty": "intermediate",
+    "category": "liaisons",
+    "expectedPronunciation": "nu z‿a.vɔ̃ z‿e.te ɑ̃ fʁɑ̃s"
+  },
+  {
+    "text": "C'est un petit enfant.",
+    "translation": "It's a small child.",
+    "difficulty": "intermediate",
+    "category": "liaisons",
+    "expectedPronunciation": "sɛ t‿œ̃ pə.ti t‿ɑ̃.fɑ̃"
+  },
+  {
+    "text": "Je voudrais acheter des fruits et des légumes.",
+    "translation": "I would like to buy some fruits and vegetables.",
+    "difficulty": "intermediate",
+    "category": "shopping",
+    "expectedPronunciation": "ʒə vu.dʁɛ a.ʃə.te de fʁɥi e de le.gym"
+  },
+  {
+    "text": "Combien coûte ce pull?",
+    "translation": "How much does this sweater cost?",
+    "difficulty": "intermediate",
+    "category": "shopping",
+    "expectedPronunciation": "kɔ̃.bjɛ̃ kut sə pyl"
+  },
+  {
+    "text": "Je cherche une chemise en coton.",
+    "translation": "I'm looking for a cotton shirt.",
+    "difficulty": "intermediate",
+    "category": "shopping",
+    "expectedPronunciation": "ʒə ʃɛʁʃ yn ʃə.miz ɑ̃ kɔ.tɔ̃"
+  },
+  {
+    "text": "Avez-vous ce modèle en bleu?",
+    "translation": "Do you have this model in blue?",
+    "difficulty": "intermediate",
+    "category": "shopping",
+    "expectedPronunciation": "a.ve vu sə mɔ.dɛl ɑ̃ blø"
+  },
+  {
+    "text": "Je voudrais réserver une chambre pour deux nuits.",
+    "translation": "I would like to book a room for two nights.",
+    "difficulty": "intermediate",
+    "category": "travel",
+    "expectedPronunciation": "ʒə vu.dʁɛ ʁe.zɛʁ.ve yn ʃɑ̃bʁ puʁ dø nɥi"
+  },
+  {
+    "text": "À quelle heure part le train pour Paris?",
+    "translation": "What time does the train to Paris leave?",
+    "difficulty": "intermediate",
+    "category": "travel",
+    "expectedPronunciation": "a kɛl œʁ paʁ lə tʁɛ̃ puʁ pa.ʁi"
+  },
+  {
+    "text": "Pouvez-vous m'indiquer le chemin vers la gare?",
+    "translation": "Can you show me the way to the train station?",
+    "difficulty": "intermediate",
+    "category": "travel",
+    "expectedPronunciation": "pu.ve vu mɛ̃.di.ke lə ʃə.mɛ̃ vɛʁ la gaʁ"
+  },
+  {
+    "text": "Je voudrais louer une voiture.",
+    "translation": "I would like to rent a car.",
+    "difficulty": "intermediate",
+    "category": "travel",
+    "expectedPronunciation": "ʒə vu.dʁɛ lu.e yn vwa.tyʁ"
+  },
+  {
+    "text": "Les chaussettes de l'archiduchesse sont-elles sèches ou archi-sèches?",
+    "translation": "Are the archduchess's socks dry or very dry?",
+    "difficulty": "advanced",
+    "category": "tongue twisters",
+    "expectedPronunciation": "le ʃo.sɛt də laʁ.ʃi.dy.ʃɛs sɔ̃ t‿ɛl sɛʃ u aʁ.ʃi sɛʃ"
+  },
+  {
+    "text": "Un chasseur sachant chasser doit savoir chasser sans son chien.",
+    "translation": "A hunter who knows how to hunt must know how to hunt without his dog.",
+    "difficulty": "advanced",
+    "category": "tongue twisters",
+    "expectedPronunciation": "œ̃ ʃa.sœʁ sa.ʃɑ̃ ʃa.se dwa sa.vwaʁ ʃa.se sɑ̃ sɔ̃ ʃjɛ̃"
+  },
+  {
+    "text": "Si six scies scient six cyprès, six cent six scies scient six cent six cyprès.",
+    "translation": "If six saws saw six cypress trees, six hundred and six saws saw six hundred and six cypress trees.",
+    "difficulty": "advanced",
+    "category": "tongue twisters",
+    "expectedPronunciation": "si si si si si si.pʁɛ, si sɑ̃ si si si si sɑ̃ si si.pʁɛ"
+  },
+  {
+    "text": "Ton thé t'a-t-il ôté ta toux?",
+    "translation": "Has your tea taken away your cough?",
+    "difficulty": "advanced",
+    "category": "tongue twisters",
+    "expectedPronunciation": "tɔ̃ te ta ti.l o.te ta tu"
+  },
+  {
+    "text": "Il faut qu'il fasse beau pour la fête.",
+    "translation": "The weather needs to be nice for the party.",
+    "difficulty": "advanced",
+    "category": "subjunctive",
+    "expectedPronunciation": "il fo kil fas bo puʁ la fɛt"
+  },
+  {
+    "text": "Je ne pense pas qu'il vienne ce soir.",
+    "translation": "I don't think he will come tonight.",
+    "difficulty": "advanced",
+    "category": "subjunctive",
+    "expectedPronunciation": "ʒə nə pɑ̃s pa kil vjɛn sə swaʁ"
+  },
+  {
+    "text": "Il est important que vous sachiez la vérité.",
+    "translation": "It is important that you know the truth.",
+    "difficulty": "advanced",
+    "category": "subjunctive",
+    "expectedPronunciation": "i.l‿ɛ tɛ̃.pɔʁ.tɑ̃ kə vu sa.ʃje la ve.ʁi.te"
+  },
+  {
+    "text": "Bien qu'il pleuve, nous sortons.",
+    "translation": "Although it's raining, we're going out.",
+    "difficulty": "advanced",
+    "category": "subjunctive",
+    "expectedPronunciation": "bjɛ̃ kil plœv, nu sɔʁ.tɔ̃"
+  },
+  {
+    "text": "Cette scène est exceptionnelle.",
+    "translation": "This scene is exceptional.",
+    "difficulty": "advanced",
+    "category": "difficult words",
+    "expectedPronunciation": "sɛt sɛn ɛ t‿ɛk.sɛp.sjɔ.nɛl"
+  },
+  {
+    "text": "L'accueil chaleureux des habitants nous a touchés.",
+    "translation": "The warm welcome from the inhabitants touched us.",
+    "difficulty": "advanced",
+    "category": "difficult words",
+    "expectedPronunciation": "la.kœj ʃa.lø.ʁø de z‿a.bi.tɑ̃ nu z‿a tu.ʃe"
+  },
+  {
+    "text": "Le gouvernement a pris des mesures extraordinaires.",
+    "translation": "The government has taken extraordinary measures.",
+    "difficulty": "advanced",
+    "category": "difficult words",
+    "expectedPronunciation": "lə gu.vɛʁ.nə.mɑ̃ a pʁi de mə.zyʁ ɛks.tʁa.ɔʁ.di.nɛʁ"
+  },
+  {
+    "text": "L'inconstitutionnalité de cette loi est évidente.",
+    "translation": "The unconstitutionality of this law is evident.",
+    "difficulty": "advanced",
+    "category": "difficult words",
+    "expectedPronunciation": "lɛ̃.kɔ̃s.ti.ty.sjɔ.na.li.te də sɛt lwa ɛ te.vi.dɑ̃t"
+  },
+  {
+    "text": "Est-ce que vous pourriez me dire où se trouve la gare, s'il vous plaît?",
+    "translation": "Could you tell me where the train station is, please?",
+    "difficulty": "advanced",
+    "category": "intonation",
+    "expectedPronunciation": "ɛs kə vu pu.ʁje mə diʁ u sə tʁuv la gaʁ, sil vu plɛ"
+  },
+  {
+    "text": "Je ne sais pas si j'aurai le temps de finir ce travail aujourd'hui.",
+    "translation": "I don't know if I'll have time to finish this work today.",
+    "difficulty": "advanced",
+    "category": "rhythm",
+    "expectedPronunciation": "ʒə nə sɛ pa si ʒo.ʁe lə tɑ̃ də fi.niʁ sə tʁa.vaj o.ʒuʁ.dɥi"
+  },
+  {
+    "text": "Pourriez-vous me recommander un bon restaurant dans le quartier?",
+    "translation": "Could you recommend a good restaurant in the neighborhood?",
+    "difficulty": "advanced",
+    "category": "intonation",
+    "expectedPronunciation": "pu.ʁje vu mə ʁə.kɔ.mɑ̃.de œ̃ bɔ̃ ʁɛs.to.ʁɑ̃ dɑ̃ lə kaʁ.tje"
+  },
+  {
+    "text": "Qu'est-ce que vous avez fait pendant vos vacances d'été?",
+    "translation": "What did you do during your summer vacation?",
+    "difficulty": "advanced",
+    "category": "intonation",
+    "expectedPronunciation": "kɛs kə vu z‿a.ve fɛ pɑ̃.dɑ̃ vo va.kɑ̃s de.te"
+  },
+  {
+    "text": "Demain, dès l'aube, à l'heure où blanchit la campagne, je partirai.",
+    "translation": "Tomorrow, at dawn, at the hour when the countryside whitens, I will leave.",
+    "difficulty": "advanced",
+    "category": "poetry",
+    "expectedPronunciation": "də.mɛ̃, dɛ lob, a lœʁ u blɑ̃.ʃi la kɑ̃.paɲ, ʒə paʁ.ti.ʁe"
+  },
+  {
+    "text": "La mer, la mer, toujours recommencée.",
+    "translation": "The sea, the sea, forever restarting.",
+    "difficulty": "advanced",
+    "category": "poetry",
+    "expectedPronunciation": "la mɛʁ, la mɛʁ, tu.ʒuʁ ʁə.kɔ.mɑ̃.se"
+  },
+  {
+    "text": "Heureux qui, comme Ulysse, a fait un beau voyage.",
+    "translation": "Happy is he who, like Ulysses, has made a beautiful journey.",
+    "difficulty": "advanced",
+    "category": "poetry",
+    "expectedPronunciation": "ø.ʁø ki, kɔm y.lis, a fɛ tœ̃ bo vwa.jaʒ"
+  },
+  {
+    "text": "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
+    "translation": "The long sobs of the violins of autumn wound my heart with a monotonous languor.",
+    "difficulty": "advanced",
+    "category": "poetry",
+    "expectedPronunciation": "le sɑ̃.glo lɔ̃ de vjɔ.lɔ̃ də lo.tɔn blɛs mɔ̃ kœʁ dyn lɑ̃.gœʁ mɔ.nɔ.tɔn"
+  }
+]

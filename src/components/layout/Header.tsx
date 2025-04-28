@@ -37,6 +37,7 @@ const NAVIGATION_GROUPS: NavGroup[] = [
       { name: "Writing", href: "/writing" },
       { name: "Vocabulary", href: "/vocabulary" },
       { name: "Pronunciation", href: "/pronunciation" },
+      { name: "AI Pronunciation", href: "/pronunciation-demo" },
       { name: "Listening", href: "/listening" },
     ]
   },
@@ -141,8 +142,8 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="items-center hidden space-x-5 md:flex">
             {NAVIGATION_GROUPS.map((group) => (
-              <div 
-                key={group.name} 
+              <div
+                key={group.name}
                 ref={(el) => { dropdownRefs.current[group.name] = el; }}
                 className="relative"
               >
@@ -156,10 +157,10 @@ const Header = () => {
                 >
                   <span className="text-current">{group.icon}</span>
                   {group.name}
-                  <svg 
-                    className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === group.name ? 'rotate-180' : ''}`} 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === group.name ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -213,8 +214,8 @@ const Header = () => {
                         <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                       </div>
-                      <Link 
-                        href="/dashboard" 
+                      <Link
+                        href="/dashboard"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
                         <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,8 +223,8 @@ const Header = () => {
                         </svg>
                         Dashboard
                       </Link>
-                      <Link 
-                        href="/profile" 
+                      <Link
+                        href="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
                         <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,8 +232,8 @@ const Header = () => {
                         </svg>
                         Profile
                       </Link>
-                      <Link 
-                        href="/progress" 
+                      <Link
+                        href="/progress"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
                         <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,8 +241,8 @@ const Header = () => {
                         </svg>
                         My Progress
                       </Link>
-                      <Link 
-                        href="/settings" 
+                      <Link
+                        href="/settings"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
                         <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,9 +311,9 @@ const Header = () => {
                   </div>
                   <div className="pl-4 space-y-1">
                     {group.items.map((item) => (
-                      <MobileNavLink 
-                        key={item.href} 
-                        href={item.href} 
+                      <MobileNavLink
+                        key={item.href}
+                        href={item.href}
                         active={isActive(item.href)}
                       >
                         {item.name}
@@ -321,7 +322,7 @@ const Header = () => {
                   </div>
                 </div>
               ))}
-              
+
               {isAuthenticated ? (
                 <>
                   <div className="flex items-center gap-2 px-4 py-2 mt-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">
@@ -371,7 +372,7 @@ const Header = () => {
           </nav>
         )}
       </div>
-      
+
       {/* Animation styles */}
       <style jsx global>{`
         @keyframes slideDown {
@@ -384,11 +385,11 @@ const Header = () => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-slideDown {
           animation: slideDown 0.3s ease forwards;
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -399,7 +400,7 @@ const Header = () => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.2s ease forwards;
         }

@@ -173,10 +173,55 @@ class PronunciationService {
   }
 
   /**
-   * Get audio URL for a phrase
+   * Get text for a phrase and speak it
    */
-  getAudioUrl(id: number): string {
-    return pronunciationApiService.getAudioUrl(id);
+  async speakPhrase(id: number): Promise<boolean> {
+    try {
+      // Get the phrase text
+      const text = await pronunciationApiService.getPhraseText(id);
+
+      if (!text) {
+        throw new Error(`Failed to get text for phrase ${id}`);
+      }
+
+      // Use the JavaScript implementation directly
+      // This avoids the circular dependency
+      if (typeof window !== 'undefined') {
+        const audio = new Audio();
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text,
+            voice: 'alloy'
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        audio.src = audioUrl;
+        await new Promise((resolve, reject) => {
+          audio.onended = () => resolve(true);
+          audio.onerror = (e) => reject(e);
+          audio.play().catch(reject);
+        });
+      } else {
+        // Server-side - can't play audio
+        console.log('Server-side rendering detected, skipping audio playback');
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error speaking phrase ${id}:`, error);
+      return false;
+    }
   }
 
   /**

@@ -49,27 +49,15 @@ export default function VocabularyPage() {
   );
 
   // Extract vocabulary items from API response
-  const apiVocabulary = apiResponse?.data?.items || [];
+  const apiVocabulary = apiResponse || [];
 
   // Convert API vocabulary to VocabularyWord format
   useEffect(() => {
-    if (apiVocabulary?.length > 0) {
-      // Convert API vocabulary to VocabularyWord format
-      const convertedVocabulary: VocabularyWord[] = apiVocabulary.map((item: any, index: number) => ({
-        id: item.id?.toString() || index.toString(),
-        word: item.word,
-        translation: item.translation,
-        example: item.example || '',
-        category: 'general', // Default category
-        pronunciation: '', // API doesn't provide pronunciation
-        level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
-               item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
-        lastReviewed: item.lastPracticed,
-        nextReview: undefined,
-        repetitionStage: item.learned ? 3 : 0 // Estimate stage based on learned status
-      }));
+    console.log('API Response in component:', apiResponse); // Debug log
 
-      setVocabulary(convertedVocabulary);
+    if (apiVocabulary?.length > 0) {
+      // The vocabularyService already converts the API response to VocabularyWord format
+      setVocabulary(apiVocabulary);
     } else if (!isLoading && (error || !apiVocabulary?.length)) {
       // If API fails, set empty vocabulary
       setVocabulary([]);

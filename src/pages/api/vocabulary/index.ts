@@ -13,24 +13,73 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 
-  // GET request to retrieve user's vocabulary
+  // GET request to retrieve vocabulary lists
   if (req.method === 'GET') {
     try {
-      const vocabularyItems = await prisma.userVocabulary.findMany({
-        where: {
-          userId
-        },
-        include: {
-          vocabulary: true
-        },
+      const { level, category } = req.query;
+
+      // Build the where clause based on query parameters
+      const where: any = {};
+
+      if (level) {
+        where.level = level as string;
+      }
+
+      if (category) {
+        where.category = category as string;
+      }
+
+      // Fetch vocabulary from database
+      const vocabulary = await prisma.vocabulary.findMany({
+        where,
         orderBy: {
-          lastPracticed: 'desc'
+          word: 'asc'
         }
       });
-      
+
+      // Get user vocabulary progress for these items
+      const userVocabularyItems = await prisma.userVocabulary.findMany({
+        where: {
+          userId,
+          vocabularyId: {
+            in: vocabulary.map(item => item.id)
+          }
+        }
+      });
+
+      // Create a map of vocabulary ID to user progress
+      const userProgressMap = new Map();
+      userVocabularyItems.forEach(item => {
+        userProgressMap.set(item.vocabularyId, {
+          learned: item.learned,
+          lastPracticed: item.lastPracticed,
+          nextReviewDate: item.nextReviewDate,
+          repetitionStage: item.repetitionStage
+        });
+      });
+
+      // Combine vocabulary with user progress
+      const result = vocabulary.map(item => {
+        const userProgress = userProgressMap.get(item.id);
+        return {
+          id: item.id,
+          word: item.word,
+          translation: item.translation,
+          example: item.example,
+          level: item.level,
+          category: item.category,
+          pronunciation: item.pronunciation,
+          usageContext: item.usageContext,
+          learned: userProgress ? userProgress.learned : false,
+          lastPracticed: userProgress ? userProgress.lastPracticed : null,
+          nextReview: userProgress ? userProgress.nextReviewDate : null,
+          repetitionStage: userProgress ? userProgress.repetitionStage : 0
+        };
+      });
+
       return res.status(200).json({
         success: true,
-        data: vocabularyItems
+        data: result
       });
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
@@ -40,102 +89,69 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
   }
-  
-  // POST request to add vocabulary to user's list
+
+  // POST request to add a new vocabulary item
   if (req.method === 'POST') {
     try {
-      const { vocabularyId, learned } = req.body;
-      
-      if (!vocabularyId) {
+      const {
+        word,
+        translation,
+        example,
+        level,
+        category,
+        pronunciation,
+        usageContext
+      } = req.body;
+
+      // Validate required fields
+      if (!word || !translation || !level) {
         return res.status(400).json({
           success: false,
-          error: { message: 'Missing required vocabulary ID' }
+          error: { message: 'Word, translation, and level are required' }
         });
       }
-      
-      // Check if vocabulary exists
-      const vocabularyExists = await prisma.vocabulary.findUnique({
-        where: { id: vocabularyId }
+
+      // Check if vocabulary already exists
+      const existingVocabulary = await prisma.vocabulary.findUnique({
+        where: { word }
       });
-      
-      if (!vocabularyExists) {
-        return res.status(404).json({
+
+      if (existingVocabulary) {
+        return res.status(400).json({
           success: false,
-          error: { message: 'Vocabulary not found' }
+          error: { message: 'Vocabulary item already exists' }
         });
       }
-      
-      // Create or update user vocabulary
-      const userVocabulary = await prisma.userVocabulary.upsert({
-        where: {
-          userId_vocabularyId: {
-            userId,
-            vocabularyId
-          }
-        },
-        update: {
-          learned: learned !== undefined ? learned : undefined,
-          lastPracticed: new Date()
-        },
-        create: {
-          userId,
-          vocabularyId,
-          learned: learned || false,
-          lastPracticed: new Date()
+
+      // Create new vocabulary item
+      const newVocabulary = await prisma.vocabulary.create({
+        data: {
+          word,
+          translation,
+          example: example || '',
+          level,
+          category: category || null,
+          pronunciation: pronunciation || null,
+          usageContext: usageContext || []
         }
       });
-      
+
       return res.status(201).json({
         success: true,
-        data: userVocabulary
+        data: newVocabulary
       });
     } catch (error) {
-      console.error('Error managing vocabulary:', error);
+      console.error('Error adding vocabulary:', error);
       return res.status(500).json({
         success: false,
-        error: { message: 'Failed to manage vocabulary' }
+        error: { message: 'Failed to add vocabulary' }
       });
     }
   }
-  
-  // DELETE request to remove vocabulary from user's list
-  if (req.method === 'DELETE') {
-    try {
-      const { vocabularyId } = req.body;
-      
-      if (!vocabularyId) {
-        return res.status(400).json({
-          success: false,
-          error: { message: 'Missing required vocabulary ID' }
-        });
-      }
-      
-      // Delete the user vocabulary entry
-      await prisma.userVocabulary.delete({
-        where: {
-          userId_vocabularyId: {
-            userId,
-            vocabularyId
-          }
-        }
-      });
-      
-      return res.status(200).json({
-        success: true,
-        message: 'Vocabulary removed successfully'
-      });
-    } catch (error) {
-      console.error('Error removing vocabulary:', error);
-      return res.status(500).json({
-        success: false,
-        error: { message: 'Failed to remove vocabulary' }
-      });
-    }
-  }
-  
-  return res.status(405).json({ 
-    success: false, 
-    error: { message: 'Method not allowed' } 
+
+  return res.status(405).json({
+    success: false,
+    error: { message: 'Method not allowed' }
   });
 }
 

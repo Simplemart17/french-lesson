@@ -1,0 +1,529 @@
+[
+  {
+    "title": "Introduction to French Greetings",
+    "description": "Learn basic French greetings and introductions for everyday conversations.",
+    "level": "A1",
+    "duration": 30,
+    "topics": [
+      "greetings",
+      "introductions",
+      "basics"
+    ],
+    "sections": [
+      {
+        "title": "Common Greetings",
+        "type": "text",
+        "content": "In French, greetings are an important part of daily interactions. Here are the most common greetings:\n\n- Bonjour = Hello/Good day\n- Salut = Hi (informal)\n- Bonsoir = Good evening\n- Au revoir = Goodbye\n- À bientôt = See you soon",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "multiple-choice",
+            "question": "How do you say 'Hello' in French?",
+            "options": [
+              "Bonjour",
+              "Au revoir",
+              "Merci",
+              "S'il vous plaît"
+            ],
+            "correctAnswer": "Bonjour",
+            "explanation": "Bonjour is the standard greeting in French, used throughout the day until evening."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "Which greeting is informal?",
+            "options": [
+              "Bonjour",
+              "Salut",
+              "Bonsoir",
+              "Au revoir"
+            ],
+            "correctAnswer": "Salut",
+            "explanation": "Salut is an informal greeting used among friends and family."
+          }
+        ]
+      },
+      {
+        "title": "Introducing Yourself",
+        "type": "text",
+        "content": "To introduce yourself in French, you can say:\n\n- Je m'appelle [your name] = My name is [your name]\n- Je suis [your name] = I am [your name]\n- Enchanté(e) = Nice to meet you",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "fill-in-blank",
+            "question": "To say 'My name is John' in French, you would say: '__ ________ John'",
+            "options": [],
+            "correctAnswer": "Je m'appelle",
+            "explanation": "Je m'appelle literally means 'I call myself' and is the most common way to introduce yourself."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "How do you say 'Nice to meet you' in French?",
+            "options": [
+              "Au revoir",
+              "Bonjour",
+              "Enchanté",
+              "Merci"
+            ],
+            "correctAnswer": "Enchanté",
+            "explanation": "Enchanté (or enchantée for women) is used when meeting someone for the first time."
+          }
+        ]
+      },
+      {
+        "title": "Practice Dialogue",
+        "type": "audio",
+        "content": "Listen to this dialogue and practice the pronunciation:\n\nPerson A: Bonjour ! Je m'appelle Marie. Et vous ?\nPerson B: Bonjour Marie ! Je m'appelle Pierre. Enchanté.\nPerson A: Enchantée, Pierre. Comment allez-vous ?\nPerson B: Très bien, merci. Et vous ?\nPerson A: Ça va bien, merci.",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "ordering",
+            "question": "Put the dialogue in the correct order:",
+            "options": [
+              "Bonjour ! Je m'appelle Marie. Et vous ?",
+              "Bonjour Marie ! Je m'appelle Pierre. Enchanté.",
+              "Enchantée, Pierre. Comment allez-vous ?",
+              "Très bien, merci. Et vous ?",
+              "Ça va bien, merci."
+            ],
+            "correctAnswer": "0,1,2,3,4",
+            "explanation": "This is the natural flow of a French greeting conversation."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Ordering Food in a Restaurant",
+    "description": "Learn essential vocabulary and phrases for ordering food in a French restaurant.",
+    "level": "A2",
+    "duration": 45,
+    "topics": [
+      "food",
+      "restaurants",
+      "practical"
+    ],
+    "sections": [
+      {
+        "title": "Restaurant Vocabulary",
+        "type": "text",
+        "content": "Here are some essential words for dining out:\n\n- Un restaurant = A restaurant\n- Un menu = A menu\n- Une table = A table\n- Un serveur/Une serveuse = A waiter/waitress\n- L'addition = The bill\n- Une entrée = A starter\n- Un plat principal = A main course\n- Un dessert = A dessert\n- Une boisson = A drink",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "matching",
+            "question": "Match the French words with their English translations",
+            "options": [
+              "un menu",
+              "l'addition",
+              "un serveur",
+              "une table",
+              "un dessert"
+            ],
+            "correctAnswer": "menu=menu, addition=bill, serveur=waiter, table=table, dessert=dessert",
+            "explanation": "These are essential terms you'll need when dining at a French restaurant."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "What is 'une entrée' in a French restaurant?",
+            "options": [
+              "The entrance",
+              "A starter",
+              "The main course",
+              "The bill"
+            ],
+            "correctAnswer": "A starter",
+            "explanation": "In French restaurants, 'une entrée' refers to the first course or starter, not the main dish."
+          }
+        ]
+      },
+      {
+        "title": "Ordering Phrases",
+        "type": "audio",
+        "content": "Common phrases for ordering food:\n\n- Je voudrais... = I would like...\n- Pour moi, ce sera... = For me, it will be...\n- L'addition, s'il vous plaît = The bill, please\n- C'est délicieux = It's delicious\n- Je recommande... = I recommend...\n- Qu'est-ce que vous recommandez ? = What do you recommend?",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "multiple-choice",
+            "question": "How do you ask for the bill in French?",
+            "options": [
+              "Je voudrais manger",
+              "C'est délicieux",
+              "L'addition, s'il vous plaît",
+              "Une table pour deux"
+            ],
+            "correctAnswer": "L'addition, s'il vous plaît",
+            "explanation": "L'addition, s'il vous plaît is how you politely ask for the bill in a restaurant."
+          },
+          {
+            "type": "fill-in-blank",
+            "question": "To say 'I would like a coffee' in French, you would say: '__ ________ un café.'",
+            "options": [],
+            "correctAnswer": "Je voudrais",
+            "explanation": "Je voudrais is a polite way to order in French, equivalent to 'I would like' in English."
+          }
+        ]
+      },
+      {
+        "title": "Restaurant Dialogue",
+        "type": "text",
+        "content": "Study this typical restaurant dialogue:\n\nServeur: Bonjour, vous avez réservé ?\nClient: Oui, j'ai réservé une table pour deux personnes au nom de Dupont.\nServeur: Parfait. Suivez-moi, s'il vous plaît. Voici la carte.\nClient: Merci. Qu'est-ce que vous recommandez aujourd'hui ?\nServeur: Je vous recommande le steak-frites, c'est notre spécialité.\nClient: Très bien, je vais prendre ça. Et comme entrée, une soupe à l'oignon.\nServeur: Excellent choix. Et comme boisson ?\nClient: Une carafe d'eau, s'il vous plaît.\nServeur: Je vous apporte ça tout de suite.",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "true-false",
+            "question": "In the dialogue, the client ordered fish as a main course.",
+            "options": [
+              "True",
+              "False"
+            ],
+            "correctAnswer": "False",
+            "explanation": "The client ordered steak-frites (steak and fries), not fish."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "What did the client order to drink?",
+            "options": [
+              "Wine",
+              "Water",
+              "Coffee",
+              "Beer"
+            ],
+            "correctAnswer": "Water",
+            "explanation": "The client ordered 'une carafe d'eau' which means a pitcher of water."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Talking About Your Daily Routine",
+    "description": "Learn to describe your daily activities and routines in French.",
+    "level": "B1",
+    "duration": 60,
+    "topics": [
+      "daily life",
+      "reflexive verbs",
+      "time expressions"
+    ],
+    "sections": [
+      {
+        "title": "Reflexive Verbs",
+        "type": "text",
+        "content": "Many daily routine activities use reflexive verbs in French. These verbs use a reflexive pronoun (me, te, se, nous, vous, se) to indicate that the subject performs the action on itself:\n\n- Je me réveille = I wake up\n- Je me lave = I wash myself\n- Je me brosse les dents = I brush my teeth\n- Je me couche = I go to bed\n- Je m'habille = I get dressed\n- Je me prépare = I get ready",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "fill-in-blank",
+            "question": "To say 'I brush my teeth' in French, you would say: 'Je __ _______ les dents'",
+            "options": [],
+            "correctAnswer": "me brosse",
+            "explanation": "The reflexive verb 'se brosser' requires the reflexive pronoun 'me' before the verb when used with 'je'."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "Which is the correct way to say 'She gets dressed'?",
+            "options": [
+              "Elle s'habille",
+              "Elle habille",
+              "Elle est habille",
+              "Elle habilles"
+            ],
+            "correctAnswer": "Elle s'habille",
+            "explanation": "The reflexive verb 's'habiller' requires the reflexive pronoun 's'' before the verb when used with 'elle'."
+          }
+        ]
+      },
+      {
+        "title": "Time Expressions",
+        "type": "text",
+        "content": "To talk about when you do things, you'll need these time expressions:\n\n- Le matin = In the morning\n- L'après-midi = In the afternoon\n- Le soir = In the evening\n- À [time] = At [time]\n- Tous les jours = Every day\n- D'abord... ensuite... enfin = First... then... finally\n- Tôt = Early\n- Tard = Late\n- Pendant = During\n- Avant de = Before (doing something)\n- Après avoir = After (having done something)",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "multiple-choice",
+            "question": "How do you say 'every day' in French?",
+            "options": [
+              "Aujourd'hui",
+              "Maintenant",
+              "Tous les jours",
+              "Demain"
+            ],
+            "correctAnswer": "Tous les jours",
+            "explanation": "Tous les jours literally means 'all the days' and is used to express something that happens daily."
+          },
+          {
+            "type": "fill-in-blank",
+            "question": "To say 'I wake up early in the morning', you would say: 'Je me réveille ____ le _____.'",
+            "options": [],
+            "correctAnswer": "tôt, matin",
+            "explanation": "Tôt means 'early' and le matin means 'in the morning'."
+          }
+        ]
+      },
+      {
+        "title": "Describing Your Routine",
+        "type": "audio",
+        "content": "Listen to this description of a daily routine:\n\nTous les jours, je me réveille à 7 heures du matin. D'abord, je me douche et je m'habille. Ensuite, je prends mon petit-déjeuner à 7h30. Je pars de chez moi à 8 heures et j'arrive au bureau à 8h30. Je travaille jusqu'à midi, puis je déjeune avec mes collègues. L'après-midi, je continue à travailler jusqu'à 17 heures. Après le travail, je fais du sport ou je rentre directement chez moi. Le soir, je prépare le dîner, je regarde un peu la télé et je lis un livre. Enfin, je me couche vers 23 heures.",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "ordering",
+            "question": "Put these daily activities in the correct order according to the audio:",
+            "options": [
+              "Se réveiller",
+              "Prendre le petit-déjeuner",
+              "Arriver au bureau",
+              "Déjeuner",
+              "Rentrer chez soi",
+              "Se coucher"
+            ],
+            "correctAnswer": "0,1,2,3,4,5",
+            "explanation": "This is the chronological order of activities in a typical day as described in the audio."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "At what time does the person wake up?",
+            "options": [
+              "6:00",
+              "6:30",
+              "7:00",
+              "7:30"
+            ],
+            "correctAnswer": "7:00",
+            "explanation": "The person says 'je me réveille à 7 heures du matin' (I wake up at 7 in the morning)."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Shopping for Clothes",
+    "description": "Learn vocabulary and expressions for shopping for clothes in French.",
+    "level": "A2",
+    "duration": 45,
+    "topics": [
+      "shopping",
+      "clothing",
+      "numbers"
+    ],
+    "sections": [
+      {
+        "title": "Clothing Vocabulary",
+        "type": "text",
+        "content": "Essential clothing vocabulary in French:\n\n- Un pantalon = Pants/trousers\n- Une chemise = A shirt\n- Un t-shirt = A t-shirt\n- Une robe = A dress\n- Une jupe = A skirt\n- Un pull = A sweater\n- Un manteau = A coat\n- Des chaussures = Shoes\n- Des chaussettes = Socks\n- Un chapeau = A hat\n- Une écharpe = A scarf\n- Des gants = Gloves",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "matching",
+            "question": "Match the French clothing items with their English translations",
+            "options": [
+              "une robe",
+              "un pantalon",
+              "des chaussures",
+              "un chapeau",
+              "une écharpe"
+            ],
+            "correctAnswer": "robe=dress, pantalon=pants, chaussures=shoes, chapeau=hat, écharpe=scarf",
+            "explanation": "These are common clothing items you'll need to know when shopping in France."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "Which of these is NOT an item of clothing?",
+            "options": [
+              "Une chemise",
+              "Un pull",
+              "Une assiette",
+              "Des gants"
+            ],
+            "correctAnswer": "Une assiette",
+            "explanation": "Une assiette means 'a plate' and is not a clothing item. The others are a shirt, a sweater, and gloves."
+          }
+        ]
+      },
+      {
+        "title": "Shopping Phrases",
+        "type": "audio",
+        "content": "Useful phrases for shopping for clothes:\n\n- Je cherche... = I'm looking for...\n- Quelle est votre taille ? = What is your size?\n- Je fais du 40 = I'm a size 40\n- Je peux l'essayer ? = Can I try it on?\n- Les cabines d'essayage sont là-bas = The fitting rooms are over there\n- Ça vous va très bien = It suits you very well\n- C'est trop grand/petit = It's too big/small\n- Combien ça coûte ? = How much does it cost?\n- C'est en solde ? = Is it on sale?\n- Je vais le/la prendre = I'll take it",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "fill-in-blank",
+            "question": "To ask 'Can I try it on?' in French, you would say: '__ _____ l'essayer ?'",
+            "options": [],
+            "correctAnswer": "Je peux",
+            "explanation": "Je peux means 'I can' or 'May I' and is used to ask permission."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "How do you say 'It's too small' in French?",
+            "options": [
+              "C'est trop grand",
+              "C'est trop petit",
+              "C'est très bien",
+              "C'est en solde"
+            ],
+            "correctAnswer": "C'est trop petit",
+            "explanation": "Trop petit means 'too small', while trop grand means 'too big'."
+          }
+        ]
+      },
+      {
+        "title": "Shopping Dialogue",
+        "type": "text",
+        "content": "Study this dialogue in a clothing store:\n\nVendeur: Bonjour, je peux vous aider ?\nClient: Bonjour, je cherche un pull pour l'hiver.\nVendeur: Bien sûr. Quelle taille faites-vous ?\nClient: Je fais du M.\nVendeur: D'accord. Nous avons ces modèles en taille M. Quelle couleur préférez-vous ?\nClient: J'aime bien le bleu. Je peux l'essayer ?\nVendeur: Bien sûr, les cabines d'essayage sont au fond à droite.\n[Plus tard]\nVendeur: Alors, il vous va bien ?\nClient: Oui, il me va très bien. Combien coûte-t-il ?\nVendeur: Il coûte 45 euros, mais il est en solde à -20% aujourd'hui.\nClient: Super ! Je vais le prendre.\nVendeur: Parfait. Vous pouvez payer à la caisse là-bas.",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "true-false",
+            "question": "The customer is looking for a coat.",
+            "options": [
+              "True",
+              "False"
+            ],
+            "correctAnswer": "False",
+            "explanation": "The customer is looking for a sweater (un pull), not a coat (un manteau)."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "What size is the customer looking for?",
+            "options": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "correctAnswer": "M",
+            "explanation": "The customer says 'Je fais du M' which means 'I'm a size M'."
+          },
+          {
+            "type": "calculation",
+            "question": "If the sweater costs 45 euros with a 20% discount, how much will the customer pay?",
+            "options": [
+              "36 euros",
+              "40 euros",
+              "45 euros",
+              "54 euros"
+            ],
+            "correctAnswer": "36 euros",
+            "explanation": "45 euros - 20% = 45 - 9 = 36 euros"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Making Travel Plans",
+    "description": "Learn vocabulary and expressions for planning trips and travel in French.",
+    "level": "B1",
+    "duration": 60,
+    "topics": [
+      "travel",
+      "transportation",
+      "accommodation"
+    ],
+    "sections": [
+      {
+        "title": "Travel Vocabulary",
+        "type": "text",
+        "content": "Essential travel vocabulary in French:\n\n- Un voyage = A trip/journey\n- Un billet = A ticket\n- Une réservation = A reservation\n- Un hôtel = A hotel\n- Une auberge de jeunesse = A youth hostel\n- Un vol = A flight\n- Un train = A train\n- Une gare = A train station\n- Un aéroport = An airport\n- Un passeport = A passport\n- Une valise = A suitcase\n- Un plan/Une carte = A map",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "matching",
+            "question": "Match the French travel terms with their English translations",
+            "options": [
+              "un voyage",
+              "un billet",
+              "une gare",
+              "un aéroport",
+              "une valise"
+            ],
+            "correctAnswer": "voyage=trip, billet=ticket, gare=train station, aéroport=airport, valise=suitcase",
+            "explanation": "These are common travel terms you'll need to know when traveling in France."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "What is 'une auberge de jeunesse'?",
+            "options": [
+              "A youth club",
+              "A youth hostel",
+              "A young person's restaurant",
+              "A children's playground"
+            ],
+            "correctAnswer": "A youth hostel",
+            "explanation": "Une auberge de jeunesse is a youth hostel, an affordable accommodation option popular with young travelers."
+          }
+        ]
+      },
+      {
+        "title": "Making Reservations",
+        "type": "audio",
+        "content": "Useful phrases for making travel reservations:\n\n- Je voudrais réserver... = I would like to book...\n- Pour combien de personnes ? = For how many people?\n- Pour combien de nuits ? = For how many nights?\n- Quelle est la date d'arrivée/de départ ? = What is the arrival/departure date?\n- Avez-vous des chambres disponibles ? = Do you have any rooms available?\n- Quel est le prix par nuit ? = What is the price per night?\n- Est-ce que le petit-déjeuner est inclus ? = Is breakfast included?\n- Je voudrais annuler/modifier ma réservation = I would like to cancel/change my reservation",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "fill-in-blank",
+            "question": "To ask if breakfast is included, you would say: 'Est-ce que le ____-_______ est inclus ?'",
+            "options": [],
+            "correctAnswer": "petit-déjeuner",
+            "explanation": "Le petit-déjeuner means 'breakfast' in French."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "How do you ask 'For how many nights?' in French?",
+            "options": [
+              "Pour combien de jours ?",
+              "Pour combien de personnes ?",
+              "Pour combien de nuits ?",
+              "Pour quelle date ?"
+            ],
+            "correctAnswer": "Pour combien de nuits ?",
+            "explanation": "Pour combien de nuits ? is how you ask for the duration of a stay in nights."
+          }
+        ]
+      },
+      {
+        "title": "Transportation Dialogue",
+        "type": "text",
+        "content": "Study this dialogue at a train station:\n\nClient: Bonjour, je voudrais un billet pour Lyon, s'il vous plaît.\nAgent: Bonjour. Aller simple ou aller-retour ?\nClient: Aller-retour. Je pars demain matin et je reviens dimanche soir.\nAgent: D'accord. Quel horaire préférez-vous pour l'aller ?\nClient: Y a-t-il un train vers 9 heures ?\nAgent: Oui, il y a un train à 9h15, arrivée à Lyon à 11h30.\nClient: Parfait. Et pour le retour, un train en fin d'après-midi dimanche ?\nAgent: Il y a un train à 17h45, arrivée à Paris à 20h00.\nClient: Ça me convient. Combien coûte le billet ?\nAgent: En seconde classe, c'est 87 euros.\nClient: Je vais prendre ça. Je peux payer par carte ?\nAgent: Bien sûr. Insérez votre carte, s'il vous plaît.",
+        "videoUrl": null,
+        "exercises": [
+          {
+            "type": "true-false",
+            "question": "The customer is buying a one-way ticket.",
+            "options": [
+              "True",
+              "False"
+            ],
+            "correctAnswer": "False",
+            "explanation": "The customer is buying a round-trip ticket (aller-retour), not a one-way ticket (aller simple)."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "What time does the return train arrive?",
+            "options": [
+              "17:45",
+              "18:00",
+              "19:45",
+              "20:00"
+            ],
+            "correctAnswer": "20:00",
+            "explanation": "The return train arrives at 20:00 (8:00 PM)."
+          },
+          {
+            "type": "multiple-choice",
+            "question": "How much does the ticket cost?",
+            "options": [
+              "78 euros",
+              "87 euros",
+              "97 euros",
+              "107 euros"
+            ],
+            "correctAnswer": "87 euros",
+            "explanation": "The agent says the second-class ticket costs 87 euros."
+          }
+        ]
+      }
+    ]
+  }
+]

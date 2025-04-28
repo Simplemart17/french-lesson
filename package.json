@@ -8,10 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
-    "db:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/setup-db.ts",
-    "db:setup": "prisma generate && prisma migrate dev && ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/lib/seed.ts",
+    "db:seed": "node prisma/seed/index.js",
+    "db:setup": "prisma generate && prisma migrate dev && npm run db:seed",
     "generate-vocabulary": "node scripts/generate-vocabulary.js",
     "seed-vocabulary": "node scripts/seed-vocabulary.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed/index.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

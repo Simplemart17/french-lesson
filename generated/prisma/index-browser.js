@@ -185,10 +185,9 @@ exports.Prisma.VocabularyScalarFieldEnum = {
   translation: 'translation',
   example: 'example',
   level: 'level',
+  category: 'category',
   pronunciation: 'pronunciation',
-  audioUrl: 'audioUrl',
-  usageContext: 'usageContext',
-  category: 'category'
+  usageContext: 'usageContext'
 };
 
 exports.Prisma.UserVocabularyScalarFieldEnum = {
@@ -197,8 +196,8 @@ exports.Prisma.UserVocabularyScalarFieldEnum = {
   vocabularyId: 'vocabularyId',
   learned: 'learned',
   lastPracticed: 'lastPracticed',
-  repetitionStage: 'repetitionStage',
-  nextReviewDate: 'nextReviewDate'
+  nextReviewDate: 'nextReviewDate',
+  repetitionStage: 'repetitionStage'
 };
 
 exports.Prisma.ConversationScalarFieldEnum = {
@@ -217,9 +216,9 @@ exports.Prisma.MessageScalarFieldEnum = {
   role: 'role',
   content: 'content',
   timestamp: 'timestamp',
+  audioUrl: 'audioUrl',
   corrections: 'corrections',
-  suggestedVocabulary: 'suggestedVocabulary',
-  audioUrl: 'audioUrl'
+  suggestedVocabulary: 'suggestedVocabulary'
 };
 
 exports.Prisma.ConversationTemplateScalarFieldEnum = {
@@ -276,7 +275,6 @@ exports.Prisma.PronunciationExerciseScalarFieldEnum = {
   id: 'id',
   text: 'text',
   translation: 'translation',
-  audioUrl: 'audioUrl',
   difficulty: 'difficulty',
   category: 'category',
   expectedPronunciation: 'expectedPronunciation'

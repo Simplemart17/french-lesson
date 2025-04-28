@@ -62,9 +62,9 @@ export function useFetch<T>(
   const lastFetchTimeRef = useRef(0);
 
   // Function to safely update state only if component is mounted
-  const safeSetState = useCallback(<S>(setter: React.Dispatch<React.SetStateAction<S>>, value: React.SetStateAction<S>) => {
+  const safeSetState = useCallback(<S>(setter: React.Dispatch<React.SetStateAction<S>>, value: S | ((prevState: S) => S)) => {
     if (isMountedRef.current) {
-      setter(value);
+      setter(value as React.SetStateAction<S>);
     }
   }, []);
 
@@ -88,9 +88,12 @@ export function useFetch<T>(
 
   // Main fetch function
   const fetchData = useCallback(async (skipCache = false) => {
+    console.log('fetchData called, skipCache:', skipCache);
+
     // Avoid duplicate requests within deduping interval
     const now = Date.now();
     if (now - lastFetchTimeRef.current < dedupingInterval && !skipCache) {
+      console.log('Skipping fetch due to deduping interval');
       return;
     }
     lastFetchTimeRef.current = now;
@@ -100,6 +103,7 @@ export function useFetch<T>(
     if (cacheKey && !skipCache) {
       const cachedData = cache.get<T>(cacheKey);
       if (cachedData) {
+        console.log('Using cached data for key:', cacheKey);
         safeSetState(setData, cachedData);
         onSuccess?.(cachedData);
 
@@ -112,22 +116,26 @@ export function useFetch<T>(
 
     // If we're already loading and not explicitly skipping cache, don't start another request
     if (isLoading && !skipCache) {
+      console.log('Already loading, skipping fetch');
       return;
     }
 
     // Check if there's already an in-flight request for this key
     if (cacheKey && cacheKey in inFlightRequests && !skipCache) {
+      console.log('Using in-flight request for key:', cacheKey);
       try {
         const result = await inFlightRequests[cacheKey];
         safeSetState(setData, result);
         onSuccess?.(result);
         return;
       } catch (err) {
+        console.log('In-flight request failed, continuing with new request');
         // If the in-flight request fails, we'll continue with a new request
       }
     }
 
     // Start loading
+    console.log('Starting fetch...');
     safeSetState(setIsLoading, true);
     safeSetState(setIsValidating, true);
     safeSetState(setError, null);
@@ -139,15 +147,19 @@ export function useFetch<T>(
         const maxRetries = typeof retry === 'boolean' ? (retry ? 3 : 0) : retry;
         retryCountRef.current = 0;
 
+        console.log('Executing fetch function...');
         // Execute fetch with retry logic
         const result = await fetchWithRetry(fetchFn, maxRetries);
+        console.log('Fetch result:', result);
 
         // Cache the result if cacheKey is provided
         if (cacheKey) {
+          console.log('Caching result for key:', cacheKey);
           cache.set(cacheKey, result, cacheDuration);
         }
 
         // Update state and call onSuccess
+        console.log('Setting data and calling onSuccess');
         safeSetState(setData, result);
         safeSetState(setIsLoading, false);
         safeSetState(setIsValidating, false);
@@ -156,6 +168,7 @@ export function useFetch<T>(
         return result;
       } catch (err) {
         // Handle error
+        console.error('Fetch error:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         safeSetState(setError, error);
         safeSetState(setIsLoading, false);
@@ -172,10 +185,12 @@ export function useFetch<T>(
 
     // Store the promise for deduping
     if (cacheKey) {
+      console.log('Storing promise for key:', cacheKey);
       inFlightRequests[cacheKey] = fetchPromise();
     }
 
     // Execute the fetch
+    console.log('Awaiting fetch promise...');
     await fetchPromise();
   }, [
     fetchFn,

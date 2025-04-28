@@ -20,14 +20,12 @@ interface AdvancedPronunciationPracticeProps {
   phrase: string;
   translation?: string;
   onResult?: (result: PronunciationResponse) => void;
-  audioUrl?: string;
 }
 
 const AdvancedPronunciationPractice: React.FC<AdvancedPronunciationPracticeProps> = ({
   phrase,
   translation,
-  onResult,
-  audioUrl
+  onResult
 }) => {
   // State
   const [isRecording, setIsRecording] = useState(false);
@@ -42,18 +40,30 @@ const AdvancedPronunciationPractice: React.FC<AdvancedPronunciationPracticeProps
   const audioChunksRef = useRef<Blob[]>([]);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
-  // Play phrase audio
-  const playPhraseAudio = () => {
-    if (audioUrl) {
-      const audio = new Audio(audioUrl);
-      audio.play();
-    } else if ('speechSynthesis' in window) {
+  // Play phrase audio using AI TTS
+  const playPhraseAudio = async () => {
+    try {
+      // Import the pronunciation service
+      const pronunciationService = (await import('@/services/pronunciationService')).default;
+
+      // Use the service to speak the phrase
+      await pronunciationService.speak(phrase, {
+        useAI: true,
+        voice: 'alloy',
+        cacheKey: phrase
+      });
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setError('Failed to play audio. Please try again.');
+
       // Fallback to browser's speech synthesis
-      const utterance = new SpeechSynthesisUtterance(phrase);
-      utterance.lang = 'fr-FR';
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setError('Text-to-speech is not supported in your browser');
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.lang = 'fr-FR';
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setError('Text-to-speech is not supported in your browser');
+      }
     }
   };
 

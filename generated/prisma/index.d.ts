@@ -2325,21 +2325,21 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    lessonProgress: number
-    vocabulary: number
-    examResults: number
     conversations: number
+    examResults: number
+    lessonProgress: number
     practiceSessions: number
     templateUsage: number
+    vocabulary: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    lessonProgress?: boolean | UserCountOutputTypeCountLessonProgressArgs
-    vocabulary?: boolean | UserCountOutputTypeCountVocabularyArgs
-    examResults?: boolean | UserCountOutputTypeCountExamResultsArgs
     conversations?: boolean | UserCountOutputTypeCountConversationsArgs
+    examResults?: boolean | UserCountOutputTypeCountExamResultsArgs
+    lessonProgress?: boolean | UserCountOutputTypeCountLessonProgressArgs
     practiceSessions?: boolean | UserCountOutputTypeCountPracticeSessionsArgs
     templateUsage?: boolean | UserCountOutputTypeCountTemplateUsageArgs
+    vocabulary?: boolean | UserCountOutputTypeCountVocabularyArgs
   }
 
   // Custom InputTypes
@@ -2356,15 +2356,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountLessonProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: LessonProgressWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserVocabularyWhereInput
+  export type UserCountOutputTypeCountConversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConversationWhereInput
   }
 
   /**
@@ -2377,8 +2370,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountConversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ConversationWhereInput
+  export type UserCountOutputTypeCountLessonProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonProgressWhereInput
   }
 
   /**
@@ -2393,6 +2386,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserTemplateUsageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserVocabularyWhereInput
   }
 
 
@@ -2472,13 +2472,13 @@ export namespace Prisma {
    */
 
   export type VocabularyCountOutputType = {
-    userVocabulary: number
     practiceItems: number
+    userVocabulary: number
   }
 
   export type VocabularyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userVocabulary?: boolean | VocabularyCountOutputTypeCountUserVocabularyArgs
     practiceItems?: boolean | VocabularyCountOutputTypeCountPracticeItemsArgs
+    userVocabulary?: boolean | VocabularyCountOutputTypeCountUserVocabularyArgs
   }
 
   // Custom InputTypes
@@ -2495,15 +2495,15 @@ export namespace Prisma {
   /**
    * VocabularyCountOutputType without action
    */
-  export type VocabularyCountOutputTypeCountUserVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserVocabularyWhereInput
+  export type VocabularyCountOutputTypeCountPracticeItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeItemWhereInput
   }
 
   /**
    * VocabularyCountOutputType without action
    */
-  export type VocabularyCountOutputTypeCountPracticeItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PracticeItemWhereInput
+  export type VocabularyCountOutputTypeCountUserVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserVocabularyWhereInput
   }
 
 
@@ -2543,13 +2543,13 @@ export namespace Prisma {
    */
 
   export type ConversationTemplateCountOutputType = {
-    userTemplateUsage: number
     conversations: number
+    userTemplateUsage: number
   }
 
   export type ConversationTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userTemplateUsage?: boolean | ConversationTemplateCountOutputTypeCountUserTemplateUsageArgs
     conversations?: boolean | ConversationTemplateCountOutputTypeCountConversationsArgs
+    userTemplateUsage?: boolean | ConversationTemplateCountOutputTypeCountUserTemplateUsageArgs
   }
 
   // Custom InputTypes
@@ -2566,15 +2566,15 @@ export namespace Prisma {
   /**
    * ConversationTemplateCountOutputType without action
    */
-  export type ConversationTemplateCountOutputTypeCountUserTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserTemplateUsageWhereInput
+  export type ConversationTemplateCountOutputTypeCountConversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConversationWhereInput
   }
 
   /**
    * ConversationTemplateCountOutputType without action
    */
-  export type ConversationTemplateCountOutputTypeCountConversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ConversationWhereInput
+  export type ConversationTemplateCountOutputTypeCountUserTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateUsageWhereInput
   }
 
 
@@ -2967,12 +2967,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: boolean
     speechRecognitionEnabled?: boolean
-    lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
-    vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
-    examResults?: boolean | User$examResultsArgs<ExtArgs>
     conversations?: boolean | User$conversationsArgs<ExtArgs>
+    examResults?: boolean | User$examResultsArgs<ExtArgs>
+    lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     practiceSessions?: boolean | User$practiceSessionsArgs<ExtArgs>
     templateUsage?: boolean | User$templateUsageArgs<ExtArgs>
+    vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3041,12 +3041,12 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "level" | "points" | "streakDays" | "joinedAt" | "learningGoals" | "completedLessons" | "lastActive" | "dailyGoal" | "notifications" | "theme" | "aiCorrectionEnabled" | "aiVocabSuggestionsEnabled" | "preferredVoice" | "speechRecognitionEnabled", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
-    vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
-    examResults?: boolean | User$examResultsArgs<ExtArgs>
     conversations?: boolean | User$conversationsArgs<ExtArgs>
+    examResults?: boolean | User$examResultsArgs<ExtArgs>
+    lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     practiceSessions?: boolean | User$practiceSessionsArgs<ExtArgs>
     templateUsage?: boolean | User$templateUsageArgs<ExtArgs>
+    vocabulary?: boolean | User$vocabularyArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3055,12 +3055,12 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      lessonProgress: Prisma.$LessonProgressPayload<ExtArgs>[]
-      vocabulary: Prisma.$UserVocabularyPayload<ExtArgs>[]
-      examResults: Prisma.$ExamResultPayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
+      examResults: Prisma.$ExamResultPayload<ExtArgs>[]
+      lessonProgress: Prisma.$LessonProgressPayload<ExtArgs>[]
       practiceSessions: Prisma.$PracticeSessionPayload<ExtArgs>[]
       templateUsage: Prisma.$UserTemplateUsagePayload<ExtArgs>[]
+      vocabulary: Prisma.$UserVocabularyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3475,12 +3475,12 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    lessonProgress<T extends User$lessonProgressArgs<ExtArgs> = {}>(args?: Subset<T, User$lessonProgressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    vocabulary<T extends User$vocabularyArgs<ExtArgs> = {}>(args?: Subset<T, User$vocabularyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserVocabularyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    examResults<T extends User$examResultsArgs<ExtArgs> = {}>(args?: Subset<T, User$examResultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExamResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends User$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    examResults<T extends User$examResultsArgs<ExtArgs> = {}>(args?: Subset<T, User$examResultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExamResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    lessonProgress<T extends User$lessonProgressArgs<ExtArgs> = {}>(args?: Subset<T, User$lessonProgressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     practiceSessions<T extends User$practiceSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$practiceSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     templateUsage<T extends User$templateUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$templateUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    vocabulary<T extends User$vocabularyArgs<ExtArgs> = {}>(args?: Subset<T, User$vocabularyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserVocabularyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3916,51 +3916,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.lessonProgress
+   * User.conversations
    */
-  export type User$lessonProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$conversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the LessonProgress
+     * Select specific fields to fetch from the Conversation
      */
-    select?: LessonProgressSelect<ExtArgs> | null
+    select?: ConversationSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the LessonProgress
+     * Omit specific fields from the Conversation
      */
-    omit?: LessonProgressOmit<ExtArgs> | null
+    omit?: ConversationOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: LessonProgressInclude<ExtArgs> | null
-    where?: LessonProgressWhereInput
-    orderBy?: LessonProgressOrderByWithRelationInput | LessonProgressOrderByWithRelationInput[]
-    cursor?: LessonProgressWhereUniqueInput
+    include?: ConversationInclude<ExtArgs> | null
+    where?: ConversationWhereInput
+    orderBy?: ConversationOrderByWithRelationInput | ConversationOrderByWithRelationInput[]
+    cursor?: ConversationWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: LessonProgressScalarFieldEnum | LessonProgressScalarFieldEnum[]
-  }
-
-  /**
-   * User.vocabulary
-   */
-  export type User$vocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the UserVocabulary
-     */
-    select?: UserVocabularySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the UserVocabulary
-     */
-    omit?: UserVocabularyOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserVocabularyInclude<ExtArgs> | null
-    where?: UserVocabularyWhereInput
-    orderBy?: UserVocabularyOrderByWithRelationInput | UserVocabularyOrderByWithRelationInput[]
-    cursor?: UserVocabularyWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserVocabularyScalarFieldEnum | UserVocabularyScalarFieldEnum[]
+    distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
   }
 
   /**
@@ -3988,27 +3964,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.conversations
+   * User.lessonProgress
    */
-  export type User$conversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$lessonProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Conversation
+     * Select specific fields to fetch from the LessonProgress
      */
-    select?: ConversationSelect<ExtArgs> | null
+    select?: LessonProgressSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Conversation
+     * Omit specific fields from the LessonProgress
      */
-    omit?: ConversationOmit<ExtArgs> | null
+    omit?: LessonProgressOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ConversationInclude<ExtArgs> | null
-    where?: ConversationWhereInput
-    orderBy?: ConversationOrderByWithRelationInput | ConversationOrderByWithRelationInput[]
-    cursor?: ConversationWhereUniqueInput
+    include?: LessonProgressInclude<ExtArgs> | null
+    where?: LessonProgressWhereInput
+    orderBy?: LessonProgressOrderByWithRelationInput | LessonProgressOrderByWithRelationInput[]
+    cursor?: LessonProgressWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
+    distinct?: LessonProgressScalarFieldEnum | LessonProgressScalarFieldEnum[]
   }
 
   /**
@@ -4057,6 +4033,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
+  }
+
+  /**
+   * User.vocabulary
+   */
+  export type User$vocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserVocabulary
+     */
+    select?: UserVocabularySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserVocabulary
+     */
+    omit?: UserVocabularyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserVocabularyInclude<ExtArgs> | null
+    where?: UserVocabularyWhereInput
+    orderBy?: UserVocabularyOrderByWithRelationInput | UserVocabularyOrderByWithRelationInput[]
+    cursor?: UserVocabularyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserVocabularyScalarFieldEnum | UserVocabularyScalarFieldEnum[]
   }
 
   /**
@@ -5453,8 +5453,8 @@ export namespace Prisma {
     audioUrl?: boolean
     videoUrl?: boolean
     order?: boolean
-    lesson?: boolean | LessonDefaultArgs<ExtArgs>
     exercises?: boolean | LessonSection$exercisesArgs<ExtArgs>
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
     _count?: boolean | LessonSectionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lessonSection"]>
 
@@ -5495,8 +5495,8 @@ export namespace Prisma {
 
   export type LessonSectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lessonId" | "title" | "type" | "content" | "audioUrl" | "videoUrl" | "order", ExtArgs["result"]["lessonSection"]>
   export type LessonSectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    lesson?: boolean | LessonDefaultArgs<ExtArgs>
     exercises?: boolean | LessonSection$exercisesArgs<ExtArgs>
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
     _count?: boolean | LessonSectionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LessonSectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5509,8 +5509,8 @@ export namespace Prisma {
   export type $LessonSectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "LessonSection"
     objects: {
-      lesson: Prisma.$LessonPayload<ExtArgs>
       exercises: Prisma.$LessonExercisePayload<ExtArgs>[]
+      lesson: Prisma.$LessonPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5915,8 +5915,8 @@ export namespace Prisma {
    */
   export interface Prisma__LessonSectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    lesson<T extends LessonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonDefaultArgs<ExtArgs>>): Prisma__LessonClient<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     exercises<T extends LessonSection$exercisesArgs<ExtArgs> = {}>(args?: Subset<T, LessonSection$exercisesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonExercisePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    lesson<T extends LessonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonDefaultArgs<ExtArgs>>): Prisma__LessonClient<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8683,9 +8683,8 @@ export namespace Prisma {
     translation: string | null
     example: string | null
     level: string | null
-    pronunciation: string | null
-    audioUrl: string | null
     category: string | null
+    pronunciation: string | null
   }
 
   export type VocabularyMaxAggregateOutputType = {
@@ -8694,9 +8693,8 @@ export namespace Prisma {
     translation: string | null
     example: string | null
     level: string | null
-    pronunciation: string | null
-    audioUrl: string | null
     category: string | null
+    pronunciation: string | null
   }
 
   export type VocabularyCountAggregateOutputType = {
@@ -8705,10 +8703,9 @@ export namespace Prisma {
     translation: number
     example: number
     level: number
-    pronunciation: number
-    audioUrl: number
-    usageContext: number
     category: number
+    pronunciation: number
+    usageContext: number
     _all: number
   }
 
@@ -8727,9 +8724,8 @@ export namespace Prisma {
     translation?: true
     example?: true
     level?: true
-    pronunciation?: true
-    audioUrl?: true
     category?: true
+    pronunciation?: true
   }
 
   export type VocabularyMaxAggregateInputType = {
@@ -8738,9 +8734,8 @@ export namespace Prisma {
     translation?: true
     example?: true
     level?: true
-    pronunciation?: true
-    audioUrl?: true
     category?: true
+    pronunciation?: true
   }
 
   export type VocabularyCountAggregateInputType = {
@@ -8749,10 +8744,9 @@ export namespace Prisma {
     translation?: true
     example?: true
     level?: true
-    pronunciation?: true
-    audioUrl?: true
-    usageContext?: true
     category?: true
+    pronunciation?: true
+    usageContext?: true
     _all?: true
   }
 
@@ -8848,10 +8842,9 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation: string | null
-    audioUrl: string | null
-    usageContext: string[]
     category: string | null
+    pronunciation: string | null
+    usageContext: string[]
     _count: VocabularyCountAggregateOutputType | null
     _avg: VocabularyAvgAggregateOutputType | null
     _sum: VocabularySumAggregateOutputType | null
@@ -8879,12 +8872,11 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
-    pronunciation?: boolean
-    audioUrl?: boolean
-    usageContext?: boolean
     category?: boolean
-    userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
+    pronunciation?: boolean
+    usageContext?: boolean
     practiceItems?: boolean | Vocabulary$practiceItemsArgs<ExtArgs>
+    userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
     _count?: boolean | VocabularyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vocabulary"]>
 
@@ -8894,10 +8886,9 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
-    pronunciation?: boolean
-    audioUrl?: boolean
-    usageContext?: boolean
     category?: boolean
+    pronunciation?: boolean
+    usageContext?: boolean
   }, ExtArgs["result"]["vocabulary"]>
 
   export type VocabularySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8906,10 +8897,9 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
-    pronunciation?: boolean
-    audioUrl?: boolean
-    usageContext?: boolean
     category?: boolean
+    pronunciation?: boolean
+    usageContext?: boolean
   }, ExtArgs["result"]["vocabulary"]>
 
   export type VocabularySelectScalar = {
@@ -8918,16 +8908,15 @@ export namespace Prisma {
     translation?: boolean
     example?: boolean
     level?: boolean
-    pronunciation?: boolean
-    audioUrl?: boolean
-    usageContext?: boolean
     category?: boolean
+    pronunciation?: boolean
+    usageContext?: boolean
   }
 
-  export type VocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "word" | "translation" | "example" | "level" | "pronunciation" | "audioUrl" | "usageContext" | "category", ExtArgs["result"]["vocabulary"]>
+  export type VocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "word" | "translation" | "example" | "level" | "category" | "pronunciation" | "usageContext", ExtArgs["result"]["vocabulary"]>
   export type VocabularyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
     practiceItems?: boolean | Vocabulary$practiceItemsArgs<ExtArgs>
+    userVocabulary?: boolean | Vocabulary$userVocabularyArgs<ExtArgs>
     _count?: boolean | VocabularyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type VocabularyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8936,8 +8925,8 @@ export namespace Prisma {
   export type $VocabularyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Vocabulary"
     objects: {
-      userVocabulary: Prisma.$UserVocabularyPayload<ExtArgs>[]
       practiceItems: Prisma.$PracticeItemPayload<ExtArgs>[]
+      userVocabulary: Prisma.$UserVocabularyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -8945,10 +8934,9 @@ export namespace Prisma {
       translation: string
       example: string
       level: string
-      pronunciation: string | null
-      audioUrl: string | null
-      usageContext: string[]
       category: string | null
+      pronunciation: string | null
+      usageContext: string[]
     }, ExtArgs["result"]["vocabulary"]>
     composites: {}
   }
@@ -9343,8 +9331,8 @@ export namespace Prisma {
    */
   export interface Prisma__VocabularyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    userVocabulary<T extends Vocabulary$userVocabularyArgs<ExtArgs> = {}>(args?: Subset<T, Vocabulary$userVocabularyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserVocabularyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     practiceItems<T extends Vocabulary$practiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, Vocabulary$practiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userVocabulary<T extends Vocabulary$userVocabularyArgs<ExtArgs> = {}>(args?: Subset<T, Vocabulary$userVocabularyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserVocabularyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9379,10 +9367,9 @@ export namespace Prisma {
     readonly translation: FieldRef<"Vocabulary", 'String'>
     readonly example: FieldRef<"Vocabulary", 'String'>
     readonly level: FieldRef<"Vocabulary", 'String'>
-    readonly pronunciation: FieldRef<"Vocabulary", 'String'>
-    readonly audioUrl: FieldRef<"Vocabulary", 'String'>
-    readonly usageContext: FieldRef<"Vocabulary", 'String[]'>
     readonly category: FieldRef<"Vocabulary", 'String'>
+    readonly pronunciation: FieldRef<"Vocabulary", 'String'>
+    readonly usageContext: FieldRef<"Vocabulary", 'String[]'>
   }
     
 
@@ -9771,30 +9758,6 @@ export namespace Prisma {
   }
 
   /**
-   * Vocabulary.userVocabulary
-   */
-  export type Vocabulary$userVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the UserVocabulary
-     */
-    select?: UserVocabularySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the UserVocabulary
-     */
-    omit?: UserVocabularyOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserVocabularyInclude<ExtArgs> | null
-    where?: UserVocabularyWhereInput
-    orderBy?: UserVocabularyOrderByWithRelationInput | UserVocabularyOrderByWithRelationInput[]
-    cursor?: UserVocabularyWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserVocabularyScalarFieldEnum | UserVocabularyScalarFieldEnum[]
-  }
-
-  /**
    * Vocabulary.practiceItems
    */
   export type Vocabulary$practiceItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9816,6 +9779,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PracticeItemScalarFieldEnum | PracticeItemScalarFieldEnum[]
+  }
+
+  /**
+   * Vocabulary.userVocabulary
+   */
+  export type Vocabulary$userVocabularyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserVocabulary
+     */
+    select?: UserVocabularySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserVocabulary
+     */
+    omit?: UserVocabularyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserVocabularyInclude<ExtArgs> | null
+    where?: UserVocabularyWhereInput
+    orderBy?: UserVocabularyOrderByWithRelationInput | UserVocabularyOrderByWithRelationInput[]
+    cursor?: UserVocabularyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserVocabularyScalarFieldEnum | UserVocabularyScalarFieldEnum[]
   }
 
   /**
@@ -9869,8 +9856,8 @@ export namespace Prisma {
     vocabularyId: number | null
     learned: boolean | null
     lastPracticed: Date | null
-    repetitionStage: number | null
     nextReviewDate: Date | null
+    repetitionStage: number | null
   }
 
   export type UserVocabularyMaxAggregateOutputType = {
@@ -9879,8 +9866,8 @@ export namespace Prisma {
     vocabularyId: number | null
     learned: boolean | null
     lastPracticed: Date | null
-    repetitionStage: number | null
     nextReviewDate: Date | null
+    repetitionStage: number | null
   }
 
   export type UserVocabularyCountAggregateOutputType = {
@@ -9889,8 +9876,8 @@ export namespace Prisma {
     vocabularyId: number
     learned: number
     lastPracticed: number
-    repetitionStage: number
     nextReviewDate: number
+    repetitionStage: number
     _all: number
   }
 
@@ -9915,8 +9902,8 @@ export namespace Prisma {
     vocabularyId?: true
     learned?: true
     lastPracticed?: true
-    repetitionStage?: true
     nextReviewDate?: true
+    repetitionStage?: true
   }
 
   export type UserVocabularyMaxAggregateInputType = {
@@ -9925,8 +9912,8 @@ export namespace Prisma {
     vocabularyId?: true
     learned?: true
     lastPracticed?: true
-    repetitionStage?: true
     nextReviewDate?: true
+    repetitionStage?: true
   }
 
   export type UserVocabularyCountAggregateInputType = {
@@ -9935,8 +9922,8 @@ export namespace Prisma {
     vocabularyId?: true
     learned?: true
     lastPracticed?: true
-    repetitionStage?: true
     nextReviewDate?: true
+    repetitionStage?: true
     _all?: true
   }
 
@@ -10032,8 +10019,8 @@ export namespace Prisma {
     vocabularyId: number
     learned: boolean
     lastPracticed: Date | null
-    repetitionStage: number
     nextReviewDate: Date | null
+    repetitionStage: number
     _count: UserVocabularyCountAggregateOutputType | null
     _avg: UserVocabularyAvgAggregateOutputType | null
     _sum: UserVocabularySumAggregateOutputType | null
@@ -10061,8 +10048,8 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
-    repetitionStage?: boolean
     nextReviewDate?: boolean
+    repetitionStage?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userVocabulary"]>
@@ -10073,8 +10060,8 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
-    repetitionStage?: boolean
     nextReviewDate?: boolean
+    repetitionStage?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userVocabulary"]>
@@ -10085,8 +10072,8 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
-    repetitionStage?: boolean
     nextReviewDate?: boolean
+    repetitionStage?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userVocabulary"]>
@@ -10097,11 +10084,11 @@ export namespace Prisma {
     vocabularyId?: boolean
     learned?: boolean
     lastPracticed?: boolean
-    repetitionStage?: boolean
     nextReviewDate?: boolean
+    repetitionStage?: boolean
   }
 
-  export type UserVocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "vocabularyId" | "learned" | "lastPracticed" | "repetitionStage" | "nextReviewDate", ExtArgs["result"]["userVocabulary"]>
+  export type UserVocabularyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "vocabularyId" | "learned" | "lastPracticed" | "nextReviewDate" | "repetitionStage", ExtArgs["result"]["userVocabulary"]>
   export type UserVocabularyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     vocabulary?: boolean | VocabularyDefaultArgs<ExtArgs>
@@ -10127,8 +10114,8 @@ export namespace Prisma {
       vocabularyId: number
       learned: boolean
       lastPracticed: Date | null
-      repetitionStage: number
       nextReviewDate: Date | null
+      repetitionStage: number
     }, ExtArgs["result"]["userVocabulary"]>
     composites: {}
   }
@@ -10559,8 +10546,8 @@ export namespace Prisma {
     readonly vocabularyId: FieldRef<"UserVocabulary", 'Int'>
     readonly learned: FieldRef<"UserVocabulary", 'Boolean'>
     readonly lastPracticed: FieldRef<"UserVocabulary", 'DateTime'>
-    readonly repetitionStage: FieldRef<"UserVocabulary", 'Int'>
     readonly nextReviewDate: FieldRef<"UserVocabulary", 'DateTime'>
+    readonly repetitionStage: FieldRef<"UserVocabulary", 'Int'>
   }
     
 
@@ -11193,9 +11180,9 @@ export namespace Prisma {
     startedAt?: boolean
     lastMessageAt?: boolean
     templateId?: boolean
+    template?: boolean | Conversation$templateArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     messages?: boolean | Conversation$messagesArgs<ExtArgs>
-    template?: boolean | Conversation$templateArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -11207,8 +11194,8 @@ export namespace Prisma {
     startedAt?: boolean
     lastMessageAt?: boolean
     templateId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | Conversation$templateArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
   export type ConversationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11219,8 +11206,8 @@ export namespace Prisma {
     startedAt?: boolean
     lastMessageAt?: boolean
     templateId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | Conversation$templateArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
   export type ConversationSelectScalar = {
@@ -11235,26 +11222,26 @@ export namespace Prisma {
 
   export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "context" | "startedAt" | "lastMessageAt" | "templateId", ExtArgs["result"]["conversation"]>
   export type ConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    template?: boolean | Conversation$templateArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     messages?: boolean | Conversation$messagesArgs<ExtArgs>
-    template?: boolean | Conversation$templateArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | Conversation$templateArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | Conversation$templateArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $ConversationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Conversation"
     objects: {
+      template: Prisma.$ConversationTemplatePayload<ExtArgs> | null
       user: Prisma.$UserPayload<ExtArgs>
       messages: Prisma.$MessagePayload<ExtArgs>[]
-      template: Prisma.$ConversationTemplatePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11658,9 +11645,9 @@ export namespace Prisma {
    */
   export interface Prisma__ConversationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    template<T extends Conversation$templateArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$templateArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     messages<T extends Conversation$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    template<T extends Conversation$templateArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$templateArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12093,6 +12080,25 @@ export namespace Prisma {
   }
 
   /**
+   * Conversation.template
+   */
+  export type Conversation$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationTemplate
+     */
+    select?: ConversationTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationTemplate
+     */
+    omit?: ConversationTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationTemplateInclude<ExtArgs> | null
+    where?: ConversationTemplateWhereInput
+  }
+
+  /**
    * Conversation.messages
    */
   export type Conversation$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12114,25 +12120,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
-  }
-
-  /**
-   * Conversation.template
-   */
-  export type Conversation$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ConversationTemplate
-     */
-    select?: ConversationTemplateSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ConversationTemplate
-     */
-    omit?: ConversationTemplateOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ConversationTemplateInclude<ExtArgs> | null
-    where?: ConversationTemplateWhereInput
   }
 
   /**
@@ -12198,9 +12185,9 @@ export namespace Prisma {
     role: number
     content: number
     timestamp: number
+    audioUrl: number
     corrections: number
     suggestedVocabulary: number
-    audioUrl: number
     _all: number
   }
 
@@ -12237,9 +12224,9 @@ export namespace Prisma {
     role?: true
     content?: true
     timestamp?: true
+    audioUrl?: true
     corrections?: true
     suggestedVocabulary?: true
-    audioUrl?: true
     _all?: true
   }
 
@@ -12335,9 +12322,9 @@ export namespace Prisma {
     role: string
     content: string
     timestamp: Date
+    audioUrl: string | null
     corrections: JsonValue | null
     suggestedVocabulary: JsonValue | null
-    audioUrl: string | null
     _count: MessageCountAggregateOutputType | null
     _avg: MessageAvgAggregateOutputType | null
     _sum: MessageSumAggregateOutputType | null
@@ -12365,9 +12352,9 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    audioUrl?: boolean
     corrections?: boolean
     suggestedVocabulary?: boolean
-    audioUrl?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
@@ -12377,9 +12364,9 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    audioUrl?: boolean
     corrections?: boolean
     suggestedVocabulary?: boolean
-    audioUrl?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
@@ -12389,9 +12376,9 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    audioUrl?: boolean
     corrections?: boolean
     suggestedVocabulary?: boolean
-    audioUrl?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
@@ -12401,12 +12388,12 @@ export namespace Prisma {
     role?: boolean
     content?: boolean
     timestamp?: boolean
+    audioUrl?: boolean
     corrections?: boolean
     suggestedVocabulary?: boolean
-    audioUrl?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "timestamp" | "corrections" | "suggestedVocabulary" | "audioUrl", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "timestamp" | "audioUrl" | "corrections" | "suggestedVocabulary", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }
@@ -12428,9 +12415,9 @@ export namespace Prisma {
       role: string
       content: string
       timestamp: Date
+      audioUrl: string | null
       corrections: Prisma.JsonValue | null
       suggestedVocabulary: Prisma.JsonValue | null
-      audioUrl: string | null
     }, ExtArgs["result"]["message"]>
     composites: {}
   }
@@ -12860,9 +12847,9 @@ export namespace Prisma {
     readonly role: FieldRef<"Message", 'String'>
     readonly content: FieldRef<"Message", 'String'>
     readonly timestamp: FieldRef<"Message", 'DateTime'>
+    readonly audioUrl: FieldRef<"Message", 'String'>
     readonly corrections: FieldRef<"Message", 'Json'>
     readonly suggestedVocabulary: FieldRef<"Message", 'Json'>
-    readonly audioUrl: FieldRef<"Message", 'String'>
   }
     
 
@@ -13487,8 +13474,8 @@ export namespace Prisma {
     initialMessage?: boolean
     topics?: boolean
     level?: boolean
-    userTemplateUsage?: boolean | ConversationTemplate$userTemplateUsageArgs<ExtArgs>
     conversations?: boolean | ConversationTemplate$conversationsArgs<ExtArgs>
+    userTemplateUsage?: boolean | ConversationTemplate$userTemplateUsageArgs<ExtArgs>
     _count?: boolean | ConversationTemplateCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversationTemplate"]>
 
@@ -13524,8 +13511,8 @@ export namespace Prisma {
 
   export type ConversationTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "systemPrompt" | "initialMessage" | "topics" | "level", ExtArgs["result"]["conversationTemplate"]>
   export type ConversationTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userTemplateUsage?: boolean | ConversationTemplate$userTemplateUsageArgs<ExtArgs>
     conversations?: boolean | ConversationTemplate$conversationsArgs<ExtArgs>
+    userTemplateUsage?: boolean | ConversationTemplate$userTemplateUsageArgs<ExtArgs>
     _count?: boolean | ConversationTemplateCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -13534,8 +13521,8 @@ export namespace Prisma {
   export type $ConversationTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ConversationTemplate"
     objects: {
-      userTemplateUsage: Prisma.$UserTemplateUsagePayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
+      userTemplateUsage: Prisma.$UserTemplateUsagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -13939,8 +13926,8 @@ export namespace Prisma {
    */
   export interface Prisma__ConversationTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    userTemplateUsage<T extends ConversationTemplate$userTemplateUsageArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplate$userTemplateUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends ConversationTemplate$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplate$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userTemplateUsage<T extends ConversationTemplate$userTemplateUsageArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplate$userTemplateUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14365,30 +14352,6 @@ export namespace Prisma {
   }
 
   /**
-   * ConversationTemplate.userTemplateUsage
-   */
-  export type ConversationTemplate$userTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the UserTemplateUsage
-     */
-    select?: UserTemplateUsageSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the UserTemplateUsage
-     */
-    omit?: UserTemplateUsageOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserTemplateUsageInclude<ExtArgs> | null
-    where?: UserTemplateUsageWhereInput
-    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
-    cursor?: UserTemplateUsageWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
-  }
-
-  /**
    * ConversationTemplate.conversations
    */
   export type ConversationTemplate$conversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14410,6 +14373,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationTemplate.userTemplateUsage
+   */
+  export type ConversationTemplate$userTemplateUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateUsage
+     */
+    select?: UserTemplateUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTemplateUsage
+     */
+    omit?: UserTemplateUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateUsageInclude<ExtArgs> | null
+    where?: UserTemplateUsageWhereInput
+    orderBy?: UserTemplateUsageOrderByWithRelationInput | UserTemplateUsageOrderByWithRelationInput[]
+    cursor?: UserTemplateUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTemplateUsageScalarFieldEnum | UserTemplateUsageScalarFieldEnum[]
   }
 
   /**
@@ -14629,8 +14616,8 @@ export namespace Prisma {
     userId?: boolean
     templateId?: boolean
     usedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userTemplateUsage"]>
 
   export type UserTemplateUsageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -14638,8 +14625,8 @@ export namespace Prisma {
     userId?: boolean
     templateId?: boolean
     usedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userTemplateUsage"]>
 
   export type UserTemplateUsageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -14647,8 +14634,8 @@ export namespace Prisma {
     userId?: boolean
     templateId?: boolean
     usedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userTemplateUsage"]>
 
   export type UserTemplateUsageSelectScalar = {
@@ -14660,23 +14647,23 @@ export namespace Prisma {
 
   export type UserTemplateUsageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "templateId" | "usedAt", ExtArgs["result"]["userTemplateUsage"]>
   export type UserTemplateUsageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type UserTemplateUsageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type UserTemplateUsageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     template?: boolean | ConversationTemplateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $UserTemplateUsagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserTemplateUsage"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       template: Prisma.$ConversationTemplatePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -15077,8 +15064,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserTemplateUsageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     template<T extends ConversationTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConversationTemplateDefaultArgs<ExtArgs>>): Prisma__ConversationTemplateClient<$Result.GetResult<Prisma.$ConversationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16908,8 +16895,8 @@ export namespace Prisma {
     aiGenerated?: boolean
     difficulty?: boolean
     score?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     practiceItems?: boolean | PracticeSession$practiceItemsArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     pronunciationItems?: boolean | PracticeSession$pronunciationItemsArgs<ExtArgs>
     _count?: boolean | PracticeSessionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["practiceSession"]>
@@ -16951,8 +16938,8 @@ export namespace Prisma {
 
   export type PracticeSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "duration" | "createdAt" | "aiGenerated" | "difficulty" | "score", ExtArgs["result"]["practiceSession"]>
   export type PracticeSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     practiceItems?: boolean | PracticeSession$practiceItemsArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     pronunciationItems?: boolean | PracticeSession$pronunciationItemsArgs<ExtArgs>
     _count?: boolean | PracticeSessionCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -16966,8 +16953,8 @@ export namespace Prisma {
   export type $PracticeSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "PracticeSession"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       practiceItems: Prisma.$PracticeItemPayload<ExtArgs>[]
+      user: Prisma.$UserPayload<ExtArgs>
       pronunciationItems: Prisma.$PronunciationPracticeItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -17373,8 +17360,8 @@ export namespace Prisma {
    */
   export interface Prisma__PracticeSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     practiceItems<T extends PracticeSession$practiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSession$practiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     pronunciationItems<T extends PracticeSession$pronunciationItemsArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSession$pronunciationItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PronunciationPracticeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -19029,7 +19016,6 @@ export namespace Prisma {
     id: number | null
     text: string | null
     translation: string | null
-    audioUrl: string | null
     difficulty: string | null
     category: string | null
     expectedPronunciation: string | null
@@ -19039,7 +19025,6 @@ export namespace Prisma {
     id: number | null
     text: string | null
     translation: string | null
-    audioUrl: string | null
     difficulty: string | null
     category: string | null
     expectedPronunciation: string | null
@@ -19049,7 +19034,6 @@ export namespace Prisma {
     id: number
     text: number
     translation: number
-    audioUrl: number
     difficulty: number
     category: number
     expectedPronunciation: number
@@ -19069,7 +19053,6 @@ export namespace Prisma {
     id?: true
     text?: true
     translation?: true
-    audioUrl?: true
     difficulty?: true
     category?: true
     expectedPronunciation?: true
@@ -19079,7 +19062,6 @@ export namespace Prisma {
     id?: true
     text?: true
     translation?: true
-    audioUrl?: true
     difficulty?: true
     category?: true
     expectedPronunciation?: true
@@ -19089,7 +19071,6 @@ export namespace Prisma {
     id?: true
     text?: true
     translation?: true
-    audioUrl?: true
     difficulty?: true
     category?: true
     expectedPronunciation?: true
@@ -19186,7 +19167,6 @@ export namespace Prisma {
     id: number
     text: string
     translation: string | null
-    audioUrl: string | null
     difficulty: string
     category: string | null
     expectedPronunciation: string | null
@@ -19215,7 +19195,6 @@ export namespace Prisma {
     id?: boolean
     text?: boolean
     translation?: boolean
-    audioUrl?: boolean
     difficulty?: boolean
     category?: boolean
     expectedPronunciation?: boolean
@@ -19227,7 +19206,6 @@ export namespace Prisma {
     id?: boolean
     text?: boolean
     translation?: boolean
-    audioUrl?: boolean
     difficulty?: boolean
     category?: boolean
     expectedPronunciation?: boolean
@@ -19237,7 +19215,6 @@ export namespace Prisma {
     id?: boolean
     text?: boolean
     translation?: boolean
-    audioUrl?: boolean
     difficulty?: boolean
     category?: boolean
     expectedPronunciation?: boolean
@@ -19247,13 +19224,12 @@ export namespace Prisma {
     id?: boolean
     text?: boolean
     translation?: boolean
-    audioUrl?: boolean
     difficulty?: boolean
     category?: boolean
     expectedPronunciation?: boolean
   }
 
-  export type PronunciationExerciseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "translation" | "audioUrl" | "difficulty" | "category" | "expectedPronunciation", ExtArgs["result"]["pronunciationExercise"]>
+  export type PronunciationExerciseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "translation" | "difficulty" | "category" | "expectedPronunciation", ExtArgs["result"]["pronunciationExercise"]>
   export type PronunciationExerciseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     practiceItems?: boolean | PronunciationExercise$practiceItemsArgs<ExtArgs>
     _count?: boolean | PronunciationExerciseCountOutputTypeDefaultArgs<ExtArgs>
@@ -19270,7 +19246,6 @@ export namespace Prisma {
       id: number
       text: string
       translation: string | null
-      audioUrl: string | null
       difficulty: string
       category: string | null
       expectedPronunciation: string | null
@@ -19701,7 +19676,6 @@ export namespace Prisma {
     readonly id: FieldRef<"PronunciationExercise", 'Int'>
     readonly text: FieldRef<"PronunciationExercise", 'String'>
     readonly translation: FieldRef<"PronunciationExercise", 'String'>
-    readonly audioUrl: FieldRef<"PronunciationExercise", 'String'>
     readonly difficulty: FieldRef<"PronunciationExercise", 'String'>
     readonly category: FieldRef<"PronunciationExercise", 'String'>
     readonly expectedPronunciation: FieldRef<"PronunciationExercise", 'String'>
@@ -20353,8 +20327,8 @@ export namespace Prisma {
     transcript?: boolean
     similarityScore?: boolean
     feedback?: boolean
-    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
     exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pronunciationPracticeItem"]>
 
   export type PronunciationPracticeItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -20365,8 +20339,8 @@ export namespace Prisma {
     transcript?: boolean
     similarityScore?: boolean
     feedback?: boolean
-    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
     exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pronunciationPracticeItem"]>
 
   export type PronunciationPracticeItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -20377,8 +20351,8 @@ export namespace Prisma {
     transcript?: boolean
     similarityScore?: boolean
     feedback?: boolean
-    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
     exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pronunciationPracticeItem"]>
 
   export type PronunciationPracticeItemSelectScalar = {
@@ -20393,23 +20367,23 @@ export namespace Prisma {
 
   export type PronunciationPracticeItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionId" | "exerciseId" | "userAudioUrl" | "transcript" | "similarityScore" | "feedback", ExtArgs["result"]["pronunciationPracticeItem"]>
   export type PronunciationPracticeItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
     exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
   }
   export type PronunciationPracticeItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
     exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
   }
   export type PronunciationPracticeItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
     exercise?: boolean | PronunciationExerciseDefaultArgs<ExtArgs>
+    session?: boolean | PracticeSessionDefaultArgs<ExtArgs>
   }
 
   export type $PronunciationPracticeItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "PronunciationPracticeItem"
     objects: {
-      session: Prisma.$PracticeSessionPayload<ExtArgs>
       exercise: Prisma.$PronunciationExercisePayload<ExtArgs>
+      session: Prisma.$PracticeSessionPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -20813,8 +20787,8 @@ export namespace Prisma {
    */
   export interface Prisma__PronunciationPracticeItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    session<T extends PracticeSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSessionDefaultArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     exercise<T extends PronunciationExerciseDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PronunciationExerciseDefaultArgs<ExtArgs>>): Prisma__PronunciationExerciseClient<$Result.GetResult<Prisma.$PronunciationExercisePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    session<T extends PracticeSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PracticeSessionDefaultArgs<ExtArgs>>): Prisma__PracticeSessionClient<$Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22400,10 +22374,9 @@ export namespace Prisma {
     translation: 'translation',
     example: 'example',
     level: 'level',
+    category: 'category',
     pronunciation: 'pronunciation',
-    audioUrl: 'audioUrl',
-    usageContext: 'usageContext',
-    category: 'category'
+    usageContext: 'usageContext'
   };
 
   export type VocabularyScalarFieldEnum = (typeof VocabularyScalarFieldEnum)[keyof typeof VocabularyScalarFieldEnum]
@@ -22415,8 +22388,8 @@ export namespace Prisma {
     vocabularyId: 'vocabularyId',
     learned: 'learned',
     lastPracticed: 'lastPracticed',
-    repetitionStage: 'repetitionStage',
-    nextReviewDate: 'nextReviewDate'
+    nextReviewDate: 'nextReviewDate',
+    repetitionStage: 'repetitionStage'
   };
 
   export type UserVocabularyScalarFieldEnum = (typeof UserVocabularyScalarFieldEnum)[keyof typeof UserVocabularyScalarFieldEnum]
@@ -22441,9 +22414,9 @@ export namespace Prisma {
     role: 'role',
     content: 'content',
     timestamp: 'timestamp',
+    audioUrl: 'audioUrl',
     corrections: 'corrections',
-    suggestedVocabulary: 'suggestedVocabulary',
-    audioUrl: 'audioUrl'
+    suggestedVocabulary: 'suggestedVocabulary'
   };
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
@@ -22518,7 +22491,6 @@ export namespace Prisma {
     id: 'id',
     text: 'text',
     translation: 'translation',
-    audioUrl: 'audioUrl',
     difficulty: 'difficulty',
     category: 'category',
     expectedPronunciation: 'expectedPronunciation'
@@ -22707,12 +22679,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFilter<"User"> | boolean
     preferredVoice?: StringNullableFilter<"User"> | string | null
     speechRecognitionEnabled?: BoolFilter<"User"> | boolean
-    lessonProgress?: LessonProgressListRelationFilter
-    vocabulary?: UserVocabularyListRelationFilter
-    examResults?: ExamResultListRelationFilter
     conversations?: ConversationListRelationFilter
+    examResults?: ExamResultListRelationFilter
+    lessonProgress?: LessonProgressListRelationFilter
     practiceSessions?: PracticeSessionListRelationFilter
     templateUsage?: UserTemplateUsageListRelationFilter
+    vocabulary?: UserVocabularyListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -22734,12 +22706,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: SortOrder
     preferredVoice?: SortOrderInput | SortOrder
     speechRecognitionEnabled?: SortOrder
-    lessonProgress?: LessonProgressOrderByRelationAggregateInput
-    vocabulary?: UserVocabularyOrderByRelationAggregateInput
-    examResults?: ExamResultOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
+    examResults?: ExamResultOrderByRelationAggregateInput
+    lessonProgress?: LessonProgressOrderByRelationAggregateInput
     practiceSessions?: PracticeSessionOrderByRelationAggregateInput
     templateUsage?: UserTemplateUsageOrderByRelationAggregateInput
+    vocabulary?: UserVocabularyOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -22764,12 +22736,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFilter<"User"> | boolean
     preferredVoice?: StringNullableFilter<"User"> | string | null
     speechRecognitionEnabled?: BoolFilter<"User"> | boolean
-    lessonProgress?: LessonProgressListRelationFilter
-    vocabulary?: UserVocabularyListRelationFilter
-    examResults?: ExamResultListRelationFilter
     conversations?: ConversationListRelationFilter
+    examResults?: ExamResultListRelationFilter
+    lessonProgress?: LessonProgressListRelationFilter
     practiceSessions?: PracticeSessionListRelationFilter
     templateUsage?: UserTemplateUsageListRelationFilter
+    vocabulary?: UserVocabularyListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -22899,8 +22871,8 @@ export namespace Prisma {
     audioUrl?: StringNullableFilter<"LessonSection"> | string | null
     videoUrl?: StringNullableFilter<"LessonSection"> | string | null
     order?: IntFilter<"LessonSection"> | number
-    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
     exercises?: LessonExerciseListRelationFilter
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
   }
 
   export type LessonSectionOrderByWithRelationInput = {
@@ -22912,8 +22884,8 @@ export namespace Prisma {
     audioUrl?: SortOrderInput | SortOrder
     videoUrl?: SortOrderInput | SortOrder
     order?: SortOrder
-    lesson?: LessonOrderByWithRelationInput
     exercises?: LessonExerciseOrderByRelationAggregateInput
+    lesson?: LessonOrderByWithRelationInput
   }
 
   export type LessonSectionWhereUniqueInput = Prisma.AtLeast<{
@@ -22928,8 +22900,8 @@ export namespace Prisma {
     audioUrl?: StringNullableFilter<"LessonSection"> | string | null
     videoUrl?: StringNullableFilter<"LessonSection"> | string | null
     order?: IntFilter<"LessonSection"> | number
-    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
     exercises?: LessonExerciseListRelationFilter
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
   }, "id">
 
   export type LessonSectionOrderByWithAggregationInput = {
@@ -23114,12 +23086,11 @@ export namespace Prisma {
     translation?: StringFilter<"Vocabulary"> | string
     example?: StringFilter<"Vocabulary"> | string
     level?: StringFilter<"Vocabulary"> | string
-    pronunciation?: StringNullableFilter<"Vocabulary"> | string | null
-    audioUrl?: StringNullableFilter<"Vocabulary"> | string | null
-    usageContext?: StringNullableListFilter<"Vocabulary">
     category?: StringNullableFilter<"Vocabulary"> | string | null
-    userVocabulary?: UserVocabularyListRelationFilter
+    pronunciation?: StringNullableFilter<"Vocabulary"> | string | null
+    usageContext?: StringNullableListFilter<"Vocabulary">
     practiceItems?: PracticeItemListRelationFilter
+    userVocabulary?: UserVocabularyListRelationFilter
   }
 
   export type VocabularyOrderByWithRelationInput = {
@@ -23128,12 +23099,11 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
-    pronunciation?: SortOrderInput | SortOrder
-    audioUrl?: SortOrderInput | SortOrder
-    usageContext?: SortOrder
     category?: SortOrderInput | SortOrder
-    userVocabulary?: UserVocabularyOrderByRelationAggregateInput
+    pronunciation?: SortOrderInput | SortOrder
+    usageContext?: SortOrder
     practiceItems?: PracticeItemOrderByRelationAggregateInput
+    userVocabulary?: UserVocabularyOrderByRelationAggregateInput
   }
 
   export type VocabularyWhereUniqueInput = Prisma.AtLeast<{
@@ -23145,12 +23115,11 @@ export namespace Prisma {
     translation?: StringFilter<"Vocabulary"> | string
     example?: StringFilter<"Vocabulary"> | string
     level?: StringFilter<"Vocabulary"> | string
-    pronunciation?: StringNullableFilter<"Vocabulary"> | string | null
-    audioUrl?: StringNullableFilter<"Vocabulary"> | string | null
-    usageContext?: StringNullableListFilter<"Vocabulary">
     category?: StringNullableFilter<"Vocabulary"> | string | null
-    userVocabulary?: UserVocabularyListRelationFilter
+    pronunciation?: StringNullableFilter<"Vocabulary"> | string | null
+    usageContext?: StringNullableListFilter<"Vocabulary">
     practiceItems?: PracticeItemListRelationFilter
+    userVocabulary?: UserVocabularyListRelationFilter
   }, "id" | "word">
 
   export type VocabularyOrderByWithAggregationInput = {
@@ -23159,10 +23128,9 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
-    pronunciation?: SortOrderInput | SortOrder
-    audioUrl?: SortOrderInput | SortOrder
-    usageContext?: SortOrder
     category?: SortOrderInput | SortOrder
+    pronunciation?: SortOrderInput | SortOrder
+    usageContext?: SortOrder
     _count?: VocabularyCountOrderByAggregateInput
     _avg?: VocabularyAvgOrderByAggregateInput
     _max?: VocabularyMaxOrderByAggregateInput
@@ -23179,10 +23147,9 @@ export namespace Prisma {
     translation?: StringWithAggregatesFilter<"Vocabulary"> | string
     example?: StringWithAggregatesFilter<"Vocabulary"> | string
     level?: StringWithAggregatesFilter<"Vocabulary"> | string
-    pronunciation?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
-    audioUrl?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
-    usageContext?: StringNullableListFilter<"Vocabulary">
     category?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
+    pronunciation?: StringNullableWithAggregatesFilter<"Vocabulary"> | string | null
+    usageContext?: StringNullableListFilter<"Vocabulary">
   }
 
   export type UserVocabularyWhereInput = {
@@ -23194,8 +23161,8 @@ export namespace Prisma {
     vocabularyId?: IntFilter<"UserVocabulary"> | number
     learned?: BoolFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
-    repetitionStage?: IntFilter<"UserVocabulary"> | number
     nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntFilter<"UserVocabulary"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     vocabulary?: XOR<VocabularyScalarRelationFilter, VocabularyWhereInput>
   }
@@ -23206,8 +23173,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrderInput | SortOrder
-    repetitionStage?: SortOrder
     nextReviewDate?: SortOrderInput | SortOrder
+    repetitionStage?: SortOrder
     user?: UserOrderByWithRelationInput
     vocabulary?: VocabularyOrderByWithRelationInput
   }
@@ -23222,8 +23189,8 @@ export namespace Prisma {
     vocabularyId?: IntFilter<"UserVocabulary"> | number
     learned?: BoolFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
-    repetitionStage?: IntFilter<"UserVocabulary"> | number
     nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntFilter<"UserVocabulary"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     vocabulary?: XOR<VocabularyScalarRelationFilter, VocabularyWhereInput>
   }, "id" | "userId_vocabularyId">
@@ -23234,8 +23201,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrderInput | SortOrder
-    repetitionStage?: SortOrder
     nextReviewDate?: SortOrderInput | SortOrder
+    repetitionStage?: SortOrder
     _count?: UserVocabularyCountOrderByAggregateInput
     _avg?: UserVocabularyAvgOrderByAggregateInput
     _max?: UserVocabularyMaxOrderByAggregateInput
@@ -23252,8 +23219,8 @@ export namespace Prisma {
     vocabularyId?: IntWithAggregatesFilter<"UserVocabulary"> | number
     learned?: BoolWithAggregatesFilter<"UserVocabulary"> | boolean
     lastPracticed?: DateTimeNullableWithAggregatesFilter<"UserVocabulary"> | Date | string | null
-    repetitionStage?: IntWithAggregatesFilter<"UserVocabulary"> | number
     nextReviewDate?: DateTimeNullableWithAggregatesFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntWithAggregatesFilter<"UserVocabulary"> | number
   }
 
   export type ConversationWhereInput = {
@@ -23267,9 +23234,9 @@ export namespace Prisma {
     startedAt?: DateTimeFilter<"Conversation"> | Date | string
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
     templateId?: IntNullableFilter<"Conversation"> | number | null
+    template?: XOR<ConversationTemplateNullableScalarRelationFilter, ConversationTemplateWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     messages?: MessageListRelationFilter
-    template?: XOR<ConversationTemplateNullableScalarRelationFilter, ConversationTemplateWhereInput> | null
   }
 
   export type ConversationOrderByWithRelationInput = {
@@ -23280,9 +23247,9 @@ export namespace Prisma {
     startedAt?: SortOrder
     lastMessageAt?: SortOrder
     templateId?: SortOrderInput | SortOrder
+    template?: ConversationTemplateOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
     messages?: MessageOrderByRelationAggregateInput
-    template?: ConversationTemplateOrderByWithRelationInput
   }
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -23296,9 +23263,9 @@ export namespace Prisma {
     startedAt?: DateTimeFilter<"Conversation"> | Date | string
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
     templateId?: IntNullableFilter<"Conversation"> | number | null
+    template?: XOR<ConversationTemplateNullableScalarRelationFilter, ConversationTemplateWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     messages?: MessageListRelationFilter
-    template?: XOR<ConversationTemplateNullableScalarRelationFilter, ConversationTemplateWhereInput> | null
   }, "id">
 
   export type ConversationOrderByWithAggregationInput = {
@@ -23338,9 +23305,9 @@ export namespace Prisma {
     role?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     timestamp?: DateTimeFilter<"Message"> | Date | string
+    audioUrl?: StringNullableFilter<"Message"> | string | null
     corrections?: JsonNullableFilter<"Message">
     suggestedVocabulary?: JsonNullableFilter<"Message">
-    audioUrl?: StringNullableFilter<"Message"> | string | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
   }
 
@@ -23350,9 +23317,9 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    audioUrl?: SortOrderInput | SortOrder
     corrections?: SortOrderInput | SortOrder
     suggestedVocabulary?: SortOrderInput | SortOrder
-    audioUrl?: SortOrderInput | SortOrder
     conversation?: ConversationOrderByWithRelationInput
   }
 
@@ -23365,9 +23332,9 @@ export namespace Prisma {
     role?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     timestamp?: DateTimeFilter<"Message"> | Date | string
+    audioUrl?: StringNullableFilter<"Message"> | string | null
     corrections?: JsonNullableFilter<"Message">
     suggestedVocabulary?: JsonNullableFilter<"Message">
-    audioUrl?: StringNullableFilter<"Message"> | string | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
   }, "id">
 
@@ -23377,9 +23344,9 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    audioUrl?: SortOrderInput | SortOrder
     corrections?: SortOrderInput | SortOrder
     suggestedVocabulary?: SortOrderInput | SortOrder
-    audioUrl?: SortOrderInput | SortOrder
     _count?: MessageCountOrderByAggregateInput
     _avg?: MessageAvgOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
@@ -23396,9 +23363,9 @@ export namespace Prisma {
     role?: StringWithAggregatesFilter<"Message"> | string
     content?: StringWithAggregatesFilter<"Message"> | string
     timestamp?: DateTimeWithAggregatesFilter<"Message"> | Date | string
+    audioUrl?: StringNullableWithAggregatesFilter<"Message"> | string | null
     corrections?: JsonNullableWithAggregatesFilter<"Message">
     suggestedVocabulary?: JsonNullableWithAggregatesFilter<"Message">
-    audioUrl?: StringNullableWithAggregatesFilter<"Message"> | string | null
   }
 
   export type ConversationTemplateWhereInput = {
@@ -23412,8 +23379,8 @@ export namespace Prisma {
     initialMessage?: StringFilter<"ConversationTemplate"> | string
     topics?: StringNullableListFilter<"ConversationTemplate">
     level?: StringFilter<"ConversationTemplate"> | string
-    userTemplateUsage?: UserTemplateUsageListRelationFilter
     conversations?: ConversationListRelationFilter
+    userTemplateUsage?: UserTemplateUsageListRelationFilter
   }
 
   export type ConversationTemplateOrderByWithRelationInput = {
@@ -23424,8 +23391,8 @@ export namespace Prisma {
     initialMessage?: SortOrder
     topics?: SortOrder
     level?: SortOrder
-    userTemplateUsage?: UserTemplateUsageOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
+    userTemplateUsage?: UserTemplateUsageOrderByRelationAggregateInput
   }
 
   export type ConversationTemplateWhereUniqueInput = Prisma.AtLeast<{
@@ -23439,8 +23406,8 @@ export namespace Prisma {
     initialMessage?: StringFilter<"ConversationTemplate"> | string
     topics?: StringNullableListFilter<"ConversationTemplate">
     level?: StringFilter<"ConversationTemplate"> | string
-    userTemplateUsage?: UserTemplateUsageListRelationFilter
     conversations?: ConversationListRelationFilter
+    userTemplateUsage?: UserTemplateUsageListRelationFilter
   }, "id">
 
   export type ConversationTemplateOrderByWithAggregationInput = {
@@ -23479,8 +23446,8 @@ export namespace Prisma {
     userId?: IntFilter<"UserTemplateUsage"> | number
     templateId?: IntFilter<"UserTemplateUsage"> | number
     usedAt?: DateTimeFilter<"UserTemplateUsage"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     template?: XOR<ConversationTemplateScalarRelationFilter, ConversationTemplateWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type UserTemplateUsageOrderByWithRelationInput = {
@@ -23488,8 +23455,8 @@ export namespace Prisma {
     userId?: SortOrder
     templateId?: SortOrder
     usedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     template?: ConversationTemplateOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type UserTemplateUsageWhereUniqueInput = Prisma.AtLeast<{
@@ -23500,8 +23467,8 @@ export namespace Prisma {
     userId?: IntFilter<"UserTemplateUsage"> | number
     templateId?: IntFilter<"UserTemplateUsage"> | number
     usedAt?: DateTimeFilter<"UserTemplateUsage"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     template?: XOR<ConversationTemplateScalarRelationFilter, ConversationTemplateWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type UserTemplateUsageOrderByWithAggregationInput = {
@@ -23615,8 +23582,8 @@ export namespace Prisma {
     aiGenerated?: BoolFilter<"PracticeSession"> | boolean
     difficulty?: StringNullableFilter<"PracticeSession"> | string | null
     score?: IntNullableFilter<"PracticeSession"> | number | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     practiceItems?: PracticeItemListRelationFilter
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     pronunciationItems?: PronunciationPracticeItemListRelationFilter
   }
 
@@ -23629,8 +23596,8 @@ export namespace Prisma {
     aiGenerated?: SortOrder
     difficulty?: SortOrderInput | SortOrder
     score?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
     practiceItems?: PracticeItemOrderByRelationAggregateInput
+    user?: UserOrderByWithRelationInput
     pronunciationItems?: PronunciationPracticeItemOrderByRelationAggregateInput
   }
 
@@ -23646,8 +23613,8 @@ export namespace Prisma {
     aiGenerated?: BoolFilter<"PracticeSession"> | boolean
     difficulty?: StringNullableFilter<"PracticeSession"> | string | null
     score?: IntNullableFilter<"PracticeSession"> | number | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     practiceItems?: PracticeItemListRelationFilter
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     pronunciationItems?: PronunciationPracticeItemListRelationFilter
   }, "id">
 
@@ -23758,7 +23725,6 @@ export namespace Prisma {
     id?: IntFilter<"PronunciationExercise"> | number
     text?: StringFilter<"PronunciationExercise"> | string
     translation?: StringNullableFilter<"PronunciationExercise"> | string | null
-    audioUrl?: StringNullableFilter<"PronunciationExercise"> | string | null
     difficulty?: StringFilter<"PronunciationExercise"> | string
     category?: StringNullableFilter<"PronunciationExercise"> | string | null
     expectedPronunciation?: StringNullableFilter<"PronunciationExercise"> | string | null
@@ -23769,7 +23735,6 @@ export namespace Prisma {
     id?: SortOrder
     text?: SortOrder
     translation?: SortOrderInput | SortOrder
-    audioUrl?: SortOrderInput | SortOrder
     difficulty?: SortOrder
     category?: SortOrderInput | SortOrder
     expectedPronunciation?: SortOrderInput | SortOrder
@@ -23783,7 +23748,6 @@ export namespace Prisma {
     NOT?: PronunciationExerciseWhereInput | PronunciationExerciseWhereInput[]
     text?: StringFilter<"PronunciationExercise"> | string
     translation?: StringNullableFilter<"PronunciationExercise"> | string | null
-    audioUrl?: StringNullableFilter<"PronunciationExercise"> | string | null
     difficulty?: StringFilter<"PronunciationExercise"> | string
     category?: StringNullableFilter<"PronunciationExercise"> | string | null
     expectedPronunciation?: StringNullableFilter<"PronunciationExercise"> | string | null
@@ -23794,7 +23758,6 @@ export namespace Prisma {
     id?: SortOrder
     text?: SortOrder
     translation?: SortOrderInput | SortOrder
-    audioUrl?: SortOrderInput | SortOrder
     difficulty?: SortOrder
     category?: SortOrderInput | SortOrder
     expectedPronunciation?: SortOrderInput | SortOrder
@@ -23812,7 +23775,6 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"PronunciationExercise"> | number
     text?: StringWithAggregatesFilter<"PronunciationExercise"> | string
     translation?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
-    audioUrl?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
     difficulty?: StringWithAggregatesFilter<"PronunciationExercise"> | string
     category?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
     expectedPronunciation?: StringNullableWithAggregatesFilter<"PronunciationExercise"> | string | null
@@ -23829,8 +23791,8 @@ export namespace Prisma {
     transcript?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
     similarityScore?: FloatNullableFilter<"PronunciationPracticeItem"> | number | null
     feedback?: JsonNullableFilter<"PronunciationPracticeItem">
-    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
     exercise?: XOR<PronunciationExerciseScalarRelationFilter, PronunciationExerciseWhereInput>
+    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
   }
 
   export type PronunciationPracticeItemOrderByWithRelationInput = {
@@ -23841,8 +23803,8 @@ export namespace Prisma {
     transcript?: SortOrderInput | SortOrder
     similarityScore?: SortOrderInput | SortOrder
     feedback?: SortOrderInput | SortOrder
-    session?: PracticeSessionOrderByWithRelationInput
     exercise?: PronunciationExerciseOrderByWithRelationInput
+    session?: PracticeSessionOrderByWithRelationInput
   }
 
   export type PronunciationPracticeItemWhereUniqueInput = Prisma.AtLeast<{
@@ -23856,8 +23818,8 @@ export namespace Prisma {
     transcript?: StringNullableFilter<"PronunciationPracticeItem"> | string | null
     similarityScore?: FloatNullableFilter<"PronunciationPracticeItem"> | number | null
     feedback?: JsonNullableFilter<"PronunciationPracticeItem">
-    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
     exercise?: XOR<PronunciationExerciseScalarRelationFilter, PronunciationExerciseWhereInput>
+    session?: XOR<PracticeSessionScalarRelationFilter, PracticeSessionWhereInput>
   }, "id">
 
   export type PronunciationPracticeItemOrderByWithAggregationInput = {
@@ -23965,12 +23927,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
-    examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -23992,12 +23954,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
-    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -24018,12 +23980,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -24045,12 +24007,12 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -24190,8 +24152,8 @@ export namespace Prisma {
     audioUrl?: string | null
     videoUrl?: string | null
     order: number
-    lesson: LessonCreateNestedOneWithoutSectionsInput
     exercises?: LessonExerciseCreateNestedManyWithoutSectionInput
+    lesson: LessonCreateNestedOneWithoutSectionsInput
   }
 
   export type LessonSectionUncheckedCreateInput = {
@@ -24213,8 +24175,8 @@ export namespace Prisma {
     audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     videoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
-    lesson?: LessonUpdateOneRequiredWithoutSectionsNestedInput
     exercises?: LessonExerciseUpdateManyWithoutSectionNestedInput
+    lesson?: LessonUpdateOneRequiredWithoutSectionsNestedInput
   }
 
   export type LessonSectionUncheckedUpdateInput = {
@@ -24403,12 +24365,11 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
-    userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
     practiceItems?: PracticeItemCreateNestedManyWithoutVocabularyInput
+    userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
   }
 
   export type VocabularyUncheckedCreateInput = {
@@ -24417,12 +24378,11 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
-    userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
     practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput
+    userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
   export type VocabularyUpdateInput = {
@@ -24430,12 +24390,11 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
-    userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
     practiceItems?: PracticeItemUpdateManyWithoutVocabularyNestedInput
+    userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
   }
 
   export type VocabularyUncheckedUpdateInput = {
@@ -24444,12 +24403,11 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
-    userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput
+    userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
   }
 
   export type VocabularyCreateManyInput = {
@@ -24458,10 +24416,9 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
   }
 
   export type VocabularyUpdateManyMutationInput = {
@@ -24469,10 +24426,9 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
   }
 
   export type VocabularyUncheckedUpdateManyInput = {
@@ -24481,17 +24437,16 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
   }
 
   export type UserVocabularyCreateInput = {
     learned?: boolean
     lastPracticed?: Date | string | null
-    repetitionStage?: number
     nextReviewDate?: Date | string | null
+    repetitionStage?: number
     user: UserCreateNestedOneWithoutVocabularyInput
     vocabulary: VocabularyCreateNestedOneWithoutUserVocabularyInput
   }
@@ -24502,15 +24457,15 @@ export namespace Prisma {
     vocabularyId: number
     learned?: boolean
     lastPracticed?: Date | string | null
-    repetitionStage?: number
     nextReviewDate?: Date | string | null
+    repetitionStage?: number
   }
 
   export type UserVocabularyUpdateInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
     nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutVocabularyNestedInput
     vocabulary?: VocabularyUpdateOneRequiredWithoutUserVocabularyNestedInput
   }
@@ -24521,8 +24476,8 @@ export namespace Prisma {
     vocabularyId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
     nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserVocabularyCreateManyInput = {
@@ -24531,15 +24486,15 @@ export namespace Prisma {
     vocabularyId: number
     learned?: boolean
     lastPracticed?: Date | string | null
-    repetitionStage?: number
     nextReviewDate?: Date | string | null
+    repetitionStage?: number
   }
 
   export type UserVocabularyUpdateManyMutationInput = {
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
     nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserVocabularyUncheckedUpdateManyInput = {
@@ -24548,8 +24503,8 @@ export namespace Prisma {
     vocabularyId?: IntFieldUpdateOperationsInput | number
     learned?: BoolFieldUpdateOperationsInput | boolean
     lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
     nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
   }
 
   export type ConversationCreateInput = {
@@ -24558,9 +24513,9 @@ export namespace Prisma {
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
+    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
     user: UserCreateNestedOneWithoutConversationsInput
     messages?: MessageCreateNestedManyWithoutConversationInput
-    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
   }
 
   export type ConversationUncheckedCreateInput = {
@@ -24580,9 +24535,9 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
     user?: UserUpdateOneRequiredWithoutConversationsNestedInput
     messages?: MessageUpdateManyWithoutConversationNestedInput
-    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
   }
 
   export type ConversationUncheckedUpdateInput = {
@@ -24628,9 +24583,9 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    audioUrl?: string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: string | null
     conversation: ConversationCreateNestedOneWithoutMessagesInput
   }
 
@@ -24640,18 +24595,18 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    audioUrl?: string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: string | null
   }
 
   export type MessageUpdateInput = {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
   }
 
@@ -24661,9 +24616,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageCreateManyInput = {
@@ -24672,18 +24627,18 @@ export namespace Prisma {
     role: string
     content: string
     timestamp?: Date | string
+    audioUrl?: string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: string | null
   }
 
   export type MessageUpdateManyMutationInput = {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUncheckedUpdateManyInput = {
@@ -24692,9 +24647,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConversationTemplateCreateInput = {
@@ -24704,8 +24659,8 @@ export namespace Prisma {
     initialMessage: string
     topics?: ConversationTemplateCreatetopicsInput | string[]
     level: string
-    userTemplateUsage?: UserTemplateUsageCreateNestedManyWithoutTemplateInput
     conversations?: ConversationCreateNestedManyWithoutTemplateInput
+    userTemplateUsage?: UserTemplateUsageCreateNestedManyWithoutTemplateInput
   }
 
   export type ConversationTemplateUncheckedCreateInput = {
@@ -24716,8 +24671,8 @@ export namespace Prisma {
     initialMessage: string
     topics?: ConversationTemplateCreatetopicsInput | string[]
     level: string
-    userTemplateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutTemplateInput
+    userTemplateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput
   }
 
   export type ConversationTemplateUpdateInput = {
@@ -24727,8 +24682,8 @@ export namespace Prisma {
     initialMessage?: StringFieldUpdateOperationsInput | string
     topics?: ConversationTemplateUpdatetopicsInput | string[]
     level?: StringFieldUpdateOperationsInput | string
-    userTemplateUsage?: UserTemplateUsageUpdateManyWithoutTemplateNestedInput
     conversations?: ConversationUpdateManyWithoutTemplateNestedInput
+    userTemplateUsage?: UserTemplateUsageUpdateManyWithoutTemplateNestedInput
   }
 
   export type ConversationTemplateUncheckedUpdateInput = {
@@ -24739,8 +24694,8 @@ export namespace Prisma {
     initialMessage?: StringFieldUpdateOperationsInput | string
     topics?: ConversationTemplateUpdatetopicsInput | string[]
     level?: StringFieldUpdateOperationsInput | string
-    userTemplateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutTemplateNestedInput
+    userTemplateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
   export type ConversationTemplateCreateManyInput = {
@@ -24774,8 +24729,8 @@ export namespace Prisma {
 
   export type UserTemplateUsageCreateInput = {
     usedAt?: Date | string
-    user: UserCreateNestedOneWithoutTemplateUsageInput
     template: ConversationTemplateCreateNestedOneWithoutUserTemplateUsageInput
+    user: UserCreateNestedOneWithoutTemplateUsageInput
   }
 
   export type UserTemplateUsageUncheckedCreateInput = {
@@ -24787,8 +24742,8 @@ export namespace Prisma {
 
   export type UserTemplateUsageUpdateInput = {
     usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutTemplateUsageNestedInput
     template?: ConversationTemplateUpdateOneRequiredWithoutUserTemplateUsageNestedInput
+    user?: UserUpdateOneRequiredWithoutTemplateUsageNestedInput
   }
 
   export type UserTemplateUsageUncheckedUpdateInput = {
@@ -24904,8 +24859,8 @@ export namespace Prisma {
     aiGenerated?: boolean
     difficulty?: string | null
     score?: number | null
-    user: UserCreateNestedOneWithoutPracticeSessionsInput
     practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+    user: UserCreateNestedOneWithoutPracticeSessionsInput
     pronunciationItems?: PronunciationPracticeItemCreateNestedManyWithoutSessionInput
   }
 
@@ -24930,8 +24885,8 @@ export namespace Prisma {
     aiGenerated?: BoolFieldUpdateOperationsInput | boolean
     difficulty?: NullableStringFieldUpdateOperationsInput | string | null
     score?: NullableIntFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
     practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
     pronunciationItems?: PronunciationPracticeItemUpdateManyWithoutSessionNestedInput
   }
 
@@ -25048,7 +25003,6 @@ export namespace Prisma {
   export type PronunciationExerciseCreateInput = {
     text: string
     translation?: string | null
-    audioUrl?: string | null
     difficulty: string
     category?: string | null
     expectedPronunciation?: string | null
@@ -25059,7 +25013,6 @@ export namespace Prisma {
     id?: number
     text: string
     translation?: string | null
-    audioUrl?: string | null
     difficulty: string
     category?: string | null
     expectedPronunciation?: string | null
@@ -25069,7 +25022,6 @@ export namespace Prisma {
   export type PronunciationExerciseUpdateInput = {
     text?: StringFieldUpdateOperationsInput | string
     translation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25080,7 +25032,6 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
     translation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25091,7 +25042,6 @@ export namespace Prisma {
     id?: number
     text: string
     translation?: string | null
-    audioUrl?: string | null
     difficulty: string
     category?: string | null
     expectedPronunciation?: string | null
@@ -25100,7 +25050,6 @@ export namespace Prisma {
   export type PronunciationExerciseUpdateManyMutationInput = {
     text?: StringFieldUpdateOperationsInput | string
     translation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25110,7 +25059,6 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
     translation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25121,8 +25069,8 @@ export namespace Prisma {
     transcript?: string | null
     similarityScore?: number | null
     feedback?: NullableJsonNullValueInput | InputJsonValue
-    session: PracticeSessionCreateNestedOneWithoutPronunciationItemsInput
     exercise: PronunciationExerciseCreateNestedOneWithoutPracticeItemsInput
+    session: PracticeSessionCreateNestedOneWithoutPronunciationItemsInput
   }
 
   export type PronunciationPracticeItemUncheckedCreateInput = {
@@ -25140,8 +25088,8 @@ export namespace Prisma {
     transcript?: NullableStringFieldUpdateOperationsInput | string | null
     similarityScore?: NullableFloatFieldUpdateOperationsInput | number | null
     feedback?: NullableJsonNullValueInput | InputJsonValue
-    session?: PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput
     exercise?: PronunciationExerciseUpdateOneRequiredWithoutPracticeItemsNestedInput
+    session?: PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput
   }
 
   export type PronunciationPracticeItemUncheckedUpdateInput = {
@@ -25306,16 +25254,10 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type LessonProgressListRelationFilter = {
-    every?: LessonProgressWhereInput
-    some?: LessonProgressWhereInput
-    none?: LessonProgressWhereInput
-  }
-
-  export type UserVocabularyListRelationFilter = {
-    every?: UserVocabularyWhereInput
-    some?: UserVocabularyWhereInput
-    none?: UserVocabularyWhereInput
+  export type ConversationListRelationFilter = {
+    every?: ConversationWhereInput
+    some?: ConversationWhereInput
+    none?: ConversationWhereInput
   }
 
   export type ExamResultListRelationFilter = {
@@ -25324,10 +25266,10 @@ export namespace Prisma {
     none?: ExamResultWhereInput
   }
 
-  export type ConversationListRelationFilter = {
-    every?: ConversationWhereInput
-    some?: ConversationWhereInput
-    none?: ConversationWhereInput
+  export type LessonProgressListRelationFilter = {
+    every?: LessonProgressWhereInput
+    some?: LessonProgressWhereInput
+    none?: LessonProgressWhereInput
   }
 
   export type PracticeSessionListRelationFilter = {
@@ -25342,16 +25284,18 @@ export namespace Prisma {
     none?: UserTemplateUsageWhereInput
   }
 
+  export type UserVocabularyListRelationFilter = {
+    every?: UserVocabularyWhereInput
+    some?: UserVocabularyWhereInput
+    none?: UserVocabularyWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
-  export type LessonProgressOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type UserVocabularyOrderByRelationAggregateInput = {
+  export type ConversationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25359,7 +25303,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type ConversationOrderByRelationAggregateInput = {
+  export type LessonProgressOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25368,6 +25312,10 @@ export namespace Prisma {
   }
 
   export type UserTemplateUsageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserVocabularyOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25567,15 +25515,15 @@ export namespace Prisma {
     duration?: SortOrder
   }
 
-  export type LessonScalarRelationFilter = {
-    is?: LessonWhereInput
-    isNot?: LessonWhereInput
-  }
-
   export type LessonExerciseListRelationFilter = {
     every?: LessonExerciseWhereInput
     some?: LessonExerciseWhereInput
     none?: LessonExerciseWhereInput
+  }
+
+  export type LessonScalarRelationFilter = {
+    is?: LessonWhereInput
+    isNot?: LessonWhereInput
   }
 
   export type LessonExerciseOrderByRelationAggregateInput = {
@@ -25815,10 +25763,9 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
-    pronunciation?: SortOrder
-    audioUrl?: SortOrder
-    usageContext?: SortOrder
     category?: SortOrder
+    pronunciation?: SortOrder
+    usageContext?: SortOrder
   }
 
   export type VocabularyAvgOrderByAggregateInput = {
@@ -25831,9 +25778,8 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
-    pronunciation?: SortOrder
-    audioUrl?: SortOrder
     category?: SortOrder
+    pronunciation?: SortOrder
   }
 
   export type VocabularyMinOrderByAggregateInput = {
@@ -25842,9 +25788,8 @@ export namespace Prisma {
     translation?: SortOrder
     example?: SortOrder
     level?: SortOrder
-    pronunciation?: SortOrder
-    audioUrl?: SortOrder
     category?: SortOrder
+    pronunciation?: SortOrder
   }
 
   export type VocabularySumOrderByAggregateInput = {
@@ -25867,8 +25812,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrder
-    repetitionStage?: SortOrder
     nextReviewDate?: SortOrder
+    repetitionStage?: SortOrder
   }
 
   export type UserVocabularyAvgOrderByAggregateInput = {
@@ -25884,8 +25829,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrder
-    repetitionStage?: SortOrder
     nextReviewDate?: SortOrder
+    repetitionStage?: SortOrder
   }
 
   export type UserVocabularyMinOrderByAggregateInput = {
@@ -25894,8 +25839,8 @@ export namespace Prisma {
     vocabularyId?: SortOrder
     learned?: SortOrder
     lastPracticed?: SortOrder
-    repetitionStage?: SortOrder
     nextReviewDate?: SortOrder
+    repetitionStage?: SortOrder
   }
 
   export type UserVocabularySumOrderByAggregateInput = {
@@ -25916,15 +25861,15 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type ConversationTemplateNullableScalarRelationFilter = {
+    is?: ConversationTemplateWhereInput | null
+    isNot?: ConversationTemplateWhereInput | null
+  }
+
   export type MessageListRelationFilter = {
     every?: MessageWhereInput
     some?: MessageWhereInput
     none?: MessageWhereInput
-  }
-
-  export type ConversationTemplateNullableScalarRelationFilter = {
-    is?: ConversationTemplateWhereInput | null
-    isNot?: ConversationTemplateWhereInput | null
   }
 
   export type MessageOrderByRelationAggregateInput = {
@@ -25998,9 +25943,9 @@ export namespace Prisma {
     role?: SortOrder
     content?: SortOrder
     timestamp?: SortOrder
+    audioUrl?: SortOrder
     corrections?: SortOrder
     suggestedVocabulary?: SortOrder
-    audioUrl?: SortOrder
   }
 
   export type MessageAvgOrderByAggregateInput = {
@@ -26304,7 +26249,6 @@ export namespace Prisma {
     id?: SortOrder
     text?: SortOrder
     translation?: SortOrder
-    audioUrl?: SortOrder
     difficulty?: SortOrder
     category?: SortOrder
     expectedPronunciation?: SortOrder
@@ -26318,7 +26262,6 @@ export namespace Prisma {
     id?: SortOrder
     text?: SortOrder
     translation?: SortOrder
-    audioUrl?: SortOrder
     difficulty?: SortOrder
     category?: SortOrder
     expectedPronunciation?: SortOrder
@@ -26328,7 +26271,6 @@ export namespace Prisma {
     id?: SortOrder
     text?: SortOrder
     translation?: SortOrder
-    audioUrl?: SortOrder
     difficulty?: SortOrder
     category?: SortOrder
     expectedPronunciation?: SortOrder
@@ -26447,18 +26389,11 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type LessonProgressCreateNestedManyWithoutUserInput = {
-    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
-    createMany?: LessonProgressCreateManyUserInputEnvelope
-    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-  }
-
-  export type UserVocabularyCreateNestedManyWithoutUserInput = {
-    create?: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput> | UserVocabularyCreateWithoutUserInput[] | UserVocabularyUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UserVocabularyCreateOrConnectWithoutUserInput | UserVocabularyCreateOrConnectWithoutUserInput[]
-    createMany?: UserVocabularyCreateManyUserInputEnvelope
-    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+  export type ConversationCreateNestedManyWithoutUserInput = {
+    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
+    createMany?: ConversationCreateManyUserInputEnvelope
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
   export type ExamResultCreateNestedManyWithoutUserInput = {
@@ -26468,11 +26403,11 @@ export namespace Prisma {
     connect?: ExamResultWhereUniqueInput | ExamResultWhereUniqueInput[]
   }
 
-  export type ConversationCreateNestedManyWithoutUserInput = {
-    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
-    createMany?: ConversationCreateManyUserInputEnvelope
-    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  export type LessonProgressCreateNestedManyWithoutUserInput = {
+    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
+    createMany?: LessonProgressCreateManyUserInputEnvelope
+    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
   }
 
   export type PracticeSessionCreateNestedManyWithoutUserInput = {
@@ -26489,18 +26424,18 @@ export namespace Prisma {
     connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
   }
 
-  export type LessonProgressUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
-    createMany?: LessonProgressCreateManyUserInputEnvelope
-    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-  }
-
-  export type UserVocabularyUncheckedCreateNestedManyWithoutUserInput = {
+  export type UserVocabularyCreateNestedManyWithoutUserInput = {
     create?: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput> | UserVocabularyCreateWithoutUserInput[] | UserVocabularyUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutUserInput | UserVocabularyCreateOrConnectWithoutUserInput[]
     createMany?: UserVocabularyCreateManyUserInputEnvelope
     connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+  }
+
+  export type ConversationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
+    createMany?: ConversationCreateManyUserInputEnvelope
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
   export type ExamResultUncheckedCreateNestedManyWithoutUserInput = {
@@ -26510,11 +26445,11 @@ export namespace Prisma {
     connect?: ExamResultWhereUniqueInput | ExamResultWhereUniqueInput[]
   }
 
-  export type ConversationUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
-    createMany?: ConversationCreateManyUserInputEnvelope
-    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  export type LessonProgressUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
+    createMany?: LessonProgressCreateManyUserInputEnvelope
+    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
   }
 
   export type PracticeSessionUncheckedCreateNestedManyWithoutUserInput = {
@@ -26529,6 +26464,13 @@ export namespace Prisma {
     connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutUserInput | UserTemplateUsageCreateOrConnectWithoutUserInput[]
     createMany?: UserTemplateUsageCreateManyUserInputEnvelope
     connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+  }
+
+  export type UserVocabularyUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput> | UserVocabularyCreateWithoutUserInput[] | UserVocabularyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserVocabularyCreateOrConnectWithoutUserInput | UserVocabularyCreateOrConnectWithoutUserInput[]
+    createMany?: UserVocabularyCreateManyUserInputEnvelope
+    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -26560,32 +26502,18 @@ export namespace Prisma {
     set?: boolean
   }
 
-  export type LessonProgressUpdateManyWithoutUserNestedInput = {
-    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
-    upsert?: LessonProgressUpsertWithWhereUniqueWithoutUserInput | LessonProgressUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: LessonProgressCreateManyUserInputEnvelope
-    set?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    disconnect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    delete?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    update?: LessonProgressUpdateWithWhereUniqueWithoutUserInput | LessonProgressUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: LessonProgressUpdateManyWithWhereWithoutUserInput | LessonProgressUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
-  }
-
-  export type UserVocabularyUpdateManyWithoutUserNestedInput = {
-    create?: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput> | UserVocabularyCreateWithoutUserInput[] | UserVocabularyUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UserVocabularyCreateOrConnectWithoutUserInput | UserVocabularyCreateOrConnectWithoutUserInput[]
-    upsert?: UserVocabularyUpsertWithWhereUniqueWithoutUserInput | UserVocabularyUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: UserVocabularyCreateManyUserInputEnvelope
-    set?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    disconnect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    delete?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    update?: UserVocabularyUpdateWithWhereUniqueWithoutUserInput | UserVocabularyUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: UserVocabularyUpdateManyWithWhereWithoutUserInput | UserVocabularyUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
+  export type ConversationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
+    upsert?: ConversationUpsertWithWhereUniqueWithoutUserInput | ConversationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ConversationCreateManyUserInputEnvelope
+    set?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    disconnect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    delete?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    update?: ConversationUpdateWithWhereUniqueWithoutUserInput | ConversationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ConversationUpdateManyWithWhereWithoutUserInput | ConversationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
   export type ExamResultUpdateManyWithoutUserNestedInput = {
@@ -26602,18 +26530,18 @@ export namespace Prisma {
     deleteMany?: ExamResultScalarWhereInput | ExamResultScalarWhereInput[]
   }
 
-  export type ConversationUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
-    upsert?: ConversationUpsertWithWhereUniqueWithoutUserInput | ConversationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ConversationCreateManyUserInputEnvelope
-    set?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    disconnect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    delete?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    update?: ConversationUpdateWithWhereUniqueWithoutUserInput | ConversationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ConversationUpdateManyWithWhereWithoutUserInput | ConversationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  export type LessonProgressUpdateManyWithoutUserNestedInput = {
+    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
+    upsert?: LessonProgressUpsertWithWhereUniqueWithoutUserInput | LessonProgressUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: LessonProgressCreateManyUserInputEnvelope
+    set?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    disconnect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    delete?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    update?: LessonProgressUpdateWithWhereUniqueWithoutUserInput | LessonProgressUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: LessonProgressUpdateManyWithWhereWithoutUserInput | LessonProgressUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
   }
 
   export type PracticeSessionUpdateManyWithoutUserNestedInput = {
@@ -26644,21 +26572,7 @@ export namespace Prisma {
     deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
   }
 
-  export type LessonProgressUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
-    upsert?: LessonProgressUpsertWithWhereUniqueWithoutUserInput | LessonProgressUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: LessonProgressCreateManyUserInputEnvelope
-    set?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    disconnect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    delete?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
-    update?: LessonProgressUpdateWithWhereUniqueWithoutUserInput | LessonProgressUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: LessonProgressUpdateManyWithWhereWithoutUserInput | LessonProgressUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
-  }
-
-  export type UserVocabularyUncheckedUpdateManyWithoutUserNestedInput = {
+  export type UserVocabularyUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput> | UserVocabularyCreateWithoutUserInput[] | UserVocabularyUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutUserInput | UserVocabularyCreateOrConnectWithoutUserInput[]
     upsert?: UserVocabularyUpsertWithWhereUniqueWithoutUserInput | UserVocabularyUpsertWithWhereUniqueWithoutUserInput[]
@@ -26670,6 +26584,20 @@ export namespace Prisma {
     update?: UserVocabularyUpdateWithWhereUniqueWithoutUserInput | UserVocabularyUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserVocabularyUpdateManyWithWhereWithoutUserInput | UserVocabularyUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
+  }
+
+  export type ConversationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
+    upsert?: ConversationUpsertWithWhereUniqueWithoutUserInput | ConversationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ConversationCreateManyUserInputEnvelope
+    set?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    disconnect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    delete?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+    update?: ConversationUpdateWithWhereUniqueWithoutUserInput | ConversationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ConversationUpdateManyWithWhereWithoutUserInput | ConversationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
   export type ExamResultUncheckedUpdateManyWithoutUserNestedInput = {
@@ -26686,18 +26614,18 @@ export namespace Prisma {
     deleteMany?: ExamResultScalarWhereInput | ExamResultScalarWhereInput[]
   }
 
-  export type ConversationUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput> | ConversationCreateWithoutUserInput[] | ConversationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ConversationCreateOrConnectWithoutUserInput | ConversationCreateOrConnectWithoutUserInput[]
-    upsert?: ConversationUpsertWithWhereUniqueWithoutUserInput | ConversationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ConversationCreateManyUserInputEnvelope
-    set?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    disconnect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    delete?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
-    update?: ConversationUpdateWithWhereUniqueWithoutUserInput | ConversationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ConversationUpdateManyWithWhereWithoutUserInput | ConversationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  export type LessonProgressUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput> | LessonProgressCreateWithoutUserInput[] | LessonProgressUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LessonProgressCreateOrConnectWithoutUserInput | LessonProgressCreateOrConnectWithoutUserInput[]
+    upsert?: LessonProgressUpsertWithWhereUniqueWithoutUserInput | LessonProgressUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: LessonProgressCreateManyUserInputEnvelope
+    set?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    disconnect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    delete?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+    update?: LessonProgressUpdateWithWhereUniqueWithoutUserInput | LessonProgressUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: LessonProgressUpdateManyWithWhereWithoutUserInput | LessonProgressUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
   }
 
   export type PracticeSessionUncheckedUpdateManyWithoutUserNestedInput = {
@@ -26726,6 +26654,20 @@ export namespace Prisma {
     update?: UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput | UserTemplateUsageUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutUserInput | UserTemplateUsageUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
+  }
+
+  export type UserVocabularyUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput> | UserVocabularyCreateWithoutUserInput[] | UserVocabularyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserVocabularyCreateOrConnectWithoutUserInput | UserVocabularyCreateOrConnectWithoutUserInput[]
+    upsert?: UserVocabularyUpsertWithWhereUniqueWithoutUserInput | UserVocabularyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserVocabularyCreateManyUserInputEnvelope
+    set?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    disconnect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    delete?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    update?: UserVocabularyUpdateWithWhereUniqueWithoutUserInput | UserVocabularyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserVocabularyUpdateManyWithWhereWithoutUserInput | UserVocabularyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
   }
 
   export type LessonCreatetopicsInput = {
@@ -26821,12 +26763,6 @@ export namespace Prisma {
     deleteMany?: LessonSectionScalarWhereInput | LessonSectionScalarWhereInput[]
   }
 
-  export type LessonCreateNestedOneWithoutSectionsInput = {
-    create?: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
-    connectOrCreate?: LessonCreateOrConnectWithoutSectionsInput
-    connect?: LessonWhereUniqueInput
-  }
-
   export type LessonExerciseCreateNestedManyWithoutSectionInput = {
     create?: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput> | LessonExerciseCreateWithoutSectionInput[] | LessonExerciseUncheckedCreateWithoutSectionInput[]
     connectOrCreate?: LessonExerciseCreateOrConnectWithoutSectionInput | LessonExerciseCreateOrConnectWithoutSectionInput[]
@@ -26834,19 +26770,17 @@ export namespace Prisma {
     connect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
   }
 
+  export type LessonCreateNestedOneWithoutSectionsInput = {
+    create?: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutSectionsInput
+    connect?: LessonWhereUniqueInput
+  }
+
   export type LessonExerciseUncheckedCreateNestedManyWithoutSectionInput = {
     create?: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput> | LessonExerciseCreateWithoutSectionInput[] | LessonExerciseUncheckedCreateWithoutSectionInput[]
     connectOrCreate?: LessonExerciseCreateOrConnectWithoutSectionInput | LessonExerciseCreateOrConnectWithoutSectionInput[]
     createMany?: LessonExerciseCreateManySectionInputEnvelope
     connect?: LessonExerciseWhereUniqueInput | LessonExerciseWhereUniqueInput[]
-  }
-
-  export type LessonUpdateOneRequiredWithoutSectionsNestedInput = {
-    create?: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
-    connectOrCreate?: LessonCreateOrConnectWithoutSectionsInput
-    upsert?: LessonUpsertWithoutSectionsInput
-    connect?: LessonWhereUniqueInput
-    update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutSectionsInput, LessonUpdateWithoutSectionsInput>, LessonUncheckedUpdateWithoutSectionsInput>
   }
 
   export type LessonExerciseUpdateManyWithoutSectionNestedInput = {
@@ -26861,6 +26795,14 @@ export namespace Prisma {
     update?: LessonExerciseUpdateWithWhereUniqueWithoutSectionInput | LessonExerciseUpdateWithWhereUniqueWithoutSectionInput[]
     updateMany?: LessonExerciseUpdateManyWithWhereWithoutSectionInput | LessonExerciseUpdateManyWithWhereWithoutSectionInput[]
     deleteMany?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+  }
+
+  export type LessonUpdateOneRequiredWithoutSectionsNestedInput = {
+    create?: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutSectionsInput
+    upsert?: LessonUpsertWithoutSectionsInput
+    connect?: LessonWhereUniqueInput
+    update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutSectionsInput, LessonUpdateWithoutSectionsInput>, LessonUncheckedUpdateWithoutSectionsInput>
   }
 
   export type LessonExerciseUncheckedUpdateManyWithoutSectionNestedInput = {
@@ -26936,13 +26878,6 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type UserVocabularyCreateNestedManyWithoutVocabularyInput = {
-    create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
-    connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
-    createMany?: UserVocabularyCreateManyVocabularyInputEnvelope
-    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-  }
-
   export type PracticeItemCreateNestedManyWithoutVocabularyInput = {
     create?: XOR<PracticeItemCreateWithoutVocabularyInput, PracticeItemUncheckedCreateWithoutVocabularyInput> | PracticeItemCreateWithoutVocabularyInput[] | PracticeItemUncheckedCreateWithoutVocabularyInput[]
     connectOrCreate?: PracticeItemCreateOrConnectWithoutVocabularyInput | PracticeItemCreateOrConnectWithoutVocabularyInput[]
@@ -26950,7 +26885,7 @@ export namespace Prisma {
     connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
   }
 
-  export type UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput = {
+  export type UserVocabularyCreateNestedManyWithoutVocabularyInput = {
     create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
     createMany?: UserVocabularyCreateManyVocabularyInputEnvelope
@@ -26964,23 +26899,16 @@ export namespace Prisma {
     connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
   }
 
+  export type UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput = {
+    create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
+    connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
+    createMany?: UserVocabularyCreateManyVocabularyInputEnvelope
+    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+  }
+
   export type VocabularyUpdateusageContextInput = {
     set?: string[]
     push?: string | string[]
-  }
-
-  export type UserVocabularyUpdateManyWithoutVocabularyNestedInput = {
-    create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
-    connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
-    upsert?: UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput | UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput[]
-    createMany?: UserVocabularyCreateManyVocabularyInputEnvelope
-    set?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    disconnect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    delete?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
-    update?: UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput | UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput[]
-    updateMany?: UserVocabularyUpdateManyWithWhereWithoutVocabularyInput | UserVocabularyUpdateManyWithWhereWithoutVocabularyInput[]
-    deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
   }
 
   export type PracticeItemUpdateManyWithoutVocabularyNestedInput = {
@@ -26997,7 +26925,7 @@ export namespace Prisma {
     deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
   }
 
-  export type UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput = {
+  export type UserVocabularyUpdateManyWithoutVocabularyNestedInput = {
     create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
     connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
     upsert?: UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput | UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput[]
@@ -27023,6 +26951,20 @@ export namespace Prisma {
     update?: PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput | PracticeItemUpdateWithWhereUniqueWithoutVocabularyInput[]
     updateMany?: PracticeItemUpdateManyWithWhereWithoutVocabularyInput | PracticeItemUpdateManyWithWhereWithoutVocabularyInput[]
     deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+  }
+
+  export type UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput = {
+    create?: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput> | UserVocabularyCreateWithoutVocabularyInput[] | UserVocabularyUncheckedCreateWithoutVocabularyInput[]
+    connectOrCreate?: UserVocabularyCreateOrConnectWithoutVocabularyInput | UserVocabularyCreateOrConnectWithoutVocabularyInput[]
+    upsert?: UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput | UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput[]
+    createMany?: UserVocabularyCreateManyVocabularyInputEnvelope
+    set?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    disconnect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    delete?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    connect?: UserVocabularyWhereUniqueInput | UserVocabularyWhereUniqueInput[]
+    update?: UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput | UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput[]
+    updateMany?: UserVocabularyUpdateManyWithWhereWithoutVocabularyInput | UserVocabularyUpdateManyWithWhereWithoutVocabularyInput[]
+    deleteMany?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutVocabularyInput = {
@@ -27053,6 +26995,12 @@ export namespace Prisma {
     update?: XOR<XOR<VocabularyUpdateToOneWithWhereWithoutUserVocabularyInput, VocabularyUpdateWithoutUserVocabularyInput>, VocabularyUncheckedUpdateWithoutUserVocabularyInput>
   }
 
+  export type ConversationTemplateCreateNestedOneWithoutConversationsInput = {
+    create?: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
+    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutConversationsInput
+    connect?: ConversationTemplateWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutConversationsInput = {
     create?: XOR<UserCreateWithoutConversationsInput, UserUncheckedCreateWithoutConversationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutConversationsInput
@@ -27066,17 +27014,21 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
-  export type ConversationTemplateCreateNestedOneWithoutConversationsInput = {
-    create?: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
-    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutConversationsInput
-    connect?: ConversationTemplateWhereUniqueInput
-  }
-
   export type MessageUncheckedCreateNestedManyWithoutConversationInput = {
     create?: XOR<MessageCreateWithoutConversationInput, MessageUncheckedCreateWithoutConversationInput> | MessageCreateWithoutConversationInput[] | MessageUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutConversationInput | MessageCreateOrConnectWithoutConversationInput[]
     createMany?: MessageCreateManyConversationInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type ConversationTemplateUpdateOneWithoutConversationsNestedInput = {
+    create?: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
+    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutConversationsInput
+    upsert?: ConversationTemplateUpsertWithoutConversationsInput
+    disconnect?: ConversationTemplateWhereInput | boolean
+    delete?: ConversationTemplateWhereInput | boolean
+    connect?: ConversationTemplateWhereUniqueInput
+    update?: XOR<XOR<ConversationTemplateUpdateToOneWithWhereWithoutConversationsInput, ConversationTemplateUpdateWithoutConversationsInput>, ConversationTemplateUncheckedUpdateWithoutConversationsInput>
   }
 
   export type UserUpdateOneRequiredWithoutConversationsNestedInput = {
@@ -27099,16 +27051,6 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutConversationInput | MessageUpdateWithWhereUniqueWithoutConversationInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutConversationInput | MessageUpdateManyWithWhereWithoutConversationInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
-  }
-
-  export type ConversationTemplateUpdateOneWithoutConversationsNestedInput = {
-    create?: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
-    connectOrCreate?: ConversationTemplateCreateOrConnectWithoutConversationsInput
-    upsert?: ConversationTemplateUpsertWithoutConversationsInput
-    disconnect?: ConversationTemplateWhereInput | boolean
-    delete?: ConversationTemplateWhereInput | boolean
-    connect?: ConversationTemplateWhereUniqueInput
-    update?: XOR<XOR<ConversationTemplateUpdateToOneWithWhereWithoutConversationsInput, ConversationTemplateUpdateWithoutConversationsInput>, ConversationTemplateUncheckedUpdateWithoutConversationsInput>
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -27151,13 +27093,6 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type UserTemplateUsageCreateNestedManyWithoutTemplateInput = {
-    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
-    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
-    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
-    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
-  }
-
   export type ConversationCreateNestedManyWithoutTemplateInput = {
     create?: XOR<ConversationCreateWithoutTemplateInput, ConversationUncheckedCreateWithoutTemplateInput> | ConversationCreateWithoutTemplateInput[] | ConversationUncheckedCreateWithoutTemplateInput[]
     connectOrCreate?: ConversationCreateOrConnectWithoutTemplateInput | ConversationCreateOrConnectWithoutTemplateInput[]
@@ -27165,7 +27100,7 @@ export namespace Prisma {
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
-  export type UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput = {
+  export type UserTemplateUsageCreateNestedManyWithoutTemplateInput = {
     create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
     connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
     createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
@@ -27179,23 +27114,16 @@ export namespace Prisma {
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
+  export type UserTemplateUsageUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
+    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+  }
+
   export type ConversationTemplateUpdatetopicsInput = {
     set?: string[]
     push?: string | string[]
-  }
-
-  export type UserTemplateUsageUpdateManyWithoutTemplateNestedInput = {
-    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
-    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
-    upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput[]
-    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
-    set?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
-    disconnect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
-    delete?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
-    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
-    update?: UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput[]
-    updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput | UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput[]
-    deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
   }
 
   export type ConversationUpdateManyWithoutTemplateNestedInput = {
@@ -27212,7 +27140,7 @@ export namespace Prisma {
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
-  export type UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput = {
+  export type UserTemplateUsageUpdateManyWithoutTemplateNestedInput = {
     create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
     connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
     upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput[]
@@ -27240,10 +27168,18 @@ export namespace Prisma {
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutTemplateUsageInput = {
-    create?: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTemplateUsageInput
-    connect?: UserWhereUniqueInput
+  export type UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput> | UserTemplateUsageCreateWithoutTemplateInput[] | UserTemplateUsageUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateUsageCreateOrConnectWithoutTemplateInput | UserTemplateUsageCreateOrConnectWithoutTemplateInput[]
+    upsert?: UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: UserTemplateUsageCreateManyTemplateInputEnvelope
+    set?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    disconnect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    delete?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    connect?: UserTemplateUsageWhereUniqueInput | UserTemplateUsageWhereUniqueInput[]
+    update?: UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput | UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput | UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: UserTemplateUsageScalarWhereInput | UserTemplateUsageScalarWhereInput[]
   }
 
   export type ConversationTemplateCreateNestedOneWithoutUserTemplateUsageInput = {
@@ -27252,12 +27188,10 @@ export namespace Prisma {
     connect?: ConversationTemplateWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutTemplateUsageNestedInput = {
+  export type UserCreateNestedOneWithoutTemplateUsageInput = {
     create?: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
     connectOrCreate?: UserCreateOrConnectWithoutTemplateUsageInput
-    upsert?: UserUpsertWithoutTemplateUsageInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTemplateUsageInput, UserUpdateWithoutTemplateUsageInput>, UserUncheckedUpdateWithoutTemplateUsageInput>
   }
 
   export type ConversationTemplateUpdateOneRequiredWithoutUserTemplateUsageNestedInput = {
@@ -27266,6 +27200,14 @@ export namespace Prisma {
     upsert?: ConversationTemplateUpsertWithoutUserTemplateUsageInput
     connect?: ConversationTemplateWhereUniqueInput
     update?: XOR<XOR<ConversationTemplateUpdateToOneWithWhereWithoutUserTemplateUsageInput, ConversationTemplateUpdateWithoutUserTemplateUsageInput>, ConversationTemplateUncheckedUpdateWithoutUserTemplateUsageInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutTemplateUsageNestedInput = {
+    create?: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTemplateUsageInput
+    upsert?: UserUpsertWithoutTemplateUsageInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTemplateUsageInput, UserUpdateWithoutTemplateUsageInput>, UserUncheckedUpdateWithoutTemplateUsageInput>
   }
 
   export type UserCreateNestedOneWithoutExamResultsInput = {
@@ -27282,17 +27224,17 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExamResultsInput, UserUpdateWithoutExamResultsInput>, UserUncheckedUpdateWithoutExamResultsInput>
   }
 
-  export type UserCreateNestedOneWithoutPracticeSessionsInput = {
-    create?: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPracticeSessionsInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type PracticeItemCreateNestedManyWithoutSessionInput = {
     create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
     connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
     createMany?: PracticeItemCreateManySessionInputEnvelope
     connect?: PracticeItemWhereUniqueInput | PracticeItemWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedOneWithoutPracticeSessionsInput = {
+    create?: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPracticeSessionsInput
+    connect?: UserWhereUniqueInput
   }
 
   export type PronunciationPracticeItemCreateNestedManyWithoutSessionInput = {
@@ -27316,14 +27258,6 @@ export namespace Prisma {
     connect?: PronunciationPracticeItemWhereUniqueInput | PronunciationPracticeItemWhereUniqueInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
-    create?: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPracticeSessionsInput
-    upsert?: UserUpsertWithoutPracticeSessionsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPracticeSessionsInput, UserUpdateWithoutPracticeSessionsInput>, UserUncheckedUpdateWithoutPracticeSessionsInput>
-  }
-
   export type PracticeItemUpdateManyWithoutSessionNestedInput = {
     create?: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput> | PracticeItemCreateWithoutSessionInput[] | PracticeItemUncheckedCreateWithoutSessionInput[]
     connectOrCreate?: PracticeItemCreateOrConnectWithoutSessionInput | PracticeItemCreateOrConnectWithoutSessionInput[]
@@ -27336,6 +27270,14 @@ export namespace Prisma {
     update?: PracticeItemUpdateWithWhereUniqueWithoutSessionInput | PracticeItemUpdateWithWhereUniqueWithoutSessionInput[]
     updateMany?: PracticeItemUpdateManyWithWhereWithoutSessionInput | PracticeItemUpdateManyWithWhereWithoutSessionInput[]
     deleteMany?: PracticeItemScalarWhereInput | PracticeItemScalarWhereInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
+    create?: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPracticeSessionsInput
+    upsert?: UserUpsertWithoutPracticeSessionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPracticeSessionsInput, UserUpdateWithoutPracticeSessionsInput>, UserUncheckedUpdateWithoutPracticeSessionsInput>
   }
 
   export type PronunciationPracticeItemUpdateManyWithoutSessionNestedInput = {
@@ -27450,16 +27392,16 @@ export namespace Prisma {
     deleteMany?: PronunciationPracticeItemScalarWhereInput | PronunciationPracticeItemScalarWhereInput[]
   }
 
-  export type PracticeSessionCreateNestedOneWithoutPronunciationItemsInput = {
-    create?: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
-    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPronunciationItemsInput
-    connect?: PracticeSessionWhereUniqueInput
-  }
-
   export type PronunciationExerciseCreateNestedOneWithoutPracticeItemsInput = {
     create?: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
     connectOrCreate?: PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput
     connect?: PronunciationExerciseWhereUniqueInput
+  }
+
+  export type PracticeSessionCreateNestedOneWithoutPronunciationItemsInput = {
+    create?: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPronunciationItemsInput
+    connect?: PracticeSessionWhereUniqueInput
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -27470,20 +27412,20 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput = {
-    create?: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
-    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPronunciationItemsInput
-    upsert?: PracticeSessionUpsertWithoutPronunciationItemsInput
-    connect?: PracticeSessionWhereUniqueInput
-    update?: XOR<XOR<PracticeSessionUpdateToOneWithWhereWithoutPronunciationItemsInput, PracticeSessionUpdateWithoutPronunciationItemsInput>, PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput>
-  }
-
   export type PronunciationExerciseUpdateOneRequiredWithoutPracticeItemsNestedInput = {
     create?: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
     connectOrCreate?: PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput
     upsert?: PronunciationExerciseUpsertWithoutPracticeItemsInput
     connect?: PronunciationExerciseWhereUniqueInput
     update?: XOR<XOR<PronunciationExerciseUpdateToOneWithWhereWithoutPracticeItemsInput, PronunciationExerciseUpdateWithoutPracticeItemsInput>, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type PracticeSessionUpdateOneRequiredWithoutPronunciationItemsNestedInput = {
+    create?: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
+    connectOrCreate?: PracticeSessionCreateOrConnectWithoutPronunciationItemsInput
+    upsert?: PracticeSessionUpsertWithoutPronunciationItemsInput
+    connect?: PracticeSessionWhereUniqueInput
+    update?: XOR<XOR<PracticeSessionUpdateToOneWithWhereWithoutPronunciationItemsInput, PracticeSessionUpdateWithoutPronunciationItemsInput>, PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput>
   }
 
   export type GrammarRuleCreateexamplesInput = {
@@ -27758,59 +27700,33 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type LessonProgressCreateWithoutUserInput = {
-    completed?: boolean
-    score?: number
-    startedAt?: Date | string | null
-    completedAt?: Date | string | null
-    answers?: NullableJsonNullValueInput | InputJsonValue
-    lesson: LessonCreateNestedOneWithoutProgressInput
+  export type ConversationCreateWithoutUserInput = {
+    id?: string
+    title: string
+    context: string
+    startedAt?: Date | string
+    lastMessageAt?: Date | string
+    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
+    messages?: MessageCreateNestedManyWithoutConversationInput
   }
 
-  export type LessonProgressUncheckedCreateWithoutUserInput = {
-    id?: number
-    lessonId: number
-    completed?: boolean
-    score?: number
-    startedAt?: Date | string | null
-    completedAt?: Date | string | null
-    answers?: NullableJsonNullValueInput | InputJsonValue
+  export type ConversationUncheckedCreateWithoutUserInput = {
+    id?: string
+    title: string
+    context: string
+    startedAt?: Date | string
+    lastMessageAt?: Date | string
+    templateId?: number | null
+    messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
   }
 
-  export type LessonProgressCreateOrConnectWithoutUserInput = {
-    where: LessonProgressWhereUniqueInput
-    create: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput>
+  export type ConversationCreateOrConnectWithoutUserInput = {
+    where: ConversationWhereUniqueInput
+    create: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput>
   }
 
-  export type LessonProgressCreateManyUserInputEnvelope = {
-    data: LessonProgressCreateManyUserInput | LessonProgressCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type UserVocabularyCreateWithoutUserInput = {
-    learned?: boolean
-    lastPracticed?: Date | string | null
-    repetitionStage?: number
-    nextReviewDate?: Date | string | null
-    vocabulary: VocabularyCreateNestedOneWithoutUserVocabularyInput
-  }
-
-  export type UserVocabularyUncheckedCreateWithoutUserInput = {
-    id?: number
-    vocabularyId: number
-    learned?: boolean
-    lastPracticed?: Date | string | null
-    repetitionStage?: number
-    nextReviewDate?: Date | string | null
-  }
-
-  export type UserVocabularyCreateOrConnectWithoutUserInput = {
-    where: UserVocabularyWhereUniqueInput
-    create: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput>
-  }
-
-  export type UserVocabularyCreateManyUserInputEnvelope = {
-    data: UserVocabularyCreateManyUserInput | UserVocabularyCreateManyUserInput[]
+  export type ConversationCreateManyUserInputEnvelope = {
+    data: ConversationCreateManyUserInput | ConversationCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -27845,33 +27761,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ConversationCreateWithoutUserInput = {
-    id?: string
-    title: string
-    context: string
-    startedAt?: Date | string
-    lastMessageAt?: Date | string
-    messages?: MessageCreateNestedManyWithoutConversationInput
-    template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
+  export type LessonProgressCreateWithoutUserInput = {
+    completed?: boolean
+    score?: number
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    answers?: NullableJsonNullValueInput | InputJsonValue
+    lesson: LessonCreateNestedOneWithoutProgressInput
   }
 
-  export type ConversationUncheckedCreateWithoutUserInput = {
-    id?: string
-    title: string
-    context: string
-    startedAt?: Date | string
-    lastMessageAt?: Date | string
-    templateId?: number | null
-    messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
+  export type LessonProgressUncheckedCreateWithoutUserInput = {
+    id?: number
+    lessonId: number
+    completed?: boolean
+    score?: number
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    answers?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type ConversationCreateOrConnectWithoutUserInput = {
-    where: ConversationWhereUniqueInput
-    create: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput>
+  export type LessonProgressCreateOrConnectWithoutUserInput = {
+    where: LessonProgressWhereUniqueInput
+    create: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput>
   }
 
-  export type ConversationCreateManyUserInputEnvelope = {
-    data: ConversationCreateManyUserInput | ConversationCreateManyUserInput[]
+  export type LessonProgressCreateManyUserInputEnvelope = {
+    data: LessonProgressCreateManyUserInput | LessonProgressCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -27930,63 +27845,60 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type LessonProgressUpsertWithWhereUniqueWithoutUserInput = {
-    where: LessonProgressWhereUniqueInput
-    update: XOR<LessonProgressUpdateWithoutUserInput, LessonProgressUncheckedUpdateWithoutUserInput>
-    create: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput>
+  export type UserVocabularyCreateWithoutUserInput = {
+    learned?: boolean
+    lastPracticed?: Date | string | null
+    nextReviewDate?: Date | string | null
+    repetitionStage?: number
+    vocabulary: VocabularyCreateNestedOneWithoutUserVocabularyInput
   }
 
-  export type LessonProgressUpdateWithWhereUniqueWithoutUserInput = {
-    where: LessonProgressWhereUniqueInput
-    data: XOR<LessonProgressUpdateWithoutUserInput, LessonProgressUncheckedUpdateWithoutUserInput>
+  export type UserVocabularyUncheckedCreateWithoutUserInput = {
+    id?: number
+    vocabularyId: number
+    learned?: boolean
+    lastPracticed?: Date | string | null
+    nextReviewDate?: Date | string | null
+    repetitionStage?: number
   }
 
-  export type LessonProgressUpdateManyWithWhereWithoutUserInput = {
-    where: LessonProgressScalarWhereInput
-    data: XOR<LessonProgressUpdateManyMutationInput, LessonProgressUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type LessonProgressScalarWhereInput = {
-    AND?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
-    OR?: LessonProgressScalarWhereInput[]
-    NOT?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
-    id?: IntFilter<"LessonProgress"> | number
-    lessonId?: IntFilter<"LessonProgress"> | number
-    userId?: IntFilter<"LessonProgress"> | number
-    completed?: BoolFilter<"LessonProgress"> | boolean
-    score?: IntFilter<"LessonProgress"> | number
-    startedAt?: DateTimeNullableFilter<"LessonProgress"> | Date | string | null
-    completedAt?: DateTimeNullableFilter<"LessonProgress"> | Date | string | null
-    answers?: JsonNullableFilter<"LessonProgress">
-  }
-
-  export type UserVocabularyUpsertWithWhereUniqueWithoutUserInput = {
+  export type UserVocabularyCreateOrConnectWithoutUserInput = {
     where: UserVocabularyWhereUniqueInput
-    update: XOR<UserVocabularyUpdateWithoutUserInput, UserVocabularyUncheckedUpdateWithoutUserInput>
     create: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput>
   }
 
-  export type UserVocabularyUpdateWithWhereUniqueWithoutUserInput = {
-    where: UserVocabularyWhereUniqueInput
-    data: XOR<UserVocabularyUpdateWithoutUserInput, UserVocabularyUncheckedUpdateWithoutUserInput>
+  export type UserVocabularyCreateManyUserInputEnvelope = {
+    data: UserVocabularyCreateManyUserInput | UserVocabularyCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
-  export type UserVocabularyUpdateManyWithWhereWithoutUserInput = {
-    where: UserVocabularyScalarWhereInput
-    data: XOR<UserVocabularyUpdateManyMutationInput, UserVocabularyUncheckedUpdateManyWithoutUserInput>
+  export type ConversationUpsertWithWhereUniqueWithoutUserInput = {
+    where: ConversationWhereUniqueInput
+    update: XOR<ConversationUpdateWithoutUserInput, ConversationUncheckedUpdateWithoutUserInput>
+    create: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput>
   }
 
-  export type UserVocabularyScalarWhereInput = {
-    AND?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
-    OR?: UserVocabularyScalarWhereInput[]
-    NOT?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
-    id?: IntFilter<"UserVocabulary"> | number
-    userId?: IntFilter<"UserVocabulary"> | number
-    vocabularyId?: IntFilter<"UserVocabulary"> | number
-    learned?: BoolFilter<"UserVocabulary"> | boolean
-    lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
-    repetitionStage?: IntFilter<"UserVocabulary"> | number
-    nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+  export type ConversationUpdateWithWhereUniqueWithoutUserInput = {
+    where: ConversationWhereUniqueInput
+    data: XOR<ConversationUpdateWithoutUserInput, ConversationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ConversationUpdateManyWithWhereWithoutUserInput = {
+    where: ConversationScalarWhereInput
+    data: XOR<ConversationUpdateManyMutationInput, ConversationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ConversationScalarWhereInput = {
+    AND?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+    OR?: ConversationScalarWhereInput[]
+    NOT?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+    id?: StringFilter<"Conversation"> | string
+    userId?: IntFilter<"Conversation"> | number
+    title?: StringFilter<"Conversation"> | string
+    context?: StringFilter<"Conversation"> | string
+    startedAt?: DateTimeFilter<"Conversation"> | Date | string
+    lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
+    templateId?: IntNullableFilter<"Conversation"> | number | null
   }
 
   export type ExamResultUpsertWithWhereUniqueWithoutUserInput = {
@@ -28020,33 +27932,34 @@ export namespace Prisma {
     timeSpent?: IntFilter<"ExamResult"> | number
   }
 
-  export type ConversationUpsertWithWhereUniqueWithoutUserInput = {
-    where: ConversationWhereUniqueInput
-    update: XOR<ConversationUpdateWithoutUserInput, ConversationUncheckedUpdateWithoutUserInput>
-    create: XOR<ConversationCreateWithoutUserInput, ConversationUncheckedCreateWithoutUserInput>
+  export type LessonProgressUpsertWithWhereUniqueWithoutUserInput = {
+    where: LessonProgressWhereUniqueInput
+    update: XOR<LessonProgressUpdateWithoutUserInput, LessonProgressUncheckedUpdateWithoutUserInput>
+    create: XOR<LessonProgressCreateWithoutUserInput, LessonProgressUncheckedCreateWithoutUserInput>
   }
 
-  export type ConversationUpdateWithWhereUniqueWithoutUserInput = {
-    where: ConversationWhereUniqueInput
-    data: XOR<ConversationUpdateWithoutUserInput, ConversationUncheckedUpdateWithoutUserInput>
+  export type LessonProgressUpdateWithWhereUniqueWithoutUserInput = {
+    where: LessonProgressWhereUniqueInput
+    data: XOR<LessonProgressUpdateWithoutUserInput, LessonProgressUncheckedUpdateWithoutUserInput>
   }
 
-  export type ConversationUpdateManyWithWhereWithoutUserInput = {
-    where: ConversationScalarWhereInput
-    data: XOR<ConversationUpdateManyMutationInput, ConversationUncheckedUpdateManyWithoutUserInput>
+  export type LessonProgressUpdateManyWithWhereWithoutUserInput = {
+    where: LessonProgressScalarWhereInput
+    data: XOR<LessonProgressUpdateManyMutationInput, LessonProgressUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type ConversationScalarWhereInput = {
-    AND?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
-    OR?: ConversationScalarWhereInput[]
-    NOT?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
-    id?: StringFilter<"Conversation"> | string
-    userId?: IntFilter<"Conversation"> | number
-    title?: StringFilter<"Conversation"> | string
-    context?: StringFilter<"Conversation"> | string
-    startedAt?: DateTimeFilter<"Conversation"> | Date | string
-    lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
-    templateId?: IntNullableFilter<"Conversation"> | number | null
+  export type LessonProgressScalarWhereInput = {
+    AND?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
+    OR?: LessonProgressScalarWhereInput[]
+    NOT?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
+    id?: IntFilter<"LessonProgress"> | number
+    lessonId?: IntFilter<"LessonProgress"> | number
+    userId?: IntFilter<"LessonProgress"> | number
+    completed?: BoolFilter<"LessonProgress"> | boolean
+    score?: IntFilter<"LessonProgress"> | number
+    startedAt?: DateTimeNullableFilter<"LessonProgress"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"LessonProgress"> | Date | string | null
+    answers?: JsonNullableFilter<"LessonProgress">
   }
 
   export type PracticeSessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -28103,6 +28016,35 @@ export namespace Prisma {
     userId?: IntFilter<"UserTemplateUsage"> | number
     templateId?: IntFilter<"UserTemplateUsage"> | number
     usedAt?: DateTimeFilter<"UserTemplateUsage"> | Date | string
+  }
+
+  export type UserVocabularyUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserVocabularyWhereUniqueInput
+    update: XOR<UserVocabularyUpdateWithoutUserInput, UserVocabularyUncheckedUpdateWithoutUserInput>
+    create: XOR<UserVocabularyCreateWithoutUserInput, UserVocabularyUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserVocabularyUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserVocabularyWhereUniqueInput
+    data: XOR<UserVocabularyUpdateWithoutUserInput, UserVocabularyUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserVocabularyUpdateManyWithWhereWithoutUserInput = {
+    where: UserVocabularyScalarWhereInput
+    data: XOR<UserVocabularyUpdateManyMutationInput, UserVocabularyUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserVocabularyScalarWhereInput = {
+    AND?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
+    OR?: UserVocabularyScalarWhereInput[]
+    NOT?: UserVocabularyScalarWhereInput | UserVocabularyScalarWhereInput[]
+    id?: IntFilter<"UserVocabulary"> | number
+    userId?: IntFilter<"UserVocabulary"> | number
+    vocabularyId?: IntFilter<"UserVocabulary"> | number
+    learned?: BoolFilter<"UserVocabulary"> | boolean
+    lastPracticed?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    nextReviewDate?: DateTimeNullableFilter<"UserVocabulary"> | Date | string | null
+    repetitionStage?: IntFilter<"UserVocabulary"> | number
   }
 
   export type LessonProgressCreateWithoutLessonInput = {
@@ -28211,30 +28153,6 @@ export namespace Prisma {
     order?: IntFilter<"LessonSection"> | number
   }
 
-  export type LessonCreateWithoutSectionsInput = {
-    title: string
-    description: string
-    level: string
-    duration: number
-    topics?: LessonCreatetopicsInput | string[]
-    progress?: LessonProgressCreateNestedManyWithoutLessonInput
-  }
-
-  export type LessonUncheckedCreateWithoutSectionsInput = {
-    id?: number
-    title: string
-    description: string
-    level: string
-    duration: number
-    topics?: LessonCreatetopicsInput | string[]
-    progress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
-  }
-
-  export type LessonCreateOrConnectWithoutSectionsInput = {
-    where: LessonWhereUniqueInput
-    create: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
-  }
-
   export type LessonExerciseCreateWithoutSectionInput = {
     type: string
     question: string
@@ -28260,6 +28178,59 @@ export namespace Prisma {
   export type LessonExerciseCreateManySectionInputEnvelope = {
     data: LessonExerciseCreateManySectionInput | LessonExerciseCreateManySectionInput[]
     skipDuplicates?: boolean
+  }
+
+  export type LessonCreateWithoutSectionsInput = {
+    title: string
+    description: string
+    level: string
+    duration: number
+    topics?: LessonCreatetopicsInput | string[]
+    progress?: LessonProgressCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonUncheckedCreateWithoutSectionsInput = {
+    id?: number
+    title: string
+    description: string
+    level: string
+    duration: number
+    topics?: LessonCreatetopicsInput | string[]
+    progress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonCreateOrConnectWithoutSectionsInput = {
+    where: LessonWhereUniqueInput
+    create: XOR<LessonCreateWithoutSectionsInput, LessonUncheckedCreateWithoutSectionsInput>
+  }
+
+  export type LessonExerciseUpsertWithWhereUniqueWithoutSectionInput = {
+    where: LessonExerciseWhereUniqueInput
+    update: XOR<LessonExerciseUpdateWithoutSectionInput, LessonExerciseUncheckedUpdateWithoutSectionInput>
+    create: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput>
+  }
+
+  export type LessonExerciseUpdateWithWhereUniqueWithoutSectionInput = {
+    where: LessonExerciseWhereUniqueInput
+    data: XOR<LessonExerciseUpdateWithoutSectionInput, LessonExerciseUncheckedUpdateWithoutSectionInput>
+  }
+
+  export type LessonExerciseUpdateManyWithWhereWithoutSectionInput = {
+    where: LessonExerciseScalarWhereInput
+    data: XOR<LessonExerciseUpdateManyMutationInput, LessonExerciseUncheckedUpdateManyWithoutSectionInput>
+  }
+
+  export type LessonExerciseScalarWhereInput = {
+    AND?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+    OR?: LessonExerciseScalarWhereInput[]
+    NOT?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
+    id?: IntFilter<"LessonExercise"> | number
+    sectionId?: IntFilter<"LessonExercise"> | number
+    type?: StringFilter<"LessonExercise"> | string
+    question?: StringFilter<"LessonExercise"> | string
+    options?: StringNullableListFilter<"LessonExercise">
+    correctAnswer?: StringFilter<"LessonExercise"> | string
+    explanation?: StringNullableFilter<"LessonExercise"> | string | null
   }
 
   export type LessonUpsertWithoutSectionsInput = {
@@ -28290,35 +28261,6 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     topics?: LessonUpdatetopicsInput | string[]
     progress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
-  }
-
-  export type LessonExerciseUpsertWithWhereUniqueWithoutSectionInput = {
-    where: LessonExerciseWhereUniqueInput
-    update: XOR<LessonExerciseUpdateWithoutSectionInput, LessonExerciseUncheckedUpdateWithoutSectionInput>
-    create: XOR<LessonExerciseCreateWithoutSectionInput, LessonExerciseUncheckedCreateWithoutSectionInput>
-  }
-
-  export type LessonExerciseUpdateWithWhereUniqueWithoutSectionInput = {
-    where: LessonExerciseWhereUniqueInput
-    data: XOR<LessonExerciseUpdateWithoutSectionInput, LessonExerciseUncheckedUpdateWithoutSectionInput>
-  }
-
-  export type LessonExerciseUpdateManyWithWhereWithoutSectionInput = {
-    where: LessonExerciseScalarWhereInput
-    data: XOR<LessonExerciseUpdateManyMutationInput, LessonExerciseUncheckedUpdateManyWithoutSectionInput>
-  }
-
-  export type LessonExerciseScalarWhereInput = {
-    AND?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
-    OR?: LessonExerciseScalarWhereInput[]
-    NOT?: LessonExerciseScalarWhereInput | LessonExerciseScalarWhereInput[]
-    id?: IntFilter<"LessonExercise"> | number
-    sectionId?: IntFilter<"LessonExercise"> | number
-    type?: StringFilter<"LessonExercise"> | string
-    question?: StringFilter<"LessonExercise"> | string
-    options?: StringNullableListFilter<"LessonExercise">
-    correctAnswer?: StringFilter<"LessonExercise"> | string
-    explanation?: StringNullableFilter<"LessonExercise"> | string | null
   }
 
   export type LessonSectionCreateWithoutExercisesInput = {
@@ -28421,11 +28363,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
-    examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -28447,11 +28389,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
-    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -28518,11 +28460,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -28544,38 +28486,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserVocabularyCreateWithoutVocabularyInput = {
-    learned?: boolean
-    lastPracticed?: Date | string | null
-    repetitionStage?: number
-    nextReviewDate?: Date | string | null
-    user: UserCreateNestedOneWithoutVocabularyInput
-  }
-
-  export type UserVocabularyUncheckedCreateWithoutVocabularyInput = {
-    id?: number
-    userId: number
-    learned?: boolean
-    lastPracticed?: Date | string | null
-    repetitionStage?: number
-    nextReviewDate?: Date | string | null
-  }
-
-  export type UserVocabularyCreateOrConnectWithoutVocabularyInput = {
-    where: UserVocabularyWhereUniqueInput
-    create: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput>
-  }
-
-  export type UserVocabularyCreateManyVocabularyInputEnvelope = {
-    data: UserVocabularyCreateManyVocabularyInput | UserVocabularyCreateManyVocabularyInput[]
-    skipDuplicates?: boolean
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PracticeItemCreateWithoutVocabularyInput = {
@@ -28605,20 +28520,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput = {
+  export type UserVocabularyCreateWithoutVocabularyInput = {
+    learned?: boolean
+    lastPracticed?: Date | string | null
+    nextReviewDate?: Date | string | null
+    repetitionStage?: number
+    user: UserCreateNestedOneWithoutVocabularyInput
+  }
+
+  export type UserVocabularyUncheckedCreateWithoutVocabularyInput = {
+    id?: number
+    userId: number
+    learned?: boolean
+    lastPracticed?: Date | string | null
+    nextReviewDate?: Date | string | null
+    repetitionStage?: number
+  }
+
+  export type UserVocabularyCreateOrConnectWithoutVocabularyInput = {
     where: UserVocabularyWhereUniqueInput
-    update: XOR<UserVocabularyUpdateWithoutVocabularyInput, UserVocabularyUncheckedUpdateWithoutVocabularyInput>
     create: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput>
   }
 
-  export type UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput = {
-    where: UserVocabularyWhereUniqueInput
-    data: XOR<UserVocabularyUpdateWithoutVocabularyInput, UserVocabularyUncheckedUpdateWithoutVocabularyInput>
-  }
-
-  export type UserVocabularyUpdateManyWithWhereWithoutVocabularyInput = {
-    where: UserVocabularyScalarWhereInput
-    data: XOR<UserVocabularyUpdateManyMutationInput, UserVocabularyUncheckedUpdateManyWithoutVocabularyInput>
+  export type UserVocabularyCreateManyVocabularyInputEnvelope = {
+    data: UserVocabularyCreateManyVocabularyInput | UserVocabularyCreateManyVocabularyInput[]
+    skipDuplicates?: boolean
   }
 
   export type PracticeItemUpsertWithWhereUniqueWithoutVocabularyInput = {
@@ -28650,6 +28576,22 @@ export namespace Prisma {
     expectedAnswer?: StringFilter<"PracticeItem"> | string
   }
 
+  export type UserVocabularyUpsertWithWhereUniqueWithoutVocabularyInput = {
+    where: UserVocabularyWhereUniqueInput
+    update: XOR<UserVocabularyUpdateWithoutVocabularyInput, UserVocabularyUncheckedUpdateWithoutVocabularyInput>
+    create: XOR<UserVocabularyCreateWithoutVocabularyInput, UserVocabularyUncheckedCreateWithoutVocabularyInput>
+  }
+
+  export type UserVocabularyUpdateWithWhereUniqueWithoutVocabularyInput = {
+    where: UserVocabularyWhereUniqueInput
+    data: XOR<UserVocabularyUpdateWithoutVocabularyInput, UserVocabularyUncheckedUpdateWithoutVocabularyInput>
+  }
+
+  export type UserVocabularyUpdateManyWithWhereWithoutVocabularyInput = {
+    where: UserVocabularyScalarWhereInput
+    data: XOR<UserVocabularyUpdateManyMutationInput, UserVocabularyUncheckedUpdateManyWithoutVocabularyInput>
+  }
+
   export type UserCreateWithoutVocabularyInput = {
     email: string
     name: string
@@ -28668,9 +28610,9 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
-    examResults?: ExamResultCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
   }
@@ -28694,9 +28636,9 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
-    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
   }
@@ -28711,10 +28653,9 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
     practiceItems?: PracticeItemCreateNestedManyWithoutVocabularyInput
   }
 
@@ -28724,10 +28665,9 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
     practiceItems?: PracticeItemUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
@@ -28765,9 +28705,9 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
   }
@@ -28791,9 +28731,9 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -28814,10 +28754,9 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
     practiceItems?: PracticeItemUpdateManyWithoutVocabularyNestedInput
   }
 
@@ -28827,96 +28766,10 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutVocabularyNestedInput
-  }
-
-  export type UserCreateWithoutConversationsInput = {
-    email: string
-    name: string
-    password?: string | null
-    level?: string
-    points?: number
-    streakDays?: number
-    joinedAt?: Date | string
-    learningGoals?: UserCreatelearningGoalsInput | string[]
-    completedLessons?: number
-    lastActive?: Date | string
-    dailyGoal?: number
-    notifications?: boolean
-    theme?: string
-    aiCorrectionEnabled?: boolean
-    aiVocabSuggestionsEnabled?: boolean
-    preferredVoice?: string | null
-    speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
-    examResults?: ExamResultCreateNestedManyWithoutUserInput
-    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
-    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutConversationsInput = {
-    id?: number
-    email: string
-    name: string
-    password?: string | null
-    level?: string
-    points?: number
-    streakDays?: number
-    joinedAt?: Date | string
-    learningGoals?: UserCreatelearningGoalsInput | string[]
-    completedLessons?: number
-    lastActive?: Date | string
-    dailyGoal?: number
-    notifications?: boolean
-    theme?: string
-    aiCorrectionEnabled?: boolean
-    aiVocabSuggestionsEnabled?: boolean
-    preferredVoice?: string | null
-    speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
-    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
-    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
-    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutConversationsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutConversationsInput, UserUncheckedCreateWithoutConversationsInput>
-  }
-
-  export type MessageCreateWithoutConversationInput = {
-    role: string
-    content: string
-    timestamp?: Date | string
-    corrections?: NullableJsonNullValueInput | InputJsonValue
-    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: string | null
-  }
-
-  export type MessageUncheckedCreateWithoutConversationInput = {
-    id?: number
-    role: string
-    content: string
-    timestamp?: Date | string
-    corrections?: NullableJsonNullValueInput | InputJsonValue
-    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: string | null
-  }
-
-  export type MessageCreateOrConnectWithoutConversationInput = {
-    where: MessageWhereUniqueInput
-    create: XOR<MessageCreateWithoutConversationInput, MessageUncheckedCreateWithoutConversationInput>
-  }
-
-  export type MessageCreateManyConversationInputEnvelope = {
-    data: MessageCreateManyConversationInput | MessageCreateManyConversationInput[]
-    skipDuplicates?: boolean
   }
 
   export type ConversationTemplateCreateWithoutConversationsInput = {
@@ -28945,96 +28798,89 @@ export namespace Prisma {
     create: XOR<ConversationTemplateCreateWithoutConversationsInput, ConversationTemplateUncheckedCreateWithoutConversationsInput>
   }
 
-  export type UserUpsertWithoutConversationsInput = {
-    update: XOR<UserUpdateWithoutConversationsInput, UserUncheckedUpdateWithoutConversationsInput>
+  export type UserCreateWithoutConversationsInput = {
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutConversationsInput = {
+    id?: number
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutConversationsInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutConversationsInput, UserUncheckedCreateWithoutConversationsInput>
-    where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutConversationsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutConversationsInput, UserUncheckedUpdateWithoutConversationsInput>
+  export type MessageCreateWithoutConversationInput = {
+    role: string
+    content: string
+    timestamp?: Date | string
+    audioUrl?: string | null
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type UserUpdateWithoutConversationsInput = {
-    email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    level?: StringFieldUpdateOperationsInput | string
-    points?: IntFieldUpdateOperationsInput | number
-    streakDays?: IntFieldUpdateOperationsInput | number
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    learningGoals?: UserUpdatelearningGoalsInput | string[]
-    completedLessons?: IntFieldUpdateOperationsInput | number
-    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
-    dailyGoal?: IntFieldUpdateOperationsInput | number
-    notifications?: BoolFieldUpdateOperationsInput | boolean
-    theme?: StringFieldUpdateOperationsInput | string
-    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
-    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUpdateManyWithoutUserNestedInput
-    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
-    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
+  export type MessageUncheckedCreateWithoutConversationInput = {
+    id?: number
+    role: string
+    content: string
+    timestamp?: Date | string
+    audioUrl?: string | null
+    corrections?: NullableJsonNullValueInput | InputJsonValue
+    suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type UserUncheckedUpdateWithoutConversationsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    level?: StringFieldUpdateOperationsInput | string
-    points?: IntFieldUpdateOperationsInput | number
-    streakDays?: IntFieldUpdateOperationsInput | number
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    learningGoals?: UserUpdatelearningGoalsInput | string[]
-    completedLessons?: IntFieldUpdateOperationsInput | number
-    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
-    dailyGoal?: IntFieldUpdateOperationsInput | number
-    notifications?: BoolFieldUpdateOperationsInput | boolean
-    theme?: StringFieldUpdateOperationsInput | string
-    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
-    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
-    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
-    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type MessageUpsertWithWhereUniqueWithoutConversationInput = {
+  export type MessageCreateOrConnectWithoutConversationInput = {
     where: MessageWhereUniqueInput
-    update: XOR<MessageUpdateWithoutConversationInput, MessageUncheckedUpdateWithoutConversationInput>
     create: XOR<MessageCreateWithoutConversationInput, MessageUncheckedCreateWithoutConversationInput>
   }
 
-  export type MessageUpdateWithWhereUniqueWithoutConversationInput = {
-    where: MessageWhereUniqueInput
-    data: XOR<MessageUpdateWithoutConversationInput, MessageUncheckedUpdateWithoutConversationInput>
-  }
-
-  export type MessageUpdateManyWithWhereWithoutConversationInput = {
-    where: MessageScalarWhereInput
-    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutConversationInput>
-  }
-
-  export type MessageScalarWhereInput = {
-    AND?: MessageScalarWhereInput | MessageScalarWhereInput[]
-    OR?: MessageScalarWhereInput[]
-    NOT?: MessageScalarWhereInput | MessageScalarWhereInput[]
-    id?: IntFilter<"Message"> | number
-    conversationId?: StringFilter<"Message"> | string
-    role?: StringFilter<"Message"> | string
-    content?: StringFilter<"Message"> | string
-    timestamp?: DateTimeFilter<"Message"> | Date | string
-    corrections?: JsonNullableFilter<"Message">
-    suggestedVocabulary?: JsonNullableFilter<"Message">
-    audioUrl?: StringNullableFilter<"Message"> | string | null
+  export type MessageCreateManyConversationInputEnvelope = {
+    data: MessageCreateManyConversationInput | MessageCreateManyConversationInput[]
+    skipDuplicates?: boolean
   }
 
   export type ConversationTemplateUpsertWithoutConversationsInput = {
@@ -29069,14 +28915,106 @@ export namespace Prisma {
     userTemplateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
+  export type UserUpsertWithoutConversationsInput = {
+    update: XOR<UserUpdateWithoutConversationsInput, UserUncheckedUpdateWithoutConversationsInput>
+    create: XOR<UserCreateWithoutConversationsInput, UserUncheckedCreateWithoutConversationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutConversationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutConversationsInput, UserUncheckedUpdateWithoutConversationsInput>
+  }
+
+  export type UserUpdateWithoutConversationsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutConversationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type MessageUpsertWithWhereUniqueWithoutConversationInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutConversationInput, MessageUncheckedUpdateWithoutConversationInput>
+    create: XOR<MessageCreateWithoutConversationInput, MessageUncheckedCreateWithoutConversationInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutConversationInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutConversationInput, MessageUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutConversationInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutConversationInput>
+  }
+
+  export type MessageScalarWhereInput = {
+    AND?: MessageScalarWhereInput | MessageScalarWhereInput[]
+    OR?: MessageScalarWhereInput[]
+    NOT?: MessageScalarWhereInput | MessageScalarWhereInput[]
+    id?: IntFilter<"Message"> | number
+    conversationId?: StringFilter<"Message"> | string
+    role?: StringFilter<"Message"> | string
+    content?: StringFilter<"Message"> | string
+    timestamp?: DateTimeFilter<"Message"> | Date | string
+    audioUrl?: StringNullableFilter<"Message"> | string | null
+    corrections?: JsonNullableFilter<"Message">
+    suggestedVocabulary?: JsonNullableFilter<"Message">
+  }
+
   export type ConversationCreateWithoutMessagesInput = {
     id?: string
     title: string
     context: string
     startedAt?: Date | string
     lastMessageAt?: Date | string
-    user: UserCreateNestedOneWithoutConversationsInput
     template?: ConversationTemplateCreateNestedOneWithoutConversationsInput
+    user: UserCreateNestedOneWithoutConversationsInput
   }
 
   export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -29111,8 +29049,8 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutConversationsNestedInput
     template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
+    user?: UserUpdateOneRequiredWithoutConversationsNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -29123,27 +29061,6 @@ export namespace Prisma {
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
     templateId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type UserTemplateUsageCreateWithoutTemplateInput = {
-    usedAt?: Date | string
-    user: UserCreateNestedOneWithoutTemplateUsageInput
-  }
-
-  export type UserTemplateUsageUncheckedCreateWithoutTemplateInput = {
-    id?: number
-    userId: number
-    usedAt?: Date | string
-  }
-
-  export type UserTemplateUsageCreateOrConnectWithoutTemplateInput = {
-    where: UserTemplateUsageWhereUniqueInput
-    create: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput>
-  }
-
-  export type UserTemplateUsageCreateManyTemplateInputEnvelope = {
-    data: UserTemplateUsageCreateManyTemplateInput | UserTemplateUsageCreateManyTemplateInput[]
-    skipDuplicates?: boolean
   }
 
   export type ConversationCreateWithoutTemplateInput = {
@@ -29176,20 +29093,25 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput = {
+  export type UserTemplateUsageCreateWithoutTemplateInput = {
+    usedAt?: Date | string
+    user: UserCreateNestedOneWithoutTemplateUsageInput
+  }
+
+  export type UserTemplateUsageUncheckedCreateWithoutTemplateInput = {
+    id?: number
+    userId: number
+    usedAt?: Date | string
+  }
+
+  export type UserTemplateUsageCreateOrConnectWithoutTemplateInput = {
     where: UserTemplateUsageWhereUniqueInput
-    update: XOR<UserTemplateUsageUpdateWithoutTemplateInput, UserTemplateUsageUncheckedUpdateWithoutTemplateInput>
     create: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput>
   }
 
-  export type UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput = {
-    where: UserTemplateUsageWhereUniqueInput
-    data: XOR<UserTemplateUsageUpdateWithoutTemplateInput, UserTemplateUsageUncheckedUpdateWithoutTemplateInput>
-  }
-
-  export type UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput = {
-    where: UserTemplateUsageScalarWhereInput
-    data: XOR<UserTemplateUsageUpdateManyMutationInput, UserTemplateUsageUncheckedUpdateManyWithoutTemplateInput>
+  export type UserTemplateUsageCreateManyTemplateInputEnvelope = {
+    data: UserTemplateUsageCreateManyTemplateInput | UserTemplateUsageCreateManyTemplateInput[]
+    skipDuplicates?: boolean
   }
 
   export type ConversationUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -29208,60 +29130,20 @@ export namespace Prisma {
     data: XOR<ConversationUpdateManyMutationInput, ConversationUncheckedUpdateManyWithoutTemplateInput>
   }
 
-  export type UserCreateWithoutTemplateUsageInput = {
-    email: string
-    name: string
-    password?: string | null
-    level?: string
-    points?: number
-    streakDays?: number
-    joinedAt?: Date | string
-    learningGoals?: UserCreatelearningGoalsInput | string[]
-    completedLessons?: number
-    lastActive?: Date | string
-    dailyGoal?: number
-    notifications?: boolean
-    theme?: string
-    aiCorrectionEnabled?: boolean
-    aiVocabSuggestionsEnabled?: boolean
-    preferredVoice?: string | null
-    speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
-    examResults?: ExamResultCreateNestedManyWithoutUserInput
-    conversations?: ConversationCreateNestedManyWithoutUserInput
-    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+  export type UserTemplateUsageUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    update: XOR<UserTemplateUsageUpdateWithoutTemplateInput, UserTemplateUsageUncheckedUpdateWithoutTemplateInput>
+    create: XOR<UserTemplateUsageCreateWithoutTemplateInput, UserTemplateUsageUncheckedCreateWithoutTemplateInput>
   }
 
-  export type UserUncheckedCreateWithoutTemplateUsageInput = {
-    id?: number
-    email: string
-    name: string
-    password?: string | null
-    level?: string
-    points?: number
-    streakDays?: number
-    joinedAt?: Date | string
-    learningGoals?: UserCreatelearningGoalsInput | string[]
-    completedLessons?: number
-    lastActive?: Date | string
-    dailyGoal?: number
-    notifications?: boolean
-    theme?: string
-    aiCorrectionEnabled?: boolean
-    aiVocabSuggestionsEnabled?: boolean
-    preferredVoice?: string | null
-    speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
-    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
-    conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
-    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+  export type UserTemplateUsageUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: UserTemplateUsageWhereUniqueInput
+    data: XOR<UserTemplateUsageUpdateWithoutTemplateInput, UserTemplateUsageUncheckedUpdateWithoutTemplateInput>
   }
 
-  export type UserCreateOrConnectWithoutTemplateUsageInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+  export type UserTemplateUsageUpdateManyWithWhereWithoutTemplateInput = {
+    where: UserTemplateUsageScalarWhereInput
+    data: XOR<UserTemplateUsageUpdateManyMutationInput, UserTemplateUsageUncheckedUpdateManyWithoutTemplateInput>
   }
 
   export type ConversationTemplateCreateWithoutUserTemplateUsageInput = {
@@ -29290,66 +29172,60 @@ export namespace Prisma {
     create: XOR<ConversationTemplateCreateWithoutUserTemplateUsageInput, ConversationTemplateUncheckedCreateWithoutUserTemplateUsageInput>
   }
 
-  export type UserUpsertWithoutTemplateUsageInput = {
-    update: XOR<UserUpdateWithoutTemplateUsageInput, UserUncheckedUpdateWithoutTemplateUsageInput>
+  export type UserCreateWithoutTemplateUsageInput = {
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    conversations?: ConversationCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTemplateUsageInput = {
+    id?: number
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
+    practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTemplateUsageInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutTemplateUsageInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutTemplateUsageInput, UserUncheckedUpdateWithoutTemplateUsageInput>
-  }
-
-  export type UserUpdateWithoutTemplateUsageInput = {
-    email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    level?: StringFieldUpdateOperationsInput | string
-    points?: IntFieldUpdateOperationsInput | number
-    streakDays?: IntFieldUpdateOperationsInput | number
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    learningGoals?: UserUpdatelearningGoalsInput | string[]
-    completedLessons?: IntFieldUpdateOperationsInput | number
-    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
-    dailyGoal?: IntFieldUpdateOperationsInput | number
-    notifications?: BoolFieldUpdateOperationsInput | boolean
-    theme?: StringFieldUpdateOperationsInput | string
-    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
-    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUpdateManyWithoutUserNestedInput
-    conversations?: ConversationUpdateManyWithoutUserNestedInput
-    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutTemplateUsageInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    level?: StringFieldUpdateOperationsInput | string
-    points?: IntFieldUpdateOperationsInput | number
-    streakDays?: IntFieldUpdateOperationsInput | number
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    learningGoals?: UserUpdatelearningGoalsInput | string[]
-    completedLessons?: IntFieldUpdateOperationsInput | number
-    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
-    dailyGoal?: IntFieldUpdateOperationsInput | number
-    notifications?: BoolFieldUpdateOperationsInput | boolean
-    theme?: StringFieldUpdateOperationsInput | string
-    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
-    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
-    conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
-    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationTemplateUpsertWithoutUserTemplateUsageInput = {
@@ -29384,6 +29260,68 @@ export namespace Prisma {
     conversations?: ConversationUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
+  export type UserUpsertWithoutTemplateUsageInput = {
+    update: XOR<UserUpdateWithoutTemplateUsageInput, UserUncheckedUpdateWithoutTemplateUsageInput>
+    create: XOR<UserCreateWithoutTemplateUsageInput, UserUncheckedCreateWithoutTemplateUsageInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTemplateUsageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTemplateUsageInput, UserUncheckedUpdateWithoutTemplateUsageInput>
+  }
+
+  export type UserUpdateWithoutTemplateUsageInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    conversations?: ConversationUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTemplateUsageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    streakDays?: IntFieldUpdateOperationsInput | number
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    completedLessons?: IntFieldUpdateOperationsInput | number
+    lastActive?: DateTimeFieldUpdateOperationsInput | Date | string
+    dailyGoal?: IntFieldUpdateOperationsInput | number
+    notifications?: BoolFieldUpdateOperationsInput | boolean
+    theme?: StringFieldUpdateOperationsInput | string
+    aiCorrectionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
+    conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+    practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutExamResultsInput = {
     email: string
     name: string
@@ -29402,11 +29340,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
     conversations?: ConversationCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutExamResultsInput = {
@@ -29428,11 +29366,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: boolean
     preferredVoice?: string | null
     speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
     practiceSessions?: PracticeSessionUncheckedCreateNestedManyWithoutUserInput
     templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutExamResultsInput = {
@@ -29469,11 +29407,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExamResultsInput = {
@@ -29495,67 +29433,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     practiceSessions?: PracticeSessionUncheckedUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserCreateWithoutPracticeSessionsInput = {
-    email: string
-    name: string
-    password?: string | null
-    level?: string
-    points?: number
-    streakDays?: number
-    joinedAt?: Date | string
-    learningGoals?: UserCreatelearningGoalsInput | string[]
-    completedLessons?: number
-    lastActive?: Date | string
-    dailyGoal?: number
-    notifications?: boolean
-    theme?: string
-    aiCorrectionEnabled?: boolean
-    aiVocabSuggestionsEnabled?: boolean
-    preferredVoice?: string | null
-    speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
-    examResults?: ExamResultCreateNestedManyWithoutUserInput
-    conversations?: ConversationCreateNestedManyWithoutUserInput
-    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutPracticeSessionsInput = {
-    id?: number
-    email: string
-    name: string
-    password?: string | null
-    level?: string
-    points?: number
-    streakDays?: number
-    joinedAt?: Date | string
-    learningGoals?: UserCreatelearningGoalsInput | string[]
-    completedLessons?: number
-    lastActive?: Date | string
-    dailyGoal?: number
-    notifications?: boolean
-    theme?: string
-    aiCorrectionEnabled?: boolean
-    aiVocabSuggestionsEnabled?: boolean
-    preferredVoice?: string | null
-    speechRecognitionEnabled?: boolean
-    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
-    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
-    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
-    conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
-    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutPracticeSessionsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PracticeItemCreateWithoutSessionInput = {
@@ -29585,6 +29467,62 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserCreateWithoutPracticeSessionsInput = {
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    conversations?: ConversationCreateNestedManyWithoutUserInput
+    examResults?: ExamResultCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPracticeSessionsInput = {
+    id?: number
+    email: string
+    name: string
+    password?: string | null
+    level?: string
+    points?: number
+    streakDays?: number
+    joinedAt?: Date | string
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    completedLessons?: number
+    lastActive?: Date | string
+    dailyGoal?: number
+    notifications?: boolean
+    theme?: string
+    aiCorrectionEnabled?: boolean
+    aiVocabSuggestionsEnabled?: boolean
+    preferredVoice?: string | null
+    speechRecognitionEnabled?: boolean
+    conversations?: ConversationUncheckedCreateNestedManyWithoutUserInput
+    examResults?: ExamResultUncheckedCreateNestedManyWithoutUserInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutUserInput
+    templateUsage?: UserTemplateUsageUncheckedCreateNestedManyWithoutUserInput
+    vocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPracticeSessionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPracticeSessionsInput, UserUncheckedCreateWithoutPracticeSessionsInput>
+  }
+
   export type PronunciationPracticeItemCreateWithoutSessionInput = {
     userAudioUrl?: string | null
     transcript?: string | null
@@ -29610,6 +29548,22 @@ export namespace Prisma {
   export type PronunciationPracticeItemCreateManySessionInputEnvelope = {
     data: PronunciationPracticeItemCreateManySessionInput | PronunciationPracticeItemCreateManySessionInput[]
     skipDuplicates?: boolean
+  }
+
+  export type PracticeItemUpsertWithWhereUniqueWithoutSessionInput = {
+    where: PracticeItemWhereUniqueInput
+    update: XOR<PracticeItemUpdateWithoutSessionInput, PracticeItemUncheckedUpdateWithoutSessionInput>
+    create: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PracticeItemUpdateWithWhereUniqueWithoutSessionInput = {
+    where: PracticeItemWhereUniqueInput
+    data: XOR<PracticeItemUpdateWithoutSessionInput, PracticeItemUncheckedUpdateWithoutSessionInput>
+  }
+
+  export type PracticeItemUpdateManyWithWhereWithoutSessionInput = {
+    where: PracticeItemScalarWhereInput
+    data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyWithoutSessionInput>
   }
 
   export type UserUpsertWithoutPracticeSessionsInput = {
@@ -29641,11 +29595,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUpdateManyWithoutUserNestedInput
     conversations?: ConversationUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUpdateManyWithoutUserNestedInput
+    vocabulary?: UserVocabularyUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPracticeSessionsInput = {
@@ -29667,27 +29621,11 @@ export namespace Prisma {
     aiVocabSuggestionsEnabled?: BoolFieldUpdateOperationsInput | boolean
     preferredVoice?: NullableStringFieldUpdateOperationsInput | string | null
     speechRecognitionEnabled?: BoolFieldUpdateOperationsInput | boolean
-    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
-    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
-    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutUserNestedInput
+    examResults?: ExamResultUncheckedUpdateManyWithoutUserNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutUserNestedInput
     templateUsage?: UserTemplateUsageUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type PracticeItemUpsertWithWhereUniqueWithoutSessionInput = {
-    where: PracticeItemWhereUniqueInput
-    update: XOR<PracticeItemUpdateWithoutSessionInput, PracticeItemUncheckedUpdateWithoutSessionInput>
-    create: XOR<PracticeItemCreateWithoutSessionInput, PracticeItemUncheckedCreateWithoutSessionInput>
-  }
-
-  export type PracticeItemUpdateWithWhereUniqueWithoutSessionInput = {
-    where: PracticeItemWhereUniqueInput
-    data: XOR<PracticeItemUpdateWithoutSessionInput, PracticeItemUncheckedUpdateWithoutSessionInput>
-  }
-
-  export type PracticeItemUpdateManyWithWhereWithoutSessionInput = {
-    where: PracticeItemScalarWhereInput
-    data: XOR<PracticeItemUpdateManyMutationInput, PracticeItemUncheckedUpdateManyWithoutSessionInput>
+    vocabulary?: UserVocabularyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PronunciationPracticeItemUpsertWithWhereUniqueWithoutSessionInput = {
@@ -29753,10 +29691,9 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
     userVocabulary?: UserVocabularyCreateNestedManyWithoutVocabularyInput
   }
 
@@ -29766,10 +29703,9 @@ export namespace Prisma {
     translation: string
     example: string
     level: string
-    pronunciation?: string | null
-    audioUrl?: string | null
-    usageContext?: VocabularyCreateusageContextInput | string[]
     category?: string | null
+    pronunciation?: string | null
+    usageContext?: VocabularyCreateusageContextInput | string[]
     userVocabulary?: UserVocabularyUncheckedCreateNestedManyWithoutVocabularyInput
   }
 
@@ -29829,10 +29765,9 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
     userVocabulary?: UserVocabularyUpdateManyWithoutVocabularyNestedInput
   }
 
@@ -29842,10 +29777,9 @@ export namespace Prisma {
     translation?: StringFieldUpdateOperationsInput | string
     example?: StringFieldUpdateOperationsInput | string
     level?: StringFieldUpdateOperationsInput | string
-    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usageContext?: VocabularyUpdateusageContextInput | string[]
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    pronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+    usageContext?: VocabularyUpdateusageContextInput | string[]
     userVocabulary?: UserVocabularyUncheckedUpdateManyWithoutVocabularyNestedInput
   }
 
@@ -29892,6 +29826,28 @@ export namespace Prisma {
     data: XOR<PronunciationPracticeItemUpdateManyMutationInput, PronunciationPracticeItemUncheckedUpdateManyWithoutExerciseInput>
   }
 
+  export type PronunciationExerciseCreateWithoutPracticeItemsInput = {
+    text: string
+    translation?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+  }
+
+  export type PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput = {
+    id?: number
+    text: string
+    translation?: string | null
+    difficulty: string
+    category?: string | null
+    expectedPronunciation?: string | null
+  }
+
+  export type PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput = {
+    where: PronunciationExerciseWhereUniqueInput
+    create: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
+  }
+
   export type PracticeSessionCreateWithoutPronunciationItemsInput = {
     id?: string
     type: string
@@ -29900,8 +29856,8 @@ export namespace Prisma {
     aiGenerated?: boolean
     difficulty?: string | null
     score?: number | null
-    user: UserCreateNestedOneWithoutPracticeSessionsInput
     practiceItems?: PracticeItemCreateNestedManyWithoutSessionInput
+    user: UserCreateNestedOneWithoutPracticeSessionsInput
   }
 
   export type PracticeSessionUncheckedCreateWithoutPronunciationItemsInput = {
@@ -29921,28 +29877,32 @@ export namespace Prisma {
     create: XOR<PracticeSessionCreateWithoutPronunciationItemsInput, PracticeSessionUncheckedCreateWithoutPronunciationItemsInput>
   }
 
-  export type PronunciationExerciseCreateWithoutPracticeItemsInput = {
-    text: string
-    translation?: string | null
-    audioUrl?: string | null
-    difficulty: string
-    category?: string | null
-    expectedPronunciation?: string | null
-  }
-
-  export type PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput = {
-    id?: number
-    text: string
-    translation?: string | null
-    audioUrl?: string | null
-    difficulty: string
-    category?: string | null
-    expectedPronunciation?: string | null
-  }
-
-  export type PronunciationExerciseCreateOrConnectWithoutPracticeItemsInput = {
-    where: PronunciationExerciseWhereUniqueInput
+  export type PronunciationExerciseUpsertWithoutPracticeItemsInput = {
+    update: XOR<PronunciationExerciseUpdateWithoutPracticeItemsInput, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
     create: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
+    where?: PronunciationExerciseWhereInput
+  }
+
+  export type PronunciationExerciseUpdateToOneWithWhereWithoutPracticeItemsInput = {
+    where?: PronunciationExerciseWhereInput
+    data: XOR<PronunciationExerciseUpdateWithoutPracticeItemsInput, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
+  }
+
+  export type PronunciationExerciseUpdateWithoutPracticeItemsInput = {
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    text?: StringFieldUpdateOperationsInput | string
+    translation?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PracticeSessionUpsertWithoutPronunciationItemsInput = {
@@ -29964,8 +29924,8 @@ export namespace Prisma {
     aiGenerated?: BoolFieldUpdateOperationsInput | boolean
     difficulty?: NullableStringFieldUpdateOperationsInput | string | null
     score?: NullableIntFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
     practiceItems?: PracticeItemUpdateManyWithoutSessionNestedInput
+    user?: UserUpdateOneRequiredWithoutPracticeSessionsNestedInput
   }
 
   export type PracticeSessionUncheckedUpdateWithoutPronunciationItemsInput = {
@@ -29980,53 +29940,13 @@ export namespace Prisma {
     practiceItems?: PracticeItemUncheckedUpdateManyWithoutSessionNestedInput
   }
 
-  export type PronunciationExerciseUpsertWithoutPracticeItemsInput = {
-    update: XOR<PronunciationExerciseUpdateWithoutPracticeItemsInput, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
-    create: XOR<PronunciationExerciseCreateWithoutPracticeItemsInput, PronunciationExerciseUncheckedCreateWithoutPracticeItemsInput>
-    where?: PronunciationExerciseWhereInput
-  }
-
-  export type PronunciationExerciseUpdateToOneWithWhereWithoutPracticeItemsInput = {
-    where?: PronunciationExerciseWhereInput
-    data: XOR<PronunciationExerciseUpdateWithoutPracticeItemsInput, PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput>
-  }
-
-  export type PronunciationExerciseUpdateWithoutPracticeItemsInput = {
-    text?: StringFieldUpdateOperationsInput | string
-    translation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    difficulty?: StringFieldUpdateOperationsInput | string
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type PronunciationExerciseUncheckedUpdateWithoutPracticeItemsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    text?: StringFieldUpdateOperationsInput | string
-    translation?: NullableStringFieldUpdateOperationsInput | string | null
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    difficulty?: StringFieldUpdateOperationsInput | string
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    expectedPronunciation?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type LessonProgressCreateManyUserInput = {
-    id?: number
-    lessonId: number
-    completed?: boolean
-    score?: number
-    startedAt?: Date | string | null
-    completedAt?: Date | string | null
-    answers?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type UserVocabularyCreateManyUserInput = {
-    id?: number
-    vocabularyId: number
-    learned?: boolean
-    lastPracticed?: Date | string | null
-    repetitionStage?: number
-    nextReviewDate?: Date | string | null
+  export type ConversationCreateManyUserInput = {
+    id?: string
+    title: string
+    context: string
+    startedAt?: Date | string
+    lastMessageAt?: Date | string
+    templateId?: number | null
   }
 
   export type ExamResultCreateManyUserInput = {
@@ -30040,13 +29960,14 @@ export namespace Prisma {
     timeSpent: number
   }
 
-  export type ConversationCreateManyUserInput = {
-    id?: string
-    title: string
-    context: string
-    startedAt?: Date | string
-    lastMessageAt?: Date | string
-    templateId?: number | null
+  export type LessonProgressCreateManyUserInput = {
+    id?: number
+    lessonId: number
+    completed?: boolean
+    score?: number
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    answers?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type PracticeSessionCreateManyUserInput = {
@@ -30065,59 +29986,42 @@ export namespace Prisma {
     usedAt?: Date | string
   }
 
-  export type LessonProgressUpdateWithoutUserInput = {
-    completed?: BoolFieldUpdateOperationsInput | boolean
-    score?: IntFieldUpdateOperationsInput | number
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    answers?: NullableJsonNullValueInput | InputJsonValue
-    lesson?: LessonUpdateOneRequiredWithoutProgressNestedInput
+  export type UserVocabularyCreateManyUserInput = {
+    id?: number
+    vocabularyId: number
+    learned?: boolean
+    lastPracticed?: Date | string | null
+    nextReviewDate?: Date | string | null
+    repetitionStage?: number
   }
 
-  export type LessonProgressUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lessonId?: IntFieldUpdateOperationsInput | number
-    completed?: BoolFieldUpdateOperationsInput | boolean
-    score?: IntFieldUpdateOperationsInput | number
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    answers?: NullableJsonNullValueInput | InputJsonValue
+  export type ConversationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    context?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
+    messages?: MessageUpdateManyWithoutConversationNestedInput
   }
 
-  export type LessonProgressUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lessonId?: IntFieldUpdateOperationsInput | number
-    completed?: BoolFieldUpdateOperationsInput | boolean
-    score?: IntFieldUpdateOperationsInput | number
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    answers?: NullableJsonNullValueInput | InputJsonValue
+  export type ConversationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    context?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
+    messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
-  export type UserVocabularyUpdateWithoutUserInput = {
-    learned?: BoolFieldUpdateOperationsInput | boolean
-    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
-    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    vocabulary?: VocabularyUpdateOneRequiredWithoutUserVocabularyNestedInput
-  }
-
-  export type UserVocabularyUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    vocabularyId?: IntFieldUpdateOperationsInput | number
-    learned?: BoolFieldUpdateOperationsInput | boolean
-    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
-    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type UserVocabularyUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    vocabularyId?: IntFieldUpdateOperationsInput | number
-    learned?: BoolFieldUpdateOperationsInput | boolean
-    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
-    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type ConversationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    context?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ExamResultUpdateWithoutUserInput = {
@@ -30152,33 +30056,33 @@ export namespace Prisma {
     timeSpent?: IntFieldUpdateOperationsInput | number
   }
 
-  export type ConversationUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    context?: StringFieldUpdateOperationsInput | string
-    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    messages?: MessageUpdateManyWithoutConversationNestedInput
-    template?: ConversationTemplateUpdateOneWithoutConversationsNestedInput
+  export type LessonProgressUpdateWithoutUserInput = {
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    score?: IntFieldUpdateOperationsInput | number
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    answers?: NullableJsonNullValueInput | InputJsonValue
+    lesson?: LessonUpdateOneRequiredWithoutProgressNestedInput
   }
 
-  export type ConversationUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    context?: StringFieldUpdateOperationsInput | string
-    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    templateId?: NullableIntFieldUpdateOperationsInput | number | null
-    messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
+  export type LessonProgressUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lessonId?: IntFieldUpdateOperationsInput | number
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    score?: IntFieldUpdateOperationsInput | number
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    answers?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type ConversationUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    context?: StringFieldUpdateOperationsInput | string
-    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    templateId?: NullableIntFieldUpdateOperationsInput | number | null
+  export type LessonProgressUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lessonId?: IntFieldUpdateOperationsInput | number
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    score?: IntFieldUpdateOperationsInput | number
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    answers?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type PracticeSessionUpdateWithoutUserInput = {
@@ -30230,6 +30134,32 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     templateId?: IntFieldUpdateOperationsInput | number
     usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserVocabularyUpdateWithoutUserInput = {
+    learned?: BoolFieldUpdateOperationsInput | boolean
+    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    vocabulary?: VocabularyUpdateOneRequiredWithoutUserVocabularyNestedInput
+  }
+
+  export type UserVocabularyUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    vocabularyId?: IntFieldUpdateOperationsInput | number
+    learned?: BoolFieldUpdateOperationsInput | boolean
+    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type UserVocabularyUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    vocabularyId?: IntFieldUpdateOperationsInput | number
+    learned?: BoolFieldUpdateOperationsInput | boolean
+    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
   }
 
   export type LessonProgressCreateManyLessonInput = {
@@ -30347,15 +30277,6 @@ export namespace Prisma {
     explanation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type UserVocabularyCreateManyVocabularyInput = {
-    id?: number
-    userId: number
-    learned?: boolean
-    lastPracticed?: Date | string | null
-    repetitionStage?: number
-    nextReviewDate?: Date | string | null
-  }
-
   export type PracticeItemCreateManyVocabularyInput = {
     id?: number
     sessionId: string
@@ -30365,30 +30286,13 @@ export namespace Prisma {
     expectedAnswer: string
   }
 
-  export type UserVocabularyUpdateWithoutVocabularyInput = {
-    learned?: BoolFieldUpdateOperationsInput | boolean
-    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
-    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    user?: UserUpdateOneRequiredWithoutVocabularyNestedInput
-  }
-
-  export type UserVocabularyUncheckedUpdateWithoutVocabularyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    learned?: BoolFieldUpdateOperationsInput | boolean
-    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
-    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type UserVocabularyUncheckedUpdateManyWithoutVocabularyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    learned?: BoolFieldUpdateOperationsInput | boolean
-    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    repetitionStage?: IntFieldUpdateOperationsInput | number
-    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type UserVocabularyCreateManyVocabularyInput = {
+    id?: number
+    userId: number
+    learned?: boolean
+    lastPracticed?: Date | string | null
+    nextReviewDate?: Date | string | null
+    repetitionStage?: number
   }
 
   export type PracticeItemUpdateWithoutVocabularyInput = {
@@ -30417,23 +30321,49 @@ export namespace Prisma {
     expectedAnswer?: StringFieldUpdateOperationsInput | string
   }
 
+  export type UserVocabularyUpdateWithoutVocabularyInput = {
+    learned?: BoolFieldUpdateOperationsInput | boolean
+    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+    user?: UserUpdateOneRequiredWithoutVocabularyNestedInput
+  }
+
+  export type UserVocabularyUncheckedUpdateWithoutVocabularyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    learned?: BoolFieldUpdateOperationsInput | boolean
+    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type UserVocabularyUncheckedUpdateManyWithoutVocabularyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    learned?: BoolFieldUpdateOperationsInput | boolean
+    lastPracticed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextReviewDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repetitionStage?: IntFieldUpdateOperationsInput | number
+  }
+
   export type MessageCreateManyConversationInput = {
     id?: number
     role: string
     content: string
     timestamp?: Date | string
+    audioUrl?: string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: string | null
   }
 
   export type MessageUpdateWithoutConversationInput = {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUncheckedUpdateWithoutConversationInput = {
@@ -30441,9 +30371,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUncheckedUpdateManyWithoutConversationInput = {
@@ -30451,15 +30381,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     corrections?: NullableJsonNullValueInput | InputJsonValue
     suggestedVocabulary?: NullableJsonNullValueInput | InputJsonValue
-    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type UserTemplateUsageCreateManyTemplateInput = {
-    id?: number
-    userId: number
-    usedAt?: Date | string
   }
 
   export type ConversationCreateManyTemplateInput = {
@@ -30471,21 +30395,10 @@ export namespace Prisma {
     lastMessageAt?: Date | string
   }
 
-  export type UserTemplateUsageUpdateWithoutTemplateInput = {
-    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutTemplateUsageNestedInput
-  }
-
-  export type UserTemplateUsageUncheckedUpdateWithoutTemplateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserTemplateUsageUncheckedUpdateManyWithoutTemplateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type UserTemplateUsageCreateManyTemplateInput = {
+    id?: number
+    userId: number
+    usedAt?: Date | string
   }
 
   export type ConversationUpdateWithoutTemplateInput = {
@@ -30515,6 +30428,23 @@ export namespace Prisma {
     context?: StringFieldUpdateOperationsInput | string
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateUsageUpdateWithoutTemplateInput = {
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTemplateUsageNestedInput
+  }
+
+  export type UserTemplateUsageUncheckedUpdateWithoutTemplateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateUsageUncheckedUpdateManyWithoutTemplateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PracticeItemCreateManySessionInput = {

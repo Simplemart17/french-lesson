@@ -1,0 +1,848 @@
+[
+  {
+    "word": "bonjour",
+    "translation": "hello",
+    "example": "Bonjour, comment allez-vous?",
+    "level": "A1",
+    "pronunciation": "bɔ̃.ʒuʁ",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "au revoir",
+    "translation": "goodbye",
+    "example": "Au revoir, à demain!",
+    "level": "A1",
+    "pronunciation": "o ʁə.vwaʁ",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "merci",
+    "translation": "thank you",
+    "example": "Merci beaucoup pour votre aide.",
+    "level": "A1",
+    "pronunciation": "mɛʁ.si",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "s'il vous plaît",
+    "translation": "please",
+    "example": "Pourriez-vous m'aider, s'il vous plaît?",
+    "level": "A1",
+    "pronunciation": "sil vu plɛ",
+    "category": "greetings",
+    "usageContext": ["formal", "everyday"]
+  },
+  {
+    "word": "excusez-moi",
+    "translation": "excuse me",
+    "example": "Excusez-moi, où est la gare?",
+    "level": "A1",
+    "pronunciation": "ɛk.sky.ze mwa",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "oui",
+    "translation": "yes",
+    "example": "Oui, je comprends.",
+    "level": "A1",
+    "pronunciation": "wi",
+    "category": "basics",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "non",
+    "translation": "no",
+    "example": "Non, je ne suis pas d'accord.",
+    "level": "A1",
+    "pronunciation": "nɔ̃",
+    "category": "basics",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "s'il te plaît",
+    "translation": "please (informal)",
+    "example": "Passe-moi le sel, s'il te plaît.",
+    "level": "A1",
+    "pronunciation": "sil tə plɛ",
+    "category": "greetings",
+    "usageContext": ["informal", "everyday"]
+  },
+  {
+    "word": "pardon",
+    "translation": "sorry/excuse me",
+    "example": "Pardon, je n'ai pas entendu.",
+    "level": "A1",
+    "pronunciation": "paʁ.dɔ̃",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "salut",
+    "translation": "hi/bye (informal)",
+    "example": "Salut, comment ça va?",
+    "level": "A1",
+    "pronunciation": "sa.ly",
+    "category": "greetings",
+    "usageContext": ["informal", "everyday"]
+  },
+  {
+    "word": "bonsoir",
+    "translation": "good evening",
+    "example": "Bonsoir, bienvenue au restaurant.",
+    "level": "A1",
+    "pronunciation": "bɔ̃.swaʁ",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "bonne nuit",
+    "translation": "good night",
+    "example": "Bonne nuit, fais de beaux rêves.",
+    "level": "A1",
+    "pronunciation": "bɔn nɥi",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "à bientôt",
+    "translation": "see you soon",
+    "example": "À bientôt, j'ai hâte de te revoir.",
+    "level": "A1",
+    "pronunciation": "a bjɛ̃.to",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "bienvenue",
+    "translation": "welcome",
+    "example": "Bienvenue en France!",
+    "level": "A1",
+    "pronunciation": "bjɛ̃.və.ny",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "enchanté",
+    "translation": "pleased to meet you",
+    "example": "Enchanté de faire votre connaissance.",
+    "level": "A1",
+    "pronunciation": "ɑ̃.ʃɑ̃.te",
+    "category": "greetings",
+    "usageContext": ["formal", "informal", "introductions"]
+  },
+  {
+    "word": "comment",
+    "translation": "how",
+    "example": "Comment allez-vous?",
+    "level": "A1",
+    "pronunciation": "kɔ.mɑ̃",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "qui",
+    "translation": "who",
+    "example": "Qui est cette personne?",
+    "level": "A1",
+    "pronunciation": "ki",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "quoi",
+    "translation": "what",
+    "example": "Quoi de neuf?",
+    "level": "A1",
+    "pronunciation": "kwa",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "où",
+    "translation": "where",
+    "example": "Où est la bibliothèque?",
+    "level": "A1",
+    "pronunciation": "u",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "quand",
+    "translation": "when",
+    "example": "Quand est-ce que le train arrive?",
+    "level": "A1",
+    "pronunciation": "kɑ̃",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "pourquoi",
+    "translation": "why",
+    "example": "Pourquoi es-tu en retard?",
+    "level": "A1",
+    "pronunciation": "puʁ.kwa",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "comment",
+    "translation": "how",
+    "example": "Comment est-ce qu'on fait ça?",
+    "level": "A1",
+    "pronunciation": "kɔ.mɑ̃",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "everyday"]
+  },
+  {
+    "word": "combien",
+    "translation": "how much/how many",
+    "example": "Combien ça coûte?",
+    "level": "A1",
+    "pronunciation": "kɔ̃.bjɛ̃",
+    "category": "question words",
+    "usageContext": ["formal", "informal", "shopping"]
+  },
+  {
+    "word": "un",
+    "translation": "one",
+    "example": "J'ai un frère.",
+    "level": "A1",
+    "pronunciation": "œ̃",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "deux",
+    "translation": "two",
+    "example": "J'ai deux sœurs.",
+    "level": "A1",
+    "pronunciation": "dø",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "trois",
+    "translation": "three",
+    "example": "Il y a trois livres sur la table.",
+    "level": "A1",
+    "pronunciation": "tʁwa",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "quatre",
+    "translation": "four",
+    "example": "Nous avons quatre chaises.",
+    "level": "A1",
+    "pronunciation": "katʁ",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "cinq",
+    "translation": "five",
+    "example": "Il y a cinq personnes dans ma famille.",
+    "level": "A1",
+    "pronunciation": "sɛ̃k",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "six",
+    "translation": "six",
+    "example": "J'ai six ans.",
+    "level": "A1",
+    "pronunciation": "sis",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "sept",
+    "translation": "seven",
+    "example": "Il est sept heures.",
+    "level": "A1",
+    "pronunciation": "sɛt",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "huit",
+    "translation": "eight",
+    "example": "J'ai huit livres.",
+    "level": "A1",
+    "pronunciation": "ɥit",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "neuf",
+    "translation": "nine",
+    "example": "Il y a neuf étudiants dans la classe.",
+    "level": "A1",
+    "pronunciation": "nœf",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "dix",
+    "translation": "ten",
+    "example": "J'ai dix doigts.",
+    "level": "A1",
+    "pronunciation": "dis",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "onze",
+    "translation": "eleven",
+    "example": "Il a onze ans.",
+    "level": "A1",
+    "pronunciation": "ɔ̃z",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "douze",
+    "translation": "twelve",
+    "example": "Il y a douze mois dans une année.",
+    "level": "A1",
+    "pronunciation": "duz",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "treize",
+    "translation": "thirteen",
+    "example": "Elle a treize ans.",
+    "level": "A1",
+    "pronunciation": "tʁɛz",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "quatorze",
+    "translation": "fourteen",
+    "example": "J'ai quatorze livres.",
+    "level": "A1",
+    "pronunciation": "ka.tɔʁz",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "quinze",
+    "translation": "fifteen",
+    "example": "Il y a quinze étudiants dans la classe.",
+    "level": "A1",
+    "pronunciation": "kɛ̃z",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "seize",
+    "translation": "sixteen",
+    "example": "Elle a seize ans.",
+    "level": "A1",
+    "pronunciation": "sɛz",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "dix-sept",
+    "translation": "seventeen",
+    "example": "J'ai dix-sept ans.",
+    "level": "A1",
+    "pronunciation": "di.sɛt",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "dix-huit",
+    "translation": "eighteen",
+    "example": "Il a dix-huit ans.",
+    "level": "A1",
+    "pronunciation": "di.zɥit",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "dix-neuf",
+    "translation": "nineteen",
+    "example": "Elle a dix-neuf ans.",
+    "level": "A1",
+    "pronunciation": "diz.nœf",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "vingt",
+    "translation": "twenty",
+    "example": "J'ai vingt euros.",
+    "level": "A1",
+    "pronunciation": "vɛ̃",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "trente",
+    "translation": "thirty",
+    "example": "Il a trente ans.",
+    "level": "A1",
+    "pronunciation": "tʁɑ̃t",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "quarante",
+    "translation": "forty",
+    "example": "Elle a quarante ans.",
+    "level": "A1",
+    "pronunciation": "ka.ʁɑ̃t",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "cinquante",
+    "translation": "fifty",
+    "example": "Il y a cinquante étudiants dans l'école.",
+    "level": "A1",
+    "pronunciation": "sɛ̃.kɑ̃t",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "soixante",
+    "translation": "sixty",
+    "example": "Elle a soixante ans.",
+    "level": "A1",
+    "pronunciation": "swa.sɑ̃t",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "soixante-dix",
+    "translation": "seventy",
+    "example": "Il a soixante-dix ans.",
+    "level": "A1",
+    "pronunciation": "swa.sɑ̃t.dis",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "quatre-vingts",
+    "translation": "eighty",
+    "example": "Elle a quatre-vingts ans.",
+    "level": "A1",
+    "pronunciation": "ka.tʁə.vɛ̃",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "quatre-vingt-dix",
+    "translation": "ninety",
+    "example": "Il a quatre-vingt-dix ans.",
+    "level": "A1",
+    "pronunciation": "ka.tʁə.vɛ̃.dis",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "cent",
+    "translation": "one hundred",
+    "example": "Il y a cent pages dans ce livre.",
+    "level": "A1",
+    "pronunciation": "sɑ̃",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "mille",
+    "translation": "one thousand",
+    "example": "Cette voiture coûte mille euros.",
+    "level": "A1",
+    "pronunciation": "mil",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "un million",
+    "translation": "one million",
+    "example": "Cette maison coûte un million d'euros.",
+    "level": "A1",
+    "pronunciation": "œ̃ mi.ljɔ̃",
+    "category": "numbers",
+    "usageContext": ["counting", "everyday"]
+  },
+  {
+    "word": "lundi",
+    "translation": "Monday",
+    "example": "Je travaille le lundi.",
+    "level": "A1",
+    "pronunciation": "lœ̃.di",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "mardi",
+    "translation": "Tuesday",
+    "example": "J'ai un cours de français le mardi.",
+    "level": "A1",
+    "pronunciation": "maʁ.di",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "mercredi",
+    "translation": "Wednesday",
+    "example": "Le mercredi, je vais à la bibliothèque.",
+    "level": "A1",
+    "pronunciation": "mɛʁ.kʁə.di",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "jeudi",
+    "translation": "Thursday",
+    "example": "J'ai un rendez-vous le jeudi.",
+    "level": "A1",
+    "pronunciation": "ʒø.di",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "vendredi",
+    "translation": "Friday",
+    "example": "Le vendredi, je finis le travail à 16h.",
+    "level": "A1",
+    "pronunciation": "vɑ̃.dʁə.di",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "samedi",
+    "translation": "Saturday",
+    "example": "Le samedi, je fais les courses.",
+    "level": "A1",
+    "pronunciation": "sam.di",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "dimanche",
+    "translation": "Sunday",
+    "example": "Le dimanche, je me repose.",
+    "level": "A1",
+    "pronunciation": "di.mɑ̃ʃ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "janvier",
+    "translation": "January",
+    "example": "Mon anniversaire est en janvier.",
+    "level": "A1",
+    "pronunciation": "ʒɑ̃.vje",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "février",
+    "translation": "February",
+    "example": "Il fait froid en février.",
+    "level": "A1",
+    "pronunciation": "fe.vʁi.je",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "mars",
+    "translation": "March",
+    "example": "Le printemps commence en mars.",
+    "level": "A1",
+    "pronunciation": "maʁs",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "avril",
+    "translation": "April",
+    "example": "Il pleut souvent en avril.",
+    "level": "A1",
+    "pronunciation": "a.vʁil",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "mai",
+    "translation": "May",
+    "example": "Les fleurs fleurissent en mai.",
+    "level": "A1",
+    "pronunciation": "mɛ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "juin",
+    "translation": "June",
+    "example": "L'été commence en juin.",
+    "level": "A1",
+    "pronunciation": "ʒɥɛ̃",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "juillet",
+    "translation": "July",
+    "example": "Il fait chaud en juillet.",
+    "level": "A1",
+    "pronunciation": "ʒɥi.jɛ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "août",
+    "translation": "August",
+    "example": "Je pars en vacances en août.",
+    "level": "A1",
+    "pronunciation": "u",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "septembre",
+    "translation": "September",
+    "example": "L'école commence en septembre.",
+    "level": "A1",
+    "pronunciation": "sɛp.tɑ̃bʁ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "octobre",
+    "translation": "October",
+    "example": "Les feuilles changent de couleur en octobre.",
+    "level": "A1",
+    "pronunciation": "ɔk.tɔbʁ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "novembre",
+    "translation": "November",
+    "example": "Il fait froid en novembre.",
+    "level": "A1",
+    "pronunciation": "nɔ.vɑ̃bʁ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "décembre",
+    "translation": "December",
+    "example": "Noël est en décembre.",
+    "level": "A1",
+    "pronunciation": "de.sɑ̃bʁ",
+    "category": "time",
+    "usageContext": ["calendar", "everyday"]
+  },
+  {
+    "word": "aujourd'hui",
+    "translation": "today",
+    "example": "Aujourd'hui, il fait beau.",
+    "level": "A1",
+    "pronunciation": "o.ʒuʁ.dɥi",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "demain",
+    "translation": "tomorrow",
+    "example": "Demain, j'ai un examen.",
+    "level": "A1",
+    "pronunciation": "də.mɛ̃",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "hier",
+    "translation": "yesterday",
+    "example": "Hier, j'ai visité le musée.",
+    "level": "A1",
+    "pronunciation": "jɛʁ",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "maintenant",
+    "translation": "now",
+    "example": "Je suis occupé maintenant.",
+    "level": "A1",
+    "pronunciation": "mɛ̃.tə.nɑ̃",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "plus tard",
+    "translation": "later",
+    "example": "On peut parler plus tard.",
+    "level": "A1",
+    "pronunciation": "ply taʁ",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "tôt",
+    "translation": "early",
+    "example": "Je me lève tôt le matin.",
+    "level": "A1",
+    "pronunciation": "to",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "tard",
+    "translation": "late",
+    "example": "Je me couche tard le weekend.",
+    "level": "A1",
+    "pronunciation": "taʁ",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "matin",
+    "translation": "morning",
+    "example": "Je prends un café le matin.",
+    "level": "A1",
+    "pronunciation": "ma.tɛ̃",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "après-midi",
+    "translation": "afternoon",
+    "example": "Je fais une sieste l'après-midi.",
+    "level": "A1",
+    "pronunciation": "a.pʁɛ mi.di",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "soir",
+    "translation": "evening",
+    "example": "Je dîne le soir à 20h.",
+    "level": "A1",
+    "pronunciation": "swaʁ",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "nuit",
+    "translation": "night",
+    "example": "Je dors bien la nuit.",
+    "level": "A1",
+    "pronunciation": "nɥi",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "heure",
+    "translation": "hour/time",
+    "example": "Quelle heure est-il?",
+    "level": "A1",
+    "pronunciation": "œʁ",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "minute",
+    "translation": "minute",
+    "example": "J'arrive dans cinq minutes.",
+    "level": "A1",
+    "pronunciation": "mi.nyt",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "seconde",
+    "translation": "second",
+    "example": "Attendez une seconde, s'il vous plaît.",
+    "level": "A1",
+    "pronunciation": "sə.ɡɔ̃d",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "semaine",
+    "translation": "week",
+    "example": "Je travaille cinq jours par semaine.",
+    "level": "A1",
+    "pronunciation": "sə.mɛn",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "mois",
+    "translation": "month",
+    "example": "Il y a douze mois dans une année.",
+    "level": "A1",
+    "pronunciation": "mwa",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "année",
+    "translation": "year",
+    "example": "Bonne année!",
+    "level": "A1",
+    "pronunciation": "a.ne",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "saison",
+    "translation": "season",
+    "example": "L'hiver est ma saison préférée.",
+    "level": "A1",
+    "pronunciation": "sɛ.zɔ̃",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "printemps",
+    "translation": "spring",
+    "example": "Au printemps, les fleurs fleurissent.",
+    "level": "A1",
+    "pronunciation": "pʁɛ̃.tɑ̃",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "été",
+    "translation": "summer",
+    "example": "En été, il fait chaud.",
+    "level": "A1",
+    "pronunciation": "e.te",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "automne",
+    "translation": "autumn/fall",
+    "example": "En automne, les feuilles tombent.",
+    "level": "A1",
+    "pronunciation": "o.tɔn",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  },
+  {
+    "word": "hiver",
+    "translation": "winter",
+    "example": "En hiver, il neige souvent.",
+    "level": "A1",
+    "pronunciation": "i.vɛʁ",
+    "category": "time",
+    "usageContext": ["everyday", "conversation"]
+  }
+]

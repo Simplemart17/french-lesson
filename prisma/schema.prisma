@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -14,297 +8,222 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==================== USER RELATED MODELS ====================
-
-// User model
 model User {
-  id                      Int                   @id @default(autoincrement())
-  email                   String                @unique
-  name                    String
-  password                String?               // Hashed password
-  level                   String                @default("A1")
-  points                  Int                   @default(0)
-  streakDays              Int                   @default(0)
-  joinedAt                DateTime              @default(now())
-  learningGoals           String[]              @default([])
-  completedLessons        Int                   @default(0)
-  lastActive              DateTime              @default(now())
-  dailyGoal               Int                   @default(15)
-  notifications           Boolean               @default(true)
-  theme                   String                @default("light")
-
-  // New AI-related preferences
-  aiCorrectionEnabled     Boolean               @default(true)
+  id                        Int                 @id @default(autoincrement())
+  email                     String              @unique
+  name                      String
+  password                  String?
+  level                     String              @default("A1")
+  points                    Int                 @default(0)
+  streakDays                Int                 @default(0)
+  joinedAt                  DateTime            @default(now())
+  learningGoals             String[]            @default([])
+  completedLessons          Int                 @default(0)
+  lastActive                DateTime            @default(now())
+  dailyGoal                 Int                 @default(15)
+  notifications             Boolean             @default(true)
+  theme                     String              @default("light")
+  aiCorrectionEnabled       Boolean             @default(true)
   aiVocabSuggestionsEnabled Boolean             @default(true)
-  preferredVoice          String?               // For TTS preferences
-  speechRecognitionEnabled Boolean              @default(true)
-
-  // Relations
-  lessonProgress          LessonProgress[]
-  vocabulary              UserVocabulary[]
-  examResults             ExamResult[]
-  conversations           Conversation[]
-  practiceSessions        PracticeSession[]
-  templateUsage           UserTemplateUsage[]
+  preferredVoice            String?
+  speechRecognitionEnabled  Boolean             @default(true)
+  conversations             Conversation[]
+  examResults               ExamResult[]
+  lessonProgress            LessonProgress[]
+  practiceSessions          PracticeSession[]
+  templateUsage             UserTemplateUsage[]
+  vocabulary                UserVocabulary[]
 }
 
-// ==================== LESSON RELATED MODELS ====================
-
-// Lesson model
 model Lesson {
-  id                      Int                   @id @default(autoincrement())
-  title                   String
-  description             String
-  level                   String
-  duration                Int                   // minutes
-  topics                  String[]
-
-  // Relations
-  progress                LessonProgress[]
-  sections                LessonSection[]
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String
+  level       String
+  duration    Int
+  topics      String[]
+  progress    LessonProgress[]
+  sections    LessonSection[]
 }
 
-// LessonSection model - replaces the content JSON field in Lesson
 model LessonSection {
-  id                      Int                   @id @default(autoincrement())
-  lessonId                Int
-  title                   String
-  type                    String                // 'text', 'audio', 'video', 'exercise', etc.
-  content                 String?               @db.Text
-  audioUrl                String?
-  videoUrl                String?
-  order                   Int                   // For ordering sections within a lesson
-
-  // Relations
-  lesson                  Lesson                @relation(fields: [lessonId], references: [id])
-  exercises               LessonExercise[]
+  id        Int              @id @default(autoincrement())
+  lessonId  Int
+  title     String
+  type      String
+  content   String?
+  audioUrl  String?
+  videoUrl  String?
+  order     Int
+  exercises LessonExercise[]
+  lesson    Lesson           @relation(fields: [lessonId], references: [id])
 }
 
-// LessonExercise model - for structured exercises within lesson sections
 model LessonExercise {
-  id                      Int                   @id @default(autoincrement())
-  sectionId               Int
-  type                    String                // 'multiple-choice', 'fill-in-blank', etc.
-  question                String                @db.Text
-  options                 String[]              // For multiple choice
-  correctAnswer           String
-  explanation             String?               @db.Text
-
-  // Relations
-  section                 LessonSection         @relation(fields: [sectionId], references: [id])
+  id            Int           @id @default(autoincrement())
+  sectionId     Int
+  type          String
+  question      String
+  options       String[]
+  correctAnswer String
+  explanation   String?
+  section       LessonSection @relation(fields: [sectionId], references: [id])
 }
 
-// LessonProgress model
 model LessonProgress {
-  id                      Int                   @id @default(autoincrement())
-  lessonId                Int
-  userId                  Int
-  completed               Boolean               @default(false)
-  score                   Int                   @default(0)
-  startedAt               DateTime?
-  completedAt             DateTime?
-  answers                 Json?                 // JSON object storing user answers
-
-  // Relations
-  lesson                  Lesson                @relation(fields: [lessonId], references: [id])
-  user                    User                  @relation(fields: [userId], references: [id])
+  id          Int       @id @default(autoincrement())
+  lessonId    Int
+  userId      Int
+  completed   Boolean   @default(false)
+  score       Int       @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  answers     Json?
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, lessonId])
 }
 
-// ==================== VOCABULARY RELATED MODELS ====================
-
-// Vocabulary model
 model Vocabulary {
-  id                      Int                   @id @default(autoincrement())
-  word                    String                @unique
-  translation             String
-  example                 String
-  level                   String
-
-  // New fields
-  pronunciation           String?               // IPA notation or pronunciation guide
-  audioUrl                String?               // URL to pronunciation audio
-  usageContext            String[]              @default([]) // Common contexts where the word is used
-  category                String?               // e.g., 'food', 'travel', 'business'
-
-  // Relations
-  userVocabulary          UserVocabulary[]
-  practiceItems           PracticeItem[]
+  id             Int              @id @default(autoincrement())
+  word           String           @unique
+  translation    String
+  example        String
+  level          String
+  category       String?
+  pronunciation  String?
+  usageContext   String[]         @default([])
+  practiceItems  PracticeItem[]
+  userVocabulary UserVocabulary[]
 }
 
-// UserVocabulary model for tracking user's vocabulary progress
 model UserVocabulary {
-  id                      Int                   @id @default(autoincrement())
-  userId                  Int
-  vocabularyId            Int
-  learned                 Boolean               @default(false)
-  lastPracticed           DateTime?
-  repetitionStage         Int                   @default(0) // For spaced repetition algorithm
-  nextReviewDate          DateTime?             // When this word should be reviewed next
-
-  // Relations
-  user                    User                  @relation(fields: [userId], references: [id])
-  vocabulary              Vocabulary            @relation(fields: [vocabularyId], references: [id])
+  id              Int        @id @default(autoincrement())
+  userId          Int
+  vocabularyId    Int
+  learned         Boolean    @default(false)
+  lastPracticed   DateTime?
+  nextReviewDate  DateTime?
+  repetitionStage Int        @default(0)
+  user            User       @relation(fields: [userId], references: [id])
+  vocabulary      Vocabulary @relation(fields: [vocabularyId], references: [id])
 
   @@unique([userId, vocabularyId])
 }
 
-// ==================== CONVERSATION RELATED MODELS ====================
-
-// Conversation model
 model Conversation {
-  id                      String                @id @default(uuid())
-  userId                  Int
-  title                   String
-  context                 String
-  startedAt               DateTime              @default(now())
-  lastMessageAt           DateTime              @default(now())
-  templateId              Int?                  // Optional reference to a template
-
-  // Relations
-  user                    User                  @relation(fields: [userId], references: [id])
-  messages                Message[]
-  template                ConversationTemplate? @relation(fields: [templateId], references: [id])
+  id            String                @id @default(uuid())
+  userId        Int
+  title         String
+  context       String
+  startedAt     DateTime              @default(now())
+  lastMessageAt DateTime              @default(now())
+  templateId    Int?
+  template      ConversationTemplate? @relation(fields: [templateId], references: [id])
+  user          User                  @relation(fields: [userId], references: [id])
+  messages      Message[]
 }
 
-// Message model
 model Message {
-  id                      Int                   @id @default(autoincrement())
-  conversationId          String
-  role                    String                // 'user' or 'assistant'
-  content                 String                @db.Text
-  timestamp               DateTime              @default(now())
-
-  // New fields
-  corrections             Json?                 // Grammar corrections provided by AI
-  suggestedVocabulary     Json?                 // Vocabulary suggestions
-  audioUrl                String?               // For storing TTS audio
-
-  // Relations
-  conversation            Conversation          @relation(fields: [conversationId], references: [id])
+  id                  Int          @id @default(autoincrement())
+  conversationId      String
+  role                String
+  content             String
+  timestamp           DateTime     @default(now())
+  audioUrl            String?
+  corrections         Json?
+  suggestedVocabulary Json?
+  conversation        Conversation @relation(fields: [conversationId], references: [id])
 }
 
-// ConversationTemplate model for AI conversation templates
 model ConversationTemplate {
-  id                      Int                   @id @default(autoincrement())
-  title                   String
-  description             String
-  systemPrompt            String                @db.Text
-  initialMessage          String
-  topics                  String[]
-  level                   String                // 'beginner', 'intermediate', 'advanced'
-
-  // Relations
-  userTemplateUsage       UserTemplateUsage[]
-  conversations           Conversation[]
+  id                Int                 @id @default(autoincrement())
+  title             String
+  description       String
+  systemPrompt      String
+  initialMessage    String
+  topics            String[]
+  level             String
+  conversations     Conversation[]
+  userTemplateUsage UserTemplateUsage[]
 }
 
-// UserTemplateUsage model to track which templates users have used
 model UserTemplateUsage {
-  id                      Int                   @id @default(autoincrement())
-  userId                  Int
-  templateId              Int
-  usedAt                  DateTime              @default(now())
-
-  // Relations
-  user                    User                  @relation(fields: [userId], references: [id])
-  template                ConversationTemplate  @relation(fields: [templateId], references: [id])
+  id         Int                  @id @default(autoincrement())
+  userId     Int
+  templateId Int
+  usedAt     DateTime             @default(now())
+  template   ConversationTemplate @relation(fields: [templateId], references: [id])
+  user       User                 @relation(fields: [userId], references: [id])
 }
 
-// ==================== EXAM RELATED MODELS ====================
-
-// Exam result model
 model ExamResult {
-  id                      Int                   @id @default(autoincrement())
-  userId                  Int
-  examId                  String
-  section                 String
-  level                   String
-  score                   Int
-  details                 Json                  // JSON object containing details about answers
-  completedAt             DateTime
-  timeSpent               Int                   // Time spent in seconds
-
-  // Relations
-  user                    User                  @relation(fields: [userId], references: [id])
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  examId      String
+  section     String
+  level       String
+  score       Int
+  details     Json
+  completedAt DateTime
+  timeSpent   Int
+  user        User     @relation(fields: [userId], references: [id])
 }
 
-// ==================== PRACTICE RELATED MODELS ====================
-
-// Practice session model
 model PracticeSession {
-  id                      String                @id @default(uuid())
-  userId                  Int
-  type                    String                // 'vocabulary', 'grammar', 'listening', 'speaking', 'pronunciation'
-  duration                Int                   // time in seconds
-  createdAt               DateTime              @default(now())
-
-  // New fields
-  aiGenerated             Boolean               @default(false)  // Whether this was AI-generated content
-  difficulty              String?               // 'beginner', 'intermediate', 'advanced'
-  score                   Int?                  // Overall session score
-
-  // Relations
-  user                    User                  @relation(fields: [userId], references: [id])
-  practiceItems           PracticeItem[]
-  pronunciationItems      PronunciationPracticeItem[]
+  id                 String                      @id @default(uuid())
+  userId             Int
+  type               String
+  duration           Int
+  createdAt          DateTime                    @default(now())
+  aiGenerated        Boolean                     @default(false)
+  difficulty         String?
+  score              Int?
+  practiceItems      PracticeItem[]
+  user               User                        @relation(fields: [userId], references: [id])
+  pronunciationItems PronunciationPracticeItem[]
 }
 
-// Practice item model
 model PracticeItem {
-  id                      Int                   @id @default(autoincrement())
-  sessionId               String
-  vocabularyId            Int
-  exerciseType            String                // 'multiple-choice', 'fill-in-blank', 'translation', 'matching'
-  isCorrect               Boolean
-  userAnswer              String
-  expectedAnswer          String
-
-  // Relations
-  session                 PracticeSession       @relation(fields: [sessionId], references: [id])
-  vocabulary              Vocabulary            @relation(fields: [vocabularyId], references: [id])
+  id             Int             @id @default(autoincrement())
+  sessionId      String
+  vocabularyId   Int
+  exerciseType   String
+  isCorrect      Boolean
+  userAnswer     String
+  expectedAnswer String
+  session        PracticeSession @relation(fields: [sessionId], references: [id])
+  vocabulary     Vocabulary      @relation(fields: [vocabularyId], references: [id])
 }
 
-// ==================== PRONUNCIATION RELATED MODELS ====================
-
-// PronunciationExercise model
 model PronunciationExercise {
-  id                      Int                   @id @default(autoincrement())
-  text                    String                @db.Text
-  translation             String?               @db.Text
-  audioUrl                String?
-  difficulty              String                // 'beginner', 'intermediate', 'advanced'
-  category                String?               // e.g., 'vowels', 'consonants', 'nasal sounds'
-  expectedPronunciation   String?               // IPA notation or pronunciation guide
-
-  // Relations
-  practiceItems           PronunciationPracticeItem[]
+  id                    Int                         @id @default(autoincrement())
+  text                  String
+  translation           String?
+  difficulty            String
+  category              String?
+  expectedPronunciation String?
+  practiceItems         PronunciationPracticeItem[]
 }
 
-// PronunciationPracticeItem model
 model PronunciationPracticeItem {
-  id                      Int                   @id @default(autoincrement())
-  sessionId               String
-  exerciseId              Int
-  userAudioUrl            String?               // URL to stored user audio
-  transcript              String?               // What the system heard
-  similarityScore         Float?                // Pronunciation accuracy score
-  feedback                Json?                 // Detailed feedback from AI
-
-  // Relations
-  session                 PracticeSession       @relation(fields: [sessionId], references: [id])
-  exercise                PronunciationExercise @relation(fields: [exerciseId], references: [id])
+  id              Int                   @id @default(autoincrement())
+  sessionId       String
+  exerciseId      Int
+  userAudioUrl    String?
+  transcript      String?
+  similarityScore Float?
+  feedback        Json?
+  exercise        PronunciationExercise @relation(fields: [exerciseId], references: [id])
+  session         PracticeSession       @relation(fields: [sessionId], references: [id])
 }
 
-// ==================== GRAMMAR RELATED MODELS ====================
-
-// GrammarRule model
 model GrammarRule {
-  id                      Int                   @id @default(autoincrement())
-  title                   String
-  description             String                @db.Text
-  examples                String[]
-  level                   String                // 'A1', 'A2', 'B1', etc.
-  category                String                // 'verb conjugation', 'articles', etc.
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  examples    String[]
+  level       String
+  category    String
 }

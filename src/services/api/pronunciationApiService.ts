@@ -16,7 +16,6 @@ export interface PronunciationPhrase {
   id: number;
   text: string;
   translation: string;
-  audioUrl: string;
   phonetics?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   focusSounds?: string[];
@@ -110,14 +109,14 @@ export const pronunciationApiService = {
   getExercises: async (params?: PronunciationExerciseListParams): Promise<ApiResponse<PronunciationExerciseListResponse>> => {
     return apiClient.get<PronunciationExerciseListResponse>(API_ENDPOINTS.PRONUNCIATION.EXERCISES, params);
   },
-  
+
   /**
    * Get pronunciation exercise by ID
    */
   getExercise: async (id: number): Promise<ApiResponse<PronunciationExercise>> => {
     return apiClient.get<PronunciationExercise>(`${API_ENDPOINTS.PRONUNCIATION.EXERCISES}/${id}`);
   },
-  
+
   /**
    * Check pronunciation
    */
@@ -127,7 +126,7 @@ export const pronunciationApiService = {
       const formData = new FormData();
       formData.append('phraseId', data.phraseId.toString());
       formData.append('audio', data.audioBlob);
-      
+
       return apiClient.request<PronunciationCheckResponse>({
         method: 'POST',
         url: API_ENDPOINTS.PRONUNCIATION.CHECK,
@@ -137,14 +136,14 @@ export const pronunciationApiService = {
         },
       });
     }
-    
+
     // Otherwise, just send the transcript
     return apiClient.post<PronunciationCheckResponse>(API_ENDPOINTS.PRONUNCIATION.CHECK, {
       phraseId: data.phraseId,
       transcript: data.transcript,
     });
   },
-  
+
   /**
    * AI-powered advanced pronunciation analysis
    */
@@ -153,12 +152,12 @@ export const pronunciationApiService = {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
       formData.append('text', text);
-      
+
       const response = await fetch('/api/ai/pronunciation-analysis', {
         method: 'POST',
         body: formData,
       });
-      
+
       return await response.json();
     } catch (error) {
       console.error('Error in pronunciation analysis:', error);
@@ -170,22 +169,33 @@ export const pronunciationApiService = {
       };
     }
   },
-  
+
   /**
-   * Get pronunciation audio
+   * Get text for a pronunciation phrase
+   *
+   * Note: We no longer use audio URLs since we're using AI TTS
+   * This method is kept for backward compatibility
    */
-  getAudioUrl: (id: number): string => {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-    return `${baseURL}${API_ENDPOINTS.PRONUNCIATION.AUDIO(id)}`;
+  getPhraseText: async (id: number): Promise<string> => {
+    try {
+      const response = await apiClient.get<PronunciationPhrase>(`${API_ENDPOINTS.PRONUNCIATION.PHRASES}/${id}`);
+      if (response.data && response.data.text) {
+        return response.data.text;
+      }
+      return '';
+    } catch (error) {
+      console.error('Error getting phrase text:', error);
+      return '';
+    }
   },
-  
+
   /**
    * Get pronunciation progress
    */
   getProgress: async (): Promise<ApiResponse<PronunciationProgress[]>> => {
     return apiClient.get<PronunciationProgress[]>(API_ENDPOINTS.PRONUNCIATION.PROGRESS);
   },
-  
+
   /**
    * Update pronunciation progress
    */

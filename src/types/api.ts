@@ -86,14 +86,18 @@ export interface LessonProgress {
 
 // Vocabulary and Practice types
 export interface VocabularyItem {
+  id?: number;
   word: string;
   translation: string;
   example: string;
   level: string;
   category?: string;
+  pronunciation?: string;
+  usageContext?: string[];
   learned: boolean;
   lastPracticed?: string;
   nextReview?: string;
+  repetitionStage?: number;
 }
 
 export interface PracticeSession {

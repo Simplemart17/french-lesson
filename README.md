@@ -8,8 +8,18 @@ A modern, AI-powered French learning platform with personalized lessons, interac
 - AI-powered French language tutor
 - Grammar correction and feedback
 - Conversation practice with contextual vocabulary
-- Pronunciation analysis
+- Pronunciation analysis with AI-powered text-to-speech
 - Progress tracking
+
+### New AI Text-to-Speech Feature
+
+The platform now includes high-quality AI-powered text-to-speech for French pronunciation:
+
+- Natural-sounding French pronunciation using OpenAI's TTS API
+- Multiple voice options for varied learning experience
+- Automatic fallback to browser-based TTS when offline
+- Intelligent caching to reduce API calls
+- Integrated with vocabulary, lessons, and pronunciation exercises
 
 ## Tech Stack
 
@@ -39,6 +49,9 @@ JWT_SECRET="your-secret-key-here"
 
 # OpenAI
 OPENAI_API_KEY="your-openai-api-key"
+
+# Optional: Set a default voice for TTS (alloy, echo, fable, onyx, nova, shimmer)
+DEFAULT_TTS_VOICE="alloy"
 ```
 
 ### Installation
@@ -76,6 +89,7 @@ The application will be available at http://localhost:3000.
 - `POST /api/ai/generate-conversation` - Generate conversation practice with vocabulary
 - `POST /api/ai/tutor-chat` - Chat with the AI French tutor
 - `POST /api/ai/personalized-lesson-plan` - Get personalized lesson recommendations
+- `POST /api/tts` - Generate high-quality French text-to-speech audio
 
 ## Database Schema
 
