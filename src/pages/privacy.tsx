@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
 
-        <div className="p-6 mb-8 bg-white rounded-xl shadow-sm prose prose-gray max-w-none">
+        <div className="p-6 mb-8 prose bg-white shadow-sm rounded-xl prose-gray max-w-none">
           <h2>Introduction</h2>
           <p>
             At French Tutor AI, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.
@@ -110,7 +110,6 @@ export default function PrivacyPolicyPage() {
           </p>
           <p>
             Email: privacy@frenchtutor.ai<br />
-            Address: 123 Language Lane, Learning City, LC 12345
           </p>
         </div>
       </div>
