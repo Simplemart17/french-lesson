@@ -1,0 +1,151 @@
+/* Pronunciation Player Styles */
+.pronunciation-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pronunciation-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.pronunciation-button.playing {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.pronunciation-button:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Vocabulary Item Styles */
+.vocabulary-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.vocabulary-item .word-section {
+  margin-bottom: 0.75rem;
+}
+
+.vocabulary-item .word {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 0.25rem;
+}
+
+.vocabulary-item .translation {
+  color: #4b5563;
+}
+
+.vocabulary-item .phonetic {
+  color: #6b7280;
+  font-style: italic;
+  margin-left: 0.5rem;
+}
+
+.vocabulary-item .example-section {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vocabulary-item .example {
+  color: #1f2937;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+/* Pronunciation Exercise Styles */
+.pronunciation-exercise {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pronunciation-exercise .exercise-content {
+  margin-bottom: 1rem;
+}
+
+.pronunciation-exercise .text-to-pronounce {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.pronunciation-exercise .translation {
+  color: #4b5563;
+}
+
+.pronunciation-exercise .phonetic-section {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.25rem;
+}
+
+.pronunciation-exercise .exercise-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pronunciation-exercise .feedback-section {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border: 1px solid;
+  border-radius: 0.25rem;
+}
+
+/* Animation for recording button */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
