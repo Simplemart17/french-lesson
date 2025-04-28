@@ -5,10 +5,9 @@ import vocabularyApiService from './api/vocabularyApiService';
 class VocabularyService {
   // Get vocabulary from the API
   async getVocabulary(level?: string, category?: string): Promise<VocabularyWord[]> {
+    console.log('Fetching vocabulary with level:', level, 'and category:', category); // Debug log
     try {
       const response = await vocabularyApiService.getVocabulary(level, category);
-
-      console.log('API Response:', response); // Debug log
 
       // Convert API vocabulary to VocabularyWord format
       return response.map((item: any, index: number) => ({
@@ -26,7 +25,6 @@ class VocabularyService {
         usageContext: item.usageContext || [] // Include usageContext
       }));
     } catch (error) {
-      console.error('Error fetching vocabulary:', error);
       return [];
     }
   }

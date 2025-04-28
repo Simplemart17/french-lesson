@@ -50,10 +50,10 @@ export default function VocabularyPage() {
 
   // Extract vocabulary items from API response
   const apiVocabulary = apiResponse || [];
+  console.log('API Response in component:', apiResponse); // Debug log
 
   // Convert API vocabulary to VocabularyWord format
   useEffect(() => {
-    console.log('API Response in component:', apiResponse); // Debug log
 
     if (apiVocabulary?.length > 0) {
       // The vocabularyService already converts the API response to VocabularyWord format
