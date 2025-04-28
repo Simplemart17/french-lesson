@@ -9,6 +9,7 @@ type ResourceItem = {
   description: string;
   level: string;
   imageUrl?: string;
+  link: string;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -57,6 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       description: lesson.description || 'Practice this lesson to improve your French',
       level: lesson.level,
       imageUrl: lesson.imageUrl || '/images/lesson-default.jpg',
+      link: `/lessons/${lesson.id}`,
     }));
 
     // If we have fewer than 3 resources, add some mock grammar exercises
@@ -69,6 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           description: 'Practice conjugating verbs in the present tense',
           level: userLevel,
           imageUrl: '/images/grammar-exercise.jpg',
+          link: '/exercises/grammar-1',
         },
         {
           id: 'grammar-2',
@@ -77,6 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           description: 'Master the passé composé and imparfait',
           level: userLevel,
           imageUrl: '/images/grammar-exercise.jpg',
+          link: '/exercises/grammar-2',
         },
       ];
 

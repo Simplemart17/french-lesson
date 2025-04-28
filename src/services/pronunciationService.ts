@@ -184,8 +184,20 @@ class PronunciationService {
         throw new Error(`Failed to get text for phrase ${id}`);
       }
 
+      // Use the speak method to play the audio
+      return await this.speak(text, { voice: 'alloy' });
+    } catch (error) {
+      console.error(`Error speaking phrase ${id}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Speak the provided text using text-to-speech
+   */
+  async speak(text: string, options: { voice?: string } = {}): Promise<boolean> {
+    try {
       // Use the JavaScript implementation directly
-      // This avoids the circular dependency
       if (typeof window !== 'undefined') {
         const audio = new Audio();
         const response = await fetch('/api/tts', {
@@ -195,7 +207,7 @@ class PronunciationService {
           },
           body: JSON.stringify({
             text,
-            voice: 'alloy'
+            voice: options.voice || 'alloy'
           }),
         });
 
@@ -219,7 +231,7 @@ class PronunciationService {
 
       return true;
     } catch (error) {
-      console.error(`Error speaking phrase ${id}:`, error);
+      console.error(`Error speaking text:`, error);
       return false;
     }
   }

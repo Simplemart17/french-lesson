@@ -320,6 +320,41 @@ class AIService {
   }
 
   /**
+   * Check writing for grammar and style issues
+   */
+  async checkWriting(text: string, context?: string): Promise<{
+    corrections: Array<{
+      original: string;
+      corrected: string;
+      explanation: string;
+    }>;
+    feedback?: string;
+    score?: number;
+  }> {
+    try {
+      const response = await api.post('/ai/check-writing', {
+        text,
+        context
+      });
+
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error('Failed to check writing');
+    } catch (error) {
+      console.error('Error checking writing:', error);
+
+      // Return a basic response instead of throwing
+      return {
+        corrections: [],
+        feedback: 'Unable to analyze writing at this time. Please try again later.',
+        score: 0
+      };
+    }
+  }
+
+  /**
    * Clear AI service cache
    */
   clearCache(): void {
