@@ -47,8 +47,12 @@ export default async function handler(
       };
 
       // Determine base percentage based on user level
-      const level = (user.level as 'beginner' | 'intermediate' | 'advanced') || 'beginner';
-      const { base, variation } = defaultPercentages[level];
+      // Ensure level is one of the expected values, default to 'beginner' if not
+      let level = (user.level as string) || 'beginner';
+      if (!['beginner', 'intermediate', 'advanced'].includes(level)) {
+        level = 'beginner';
+      }
+      const { base, variation } = defaultPercentages[level as keyof typeof defaultPercentages];
 
       // Generate skills with some randomization
       const skills: SkillResponse[] = [

@@ -16,7 +16,7 @@ export default function TermsOfServicePage() {
           </p>
         </div>
 
-        <div className="p-6 mb-8 bg-white rounded-xl shadow-sm prose prose-gray max-w-none">
+        <div className="p-6 mb-8 prose bg-white shadow-sm rounded-xl prose-gray max-w-none">
           <h2>1. Introduction</h2>
           <p>
             Welcome to French Tutor AI. These Terms of Service ("Terms") govern your access to and use of the French Tutor AI website and services (the "Service"). By accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service.
@@ -91,7 +91,6 @@ export default function TermsOfServicePage() {
           </p>
           <p>
             Email: terms@frenchtutor.ai<br />
-            Address: 123 Language Lane, Learning City, LC 12345
           </p>
         </div>
       </div>

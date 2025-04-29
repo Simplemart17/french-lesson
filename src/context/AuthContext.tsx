@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { authApiService, userApiService } from '@/services';
-import { User } from '@/types/api';
+import { User, ApiResponse } from '@/types/api';
 import { AuthService } from '@/utils/authService';
 
 // Helper function to convert API user to our User type
@@ -79,13 +79,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         // For development, we'll skip the API call and just use the stored data
         // In production, you would uncomment this to refresh user data from API
-        
+
         try {
           const response = await userApiService.getProfile();
+          const apiResponse = response.data as unknown as ApiResponse<any>;
 
           // Convert API user profile to our User type
-          if (response.data) {
-            setUser(convertApiUserToUser(response.data));
+          if (apiResponse && apiResponse.success && apiResponse.data) {
+            setUser(convertApiUserToUser(apiResponse.data));
           }
         } catch (profileError) {
 
@@ -119,10 +120,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
       const response = await authApiService.login({ email, password });
+      const apiResponse = response.data as unknown as ApiResponse<any>;
 
       // Set user state if response is successful
-      if (response.data && response.data.user) {
-        setUser(convertApiUserToUser(response.data.user));
+      if (apiResponse && apiResponse.success && apiResponse.data && apiResponse.data.user) {
+        setUser(convertApiUserToUser(apiResponse.data.user));
       }
 
       // Force initialize to refresh auth state
@@ -147,10 +149,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         password,
         passwordConfirmation: password // Use the same password for confirmation
       });
+      const apiResponse = response.data as unknown as ApiResponse<any>;
 
       // Set user state if response is successful
-      if (response.data && response.data.user) {
-        setUser(convertApiUserToUser(response.data.user));
+      if (apiResponse && apiResponse.success && apiResponse.data && apiResponse.data.user) {
+        setUser(convertApiUserToUser(apiResponse.data.user));
       }
 
       // Force initialize to refresh auth state

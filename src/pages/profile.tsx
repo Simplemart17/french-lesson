@@ -7,7 +7,7 @@ import UserProfile, { UserProfileData } from '@/components/features/UserProfile'
 import { useAuth } from '@/context/AuthContext';
 import LoadingState from '@/components/ui/LoadingState';
 import apiClient from '@/services/api/apiClient';
-import { User } from '@/types/api';
+import { User, ApiResponse } from '@/types/api';
 
 interface UserProfileFullData extends User {
   achievements: {
@@ -73,10 +73,10 @@ export default function ProfilePage() {
 
       try {
         setIsLoading(true);
-        const response = await apiClient.get<UserProfileFullData>('/user/profile');
+        const response = await apiClient.get<ApiResponse<UserProfileFullData>>('/user/profile');
 
-        if (response.data) {
-          const userData = response.data;
+        if (response.data && response.data.success && response.data.data) {
+          const userData = response.data.data;
           setUser(userData);
 
           // Update profile data
@@ -111,10 +111,10 @@ export default function ProfilePage() {
       }
 
       try {
-        const response = await apiClient.get<LanguageSkill[]>('/user/skills');
+        const response = await apiClient.get<ApiResponse<LanguageSkill[]>>('/user/skills');
 
-        if (response.data) {
-          setLanguageSkills(response.data);
+        if (response.data && response.data.success && response.data.data) {
+          setLanguageSkills(response.data.data);
         } else {
           // Fallback to default skills if API fails
           setLanguageSkills([
@@ -151,10 +151,10 @@ export default function ProfilePage() {
       }
 
       try {
-        const response = await apiClient.get<{resources: ResourceItem[]}>('/learning/recommended-resources');
+        const response = await apiClient.get<ApiResponse<{resources: ResourceItem[]}>>('/learning/recommended-resources');
 
-        if (response.data && response.data.resources) {
-          setResources(response.data.resources);
+        if (response.data && response.data.success && response.data.data && response.data.data.resources) {
+          setResources(response.data.data.resources);
         } else {
           // No fallback needed as we'll handle empty state in the UI
           console.log('No recommended resources available');
@@ -171,14 +171,14 @@ export default function ProfilePage() {
   const handleProfileSave = async (data: UserProfileData) => {
     try {
       setIsLoading(true);
-      const response = await apiClient.put<UserProfileFullData>('/user/profile', {
+      const response = await apiClient.put<ApiResponse<UserProfileFullData>>('/user/profile', {
         name: data.name,
         email: data.email,
         level: data.level,
         learningGoals: data.learningGoals
       });
 
-      if (response.data) {
+      if (response.data && response.data.success && response.data.data) {
         // Update local state with new user data
         setUser(prev => prev ? {
           ...prev,
@@ -475,6 +475,12 @@ export default function ProfilePage() {
                         src={resource.imageUrl}
                         alt={resource.title}
                         className="object-cover w-full h-full"
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null; // Prevent infinite loop
+                          target.src = '/images/lesson-default.jpg';
+                        }}
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-gray-500">

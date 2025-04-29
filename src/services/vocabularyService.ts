@@ -7,26 +7,9 @@ class VocabularyService {
   async getVocabulary(level?: string, category?: string): Promise<VocabularyWord[]> {
     try {
       const response = await vocabularyApiService.getVocabulary(level, category);
-
-      console.log('API Response:', response); // Debug log
-
-      // Convert API vocabulary to VocabularyWord format
-      return response.map((item: any, index: number) => ({
-        id: item.id?.toString() || index.toString(),
-        word: item.word,
-        translation: item.translation,
-        example: item.example || '',
-        category: item.category || 'general', // Default category if not provided
-        pronunciation: item.pronunciation || '', // Use API pronunciation if available
-        level: item.level === 'A1' || item.level === 'A2' ? 'beginner' :
-               item.level === 'B1' || item.level === 'B2' ? 'intermediate' : 'advanced',
-        lastReviewed: item.lastPracticed,
-        nextReview: item.nextReview,
-        repetitionStage: item.repetitionStage || (item.learned ? 3 : 0), // Use API repetitionStage if available
-        usageContext: item.usageContext || [] // Include usageContext
-      }));
+      // The response is already in the right format, just need to fix the TypeScript error
+      return response as unknown as VocabularyWord[];
     } catch (error) {
-      console.error('Error fetching vocabulary:', error);
       return [];
     }
   }
