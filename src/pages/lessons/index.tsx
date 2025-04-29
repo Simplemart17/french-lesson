@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { useAuth } from '@/context/AuthContext';
-import { lessonService } from '@/services/index';
-import useFetch from '@/hooks/useFetch';
+import lessonService from '@/services/lessonService';
+import { Lesson as ApiLesson } from '@/types/api';
 
 // Sample lesson data
 const lessonCategories = [
@@ -21,13 +21,16 @@ const lessonCategories = [
 
 const lessonLevels = [
   { id: 'all', name: 'All Levels' },
-  { id: 'beginner', name: 'Beginner (A1-A2)' },
-  { id: 'intermediate', name: 'Intermediate (B1-B2)' },
-  { id: 'advanced', name: 'Advanced (C1-C2)' },
+  { id: 'A1', name: 'Beginner (A1)' },
+  { id: 'A2', name: 'Elementary (A2)' },
+  { id: 'B1', name: 'Intermediate (B1)' },
+  { id: 'B2', name: 'Upper Intermediate (B2)' },
+  { id: 'C1', name: 'Advanced (C1)' },
+  { id: 'C2', name: 'Proficient (C2)' },
 ];
 
 // Helper function to get category display text
-const getCategoryDisplay = (lesson: any): string => {
+const getCategoryDisplay = (lesson: Lesson): string => {
   if (lesson.category) {
     return lesson.category;
   } else if (lesson.topics && lesson.topics.length > 0) {
@@ -37,26 +40,26 @@ const getCategoryDisplay = (lesson: any): string => {
 };
 
 // Helper function to get image URL
-const getImageUrl = (lesson: any): string | undefined => {
-  return lesson.imageUrl;
+const getImageUrl = (lesson: Lesson): string => {
+  return lesson.imageUrl || `/images/lessons/${lesson.id}.jpg`;
 };
 
 // Extended lesson type that includes progress
-interface LessonWithProgress extends Omit<Lesson, 'progress'> {
+interface LessonWithProgress extends Lesson {
   progress: number;
 }
 
 interface Lesson {
-  id: string | number;
+  id: number;
   title: string;
   description: string;
   level: string;
   category?: string;
-  topics?: string[];
+  topics: string[];
   duration: number;
   imageUrl?: string;
   progress?: number;
-  content?: { sections: any[] };
+  sectionCount?: number;
 }
 
 export default function LessonsPage() {
@@ -68,40 +71,73 @@ export default function LessonsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const lessonsPerPage = 6;
 
-  // Fetch lessons using our custom hook
-  const {
-    data: lessons = [],
-    isLoading: isLoadingLessons,
-    error: lessonsError,
-    refetch: refetchLessons
-  } = useFetch<any[]>(
-    () => lessonService.getLessons(
-      selectedLevel === 'all' ? undefined : selectedLevel,
-      selectedCategory === 'all' ? undefined : selectedCategory
-    ),
-    {
-      cacheKey: `lessons-${selectedLevel}-${selectedCategory}`,
-      onError: (err) => {
-        console.error('Error fetching lessons:', err);
-      }
-    }
-  );
+  // State for lessons and progress
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [progressData, setProgressData] = useState<any[]>([]);
+  const [isLoadingLessons, setIsLoadingLessons] = useState(true);
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
+  const [lessonsError, setLessonsError] = useState<string | null>(null);
+  const [progressError, setProgressError] = useState<string | null>(null);
 
-  // Fetch lesson progress if authenticated
-  const {
-    data: progressData = [],
-    isLoading: isLoadingProgress,
-    error: progressError,
-    refetch: refetchProgress
-  } = useFetch<any[]>(
-    () => isAuthenticated ? lessonService.getAllLessonProgress() : Promise.resolve([]),
-    {
-      cacheKey: 'lesson-progress',
-      onError: (err) => {
-        console.error('Error fetching lesson progress:', err);
+  // Fetch lessons and progress
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoadingLessons(true);
+      setLessonsError(null);
+
+      try {
+        // Get level filter
+        const levelFilter = selectedLevel === 'all' ? undefined : selectedLevel;
+        const topicFilter = selectedCategory === 'all' ? undefined : selectedCategory;
+
+        // Fetch lessons
+        const lessonsData = await lessonService.getLessons(levelFilter, topicFilter);
+
+        // Convert API lessons to our format
+        const formattedLessons: Lesson[] = lessonsData.map(lesson => ({
+          id: lesson.id,
+          title: lesson.title,
+          description: lesson.description,
+          level: lesson.level,
+          topics: lesson.topics,
+          duration: lesson.duration,
+          imageUrl: `/images/lessons/${lesson.id}.jpg`,
+          sectionCount: lesson.sectionCount || 0
+        }));
+
+        setLessons(formattedLessons);
+        setIsLoadingLessons(false);
+      } catch (err) {
+        console.error('Error fetching lessons:', err);
+        setLessonsError('Failed to load lessons');
+        setIsLoadingLessons(false);
       }
-    }
-  );
+    };
+
+    fetchData();
+  }, [selectedLevel, selectedCategory]);
+
+  // Fetch progress if authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchProgress = async () => {
+      setIsLoadingProgress(true);
+      setProgressError(null);
+
+      try {
+        const progress = await lessonService.getAllLessonProgress();
+        setProgressData(progress);
+        setIsLoadingProgress(false);
+      } catch (err) {
+        console.error('Error fetching lesson progress:', err);
+        setProgressError('Failed to load progress');
+        setIsLoadingProgress(false);
+      }
+    };
+
+    fetchProgress();
+  }, [isAuthenticated]);
 
   // Combine lessons with progress data
   const lessonsWithProgress: LessonWithProgress[] = lessons.map(lesson => {
@@ -214,10 +250,39 @@ export default function LessonsPage() {
         {(lessonsError || progressError) && !isLoadingLessons && !isLoadingProgress && (
           <div className="mb-8">
             <ErrorMessage
-              message="Failed to load lessons. Using locally stored data instead."
+              message="Failed to load lessons. Please try again."
               retryAction={() => {
-                refetchLessons();
-                if (isAuthenticated) refetchProgress();
+                // Refetch lessons and progress
+                const levelFilter = selectedLevel === 'all' ? undefined : selectedLevel;
+                const topicFilter = selectedCategory === 'all' ? undefined : selectedCategory;
+
+                setIsLoadingLessons(true);
+                lessonService.getLessons(levelFilter, topicFilter)
+                  .then(data => {
+                    setLessons(data);
+                    setIsLoadingLessons(false);
+                    setLessonsError(null);
+                  })
+                  .catch(err => {
+                    console.error('Error fetching lessons:', err);
+                    setLessonsError('Failed to load lessons');
+                    setIsLoadingLessons(false);
+                  });
+
+                if (isAuthenticated) {
+                  setIsLoadingProgress(true);
+                  lessonService.getAllLessonProgress()
+                    .then(data => {
+                      setProgressData(data);
+                      setIsLoadingProgress(false);
+                      setProgressError(null);
+                    })
+                    .catch(err => {
+                      console.error('Error fetching progress:', err);
+                      setProgressError('Failed to load progress');
+                      setIsLoadingProgress(false);
+                    });
+                }
               }}
             />
           </div>
@@ -415,7 +480,20 @@ export default function LessonsPage() {
                   setSearchQuery('');
                   setSortOption('recommended');
                   setCurrentPage(1);
-                  refetchLessons();
+
+                  // Refetch lessons
+                  setIsLoadingLessons(true);
+                  lessonService.getLessons()
+                    .then(data => {
+                      setLessons(data);
+                      setIsLoadingLessons(false);
+                      setLessonsError(null);
+                    })
+                    .catch(err => {
+                      console.error('Error fetching lessons:', err);
+                      setLessonsError('Failed to load lessons');
+                      setIsLoadingLessons(false);
+                    });
                 }}>
                   Reset Filters
                 </Button>

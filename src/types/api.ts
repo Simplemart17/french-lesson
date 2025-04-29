@@ -35,33 +35,27 @@ export interface AuthResponse {
 }
 
 // Lesson-related types
+export interface LessonExercise {
+  id: number;
+  sectionId: number;
+  type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking' | 'translation' | 'true-false';
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
+  explanation?: string;
+}
+
 export interface LessonSection {
-  type: 'text' | 'audio' | 'video' | 'image' | 'vocabulary' | 'dialogue' | 'exercise';
+  id: number;
+  lessonId: number;
   title: string;
+  type: 'text' | 'audio' | 'video' | 'image' | 'exercise';
   content?: string;
   audioUrl?: string;
   videoUrl?: string;
   imageUrl?: string;
-  transcript?: string;
-  words?: {
-    word: string;
-    translation: string;
-    notes?: string;
-  }[];
-  questions?: {
-    type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking';
-    question?: string;
-    options?: string[];
-    correctAnswer?: string;
-  }[];
-}
-
-export interface LessonExercise {
-  type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking';
-  question: string;
-  options?: string[];
-  correctAnswer: string | string[];
-  hint?: string;
+  order: number;
+  exercises?: LessonExercise[];
 }
 
 export interface Lesson {
@@ -71,17 +65,27 @@ export interface Lesson {
   level: string;
   duration: number; // in minutes
   topics: string[];
-  content: {
-    sections: LessonSection[];
-  };
+  sections?: LessonSection[];
 }
 
 export interface LessonProgress {
+  id?: number;
+  userId?: number;
   lessonId: number;
   completed: boolean;
   score: number;
-  lastAccessed: string;
-  completedAt: string | null;
+  startedAt?: string;
+  completedAt?: string | null;
+  answers?: Record<number, string | string[]>;
+}
+
+export interface LessonSubmissionResult {
+  score: number;
+  feedback: Record<number, {
+    correct: boolean;
+    explanation?: string;
+  }>;
+  completed: boolean;
 }
 
 // Vocabulary and Practice types

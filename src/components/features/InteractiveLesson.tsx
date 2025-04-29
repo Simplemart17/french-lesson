@@ -45,14 +45,24 @@ export interface Lesson {
 
 interface InteractiveLessonProps {
   lesson: Lesson;
-  onComplete?: () => void;
+  onComplete?: (score: number) => void;
+  onSubmitAnswers?: (answers: Record<number, string | string[]>) => Promise<any>;
+  initialProgress?: { completed: boolean; score: number } | null;
 }
 
-const InteractiveLesson = ({ lesson, onComplete }: InteractiveLessonProps) => {
+const InteractiveLesson = ({
+  lesson,
+  onComplete,
+  onSubmitAnswers,
+  initialProgress
+}: InteractiveLessonProps) => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string | string[]>>({});
+  const [apiAnswers, setApiAnswers] = useState<Record<number, string | string[]>>({});
   const [showExplanation, setShowExplanation] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(initialProgress?.completed || false);
+  const [score, setScore] = useState(initialProgress?.score || 0);
+  const [submitting, setSubmitting] = useState(false);
 
   const currentSection = lesson.sections[currentSectionIndex];
   const totalSections = lesson.sections.length;
@@ -63,9 +73,36 @@ const InteractiveLesson = ({ lesson, onComplete }: InteractiveLessonProps) => {
       setCurrentSectionIndex(currentSectionIndex + 1);
       setShowExplanation(false);
     } else {
+      // Calculate score based on correct answers
+      const correctCount = Object.keys(userAnswers).filter(sectionId => {
+        const section = lesson.sections.find(s => s.id === sectionId);
+        if (!section || !section.exercise) return false;
+
+        const userAnswer = userAnswers[sectionId];
+        const correctAnswer = section.exercise.correctAnswer;
+
+        if (Array.isArray(correctAnswer)) {
+          if (!Array.isArray(userAnswer)) return false;
+          return correctAnswer.every(answer => userAnswer.includes(answer));
+        }
+
+        return userAnswer === correctAnswer;
+      }).length;
+
+      const totalExercises = lesson.sections.filter(s => s.exercise).length;
+      const calculatedScore = totalExercises > 0 ? Math.round((correctCount / totalExercises) * 100) : 100;
+
+      setScore(calculatedScore);
       setIsCompleted(true);
+
+      // Submit answers to API if available
+      if (onSubmitAnswers && Object.keys(apiAnswers).length > 0) {
+        onSubmitAnswers(apiAnswers);
+      }
+
+      // Call onComplete with the calculated score
       if (onComplete) {
-        onComplete();
+        onComplete(calculatedScore);
       }
     }
   };
@@ -82,10 +119,45 @@ const InteractiveLesson = ({ lesson, onComplete }: InteractiveLessonProps) => {
       ...userAnswers,
       [currentSection.id]: answer,
     });
+
+    // Also store the answer in the format expected by the API
+    if (currentSection.exercise) {
+      // Convert section ID to exercise ID for API
+      const exerciseId = parseInt(currentSection.id, 10);
+      if (!isNaN(exerciseId)) {
+        setApiAnswers({
+          ...apiAnswers,
+          [exerciseId]: answer,
+        });
+      }
+    }
   };
 
-  const checkAnswer = () => {
+  const checkAnswer = async () => {
     setShowExplanation(true);
+
+    // If we have an API submission handler and this is an exercise, submit the answer
+    if (onSubmitAnswers && currentSection.exercise) {
+      const exerciseId = parseInt(currentSection.id, 10);
+      if (!isNaN(exerciseId) && userAnswers[currentSection.id]) {
+        setSubmitting(true);
+        try {
+          // Submit just this answer
+          const result = await onSubmitAnswers({
+            [exerciseId]: userAnswers[currentSection.id]
+          });
+
+          // Update the score if we got a result
+          if (result && typeof result.score === 'number') {
+            setScore(result.score);
+          }
+        } catch (error) {
+          console.error('Error submitting answer:', error);
+        } finally {
+          setSubmitting(false);
+        }
+      }
+    }
   };
 
   const isAnswerCorrect = () => {
@@ -318,9 +390,19 @@ const InteractiveLesson = ({ lesson, onComplete }: InteractiveLessonProps) => {
     return (
       <Card className="p-6 text-center">
         <h2 className="mb-4 text-2xl font-bold text-gray-800">Lesson Completed!</h2>
-        <p className="mb-6 text-gray-600">
-          Congratulations on completing the lesson. You've made great progress in your French learning journey.
-        </p>
+        <div className="mb-6">
+          <div className="inline-block p-4 mb-4 text-3xl font-bold text-white bg-green-600 rounded-full">
+            {score}%
+          </div>
+          <p className="text-gray-600">
+            Congratulations on completing the lesson. You've made great progress in your French learning journey.
+          </p>
+          {score < 70 && (
+            <p className="mt-2 text-yellow-600">
+              You might want to review this lesson to improve your score.
+            </p>
+          )}
+        </div>
         <div className="flex justify-center space-x-4">
           <Button onClick={() => setIsCompleted(false)}>
             Review Lesson
