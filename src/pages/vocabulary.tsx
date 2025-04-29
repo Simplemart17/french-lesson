@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
@@ -7,7 +7,6 @@ import SpacedRepetition, { VocabularyWord } from '@/components/features/SpacedRe
 import VocabularyQuiz, { QuizResult } from '@/components/features/VocabularyQuiz';
 import vocabularyService from '@/services/vocabularyService';
 import { useAuth } from '@/context/AuthContext';
-import useFetch from '@/hooks/useFetch';
 import Link from 'next/link';
 
 export default function VocabularyPage() {
@@ -28,45 +27,42 @@ export default function VocabularyPage() {
     level: 'beginner'
   });
 
-  // Fetch vocabulary using our custom hook
-  const {
-    data: apiResponse,
-    isLoading,
-    error,
-    refetch: refetchVocabulary
-  } = useFetch<VocabularyWord[]>(
-    () => vocabularyService.getVocabulary(
-      // Convert the level to API format (A1, B1, C1)
-      selectedLevel === 'beginner' ? 'A1' :
-      selectedLevel === 'intermediate' ? 'B1' : 'C1'
-    ),
-    {
-      cacheKey: 'vocabulary',
-      retry: true, // Enable retries
-      retryDelay: 1000, // 1 second delay between retries
-      staleWhileRevalidate: true, // Use stale data while fetching fresh data
-      onError: (err) => {
-        console.error('Error fetching vocabulary from API:', err);
+  // State for loading, error, and data
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Function to fetch vocabulary data
+  const fetchVocabulary = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+
+      // Convert the level to API format
+      const apiLevel = selectedLevel === 'beginner' ? 'A1' :
+                      selectedLevel === 'intermediate' ? 'B1' : 'C1';
+
+      // Pass the category parameter, but only if it's not 'all'
+      const category = selectedCategory !== 'all' ? selectedCategory : undefined;
+
+      const data = await vocabularyService.getVocabulary(apiLevel, category);
+
+      if (Array.isArray(data) && data.length > 0) {
+        setVocabulary(data);
+      } else {
+        console.warn('Empty or invalid vocabulary data received');
       }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch vocabulary'));
+    } finally {
+      setIsLoading(false);
     }
-  );
+  }, [selectedLevel, selectedCategory]);
 
-  // Extract vocabulary items from API response
-  const apiVocabulary = apiResponse || [];
-  console.log('API Response in component:', apiResponse); // Debug log
-
-  // Convert API vocabulary to VocabularyWord format
+  // Fetch data when component mounts or when dependencies change
   useEffect(() => {
-    if (Array.isArray(apiVocabulary) && apiVocabulary.length > 0) {
-      console.log('Setting vocabulary with data:', apiVocabulary);
-      // The vocabularyService already converts the API response to VocabularyWord format
-      setVocabulary(apiVocabulary);
-    } else if (!isLoading && (error || !apiVocabulary?.length)) {
-      console.log('No vocabulary data available, using fallback data');
-      // The fallback data is now handled in the vocabularyService
-      refetchVocabulary();
-    }
-  }, [apiVocabulary, isLoading, error, refetchVocabulary]);
+    fetchVocabulary();
+  }, [fetchVocabulary]);
 
   // Define vocabulary categories and levels
 
@@ -86,9 +82,9 @@ export default function VocabularyPage() {
   ];
 
   // Filter vocabulary based on selected category and level
-  const filteredVocabulary = vocabulary
-    .filter(word => word.level === selectedLevel)
-    .filter(word => selectedCategory === 'all' || word.category === selectedCategory);
+  // Since we're already filtering by level and category in the API call,
+  // we only need to filter locally if the API call doesn't support these filters
+  const filteredVocabulary = vocabulary;
 
   const currentWord = filteredVocabulary[currentCardIndex];
 
@@ -125,7 +121,7 @@ export default function VocabularyPage() {
       setVocabulary(updatedVocabulary);
 
       // Refresh vocabulary data from API
-      refetchVocabulary();
+      fetchVocabulary();
     } catch (error) {
       console.error('Error updating vocabulary progress:', error);
       // Just update the local state
@@ -173,7 +169,7 @@ export default function VocabularyPage() {
       setVocabulary([...vocabulary, newVocabWord]);
 
       // Refresh vocabulary data from API
-      refetchVocabulary();
+      fetchVocabulary();
     } catch (error) {
       console.error('Error adding word to API:', error);
       // Add to local state anyway
@@ -273,7 +269,7 @@ export default function VocabularyPage() {
           <div className="mb-8">
             <ErrorMessage
               message="Failed to load vocabulary. Using locally stored data instead."
-              retryAction={refetchVocabulary}
+              retryAction={fetchVocabulary}
             />
           </div>
         )}
@@ -518,7 +514,7 @@ export default function VocabularyPage() {
             ) : (
               <div className="p-6 text-center bg-white rounded-lg shadow-lg">
                 <p className="text-gray-600">No vocabulary words found for the selected category and level.</p>
-                <Button onClick={refetchVocabulary} className="mt-4">Refresh</Button>
+                <Button onClick={fetchVocabulary} className="mt-4">Refresh</Button>
               </div>
             )}
           </div>
@@ -607,68 +603,6 @@ export default function VocabularyPage() {
             )}
           </div>
         )}
-
-        {/* Vocabulary List Section */}
-        <div className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold text-gray-800">Vocabulary List</h2>
-
-          {isLoading ? (
-            <div className="p-6 bg-white rounded-lg shadow-md">
-              <LoadingState message="Loading vocabulary list..." size="medium" />
-            </div>
-          ) : (
-            <div className="overflow-hidden bg-white rounded-lg shadow-md">
-              {filteredVocabulary.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                          French
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                          English
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                          Example
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                          Category
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredVocabulary.map((word, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{word.word}</div>
-                            <div className="text-xs text-gray-500">{word.pronunciation}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{word.translation}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-500">{word.example}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex px-2 text-xs font-semibold leading-5 text-blue-800 bg-blue-100 rounded-full">
-                              {word.category}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="p-6 text-center">
-                  <p className="text-gray-600">No vocabulary words found for the selected category and level.</p>
-                  <Button onClick={refetchVocabulary} className="mt-4">Refresh</Button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
 
         {/* Tips Section */}
         <div className="mb-12">

@@ -51,6 +51,7 @@ export function useFetch<T>(
     dedupingInterval = 2000, // 2 seconds
   } = options;
 
+
   // Get the appropriate cache based on storage option
   const getCache = (): Cache => {
     switch (cacheStorage) {
@@ -159,6 +160,15 @@ export function useFetch<T>(
 
         // Execute fetch with retry logic
         const result = await fetchWithRetry(fetchFn, maxRetries);
+
+        // Handle undefined or null result
+        if (result === undefined || result === null) {
+          console.warn('useFetch received undefined/null result from fetchFn');
+          // Don't update state with undefined/null
+          safeSetState(setIsLoading, false);
+          safeSetState(setIsValidating, false);
+          return result;
+        }
 
         // Cache the result if cacheKey is provided
         if (cacheKey) {
