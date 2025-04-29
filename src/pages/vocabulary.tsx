@@ -34,7 +34,7 @@ export default function VocabularyPage() {
     isLoading,
     error,
     refetch: refetchVocabulary
-  } = useFetch<any>(
+  } = useFetch<VocabularyWord[]>(
     () => vocabularyService.getVocabulary(
       // Convert the level to API format (A1, B1, C1)
       selectedLevel === 'beginner' ? 'A1' :
@@ -42,6 +42,9 @@ export default function VocabularyPage() {
     ),
     {
       cacheKey: 'vocabulary',
+      retry: true, // Enable retries
+      retryDelay: 1000, // 1 second delay between retries
+      staleWhileRevalidate: true, // Use stale data while fetching fresh data
       onError: (err) => {
         console.error('Error fetching vocabulary from API:', err);
       }
@@ -54,15 +57,16 @@ export default function VocabularyPage() {
 
   // Convert API vocabulary to VocabularyWord format
   useEffect(() => {
-
-    if (apiVocabulary?.length > 0) {
+    if (Array.isArray(apiVocabulary) && apiVocabulary.length > 0) {
+      console.log('Setting vocabulary with data:', apiVocabulary);
       // The vocabularyService already converts the API response to VocabularyWord format
       setVocabulary(apiVocabulary);
     } else if (!isLoading && (error || !apiVocabulary?.length)) {
-      // If API fails, set empty vocabulary
-      setVocabulary([]);
+      console.log('No vocabulary data available, using fallback data');
+      // The fallback data is now handled in the vocabularyService
+      refetchVocabulary();
     }
-  }, [apiVocabulary, isLoading, error]);
+  }, [apiVocabulary, isLoading, error, refetchVocabulary]);
 
   // Define vocabulary categories and levels
 

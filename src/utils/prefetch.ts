@@ -63,10 +63,10 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
   try {
     switch (page) {
       case 'vocabulary':
-        await vocabularyService.getVocabulary({
-          level: params?.level,
-          category: params?.category
-        }).catch((err: Error) => {
+        await vocabularyService.getVocabulary(
+          params?.level,
+          params?.category
+        ).catch((err: Error) => {
           console.error('Failed to prefetch vocabulary for page:', err);
           return [];
         });

@@ -13,8 +13,11 @@ export const vocabularyApiService = {
   getVocabulary: async (level?: string, category?: string): Promise<VocabularyItem[]> => {
     try {
       const params = { level, category };
+
       const response = await apiClient.get<ApiResponse<VocabularyItem[]>>('/vocabulary', { params });
-      if (response.data.success && response.data.data) {
+
+      // Handle the standard ApiResponse format
+      if (response.data && response.data.success && response.data.data) {
         return response.data.data;
       }
 
@@ -112,8 +115,8 @@ export const vocabularyApiService = {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      return progress.filter(item => {
-        if (!item.nextReview) return true; // Never reviewed
+      return progress.filter((item: VocabularyItem) => {
+        if (!item.nextReview) return true;
         const reviewDate = new Date(item.nextReview);
         return reviewDate <= today;
       });
@@ -129,7 +132,7 @@ export const vocabularyApiService = {
   getCategories: async (): Promise<string[]> => {
     try {
       const vocabulary = await vocabularyApiService.getVocabulary();
-      const categories = new Set(vocabulary.map(item => item.category));
+      const categories = new Set(vocabulary.map((item: VocabularyItem) => item.category));
       return Array.from(categories).filter((category): category is string => category !== undefined);
     } catch (error) {
       console.error('Error getting vocabulary categories:', error);
