@@ -118,23 +118,23 @@ const TranslationWidget: React.FC = () => {
   }, [translatedText]);
 
   return (
-    <Card className="mx-auto w-full max-w-3xl shadow-lg transition-all hover-lift">
+    <Card className="w-full max-w-3xl mx-auto transition-all shadow-lg hover-lift">
       <CardHeader className="bg-gradient-to-r rounded-t-xl from-primary-50 to-primary-100">
         <div className="flex items-center">
-          <Languages className="mr-2 w-6 h-6 text-primary-600" />
+          <Languages className="w-6 h-6 mr-2 text-primary-600" />
           <CardTitle>Text Translation</CardTitle>
         </div>
         <CardDescription>Translate between English and French</CardDescription>
       </CardHeader>
 
       <CardContent className="p-6 space-y-4">
-        <div className="flex gap-2 justify-between items-center animate-fade-in">
+        <div className="flex items-center justify-between gap-2 animate-fade-in">
           <div className="w-1/2">
             <label htmlFor="sourceLanguage" className="block mb-1 text-sm font-medium text-gray-700">
               From
             </label>
             <Select value={sourceLanguage} onValueChange={handleSourceLanguageChange}>
-              <SelectTrigger className="border-2 transition-all hover:border-primary-300">
+              <SelectTrigger className="transition-all border-2 hover:border-primary-300">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
@@ -150,7 +150,7 @@ const TranslationWidget: React.FC = () => {
             size="icon"
             onClick={handleSwapLanguages}
             disabled={sourceLanguage === 'auto' || isLoading}
-            className="mt-5 rounded-full transition-all hover:bg-primary-100"
+            className="mt-5 transition-all rounded-full hover:bg-primary-100"
           >
             <ArrowLeftRight className="w-5 h-5 text-primary-600" />
           </Button>
@@ -160,7 +160,7 @@ const TranslationWidget: React.FC = () => {
               To
             </label>
             <Select value={targetLanguage} onValueChange={handleTargetLanguageChange}>
-              <SelectTrigger className="border-2 transition-all hover:border-primary-300">
+              <SelectTrigger className="transition-all border-2 hover:border-primary-300">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
@@ -172,7 +172,7 @@ const TranslationWidget: React.FC = () => {
         </div>
 
         <div className="space-y-1 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <label htmlFor="inputText" className="block text-sm font-medium text-gray-700">
               Enter text
             </label>
@@ -182,9 +182,9 @@ const TranslationWidget: React.FC = () => {
                 size="sm"
                 onClick={handleDetectLanguage}
                 disabled={isLoading}
-                className="-mt-1 h-7 transition-all hover:bg-primary-50"
+                className="-mt-1 transition-all h-7 hover:bg-primary-50"
               >
-                <Globe className="mr-1 w-4 h-4 text-primary-600" />
+                <Globe className="w-4 h-4 mr-1 text-primary-600" />
                 <span className="text-xs">Detect language</span>
               </Button>
             )}
@@ -195,25 +195,25 @@ const TranslationWidget: React.FC = () => {
             value={inputText}
             onChange={handleInputChange}
             rows={5}
-            className="border-2 shadow-sm transition-all resize-none focus:border-primary-300 focus:ring-primary-200"
+            className="transition-all border-2 shadow-sm resize-none focus:border-primary-300 focus:ring-primary-200"
           />
           {inputText && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(inputText)}
-              className="mt-1 h-7 transition-all hover:bg-primary-50"
+              className="mt-1 transition-all h-7 hover:bg-primary-50"
             >
-              <CopyCheck className="mr-1 w-4 h-4 text-primary-600" />
+              <CopyCheck className="w-4 h-4 mr-1 text-primary-600" />
               <span className="text-xs">Copy</span>
             </Button>
           )}
         </div>
 
         <div className="space-y-1 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          <label htmlFor="translatedText" className="block flex items-center text-sm font-medium text-gray-700">
+          <label htmlFor="translatedText" className="flex items-center text-sm font-medium text-gray-700">
             Translation
-            {translatedText && <Sparkles className="ml-2 w-4 h-4 text-amber-500 animate-pulse" />}
+            {translatedText && <Sparkles className="w-4 h-4 ml-2 text-amber-500 animate-pulse" />}
           </label>
           <div className="relative">
             <Textarea
@@ -222,12 +222,12 @@ const TranslationWidget: React.FC = () => {
               value={translatedText}
               readOnly
               rows={5}
-              className="border-2 border-dashed shadow-sm transition-all resize-none bg-muted/30 focus:border-primary-300"
+              className="transition-all border-2 border-dashed shadow-sm resize-none bg-muted/30 focus:border-primary-300"
             />
             {isLoading && (
-              <div className="flex absolute inset-0 justify-center items-center bg-white/80">
+              <div className="absolute inset-0 flex items-center justify-center bg-white/80">
                 <div className="text-center">
-                  <Loader2 className="mx-auto w-8 h-8 animate-spin text-primary-600" />
+                  <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary-600" />
                   <p className="mt-2 text-sm text-gray-600">Translating...</p>
                 </div>
               </div>
@@ -238,9 +238,9 @@ const TranslationWidget: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(translatedText)}
-              className="mt-1 h-7 transition-all hover:bg-primary-50"
+              className="mt-1 transition-all h-7 hover:bg-primary-50"
             >
-              <CopyCheck className="mr-1 w-4 h-4 text-primary-600" />
+              <CopyCheck className="w-4 h-4 mr-1 text-primary-600" />
               <span className="text-xs">Copy</span>
             </Button>
           )}
@@ -257,18 +257,18 @@ const TranslationWidget: React.FC = () => {
         <Button
           onClick={handleTranslation}
           disabled={!inputText.trim() || isLoading}
-          className="w-full shadow-md transition-all bg-primary-600 hover:bg-primary-700 hover:shadow-lg"
+          className="w-full transition-all shadow-md bg-primary-600 hover:bg-primary-700 hover:shadow-lg"
           variant="primary"
           size="lg"
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               Translating...
             </>
           ) : (
             <>
-              <Sparkles className="mr-2 w-5 h-5" />
+              <Sparkles className="w-5 h-5 mr-2" />
               Translate
             </>
           )}
