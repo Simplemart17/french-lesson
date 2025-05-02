@@ -151,6 +151,7 @@ export interface ExamResult {
     userAnswer: string | string[];
   }>;
   completedAt: string;
+  timeSpent: number;
 }
 
 // API response types

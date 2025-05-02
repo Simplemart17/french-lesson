@@ -7,7 +7,6 @@ import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { useAuth } from '@/context/AuthContext';
 import lessonService from '@/services/lessonService';
-import { Lesson as ApiLesson } from '@/types/api';
 
 // Sample lesson data
 const lessonCategories = [
@@ -29,6 +28,20 @@ const lessonLevels = [
   { id: 'C2', name: 'Proficient (C2)' },
 ];
 
+// Define Lesson interface first
+interface Lesson {
+  id: number;
+  title: string;
+  description: string;
+  level: string;
+  category?: string;
+  topics: string[];
+  duration: number;
+  imageUrl?: string;
+  progress?: number;
+  sectionCount?: number;
+}
+
 // Helper function to get category display text
 const getCategoryDisplay = (lesson: Lesson): string => {
   if (lesson.category) {
@@ -47,19 +60,6 @@ const getImageUrl = (lesson: Lesson): string => {
 // Extended lesson type that includes progress
 interface LessonWithProgress extends Lesson {
   progress: number;
-}
-
-interface Lesson {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  category?: string;
-  topics: string[];
-  duration: number;
-  imageUrl?: string;
-  progress?: number;
-  sectionCount?: number;
 }
 
 export default function LessonsPage() {
@@ -102,7 +102,7 @@ export default function LessonsPage() {
           topics: lesson.topics,
           duration: lesson.duration,
           imageUrl: `/images/lessons/${lesson.id}.jpg`,
-          sectionCount: lesson.sectionCount || 0
+          sectionCount: lesson.sections?.length || 0
         }));
 
         setLessons(formattedLessons);
@@ -175,7 +175,8 @@ export default function LessonsPage() {
   const sortedLessons = [...filteredLessons].sort((a, b) => {
     switch (sortOption) {
       case 'newest':
-        return new Date(b.id).getTime() - new Date(a.id).getTime();
+        // Sort by id (assuming higher id means newer lesson)
+        return b.id - a.id;
       case 'popular':
         return (b.progress || 0) - (a.progress || 0);
       case 'duration-asc':
@@ -403,13 +404,13 @@ export default function LessonsPage() {
                     {/* Level Badge */}
                     <div className="absolute top-3 left-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        lesson.level === 'beginner'
+                        lesson.level.startsWith('A')
                           ? 'bg-green-100 text-green-800'
-                          : lesson.level === 'intermediate'
+                          : lesson.level.startsWith('B')
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
                       }`}>
-                        {lesson.level.charAt(0).toUpperCase() + lesson.level.slice(1)}
+                        {lesson.level}
                       </span>
                     </div>
 

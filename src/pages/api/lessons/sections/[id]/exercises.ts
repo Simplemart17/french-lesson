@@ -14,7 +14,7 @@ async function handler(
 
   try {
     const { id } = req.query;
-    
+
     if (!id || typeof id !== 'string') {
       return res.status(400).json({
         success: false,
@@ -23,9 +23,9 @@ async function handler(
         }
       });
     }
-    
+
     const sectionId = parseInt(id, 10);
-    
+
     if (isNaN(sectionId)) {
       return res.status(400).json({
         success: false,
@@ -34,12 +34,12 @@ async function handler(
         }
       });
     }
-    
+
     // Check if the section exists
     const section = await prisma.lessonSection.findUnique({
       where: { id: sectionId }
     });
-    
+
     if (!section) {
       return res.status(404).json({
         success: false,
@@ -48,23 +48,23 @@ async function handler(
         }
       });
     }
-    
+
     // Get exercises for the section
     const exercises = await prisma.lessonExercise.findMany({
       where: { sectionId }
     });
-    
+
     // Format the exercises for the response
     const formattedExercises: LessonExercise[] = exercises.map(exercise => ({
       id: exercise.id,
       sectionId: exercise.sectionId,
-      type: exercise.type as any,
+      type: exercise.type as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking' | 'translation' | 'true-false',
       question: exercise.question,
       options: exercise.options,
       correctAnswer: exercise.correctAnswer,
-      explanation: exercise.explanation
+      explanation: exercise.explanation || undefined // Convert null to undefined
     }));
-    
+
     return res.status(200).json({
       success: true,
       data: formattedExercises

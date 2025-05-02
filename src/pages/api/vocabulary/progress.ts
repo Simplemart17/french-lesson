@@ -42,12 +42,12 @@ export default async function handler(
         translation: item.vocabulary.translation,
         example: item.vocabulary.example,
         level: item.vocabulary.level,
-        category: item.vocabulary.category,
-        pronunciation: item.vocabulary.pronunciation,
+        category: item.vocabulary.category || undefined,
+        pronunciation: item.vocabulary.pronunciation || undefined,
         usageContext: item.vocabulary.usageContext,
         learned: item.learned,
-        lastPracticed: item.lastPracticed ? item.lastPracticed.toISOString() : null,
-        nextReview: item.nextReviewDate ? item.nextReviewDate.toISOString() : null,
+        lastPracticed: item.lastPracticed ? item.lastPracticed.toISOString() : undefined,
+        nextReview: item.nextReviewDate ? item.nextReviewDate.toISOString() : undefined,
         repetitionStage: item.repetitionStage
       }));
 
@@ -144,12 +144,12 @@ export default async function handler(
         translation: updatedUserVocabulary.vocabulary.translation,
         example: updatedUserVocabulary.vocabulary.example,
         level: updatedUserVocabulary.vocabulary.level,
-        category: updatedUserVocabulary.vocabulary.category,
-        pronunciation: updatedUserVocabulary.vocabulary.pronunciation,
+        category: updatedUserVocabulary.vocabulary.category || undefined,
+        pronunciation: updatedUserVocabulary.vocabulary.pronunciation || undefined,
         usageContext: updatedUserVocabulary.vocabulary.usageContext,
         learned: updatedUserVocabulary.learned,
-        lastPracticed: updatedUserVocabulary.lastPracticed ? updatedUserVocabulary.lastPracticed.toISOString() : null,
-        nextReview: updatedUserVocabulary.nextReviewDate ? updatedUserVocabulary.nextReviewDate.toISOString() : null,
+        lastPracticed: updatedUserVocabulary.lastPracticed ? updatedUserVocabulary.lastPracticed.toISOString() : undefined,
+        nextReview: updatedUserVocabulary.nextReviewDate ? updatedUserVocabulary.nextReviewDate.toISOString() : undefined,
         repetitionStage: updatedUserVocabulary.repetitionStage
       };
 

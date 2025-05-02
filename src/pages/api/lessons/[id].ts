@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, Lesson, LessonSection, LessonExercise } from '@/types/api';
+import { ApiResponse, Lesson } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { prisma } from '@/lib/prisma';
 
@@ -54,12 +54,13 @@ async function handler(
         });
       }
 
-      // Get user progress if authenticated
-      let progress = null;
+      // Get user ID if authenticated
       const userId = (req as any).user?.id;
 
+      // Note: We're retrieving the user's progress but not using it in the response yet
+      // This could be used in the future to customize the response based on user progress
       if (userId) {
-        progress = await prisma.lessonProgress.findUnique({
+        await prisma.lessonProgress.findUnique({
           where: {
             userId_lessonId: {
               userId,
@@ -82,9 +83,9 @@ async function handler(
           lessonId: section.lessonId,
           title: section.title,
           type: section.type as any,
-          content: section.content,
-          audioUrl: section.audioUrl,
-          videoUrl: section.videoUrl,
+          content: section.content || undefined,
+          audioUrl: section.audioUrl || undefined,
+          videoUrl: section.videoUrl || undefined,
           order: section.order,
           exercises: section.exercises.map(exercise => ({
             id: exercise.id,
@@ -93,7 +94,7 @@ async function handler(
             question: exercise.question,
             options: exercise.options,
             correctAnswer: exercise.correctAnswer,
-            explanation: exercise.explanation
+            explanation: exercise.explanation || undefined
           }))
         }))
       };

@@ -4,18 +4,15 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import PronunciationPractice, { PronunciationResult } from '@/components/features/PronunciationPractice';
-import { useAuth } from '@/context/AuthContext';
 import apiClient from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiConfig';
 import { PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationApiService';
 
 export default function PronunciationPage() {
-  const { isAuthenticated } = useAuth();
   const [exercises, setExercises] = useState<PronunciationExercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<PronunciationExercise | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<PronunciationResult[]>([]);
 
   // Fetch pronunciation exercises from API
   useEffect(() => {
@@ -43,7 +40,8 @@ export default function PronunciationPage() {
   }, []);
 
   const handleResultUpdate = (result: PronunciationResult) => {
-    setResults(prev => [...prev, result]);
+    // We can log the result or implement result tracking in the future
+    console.log('Pronunciation result:', result);
   };
 
   return (
@@ -149,7 +147,6 @@ export default function PronunciationPage() {
                         <PronunciationPractice
                           phrase={phrase.text}
                           translation={phrase.translation}
-                          audioUrl={phrase.audioUrl}
                           onResult={handleResultUpdate}
                         />
                       </div>

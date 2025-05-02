@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
@@ -9,7 +7,16 @@ interface SpeakingExercise {
   prompt: string;
   translation: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business';
+  category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping';
+}
+
+// Define the feedback type for speaking evaluation
+interface SpeakingFeedback {
+  accuracy: number;
+  pronunciation: number;
+  fluency: number;
+  feedback: string;
+  type: 'success' | 'warning' | 'error';
 }
 
 // Mock speaking exercises
@@ -150,26 +157,26 @@ const speakingExercises: Record<string, SpeakingExercise[]> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<SpeakingExercise[] | SpeakingExercise>>
+  res: NextApiResponse<ApiResponse<SpeakingExercise[] | SpeakingExercise | SpeakingFeedback>>
 ) {
   // GET request to retrieve speaking exercises
   if (req.method === 'GET') {
     try {
       const { id, difficulty, category } = req.query;
-      
+
       // If ID is provided, return that specific exercise
       if (id) {
         // Find the exercise across all difficulty levels
         let exercise: SpeakingExercise | undefined;
-        
+
         for (const difficultyLevel in speakingExercises) {
           exercise = speakingExercises[difficultyLevel].find(
             ex => ex.id === parseInt(id as string)
           );
-          
+
           if (exercise) break;
         }
-        
+
         if (!exercise) {
           return res.status(404).json({
             success: false,
@@ -178,16 +185,16 @@ export default async function handler(
             }
           });
         }
-        
+
         return res.status(200).json({
           success: true,
           data: exercise
         });
       }
-      
+
       // Get exercises based on difficulty
       let exercises: SpeakingExercise[] = [];
-      
+
       if (difficulty && speakingExercises[difficulty as string]) {
         exercises = [...speakingExercises[difficulty as string]];
       } else {
@@ -196,12 +203,12 @@ export default async function handler(
           exercises = [...exercises, ...difficultyExercises];
         });
       }
-      
+
       // Filter by category if provided
       if (category) {
         exercises = exercises.filter(ex => ex.category === category);
       }
-      
+
       return res.status(200).json({
         success: true,
         data: exercises
@@ -216,12 +223,12 @@ export default async function handler(
       });
     }
   }
-  
+
   // POST request to evaluate speaking
   if (req.method === 'POST') {
     try {
       const { exerciseId, transcript } = req.body;
-      
+
       // Validate required fields
       if (!exerciseId || !transcript) {
         return res.status(400).json({
@@ -231,18 +238,18 @@ export default async function handler(
           }
         });
       }
-      
+
       // Find the exercise
       let exercise: SpeakingExercise | undefined;
-      
+
       for (const difficultyLevel in speakingExercises) {
         exercise = speakingExercises[difficultyLevel].find(
           ex => ex.id === parseInt(exerciseId)
         );
-        
+
         if (exercise) break;
       }
-      
+
       if (!exercise) {
         return res.status(404).json({
           success: false,
@@ -251,26 +258,26 @@ export default async function handler(
           }
         });
       }
-      
+
       // In a real app, this would use a speech recognition API to evaluate the pronunciation
       // For now, we'll just simulate feedback based on the transcript length
-      
-      const feedback = {
+
+      const feedback: SpeakingFeedback = {
         accuracy: Math.random() * 100,
         pronunciation: Math.random() * 100,
         fluency: Math.random() * 100,
-        feedback: transcript.length > 20 
+        feedback: transcript.length > 20
           ? 'Excellent pronunciation! Your accent is very natural.'
           : transcript.length > 10
             ? 'Good attempt! Try to focus on the "r" sound in French.'
             : 'Try again. Pay attention to the pronunciation of vowels.',
-        type: transcript.length > 20 
+        type: transcript.length > 20
           ? 'success'
           : transcript.length > 10
             ? 'warning'
             : 'error'
       };
-      
+
       return res.status(200).json({
         success: true,
         data: feedback
@@ -285,7 +292,7 @@ export default async function handler(
       });
     }
   }
-  
+
   // Method not allowed
   return res.status(405).json({
     success: false,

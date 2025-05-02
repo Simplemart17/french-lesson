@@ -1,6 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { PronunciationExercise, PronunciationExerciseListResponse, PronunciationPhrase } from '@/services/api/pronunciationApiService';
+import { PronunciationExercise as ImportedPronunciationExercise, PronunciationPhrase as ImportedPronunciationPhrase } from '@/services/api/pronunciationApiService';
+
+// Extended PronunciationPhrase interface for the mock data
+interface PronunciationPhrase extends ImportedPronunciationPhrase {
+  audioUrl: string;
+  phonetics: string;
+  focusSounds: string[];
+}
+
+// Extended PronunciationExercise interface for the mock data
+interface PronunciationExercise extends ImportedPronunciationExercise {
+  phrases: PronunciationPhrase[];
+}
 
 // Mock data for pronunciation exercises
 const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
@@ -124,9 +136,18 @@ const mockPronunciationExercises: PronunciationExercise[] = [
   }
 ];
 
+// Define a custom response type that uses our local PronunciationExercise type
+interface CustomPronunciationExerciseListResponse {
+  items: PronunciationExercise[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<PronunciationExerciseListResponse>>
+  res: NextApiResponse<ApiResponse<CustomPronunciationExerciseListResponse>>
 ) {
   // Only allow GET requests
   if (req.method !== 'GET') {
@@ -141,46 +162,46 @@ export default function handler(
   try {
     // Get query parameters
     const { difficulty, search, page = '1', limit = '10' } = req.query;
-    
+
     // Filter exercises by difficulty if provided
     let filteredExercises = [...mockPronunciationExercises];
-    
+
     if (difficulty) {
       filteredExercises = filteredExercises.filter(
         exercise => exercise.difficulty === difficulty
       );
     }
-    
+
     // Filter by search term if provided
     if (search && typeof search === 'string') {
       const searchLower = search.toLowerCase();
       filteredExercises = filteredExercises.filter(
-        exercise => 
+        exercise =>
           exercise.title.toLowerCase().includes(searchLower) ||
           exercise.description.toLowerCase().includes(searchLower) ||
-          exercise.phrases.some(phrase => 
+          exercise.phrases.some(phrase =>
             phrase.text.toLowerCase().includes(searchLower) ||
             phrase.translation.toLowerCase().includes(searchLower)
           )
       );
     }
-    
+
     // Calculate pagination
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
     const startIndex = (pageNum - 1) * limitNum;
     const endIndex = startIndex + limitNum;
     const paginatedExercises = filteredExercises.slice(startIndex, endIndex);
-    
+
     // Prepare response
-    const response: PronunciationExerciseListResponse = {
+    const response: CustomPronunciationExerciseListResponse = {
       items: paginatedExercises,
       total: filteredExercises.length,
       page: pageNum,
       limit: limitNum,
       totalPages: Math.ceil(filteredExercises.length / limitNum)
     };
-    
+
     // Return success response
     return res.status(200).json({
       success: true,
