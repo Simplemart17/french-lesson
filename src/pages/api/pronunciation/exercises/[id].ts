@@ -1,6 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { PronunciationExercise, PronunciationPhrase } from '@/services/api/pronunciationApiService';
+import { PronunciationExercise as ImportedPronunciationExercise } from '@/services/api/pronunciationApiService';
+
+// Extended PronunciationPhrase interface for the mock data
+interface PronunciationPhrase {
+  id: number;
+  text: string;
+  translation: string;
+  audioUrl: string;
+  phonetics: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  focusSounds: string[];
+}
+
+// Extended PronunciationExercise interface for the mock data
+interface PronunciationExercise extends ImportedPronunciationExercise {
+  phrases: PronunciationPhrase[];
+}
 
 // Mock data for pronunciation phrases
 const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
@@ -142,10 +158,10 @@ export default function handler(
     // Get the exercise ID from the URL
     const { id } = req.query;
     const exerciseId = parseInt(id as string, 10);
-    
+
     // Find the exercise by ID
     const exercise = mockPronunciationExercises.find(ex => ex.id === exerciseId);
-    
+
     // If exercise not found, return 404
     if (!exercise) {
       return res.status(404).json({
@@ -155,7 +171,7 @@ export default function handler(
         }
       });
     }
-    
+
     // Return the exercise
     return res.status(200).json({
       success: true,

@@ -1,4 +1,4 @@
-import { ApiResponse, Lesson, LessonProgress } from '@/types/api';
+import { ApiResponse, Lesson, LessonProgress, LessonSection, LessonExercise } from '@/types/api';
 import apiClient from '@/services/api/apiClient';
 import { API_ENDPOINTS } from './apiConfig';
 
@@ -7,9 +7,12 @@ import { API_ENDPOINTS } from './apiConfig';
  *
  * This service handles all lesson-related API calls.
  */
-export const lessonApiService = {
+const lessonApiService = {
   /**
    * Get all lessons with optional filtering
+   * @param level Optional level filter (e.g., 'A1', 'B2')
+   * @param topic Optional topic filter
+   * @returns Array of lessons matching the filters
    */
   getLessons: async (level?: string, topic?: string): Promise<Lesson[]> => {
     try {
@@ -28,7 +31,9 @@ export const lessonApiService = {
   },
 
   /**
-   * Get a specific lesson by ID
+   * Get a specific lesson by ID with all its sections and exercises
+   * @param id Lesson ID
+   * @returns Complete lesson with sections and exercises, or null if not found
    */
   getLesson: async (id: number): Promise<Lesson | null> => {
     try {
@@ -46,7 +51,53 @@ export const lessonApiService = {
   },
 
   /**
-   * Get user lesson progress
+   * Get lesson sections for a specific lesson
+   * @param lessonId Lesson ID
+   * @returns Array of lesson sections
+   */
+  getLessonSections: async (lessonId: number): Promise<LessonSection[]> => {
+    try {
+      const response = await apiClient.get<ApiResponse<LessonSection[]>>(
+        `${API_ENDPOINTS.LESSONS.ITEM(lessonId)}/sections`
+      );
+
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      return [];
+    } catch (error) {
+      console.error(`Error fetching sections for lesson ${lessonId}:`, error);
+      return [];
+    }
+  },
+
+  /**
+   * Get exercises for a specific lesson section
+   * @param sectionId Section ID
+   * @returns Array of exercises for the section
+   */
+  getSectionExercises: async (sectionId: number): Promise<LessonExercise[]> => {
+    try {
+      const response = await apiClient.get<ApiResponse<LessonExercise[]>>(
+        `/lessons/sections/${sectionId}/exercises`
+      );
+
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      return [];
+    } catch (error) {
+      console.error(`Error fetching exercises for section ${sectionId}:`, error);
+      return [];
+    }
+  },
+
+  /**
+   * Get user lesson progress for all lessons or a specific lesson
+   * @param lessonId Optional lesson ID to filter progress
+   * @returns Array of lesson progress items
    */
   getLessonProgress: async (lessonId?: number): Promise<LessonProgress[]> => {
     try {
@@ -66,6 +117,10 @@ export const lessonApiService = {
 
   /**
    * Update lesson progress
+   * @param lessonId Lesson ID
+   * @param completed Whether the lesson is completed
+   * @param score Score achieved in the lesson (0-100)
+   * @returns Updated lesson progress
    */
   updateLessonProgress: async (
     lessonId: number,
@@ -91,7 +146,39 @@ export const lessonApiService = {
   },
 
   /**
+   * Submit answers for lesson exercises
+   * @param lessonId Lesson ID
+   * @param answers Object mapping exercise IDs to user answers
+   * @returns Score and feedback for the submitted answers
+   */
+  submitLessonAnswers: async (
+    lessonId: number,
+    answers: Record<number, string | string[]>
+  ): Promise<{ score: number; feedback: Record<number, { correct: boolean; explanation?: string }> }> => {
+    try {
+      const response = await apiClient.post<ApiResponse<{
+        score: number;
+        feedback: Record<number, { correct: boolean; explanation?: string }>;
+      }>>(
+        `${API_ENDPOINTS.LESSONS.ITEM(lessonId)}/submit`,
+        { answers }
+      );
+
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error('Failed to submit lesson answers');
+    } catch (error) {
+      console.error('Error submitting lesson answers:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get recommended next lessons based on user progress
+   * @param count Number of lessons to recommend
+   * @returns Array of recommended lessons
    */
   getRecommendedLessons: async (count: number = 3): Promise<Lesson[]> => {
     try {

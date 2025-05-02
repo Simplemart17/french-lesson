@@ -5,7 +5,7 @@ import { prisma } from '../../../lib/prisma';
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
   const userId = (req as any).user?.id;
-  
+
   if (!userId) {
     return res.status(401).json({
       success: false,
@@ -24,7 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           completedAt: 'desc'
         }
       });
-      
+
       return res.status(200).json({
         success: true,
         data: assessments
@@ -37,19 +37,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
   }
-  
+
   // POST request to create a new assessment
   if (req.method === 'POST') {
     try {
-      const { level, score, section, examId, details } = req.body;
-      
+      const { level, score, section, examId, details, timeSpent } = req.body;
+
       if (!level || score === undefined || !section || !examId) {
         return res.status(400).json({
           success: false,
           error: { message: 'Missing required fields' }
         });
       }
-      
+
       // Create new assessment using the ExamResult model
       const assessment = await prisma.examResult.create({
         data: {
@@ -59,10 +59,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           section,
           examId,
           details: details || {},
-          completedAt: new Date()
+          completedAt: new Date(),
+          timeSpent: timeSpent || 0, // Add the timeSpent field with a default value of 0
+          user: {
+            connect: {
+              id: userId
+            }
+          }
         }
       });
-      
+
       // Check if this is the user's best score by finding previous results for this exam
       const previousResults = await prisma.examResult.findMany({
         where: {
@@ -76,10 +82,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
         take: 1
       });
-      
-      const isNewHighScore = previousResults.length === 0 || 
+
+      const isNewHighScore = previousResults.length === 0 ||
                              (previousResults.length > 0 && assessment.score > previousResults[0].score);
-      
+
       return res.status(201).json({
         success: true,
         data: assessment,
@@ -93,11 +99,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
   }
-  
-  return res.status(405).json({ 
-    success: false, 
-    error: { message: 'Method not allowed' } 
+
+  return res.status(405).json({
+    success: false,
+    error: { message: 'Method not allowed' }
   });
 }
 
-export default authMiddleware(handler); 
+export default authMiddleware(handler);

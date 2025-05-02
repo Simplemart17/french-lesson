@@ -38,19 +38,23 @@ export default async function handler(
   try {
     let phraseId: number;
     let transcript: string | undefined;
-    
+
     // Handle form data if there's an audio file
     if (req.headers['content-type']?.includes('multipart/form-data')) {
       const { fields } = await parseFormData(req);
-      phraseId = parseInt(fields.phraseId as string, 10);
-      transcript = fields.transcript as string | undefined;
+      // Get the first value from the array or undefined
+      const phraseIdValue = fields.phraseId?.[0];
+      const transcriptValue = fields.transcript?.[0];
+
+      phraseId = phraseIdValue ? parseInt(phraseIdValue, 10) : NaN;
+      transcript = transcriptValue;
     } else {
       // Handle JSON data
       const body = req.body;
       phraseId = body.phraseId;
       transcript = body.transcript;
     }
-    
+
     // Validate phraseId
     if (!phraseId || isNaN(phraseId)) {
       return res.status(400).json({
@@ -60,28 +64,28 @@ export default async function handler(
         }
       });
     }
-    
+
     // In a real application, this would:
     // 1. Process the audio file using a speech recognition service
     // 2. Compare the recognized text with the expected phrase
     // 3. Generate detailed feedback on pronunciation
-    
+
     // For this mock implementation, we'll generate random feedback
     const accuracy = Math.floor(Math.random() * 40) + 60; // 60-100
     const isCorrect = accuracy >= 80;
-    
+
     // Generate mock feedback
     const feedbackTypes: Array<'sound' | 'intonation' | 'rhythm' | 'general'> = ['sound', 'intonation', 'rhythm', 'general'];
     const severityTypes: Array<'error' | 'warning' | 'info'> = ['error', 'warning', 'info'];
-    
+
     const feedback: PronunciationFeedback[] = [];
-    
+
     // Add 1-3 feedback items
     const feedbackCount = Math.floor(Math.random() * 3) + 1;
     for (let i = 0; i < feedbackCount; i++) {
       const type = feedbackTypes[Math.floor(Math.random() * feedbackTypes.length)];
       const severity = severityTypes[Math.floor(Math.random() * severityTypes.length)];
-      
+
       let message = '';
       switch (type) {
         case 'sound':
@@ -97,7 +101,7 @@ export default async function handler(
           message = 'Overall good attempt, but try to speak more slowly and clearly.';
           break;
       }
-      
+
       feedback.push({
         type,
         message,
@@ -108,7 +112,7 @@ export default async function handler(
         } : undefined
       });
     }
-    
+
     // Create response
     const response: PronunciationCheckResponse = {
       phraseId,
@@ -117,7 +121,7 @@ export default async function handler(
       transcript: transcript || 'Bonjour, comment allez-vous?', // Default transcript if none provided
       isCorrect
     };
-    
+
     // Return success response
     return res.status(200).json({
       success: true,

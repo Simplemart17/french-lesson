@@ -4,242 +4,113 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import InteractiveLesson, { Lesson } from '@/components/features/InteractiveLesson';
+import InteractiveLesson from '@/components/features/InteractiveLesson';
 import { useAuth } from '@/context/AuthContext';
+import lessonService from '@/services/lessonService';
+import { Lesson } from '@/types/api';
 
-// Sample lesson data
-const sampleLessons: Record<string, Lesson> = {
-  '1': {
-    id: '1',
-    title: 'Basic Greetings in French',
-    description: 'Learn essential greetings and introductions in French to start conversations confidently.',
-    level: 'beginner',
-    category: 'conversation',
-    duration: 15,
-    sections: [
-      {
-        id: 'intro',
-        type: 'text',
-        title: 'Introduction',
-        content: `
-          <p>Welcome to your first French lesson! In this lesson, you'll learn the most common greetings in French.</p>
-          <p>Being able to greet people properly is essential for any conversation. Let's start with the basics.</p>
-        `
-      },
-      {
-        id: 'formal-greetings',
-        type: 'text',
-        title: 'Formal Greetings',
-        content: `
-          <h3>Formal Greetings</h3>
-          <p>When meeting someone in a formal context, use these expressions:</p>
-          <ul>
-            <li><strong>Bonjour</strong> - Hello/Good day</li>
-            <li><strong>Bonsoir</strong> - Good evening</li>
-            <li><strong>Au revoir</strong> - Goodbye</li>
-            <li><strong>Enchanté(e)</strong> - Nice to meet you</li>
-          </ul>
-          <p>Note: Add an "e" to "Enchanté" if you are female.</p>
-        `
-      },
-      {
-        id: 'informal-greetings',
-        type: 'text',
-        title: 'Informal Greetings',
-        content: `
-          <h3>Informal Greetings</h3>
-          <p>With friends and family, you can use these more casual expressions:</p>
-          <ul>
-            <li><strong>Salut</strong> - Hi/Bye</li>
-            <li><strong>Coucou</strong> - Hey (very informal)</li>
-            <li><strong>À plus tard</strong> - See you later</li>
-            <li><strong>À bientôt</strong> - See you soon</li>
-          </ul>
-        `
-      },
-      {
-        id: 'audio-practice',
-        type: 'audio',
-        title: 'Pronunciation Practice',
-        content: `
-          <p>Listen to the following audio to practice your pronunciation:</p>
-        `,
-        audioUrl: 'https://example.com/audio/greetings.mp3' // This is a placeholder URL
-      },
-      {
-        id: 'exercise-1',
-        type: 'exercise',
-        title: 'Practice Exercise',
-        content: `<p>Let's test your understanding with a simple exercise:</p>`,
-        exercise: {
-          type: 'multiple-choice',
-          question: 'How would you greet someone in the evening in a formal context?',
-          options: ['Bonjour', 'Salut', 'Bonsoir', 'Coucou'],
-          correctAnswer: 'Bonsoir',
-          explanation: 'Bonsoir is used as a formal greeting in the evening, while Bonjour is used during the day.'
-        }
-      },
-      {
-        id: 'exercise-2',
-        type: 'exercise',
-        title: 'Translation Exercise',
-        content: `<p>Translate the following phrase to French:</p>`,
-        exercise: {
-          type: 'translation',
-          question: 'How do you say "Nice to meet you" (to a man) in French?',
-          correctAnswer: ['Enchanté', 'Je suis enchanté de faire votre connaissance'],
-          explanation: 'Enchanté is the most common way to say "Nice to meet you" in French.'
-        }
-      },
-      {
-        id: 'conclusion',
-        type: 'text',
-        title: 'Conclusion',
-        content: `
-          <p>Great job! You've learned the basic greetings in French.</p>
-          <p>Remember to practice these phrases regularly. In the next lesson, we'll learn how to introduce yourself and ask basic questions.</p>
-        `
-      }
-    ],
-    vocabulary: [
-      {
-        word: 'Bonjour',
-        translation: 'Hello/Good day',
-        pronunciation: '/bɔ̃.ʒuʁ/'
-      },
-      {
-        word: 'Bonsoir',
-        translation: 'Good evening',
-        pronunciation: '/bɔ̃.swaʁ/'
-      },
-      {
-        word: 'Au revoir',
-        translation: 'Goodbye',
-        pronunciation: '/o.ʁə.vwaʁ/'
-      },
-      {
-        word: 'Enchanté(e)',
-        translation: 'Nice to meet you',
-        pronunciation: '/ɑ̃.ʃɑ̃.te/'
-      },
-      {
-        word: 'Salut',
-        translation: 'Hi/Bye (informal)',
-        pronunciation: '/sa.ly/'
-      },
-      {
-        word: 'À bientôt',
-        translation: 'See you soon',
-        pronunciation: '/a.bjɛ̃.to/'
-      }
-    ]
-  },
-  '2': {
-    id: '2',
-    title: 'Introducing Yourself in French',
-    description: 'Learn how to introduce yourself and ask basic personal questions in French.',
-    level: 'beginner',
-    category: 'conversation',
-    duration: 20,
-    sections: [
-      {
-        id: 'intro',
-        type: 'text',
-        title: 'Introduction',
-        content: `
-          <p>Welcome to your second French lesson! Now that you know how to greet people, let's learn how to introduce yourself.</p>
-        `
-      },
-      {
-        id: 'basic-intro',
-        type: 'text',
-        title: 'Basic Introductions',
-        content: `
-          <h3>Basic Phrases for Introducing Yourself</h3>
-          <ul>
-            <li><strong>Je m'appelle...</strong> - My name is...</li>
-            <li><strong>Je suis...</strong> - I am...</li>
-            <li><strong>Comment vous appelez-vous?</strong> - What is your name? (formal)</li>
-            <li><strong>Comment tu t'appelles?</strong> - What is your name? (informal)</li>
-            <li><strong>D'où venez-vous?</strong> - Where are you from? (formal)</li>
-            <li><strong>D'où viens-tu?</strong> - Where are you from? (informal)</li>
-            <li><strong>Je viens de...</strong> - I am from...</li>
-          </ul>
-        `
-      },
-      {
-        id: 'exercise-1',
-        type: 'exercise',
-        title: 'Practice Exercise',
-        content: `<p>Let's practice what you've learned:</p>`,
-        exercise: {
-          type: 'multiple-choice',
-          question: 'How would you ask someone their name in an informal setting?',
-          options: [
-            'Comment vous appelez-vous?', 
-            'Comment tu t\'appelles?', 
-            'D\'où venez-vous?', 
-            'Je m\'appelle'
-          ],
-          correctAnswer: 'Comment tu t\'appelles?',
-          explanation: 'In informal settings, you use "tu" instead of "vous" and the corresponding verb form.'
-        }
-      }
-    ],
-    vocabulary: [
-      {
-        word: 'Je m\'appelle',
-        translation: 'My name is',
-        pronunciation: '/ʒə.ma.pɛl/'
-      },
-      {
-        word: 'Je suis',
-        translation: 'I am',
-        pronunciation: '/ʒə.sɥi/'
-      },
-      {
-        word: 'D\'où',
-        translation: 'From where',
-        pronunciation: '/du/'
-      },
-      {
-        word: 'Je viens de',
-        translation: 'I come from',
-        pronunciation: '/ʒə.vjɛ̃.də/'
-      }
-    ]
-  }
-};
 
 export default function LessonPage() {
   const router = useRouter();
   const { id } = router.query;
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+  const [progress, setProgress] = useState<{ completed: boolean; score: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch lesson data
   useEffect(() => {
-    if (id) {
-      // In a real app, this would be an API call
+    if (id && typeof id === 'string') {
       setIsLoading(true);
-      
-      // Simulate API delay
-      setTimeout(() => {
-        const lessonData = sampleLessons[id as string];
-        setLesson(lessonData || null);
+      setError(null);
+
+      const lessonId = parseInt(id, 10);
+      if (isNaN(lessonId)) {
+        setError('Invalid lesson ID');
         setIsLoading(false);
-      }, 500);
+        return;
+      }
+
+      // Fetch lesson data from API
+      lessonService.getLesson(lessonId)
+        .then(data => {
+          if (data) {
+            setLesson(data);
+
+            // Fetch progress if authenticated
+            if (isAuthenticated) {
+              return lessonService.getLessonProgress(lessonId);
+            }
+          } else {
+            setError('Lesson not found');
+          }
+          return null;
+        })
+        .then(progressData => {
+          if (progressData) {
+            setProgress({
+              completed: progressData.completed,
+              score: progressData.score
+            });
+          }
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error('Error fetching lesson:', err);
+          setError('Failed to load lesson. Please try again later.');
+          setIsLoading(false);
+        });
     }
-  }, [id]);
-  
-  const handleLessonComplete = () => {
-    // In a real app, this would update the user's progress
-    console.log('Lesson completed!');
-    
-    // Simulate saving progress
-    alert('Congratulations! Your progress has been saved.');
+  }, [id, isAuthenticated]);
+
+  // Handle lesson completion
+  const handleLessonComplete = async (score: number) => {
+    if (!id || !lesson || !isAuthenticated) return;
+
+    const lessonId = parseInt(id as string, 10);
+    if (isNaN(lessonId)) return;
+
+    try {
+      // Update lesson progress
+      const updatedProgress = await lessonService.updateLessonProgress(
+        lessonId,
+        true, // completed
+        score
+      );
+
+      if (updatedProgress) {
+        setProgress({
+          completed: updatedProgress.completed,
+          score: updatedProgress.score
+        });
+
+        // Show success message
+        console.log('Progress saved successfully:', updatedProgress);
+      }
+    } catch (err) {
+      console.error('Error updating lesson progress:', err);
+    }
   };
-  
+
+  // Handle exercise submission
+  const handleSubmitAnswers = async (answers: Record<number, string | string[]>) => {
+    if (!id || !lesson || !isAuthenticated) return null;
+
+    const lessonId = parseInt(id as string, 10);
+    if (isNaN(lessonId)) return null;
+
+    try {
+      // Submit answers to API
+      const result = await lessonService.submitLessonAnswers(lessonId, answers);
+      return result;
+    } catch (err) {
+      console.error('Error submitting answers:', err);
+      return null;
+    }
+  };
+
+  // Loading state
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
@@ -247,12 +118,15 @@ export default function LessonPage() {
       </div>
     );
   }
-  
-  if (!lesson) {
+
+  // Error state
+  if (error || !lesson) {
     return (
       <div className="max-w-4xl px-4 py-8 mx-auto">
         <Card className="p-8 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-gray-800">Lesson Not Found</h1>
+          <h1 className="mb-4 text-2xl font-bold text-gray-800">
+            {error || 'Lesson Not Found'}
+          </h1>
           <p className="mb-6 text-gray-600">
             Sorry, the lesson you're looking for doesn't exist or has been removed.
           </p>
@@ -265,14 +139,45 @@ export default function LessonPage() {
       </div>
     );
   }
-  
+
+  // Adapt the lesson to the InteractiveLesson component format
+  const adaptedLesson = {
+    id: lesson.id.toString(),
+    title: lesson.title,
+    description: lesson.description,
+    level: lesson.level.toLowerCase().includes('a1') || lesson.level.toLowerCase().includes('a2')
+      ? 'beginner' as const
+      : lesson.level.toLowerCase().includes('b')
+        ? 'intermediate' as const
+        : 'advanced' as const,
+    category: lesson.topics[0] || 'general',
+    duration: lesson.duration,
+    sections: lesson.sections?.map(section => ({
+      id: section.id.toString(),
+      type: section.type,
+      title: section.title,
+      content: section.content || '',
+      audioUrl: section.audioUrl,
+      videoUrl: section.videoUrl,
+      exercise: section.exercises && section.exercises.length > 0
+        ? {
+            type: section.exercises[0].type as any,
+            question: section.exercises[0].question,
+            options: section.exercises[0].options || [],
+            correctAnswer: section.exercises[0].correctAnswer,
+            explanation: section.exercises[0].explanation
+          }
+        : undefined
+    })) || []
+  };
+
   return (
     <>
       <Head>
         <title>{lesson.title} | French Tutor AI</title>
         <meta name="description" content={lesson.description} />
       </Head>
-      
+
       <div className="max-w-4xl px-4 py-8 mx-auto">
         <div className="mb-8">
           <div className="flex flex-col mb-4 md:flex-row md:items-center md:justify-between">
@@ -285,21 +190,26 @@ export default function LessonPage() {
               </Link>
               <h1 className="text-3xl font-bold text-gray-800">{lesson.title}</h1>
             </div>
-            
+
             <div className="flex items-center mt-4 space-x-4 md:mt-0">
               <div className="px-3 py-1 text-sm font-medium rounded-full bg-primary-100 text-primary-800">
-                {lesson.level.charAt(0).toUpperCase() + lesson.level.slice(1)}
+                {lesson.level}
               </div>
               <div className="px-3 py-1 text-sm font-medium text-gray-800 bg-gray-100 rounded-full">
                 {lesson.duration} min
               </div>
+              {progress?.completed && (
+                <div className="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                  Completed ({progress.score}%)
+                </div>
+              )}
             </div>
           </div>
-          
+
           <p className="mb-6 text-lg text-gray-600">
             {lesson.description}
           </p>
-          
+
           {!isAuthenticated && (
             <div className="p-4 mb-6 border border-yellow-200 rounded-lg bg-yellow-50">
               <div className="flex">
@@ -336,10 +246,12 @@ export default function LessonPage() {
             </div>
           )}
         </div>
-        
-        <InteractiveLesson 
-          lesson={lesson}
+
+        <InteractiveLesson
+          lesson={adaptedLesson}
           onComplete={handleLessonComplete}
+          onSubmitAnswers={handleSubmitAnswers}
+          initialProgress={progress}
         />
       </div>
     </>

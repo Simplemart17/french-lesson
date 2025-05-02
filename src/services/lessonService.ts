@@ -1,5 +1,5 @@
 import lessonApiService from '@/services/api/lessonApiService';
-import { Lesson, LessonProgress } from '@/types/api';
+import { Lesson, LessonProgress, LessonSection, LessonExercise, LessonSubmissionResult } from '@/types/api';
 
 /**
  * Lesson Service
@@ -14,6 +14,9 @@ class LessonService {
 
   /**
    * Get lessons with optional filtering
+   * @param level Optional level filter (e.g., 'A1', 'B2')
+   * @param topic Optional topic filter
+   * @returns Array of lessons matching the filters
    */
   async getLessons(
     level?: string,
@@ -45,7 +48,9 @@ class LessonService {
   }
 
   /**
-   * Get lesson by ID
+   * Get a complete lesson by ID with all sections and exercises
+   * @param id Lesson ID
+   * @returns Complete lesson with sections and exercises, or null if not found
    */
   async getLesson(id: number): Promise<Lesson | null> {
     const cacheKey = `lesson-${id}`;
@@ -78,7 +83,71 @@ class LessonService {
   }
 
   /**
-   * Get lesson progress
+   * Get sections for a specific lesson
+   * @param lessonId Lesson ID
+   * @returns Array of lesson sections
+   */
+  async getLessonSections(lessonId: number): Promise<LessonSection[]> {
+    const cacheKey = `lesson-sections-${lessonId}`;
+
+    // Check cache first
+    if (this.isValidCache(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      const sections = await lessonApiService.getLessonSections(lessonId);
+
+      // Cache the result
+      this.setCache(cacheKey, sections);
+      return sections;
+    } catch (error) {
+      console.error(`Error fetching sections for lesson ${lessonId}:`, error);
+
+      // Return cached data if available, even if expired
+      if (this.cache.has(cacheKey)) {
+        return this.cache.get(cacheKey);
+      }
+
+      return [];
+    }
+  }
+
+  /**
+   * Get exercises for a specific lesson section
+   * @param sectionId Section ID
+   * @returns Array of exercises for the section
+   */
+  async getSectionExercises(sectionId: number): Promise<LessonExercise[]> {
+    const cacheKey = `section-exercises-${sectionId}`;
+
+    // Check cache first
+    if (this.isValidCache(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      const exercises = await lessonApiService.getSectionExercises(sectionId);
+
+      // Cache the result
+      this.setCache(cacheKey, exercises);
+      return exercises;
+    } catch (error) {
+      console.error(`Error fetching exercises for section ${sectionId}:`, error);
+
+      // Return cached data if available, even if expired
+      if (this.cache.has(cacheKey)) {
+        return this.cache.get(cacheKey);
+      }
+
+      return [];
+    }
+  }
+
+  /**
+   * Get progress for a specific lesson
+   * @param lessonId Lesson ID
+   * @returns Lesson progress or null if not found
    */
   async getLessonProgress(lessonId: number): Promise<LessonProgress | null> {
     const cacheKey = `lesson-progress-${lessonId}`;
@@ -113,6 +182,10 @@ class LessonService {
 
   /**
    * Update lesson progress
+   * @param lessonId Lesson ID
+   * @param completed Whether the lesson is completed
+   * @param score Score achieved in the lesson (0-100)
+   * @returns Updated lesson progress or null if failed
    */
   async updateLessonProgress(
     lessonId: number,
@@ -127,8 +200,9 @@ class LessonService {
       );
 
       if (response) {
-        // Invalidate progress cache
+        // Invalidate related caches
         this.invalidateCache(`lesson-progress-${lessonId}`);
+        this.invalidateCache('all-lesson-progress');
         return response;
       }
 
@@ -140,7 +214,44 @@ class LessonService {
   }
 
   /**
-   * Get all lesson progress
+   * Submit answers for lesson exercises
+   * @param lessonId Lesson ID
+   * @param answers Object mapping exercise IDs to user answers
+   * @returns Submission result with score and feedback
+   */
+  async submitLessonAnswers(
+    lessonId: number,
+    answers: Record<number, string | string[]>
+  ): Promise<LessonSubmissionResult | null> {
+    try {
+      const result = await lessonApiService.submitLessonAnswers(lessonId, answers);
+
+      if (!result) return null;
+
+      // Calculate if the lesson is completed based on the score
+      // (typically a score of 70% or higher is considered passing)
+      const isCompleted = result.score >= 70;
+
+      // If the submission was successful and the score is high enough,
+      // update the lesson progress
+      if (isCompleted) {
+        await this.updateLessonProgress(lessonId, true, result.score);
+      }
+
+      return {
+        score: result.score,
+        feedback: result.feedback,
+        completed: isCompleted
+      };
+    } catch (error) {
+      console.error(`Error submitting answers for lesson ${lessonId}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get all lesson progress for the current user
+   * @returns Array of lesson progress items
    */
   async getAllLessonProgress(): Promise<LessonProgress[]> {
     const cacheKey = 'all-lesson-progress';
@@ -170,7 +281,40 @@ class LessonService {
   }
 
   /**
+   * Get recommended lessons based on user progress
+   * @param count Number of lessons to recommend
+   * @returns Array of recommended lessons
+   */
+  async getRecommendedLessons(count: number = 3): Promise<Lesson[]> {
+    const cacheKey = `recommended-lessons-${count}`;
+
+    // Check cache first
+    if (this.isValidCache(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      const lessons = await lessonApiService.getRecommendedLessons(count);
+
+      // Cache the result
+      this.setCache(cacheKey, lessons);
+      return lessons;
+    } catch (error) {
+      console.error('Error fetching recommended lessons:', error);
+
+      // Return cached data if available, even if expired
+      if (this.cache.has(cacheKey)) {
+        return this.cache.get(cacheKey);
+      }
+
+      return [];
+    }
+  }
+
+  /**
    * Check if cache is valid
+   * @param key Cache key
+   * @returns Whether the cache is valid
    */
   private isValidCache(key: string): boolean {
     if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
@@ -183,6 +327,8 @@ class LessonService {
 
   /**
    * Set cache with expiry
+   * @param key Cache key
+   * @param data Data to cache
    */
   private setCache(key: string, data: any): void {
     this.cache.set(key, data);
@@ -191,6 +337,7 @@ class LessonService {
 
   /**
    * Invalidate cache for a specific key
+   * @param key Cache key to invalidate
    */
   private invalidateCache(key: string): void {
     this.cache.delete(key);
@@ -198,7 +345,7 @@ class LessonService {
   }
 
   /**
-   * Clear cache
+   * Clear all cache
    */
   clearCache(): void {
     this.cache.clear();

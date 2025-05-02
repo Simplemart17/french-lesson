@@ -1,31 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { ApiResponse, LessonProgress } from '@/types/api';
+import { authMiddleware } from '@/utils/authMiddleware';
+import { prisma } from '@/lib/prisma';
+import { getUserId } from '@/utils/auth';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<LessonProgress | LessonProgress[]>>) {
   // Handle GET request
   if (req.method === 'GET') {
     try {
       // Get user ID from authenticated user
-      const userId = (req as any).user?.id;
-      
+      const userId = getUserId(req);
+
       if (!userId) {
         return res.status(401).json({
           success: false,
           error: { message: 'User not authenticated' }
         });
       }
-      
+
       // Get lessonId from query if provided
       let { lessonId } = req.query;
       const lessonIdNum = lessonId ? parseInt(lessonId as string, 10) : undefined;
-      
+
       // Build query
       const query: any = { userId };
       if (lessonIdNum && !isNaN(lessonIdNum)) {
         query.lessonId = lessonIdNum;
       }
-      
+
       // Get progress from database
       const progress = await prisma.lessonProgress.findMany({
         where: query,
@@ -33,16 +35,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           lessonId: 'asc',
         },
       });
-      
+
       // Format the data for the response
       const formattedProgress = progress.map(item => ({
+        id: item.id,
+        userId: item.userId,
         lessonId: item.lessonId,
         completed: item.completed,
         score: item.score,
-        lastAccessed: item.startedAt?.toISOString() || null,
-        completedAt: item.completedAt?.toISOString() || null
+        startedAt: item.startedAt?.toISOString(),
+        completedAt: item.completedAt?.toISOString() || null,
+        answers: item.answers as Record<number, string | string[]> | undefined
       }));
-      
+
       return res.status(200).json({
         success: true,
         data: formattedProgress
@@ -55,44 +60,58 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
   }
-  
+
   // Handle POST request (update progress)
   if (req.method === 'POST') {
     try {
-      const { lessonId, completed, score } = req.body;
-      
-      if (!lessonId || typeof completed !== 'boolean' || typeof score !== 'number') {
+      const { lessonId, completed, score, answers } = req.body;
+
+      if (!lessonId || typeof lessonId !== 'number') {
         return res.status(400).json({
           success: false,
-          error: { message: 'Invalid request body' }
+          error: { message: 'Invalid or missing lessonId' }
         });
       }
-      
+
+      if (typeof completed !== 'boolean') {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'Invalid or missing completed status' }
+        });
+      }
+
+      if (typeof score !== 'number' || score < 0 || score > 100) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'Invalid score (must be a number between 0 and 100)' }
+        });
+      }
+
       // Get user ID from authenticated user
-      const userId = (req as any).user?.id;
-      
+      const userId = getUserId(req);
+
       if (!userId) {
         return res.status(401).json({
           success: false,
           error: { message: 'User not authenticated' }
         });
       }
-      
+
       // Check if lesson exists
       const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId }
       });
-      
+
       if (!lesson) {
         return res.status(404).json({
           success: false,
           error: { message: 'Lesson not found' }
         });
       }
-      
+
       // Get current timestamp
       const now = new Date();
-      
+
       // Update or create progress
       const updatedProgress = await prisma.lessonProgress.upsert({
         where: {
@@ -105,7 +124,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           completed,
           score,
           startedAt: { set: now },
-          completedAt: completed ? now : undefined
+          completedAt: completed ? now : undefined,
+          answers: answers || undefined
         },
         create: {
           userId,
@@ -113,19 +133,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           completed,
           score,
           startedAt: now,
-          completedAt: completed ? now : null
+          completedAt: completed ? now : null,
+          answers: answers || undefined
         }
       });
-      
+
       // Format the data for the response
-      const formattedProgress = {
+      const formattedProgress: LessonProgress = {
+        id: updatedProgress.id,
+        userId: updatedProgress.userId,
         lessonId: updatedProgress.lessonId,
         completed: updatedProgress.completed,
         score: updatedProgress.score,
-        lastAccessed: updatedProgress.startedAt?.toISOString() || null,
-        completedAt: updatedProgress.completedAt?.toISOString() || null
+        startedAt: updatedProgress.startedAt?.toISOString(),
+        completedAt: updatedProgress.completedAt?.toISOString() || null,
+        answers: updatedProgress.answers as Record<number, string | string[]> | undefined
       };
-      
+
       return res.status(200).json({
         success: true,
         data: formattedProgress
@@ -138,7 +162,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
   }
-  
+
   // Method not allowed
   return res.status(405).json({
     success: false,

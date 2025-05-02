@@ -101,7 +101,7 @@ export default function TestimonialsPage() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800">{testimonial.name}</h3>
+                    <h4 className="font-semibold text-gray-800">{testimonial.name}</h4>
                     <p className="text-sm text-gray-500">{testimonial.role}</p>
                   </div>
                 </div>
