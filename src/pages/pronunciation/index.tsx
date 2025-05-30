@@ -7,6 +7,7 @@ import PronunciationPractice, { PronunciationResult } from '@/components/feature
 import apiClient from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiConfig';
 import { PronunciationExercise, PronunciationExerciseListResponse } from '@/services/api/pronunciationApiService';
+import { ApiResponse } from '@/types/api';
 
 export default function PronunciationPage() {
   const [exercises, setExercises] = useState<PronunciationExercise[]>([]);
@@ -19,11 +20,15 @@ export default function PronunciationPage() {
     const fetchExercises = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.get<PronunciationExerciseListResponse>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
-        if (response.data) {
-          setExercises(response.data.items);
-          if (response.data.items.length > 0) {
-            setSelectedExercise(response.data.items[0]);
+        const response = await apiClient.get<ApiResponse<PronunciationExerciseListResponse>>(API_ENDPOINTS.PRONUNCIATION.EXERCISES);
+
+        if (response.data && response.data.success && response.data.data) {
+          const exerciseData = response.data.data;
+          if (exerciseData.items && exerciseData.items.length > 0) {
+            setExercises(exerciseData.items);
+            setSelectedExercise(exerciseData.items[0]);
+          } else {
+            setError('No pronunciation exercises available');
           }
         } else {
           setError('Failed to load pronunciation exercises');
@@ -61,7 +66,7 @@ export default function PronunciationPage() {
             repeat the phrase, and get feedback on your pronunciation.
           </p>
           <div className="flex justify-center mt-4">
-            <Link href="/pronunciation-demo">
+            <Link href="/pronunciation/ai">
               <Button variant="outline" className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />

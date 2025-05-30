@@ -37,7 +37,7 @@ const NAVIGATION_GROUPS: NavGroup[] = [
       { name: "Writing", href: "/writing" },
       { name: "Vocabulary", href: "/vocabulary" },
       { name: "Pronunciation", href: "/pronunciation" },
-      { name: "AI Pronunciation", href: "/pronunciation-demo" },
+      { name: "AI Pronunciation", href: "/pronunciation/ai" },
       { name: "Listening", href: "/listening" },
     ]
   },
