@@ -38,30 +38,89 @@ export default async function handler(
         });
       }
 
-      // Since we might not have the UserSkill model in your schema yet,
-      // we'll generate skills based on the user's level
-      const defaultPercentages = {
-        beginner: { base: 20, variation: 15 },
-        intermediate: { base: 50, variation: 15 },
-        advanced: { base: 75, variation: 10 },
-      };
+      // Get lesson progress to calculate skills based on real data
+      const lessonProgress = await prisma.lessonProgress.findMany({
+        where: {
+          userId,
+          completed: true
+        },
+        include: {
+          lesson: {
+            select: {
+              topics: true,
+              level: true
+            }
+          }
+        }
+      });
 
-      // Determine base percentage based on user level
-      // Ensure level is one of the expected values, default to 'beginner' if not
-      let level = (user.level as string) || 'beginner';
-      if (!['beginner', 'intermediate', 'advanced'].includes(level)) {
-        level = 'beginner';
-      }
-      const { base, variation } = defaultPercentages[level as keyof typeof defaultPercentages];
+      // Get vocabulary progress
+      const vocabularyCount = await prisma.userVocabulary.count({
+        where: {
+          userId,
+          learned: true
+        }
+      });
 
-      // Generate skills with some randomization
+      // Calculate skill levels based on actual progress
+      const completedLessons = lessonProgress.length;
+      const basePercentage = Math.min(80, completedLessons * 3); // Base skill from lesson completion
+
+      // Calculate specific skill percentages
+      const listeningLessons = lessonProgress.filter(p =>
+        p.lesson.topics.includes('listening') || p.lesson.topics.includes('comprehension')
+      ).length;
+
+      const speakingLessons = lessonProgress.filter(p =>
+        p.lesson.topics.includes('speaking') || p.lesson.topics.includes('pronunciation') || p.lesson.topics.includes('conversation')
+      ).length;
+
+      const readingLessons = lessonProgress.filter(p =>
+        p.lesson.topics.includes('reading')
+      ).length;
+
+      const writingLessons = lessonProgress.filter(p =>
+        p.lesson.topics.includes('writing')
+      ).length;
+
+      const grammarLessons = lessonProgress.filter(p =>
+        p.lesson.topics.includes('grammar')
+      ).length;
+
+      // Map user level to CEFR level
+      const cefrLevel = mapUserLevelToCEFR(user.level);
+
       const skills: SkillResponse[] = [
-        { skill: 'Listening', level: level === 'beginner' ? 'A1' : level === 'intermediate' ? 'B1' : 'C1', percentage: base + Math.floor(Math.random() * variation) },
-        { skill: 'Speaking', level: level === 'beginner' ? 'A1' : level === 'intermediate' ? 'B1' : 'C1', percentage: base - Math.floor(Math.random() * variation) },
-        { skill: 'Reading', level: level === 'beginner' ? 'A2' : level === 'intermediate' ? 'B2' : 'C1', percentage: base + Math.floor(Math.random() * variation) },
-        { skill: 'Writing', level: level === 'beginner' ? 'A1' : level === 'intermediate' ? 'B1' : 'C1', percentage: base - Math.floor(Math.random() * variation) },
-        { skill: 'Grammar', level: level === 'beginner' ? 'A1' : level === 'intermediate' ? 'B1' : 'C1', percentage: base },
-        { skill: 'Vocabulary', level: level === 'beginner' ? 'A2' : level === 'intermediate' ? 'B2' : 'C1', percentage: base + Math.floor(Math.random() * variation) },
+        {
+          skill: 'Listening',
+          level: cefrLevel,
+          percentage: Math.min(100, Math.max(20, basePercentage + listeningLessons * 5))
+        },
+        {
+          skill: 'Speaking',
+          level: cefrLevel,
+          percentage: Math.min(100, Math.max(15, basePercentage + speakingLessons * 6))
+        },
+        {
+          skill: 'Reading',
+          level: cefrLevel,
+          percentage: Math.min(100, Math.max(25, basePercentage + readingLessons * 7))
+        },
+        {
+          skill: 'Writing',
+          level: cefrLevel,
+          percentage: Math.min(100, Math.max(10, basePercentage + writingLessons * 8))
+        },
+        {
+          skill: 'Grammar',
+          level: cefrLevel,
+          percentage: Math.min(100, Math.max(20, basePercentage + grammarLessons * 6))
+        },
+        {
+          skill: 'Vocabulary',
+          level: cefrLevel,
+          percentage: Math.min(100, Math.max(30, basePercentage + Math.floor(vocabularyCount / 5) * 3))
+        }
       ];
 
       return res.status(200).json({
@@ -80,5 +139,30 @@ export default async function handler(
       success: false,
       error: { message: 'Method not allowed' }
     });
+  }
+}
+
+function mapUserLevelToCEFR(userLevel: string): string {
+  switch (userLevel.toLowerCase()) {
+    case 'beginner':
+    case 'a1':
+      return 'A1';
+    case 'elementary':
+    case 'a2':
+      return 'A2';
+    case 'intermediate':
+    case 'b1':
+      return 'B1';
+    case 'upper-intermediate':
+    case 'b2':
+      return 'B2';
+    case 'advanced':
+    case 'c1':
+      return 'C1';
+    case 'proficient':
+    case 'c2':
+      return 'C2';
+    default:
+      return 'A1';
   }
 }
