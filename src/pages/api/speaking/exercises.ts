@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
+import { authMiddleware } from '../../../utils/authMiddleware';
+import { prisma } from '../../../lib/prisma';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
@@ -19,143 +21,7 @@ interface SpeakingFeedback {
   type: 'success' | 'warning' | 'error';
 }
 
-// Mock speaking exercises
-const speakingExercises: Record<string, SpeakingExercise[]> = {
-  beginner: [
-    {
-      id: 1,
-      prompt: 'Comment allez-vous aujourd\'hui?',
-      translation: 'How are you today?',
-      difficulty: 'beginner',
-      category: 'greetings'
-    },
-    {
-      id: 2,
-      prompt: 'Je m\'appelle Marie. Et vous?',
-      translation: 'My name is Marie. And you?',
-      difficulty: 'beginner',
-      category: 'greetings'
-    },
-    {
-      id: 3,
-      prompt: 'Où est la boulangerie?',
-      translation: 'Where is the bakery?',
-      difficulty: 'beginner',
-      category: 'travel'
-    },
-    {
-      id: 4,
-      prompt: 'Je voudrais un café, s\'il vous plaît.',
-      translation: 'I would like a coffee, please.',
-      difficulty: 'beginner',
-      category: 'dining'
-    },
-    {
-      id: 5,
-      prompt: 'Quelle heure est-il?',
-      translation: 'What time is it?',
-      difficulty: 'beginner',
-      category: 'everyday'
-    },
-    {
-      id: 6,
-      prompt: 'Combien ça coûte?',
-      translation: 'How much does it cost?',
-      difficulty: 'beginner',
-      category: 'shopping'
-    }
-  ],
-  intermediate: [
-    {
-      id: 7,
-      prompt: 'Pourriez-vous me recommander un bon restaurant dans le quartier?',
-      translation: 'Could you recommend a good restaurant in the area?',
-      difficulty: 'intermediate',
-      category: 'dining'
-    },
-    {
-      id: 8,
-      prompt: 'Je cherche un hôtel pas trop cher pour trois nuits.',
-      translation: 'I\'m looking for a reasonably priced hotel for three nights.',
-      difficulty: 'intermediate',
-      category: 'travel'
-    },
-    {
-      id: 9,
-      prompt: 'Excusez-moi, je me suis perdu. Pouvez-vous m\'aider?',
-      translation: 'Excuse me, I\'m lost. Can you help me?',
-      difficulty: 'intermediate',
-      category: 'travel'
-    },
-    {
-      id: 10,
-      prompt: 'J\'ai réservé une table pour deux personnes à 20h.',
-      translation: 'I\'ve reserved a table for two people at 8 PM.',
-      difficulty: 'intermediate',
-      category: 'dining'
-    },
-    {
-      id: 11,
-      prompt: 'Quels sont vos horaires d\'ouverture?',
-      translation: 'What are your opening hours?',
-      difficulty: 'intermediate',
-      category: 'everyday'
-    },
-    {
-      id: 12,
-      prompt: 'Je voudrais essayer cette veste en taille moyenne.',
-      translation: 'I would like to try this jacket in medium size.',
-      difficulty: 'intermediate',
-      category: 'shopping'
-    }
-  ],
-  advanced: [
-    {
-      id: 13,
-      prompt: 'Je suis désolé, mais je ne suis pas d\'accord avec votre analyse de la situation.',
-      translation: 'I\'m sorry, but I don\'t agree with your analysis of the situation.',
-      difficulty: 'advanced',
-      category: 'business'
-    },
-    {
-      id: 14,
-      prompt: 'Nous devrions envisager d\'autres options avant de prendre une décision finale.',
-      translation: 'We should consider other options before making a final decision.',
-      difficulty: 'advanced',
-      category: 'business'
-    },
-    {
-      id: 15,
-      prompt: 'Pourriez-vous m\'expliquer les implications de cette nouvelle politique?',
-      translation: 'Could you explain the implications of this new policy to me?',
-      difficulty: 'advanced',
-      category: 'business'
-    },
-    {
-      id: 16,
-      prompt: 'J\'ai eu un problème avec ma réservation et j\'aimerais parler au responsable.',
-      translation: 'I had a problem with my reservation and I would like to speak to the manager.',
-      difficulty: 'advanced',
-      category: 'travel'
-    },
-    {
-      id: 17,
-      prompt: 'Les transports en commun sont-ils fiables dans cette ville?',
-      translation: 'Is public transportation reliable in this city?',
-      difficulty: 'advanced',
-      category: 'travel'
-    },
-    {
-      id: 18,
-      prompt: 'Je cherche un cadeau pour quelqu\'un qui s\'intéresse à l\'art contemporain.',
-      translation: 'I\'m looking for a gift for someone who is interested in contemporary art.',
-      difficulty: 'advanced',
-      category: 'shopping'
-    }
-  ]
-};
-
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<SpeakingExercise[] | SpeakingExercise | SpeakingFeedback>>
 ) {
@@ -166,25 +32,34 @@ export default async function handler(
 
       // If ID is provided, return that specific exercise
       if (id) {
-        // Find the exercise across all difficulty levels
-        let exercise: SpeakingExercise | undefined;
-
-        for (const difficultyLevel in speakingExercises) {
-          exercise = speakingExercises[difficultyLevel].find(
-            ex => ex.id === parseInt(id as string)
-          );
-
-          if (exercise) break;
-        }
-
-        if (!exercise) {
-          return res.status(404).json({
+        const exerciseId = parseInt(id as string);
+        if (isNaN(exerciseId)) {
+          return res.status(400).json({
             success: false,
-            error: {
-              message: 'Exercise not found'
-            }
+            error: { message: 'Invalid exercise ID' }
           });
         }
+
+        // Get exercise from database
+        const dbExercise = await prisma.pronunciationExercise.findUnique({
+          where: { id: exerciseId }
+        });
+
+        if (!dbExercise) {
+          return res.status(404).json({
+            success: false,
+            error: { message: 'Exercise not found' }
+          });
+        }
+
+        // Transform to speaking exercise format
+        const exercise: SpeakingExercise = {
+          id: dbExercise.id,
+          prompt: dbExercise.text,
+          translation: dbExercise.translation || '',
+          difficulty: mapDifficultyLevel(dbExercise.difficulty),
+          category: mapCategory(dbExercise.category)
+        };
 
         return res.status(200).json({
           success: true,
@@ -192,22 +67,35 @@ export default async function handler(
         });
       }
 
-      // Get exercises based on difficulty
-      let exercises: SpeakingExercise[] = [];
+      // Build where clause for filtering
+      const where: any = {};
 
-      if (difficulty && speakingExercises[difficulty as string]) {
-        exercises = [...speakingExercises[difficulty as string]];
-      } else {
-        // If no difficulty specified, return all exercises
-        Object.values(speakingExercises).forEach(difficultyExercises => {
-          exercises = [...exercises, ...difficultyExercises];
-        });
+      if (difficulty) {
+        // Map difficulty levels
+        const dbDifficulty = mapDifficultyToDb(difficulty as string);
+        if (dbDifficulty) {
+          where.difficulty = dbDifficulty;
+        }
       }
 
-      // Filter by category if provided
       if (category) {
-        exercises = exercises.filter(ex => ex.category === category);
+        where.category = category as string;
       }
+
+      // Get exercises from database
+      const dbExercises = await prisma.pronunciationExercise.findMany({
+        where,
+        orderBy: { id: 'asc' }
+      });
+
+      // Transform to speaking exercise format
+      const exercises: SpeakingExercise[] = dbExercises.map(exercise => ({
+        id: exercise.id,
+        prompt: exercise.text,
+        translation: exercise.translation || '',
+        difficulty: mapDifficultyLevel(exercise.difficulty),
+        category: mapCategory(exercise.category)
+      }));
 
       return res.status(200).json({
         success: true,
@@ -217,9 +105,7 @@ export default async function handler(
       console.error('Error fetching speaking exercises:', error);
       return res.status(500).json({
         success: false,
-        error: {
-          message: 'Internal server error'
-        }
+        error: { message: 'Internal server error' }
       });
     }
   }
@@ -233,50 +119,26 @@ export default async function handler(
       if (!exerciseId || !transcript) {
         return res.status(400).json({
           success: false,
-          error: {
-            message: 'Missing required fields'
-          }
+          error: { message: 'Missing required fields' }
         });
       }
 
-      // Find the exercise
-      let exercise: SpeakingExercise | undefined;
+      // Find the exercise in database
+      const dbExercise = await prisma.pronunciationExercise.findUnique({
+        where: { id: parseInt(exerciseId) }
+      });
 
-      for (const difficultyLevel in speakingExercises) {
-        exercise = speakingExercises[difficultyLevel].find(
-          ex => ex.id === parseInt(exerciseId)
-        );
-
-        if (exercise) break;
-      }
-
-      if (!exercise) {
+      if (!dbExercise) {
         return res.status(404).json({
           success: false,
-          error: {
-            message: 'Exercise not found'
-          }
+          error: { message: 'Exercise not found' }
         });
       }
 
       // In a real app, this would use a speech recognition API to evaluate the pronunciation
-      // For now, we'll just simulate feedback based on the transcript length
+      // For now, we'll simulate feedback based on the transcript and expected pronunciation
 
-      const feedback: SpeakingFeedback = {
-        accuracy: Math.random() * 100,
-        pronunciation: Math.random() * 100,
-        fluency: Math.random() * 100,
-        feedback: transcript.length > 20
-          ? 'Excellent pronunciation! Your accent is very natural.'
-          : transcript.length > 10
-            ? 'Good attempt! Try to focus on the "r" sound in French.'
-            : 'Try again. Pay attention to the pronunciation of vowels.',
-        type: transcript.length > 20
-          ? 'success'
-          : transcript.length > 10
-            ? 'warning'
-            : 'error'
-      };
+      const feedback: SpeakingFeedback = generateSpeakingFeedback(transcript, dbExercise);
 
       return res.status(200).json({
         success: true,
@@ -286,9 +148,7 @@ export default async function handler(
       console.error('Error evaluating speaking:', error);
       return res.status(500).json({
         success: false,
-        error: {
-          message: 'Internal server error'
-        }
+        error: { message: 'Internal server error' }
       });
     }
   }
@@ -296,8 +156,78 @@ export default async function handler(
   // Method not allowed
   return res.status(405).json({
     success: false,
-    error: {
-      message: 'Method not allowed'
-    }
+    error: { message: 'Method not allowed' }
   });
 }
+
+// Helper functions
+function mapDifficultyLevel(dbDifficulty: string): 'beginner' | 'intermediate' | 'advanced' {
+  switch (dbDifficulty) {
+    case 'A1':
+    case 'A2':
+      return 'beginner';
+    case 'B1':
+    case 'B2':
+      return 'intermediate';
+    case 'C1':
+    case 'C2':
+      return 'advanced';
+    default:
+      return 'beginner';
+  }
+}
+
+function mapDifficultyToDb(difficulty: string): string | null {
+  switch (difficulty) {
+    case 'beginner':
+      return 'A1';
+    case 'intermediate':
+      return 'B1';
+    case 'advanced':
+      return 'C1';
+    default:
+      return null;
+  }
+}
+
+function mapCategory(dbCategory: string | null): 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping' | undefined {
+  if (!dbCategory) return undefined;
+
+  const validCategories = ['greetings', 'travel', 'dining', 'everyday', 'business', 'shopping'];
+  return validCategories.includes(dbCategory) ? dbCategory as any : 'everyday';
+}
+
+function generateSpeakingFeedback(transcript: string, exercise: any): SpeakingFeedback {
+  // Simple feedback generation based on transcript quality
+  const transcriptLength = transcript.length;
+  const expectedLength = exercise.text.length;
+  const lengthRatio = transcriptLength / expectedLength;
+
+  let accuracy = Math.min(100, Math.max(0, lengthRatio * 80 + Math.random() * 20));
+  let pronunciation = Math.min(100, Math.max(0, 70 + Math.random() * 30));
+  let fluency = Math.min(100, Math.max(0, 60 + Math.random() * 40));
+
+  let feedback = '';
+  let type: 'success' | 'warning' | 'error' = 'error';
+
+  if (accuracy > 80) {
+    feedback = 'Excellent pronunciation! Your accent is very natural.';
+    type = 'success';
+  } else if (accuracy > 60) {
+    feedback = 'Good attempt! Try to focus on the "r" sound in French.';
+    type = 'warning';
+  } else {
+    feedback = 'Try again. Pay attention to the pronunciation of vowels.';
+    type = 'error';
+  }
+
+  return {
+    accuracy: Math.round(accuracy),
+    pronunciation: Math.round(pronunciation),
+    fluency: Math.round(fluency),
+    feedback,
+    type
+  };
+}
+
+export default authMiddleware(handler);
