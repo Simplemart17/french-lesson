@@ -5,7 +5,7 @@ import { prisma } from '../../../lib/prisma';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
-  id: number;
+  id: string;
   prompt: string;
   translation: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -32,13 +32,7 @@ async function handler(
 
       // If ID is provided, return that specific exercise
       if (id) {
-        const exerciseId = parseInt(id as string);
-        if (isNaN(exerciseId)) {
-          return res.status(400).json({
-            success: false,
-            error: { message: 'Invalid exercise ID' }
-          });
-        }
+        const exerciseId = id as string;
 
         // Get exercise from database
         const dbExercise = await prisma.pronunciationExercise.findUnique({
@@ -125,7 +119,7 @@ async function handler(
 
       // Find the exercise in database
       const dbExercise = await prisma.pronunciationExercise.findUnique({
-        where: { id: parseInt(exerciseId) }
+        where: { id: exerciseId }
       });
 
       if (!dbExercise) {
