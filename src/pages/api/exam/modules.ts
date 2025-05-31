@@ -253,7 +253,7 @@ const examModules: Record<string, ExamModule> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<ExamModule[] | ExamModule>>
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   // GET request to retrieve exam modules
   if (req.method === 'GET') {
