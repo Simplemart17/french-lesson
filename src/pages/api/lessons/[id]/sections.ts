@@ -24,16 +24,7 @@ async function handler(
       });
     }
     
-    const lessonId = parseInt(id, 10);
-    
-    if (isNaN(lessonId)) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Invalid lesson ID format'
-        }
-      });
-    }
+    const lessonId = id;
     
     // Check if the lesson exists
     const lesson = await prisma.lesson.findUnique({
@@ -61,9 +52,9 @@ async function handler(
       lessonId: section.lessonId,
       title: section.title,
       type: section.type as any,
-      content: section.content,
-      audioUrl: section.audioUrl,
-      videoUrl: section.videoUrl,
+      content: section.content || undefined,
+      audioUrl: section.audioUrl || undefined,
+      videoUrl: section.videoUrl || undefined,
       order: section.order
     }));
     
