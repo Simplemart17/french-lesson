@@ -11,7 +11,7 @@ import type {
 import { hash, compare } from 'bcrypt';
 
 // User operations
-export const findUserById = async (id: number): Promise<User | null> => {
+export const findUserById = async (id: string): Promise<User | null> => {
   const user = await prisma.user.findUnique({
     where: { id }
   });
@@ -102,7 +102,7 @@ export const createUser = async (userData: Omit<User, 'id'> & { password: string
   };
 };
 
-export const updateUser = async (id: number, userData: Partial<User>): Promise<User | null> => {
+export const updateUser = async (id: string, userData: Partial<User>): Promise<User | null> => {
   const user = await prisma.user.findUnique({
     where: { id }
   });
@@ -258,7 +258,7 @@ export const getLessonsByTopic = async (topic: string): Promise<Lesson[]> => {
   }));
 };
 
-export const getLessonById = async (id: number): Promise<Lesson | null> => {
+export const getLessonById = async (id: string): Promise<Lesson | null> => {
   const lesson = await prisma.lesson.findUnique({
     where: { id },
     include: { sections: true }
@@ -288,8 +288,8 @@ export const getLessonById = async (id: number): Promise<Lesson | null> => {
 };
 
 export const updateLessonProgress = async (
-  userId: number,
-  lessonId: number,
+  userId: string,
+  lessonId: string,
   progress: Partial<LessonProgress>
 ): Promise<LessonProgress | null> => {
   // Check if progress already exists
@@ -358,7 +358,7 @@ export const updateLessonProgress = async (
   }
 };
 
-export const getLessonProgress = async (userId: number, lessonId?: number): Promise<LessonProgress[] | LessonProgress | null> => {
+export const getLessonProgress = async (userId: string, lessonId?: string): Promise<LessonProgress[] | LessonProgress | null> => {
   if (lessonId) {
     const progress = await prisma.lessonProgress.findUnique({
       where: {
@@ -396,7 +396,7 @@ export const getLessonProgress = async (userId: number, lessonId?: number): Prom
 };
 
 // Vocabulary operations
-export const getUserVocabulary = async (userId: number): Promise<VocabularyItem[]> => {
+export const getUserVocabulary = async (userId: string): Promise<VocabularyItem[]> => {
   const userVocab = await prisma.userVocabulary.findMany({
     where: { userId },
     include: { vocabulary: true }
@@ -412,7 +412,7 @@ export const getUserVocabulary = async (userId: number): Promise<VocabularyItem[
   }));
 };
 
-export const addUserVocabulary = async (userId: number, item: VocabularyItem): Promise<VocabularyItem> => {
+export const addUserVocabulary = async (userId: string, item: VocabularyItem): Promise<VocabularyItem> => {
   // Find or create vocabulary word
   let vocabulary = await prisma.vocabulary.findUnique({
     where: { word: item.word }
@@ -484,7 +484,7 @@ export const addUserVocabulary = async (userId: number, item: VocabularyItem): P
   }
 };
 
-export const updateVocabularyItem = async (userId: number, word: string, updates: Partial<VocabularyItem>): Promise<VocabularyItem | null> => {
+export const updateVocabularyItem = async (userId: string, word: string, updates: Partial<VocabularyItem>): Promise<VocabularyItem | null> => {
   // Find vocabulary word
   const vocabulary = await prisma.vocabulary.findUnique({
     where: { word }
@@ -552,7 +552,7 @@ export const getConversation = async (id: string): Promise<Conversation | null> 
   };
 };
 
-export const getUserConversations = async (userId: number): Promise<Conversation[]> => {
+export const getUserConversations = async (userId: string): Promise<Conversation[]> => {
   const conversations = await prisma.conversation.findMany({
     where: { userId },
     include: { messages: true }
@@ -573,7 +573,7 @@ export const getUserConversations = async (userId: number): Promise<Conversation
   }));
 };
 
-export const createConversation = async (userId: number, title: string, context: string, initialMessage?: string): Promise<Conversation> => {
+export const createConversation = async (userId: string, title: string, context: string, initialMessage?: string): Promise<Conversation> => {
   const now = new Date();
 
   const conversation = await prisma.conversation.create({
@@ -682,7 +682,7 @@ export const saveExamResult = async (result: ExamResult): Promise<ExamResult> =>
   };
 };
 
-export const getUserExamResults = async (userId: number): Promise<ExamResult[]> => {
+export const getUserExamResults = async (userId: string): Promise<ExamResult[]> => {
   const results = await prisma.examResult.findMany({
     where: { userId }
   });
