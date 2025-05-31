@@ -5,6 +5,7 @@ export interface ApiResponse<T = any> {
   data: T;
   status: number;
   message?: string;
+  success?: boolean;
 }
 
 // Define API error interface
