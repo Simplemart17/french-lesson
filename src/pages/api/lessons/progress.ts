@@ -66,7 +66,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
     try {
       const { lessonId, completed, score, answers } = req.body;
 
-      if (!lessonId || typeof lessonId !== 'number') {
+      if (!lessonId || typeof lessonId !== 'string') {
         return res.status(400).json({
           success: false,
           error: { message: 'Invalid or missing lessonId' }
@@ -147,7 +147,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
         score: updatedProgress.score,
         startedAt: updatedProgress.startedAt?.toISOString(),
         completedAt: updatedProgress.completedAt?.toISOString() || null,
-        answers: updatedProgress.answers as Record<number, string | string[]> | undefined
+        answers: updatedProgress.answers as Record<string, string | string[]> | undefined
       };
 
       return res.status(200).json({
