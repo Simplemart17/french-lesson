@@ -25,16 +25,7 @@ async function handler(
       });
     }
     
-    const lessonId = parseInt(id, 10);
-    
-    if (isNaN(lessonId)) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Invalid lesson ID format'
-        }
-      });
-    }
+    const lessonId = id;
     
     if (!answers || typeof answers !== 'object') {
       return res.status(400).json({
@@ -83,13 +74,13 @@ async function handler(
     
     // Calculate the score and generate feedback
     let correctCount = 0;
-    const feedback: Record<number, { correct: boolean; explanation?: string }> = {};
-    
+    const feedback: Record<string, { correct: boolean; explanation?: string }> = {};
+
     // Process each answer
     for (const [exerciseIdStr, userAnswer] of Object.entries(answers)) {
-      const exerciseId = parseInt(exerciseIdStr, 10);
+      const exerciseId = exerciseIdStr;
       const exercise = exercises.find(ex => ex.id === exerciseId);
-      
+
       if (!exercise) {
         feedback[exerciseId] = {
           correct: false,
@@ -118,7 +109,7 @@ async function handler(
       
       feedback[exerciseId] = {
         correct: isCorrect,
-        explanation: exercise.explanation
+        explanation: exercise.explanation || undefined
       };
     }
     
