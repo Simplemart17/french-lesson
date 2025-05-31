@@ -24,16 +24,7 @@ async function handler(
       });
     }
 
-    const sectionId = parseInt(id, 10);
-
-    if (isNaN(sectionId)) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Invalid section ID format'
-        }
-      });
-    }
+    const sectionId = id;
 
     // Check if the section exists
     const section = await prisma.lessonSection.findUnique({
