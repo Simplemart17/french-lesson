@@ -25,7 +25,7 @@ export default async function handler(
 
       // Get a specific lesson by ID
       if (id) {
-        const lessonId = parseInt(id as string, 10);
+        const lessonId = id as string;
 
         // Get the lesson from the database
         const lesson = await prisma.lesson.findUnique({
