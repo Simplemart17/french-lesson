@@ -21,16 +21,7 @@ async function handler(
         });
       }
 
-      const lessonId = parseInt(id, 10);
-
-      if (isNaN(lessonId)) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            message: 'Invalid lesson ID format'
-          }
-        });
-      }
+      const lessonId = id;
 
       // Find the lesson by ID with its sections
       const lesson = await prisma.lesson.findUnique({
