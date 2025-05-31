@@ -10,7 +10,7 @@ interface SkillProgress {
 }
 
 interface ActivityLog {
-  id: number;
+  id: string;
   date: string;
   activity: string;
   duration: number; // in minutes
@@ -154,7 +154,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         category: determineCategory(progress.lesson.topics)
       })),
       ...vocabularyProgress.slice(0, 5).map((vocab, index) => ({
-        id: vocab.id + 10000,
+        id: `vocab-${vocab.id}`,
         date: vocab.lastPracticed?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
         activity: `Learned new word: ${vocab.vocabulary.word}`,
         duration: 5,
