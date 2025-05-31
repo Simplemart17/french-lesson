@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from './apiConfig';
 
 // Define interfaces for user data
 export interface UserProfile {
-  id: number;
+  id: string;
   name: string;
   email: string;
   level: 'beginner' | 'intermediate' | 'advanced';
@@ -14,8 +14,8 @@ export interface UserProfile {
 }
 
 export interface UserPreferences {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   learningGoals: string[];
   interests: string[];
   studyTime: 'less-than-30min' | '30min-1hour' | '1-2hours' | 'more-than-2hours';
@@ -46,8 +46,8 @@ export interface UserProgress {
 
 export interface UserStatistics {
   examScores: {
-    id: number;
-    examId: number;
+    id: string;
+    examId: string;
     examName: string;
     score: number;
     date: string;
