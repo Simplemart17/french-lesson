@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { saveExamResult, getUserExamResults } from '@/utils/mockDb';
+import { getUserExamResults } from '@/lib/db';
 import { ApiResponse, ExamResult } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
+import { prisma } from '@/lib/prisma';
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,29 +21,39 @@ export default async function handler(
   const userId = getUserId(req);
 
   if (req.method === 'GET') {
-    // Get the user's exam results
-    const { examId, level, section } = req.query;
-    
-    let results = getUserExamResults(userId);
-    
-    // Filter results if query parameters are provided
-    if (examId) {
-      results = results.filter(r => r.examId === examId);
+    try {
+      // Get the user's exam results
+      const { examId, level, section } = req.query;
+
+      let results = await getUserExamResults(userId);
+
+      // Filter results if query parameters are provided
+      if (examId) {
+        results = results.filter(r => r.examId === examId);
+      }
+
+      if (level) {
+        results = results.filter(r => r.level === level);
+      }
+
+      if (section) {
+        results = results.filter(r => r.section === section);
+      }
+
+      // Return filtered results
+      return res.status(200).json({
+        success: true,
+        data: results
+      });
+    } catch (error) {
+      console.error('Error fetching exam results:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          message: 'Internal server error'
+        }
+      });
     }
-    
-    if (level) {
-      results = results.filter(r => r.level === level);
-    }
-    
-    if (section) {
-      results = results.filter(r => r.section === section);
-    }
-    
-    // Return filtered results
-    return res.status(200).json({
-      success: true,
-      data: results
-    });
   } else if (req.method === 'POST') {
     // Save a new exam result
     try {
@@ -58,19 +69,19 @@ export default async function handler(
         });
       }
       
-      // Create the exam result object
-      const examResult: ExamResult = {
-        userId,
-        examId,
-        section,
-        level,
-        score,
-        details,
-        completedAt: new Date().toISOString()
-      };
-      
-      // Save the result
-      const savedResult = saveExamResult(examResult);
+      // Create the exam result object and save to database
+      const savedResult = await prisma.examResult.create({
+        data: {
+          userId,
+          examId,
+          section,
+          level,
+          score,
+          details,
+          completedAt: new Date(),
+          timeSpent: req.body.timeSpent || 0
+        }
+      });
       
       return res.status(201).json({
         success: true,
