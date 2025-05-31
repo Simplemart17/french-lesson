@@ -30,7 +30,7 @@ const lessonLevels = [
 
 // Define Lesson interface first
 interface Lesson {
-  id: number;
+  id: string;
   title: string;
   description: string;
   level: string;
@@ -175,8 +175,8 @@ export default function LessonsPage() {
   const sortedLessons = [...filteredLessons].sort((a, b) => {
     switch (sortOption) {
       case 'newest':
-        // Sort by id (assuming higher id means newer lesson)
-        return b.id - a.id;
+        // Sort by id (string comparison for UUIDs)
+        return b.id.localeCompare(a.id);
       case 'popular':
         return (b.progress || 0) - (a.progress || 0);
       case 'duration-asc':
