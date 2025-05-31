@@ -108,7 +108,7 @@ export default async function handler(
         });
 
         // Create a map of vocabulary ID to learned status
-        const learnedMap = new Map<number, boolean>();
+        const learnedMap = new Map<string, boolean>();
         userVocabularyItems.forEach(item => {
           learnedMap.set(item.vocabularyId, item.learned);
         });
@@ -173,7 +173,7 @@ export default async function handler(
         });
 
         // Create a map of vocabulary ID to learned status
-        const learnedMap = new Map<number, boolean>();
+        const learnedMap = new Map<string, boolean>();
         userVocabularyItems.forEach(item => {
           learnedMap.set(item.vocabularyId, item.learned);
         });
