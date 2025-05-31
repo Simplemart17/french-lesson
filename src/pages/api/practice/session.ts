@@ -3,15 +3,15 @@ import { authMiddleware } from '../../../utils/authMiddleware';
 import { prisma } from '../../../lib/prisma';
 
 interface PracticeItemWithVocabulary {
-  id: number;
+  id: string;
   sessionId: string;
-  vocabularyId: number;
+  vocabularyId: string;
   exerciseType: string;
   isCorrect: boolean;
   userAnswer: string;
   expectedAnswer: string;
   vocabulary?: {
-    id: number;
+    id: string;
     word: string;
     translation: string;
     example: string;
@@ -20,7 +20,7 @@ interface PracticeItemWithVocabulary {
 }
 
 interface PracticeItemInput {
-  vocabularyId: number;
+  vocabularyId: string;
   exerciseType: string;
   isCorrect: boolean;
   userAnswer: string;
@@ -29,7 +29,7 @@ interface PracticeItemInput {
 
 interface SessionWithStats {
   id: string;
-  userId: number;
+  userId: string;
   type: string;
   duration: number;
   createdAt: Date;
