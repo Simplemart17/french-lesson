@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
+import { hash } from 'bcrypt';
 
 // Import seed functions
 import { seedVocabulary } from './vocabulary';
@@ -62,10 +63,53 @@ export async function processBatches(
   }
 }
 
+// Function to seed default users for development
+async function seedUsers(prisma: PrismaClient) {
+  console.log('👤 Seeding users...');
+
+  const defaultUserId = '00000000-0000-0000-0000-000000000001';
+
+  // Check if default user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { id: defaultUserId }
+  });
+
+  if (existingUser) {
+    console.log('✓ Default user already exists');
+    return;
+  }
+
+  // Create default development user
+  const hashedPassword = await hash('password123', 10);
+
+  await prisma.user.create({
+    data: {
+      id: defaultUserId,
+      email: 'demo@frenchtutor.ai',
+      name: 'Demo User',
+      password: hashedPassword,
+      level: 'A2',
+      points: 150,
+      streakDays: 5,
+      learningGoals: ['conversation', 'grammar'],
+      completedLessons: 3,
+      dailyGoal: 20,
+      notifications: true,
+      theme: 'light'
+    }
+  });
+
+  console.log('✓ Created default development user (demo@frenchtutor.ai / password123)');
+}
+
 async function main() {
   console.log('🌱 Starting database seeding...');
 
   try {
+    // Seed users first (required for other data)
+    console.log('👤 Starting user seeding...');
+    await seedUsers(prisma);
+
     // Seed in order of dependencies
     console.log('📚 Starting vocabulary seeding...');
     await seedVocabulary(prisma);

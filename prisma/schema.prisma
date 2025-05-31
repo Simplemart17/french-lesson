@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                        Int                 @id @default(autoincrement())
+  id                        String              @id @default(uuid())
   email                     String              @unique
   name                      String
   password                  String?
@@ -35,7 +35,7 @@ model User {
 }
 
 model Lesson {
-  id          Int              @id @default(autoincrement())
+  id          String           @id @default(uuid())
   title       String
   description String
   level       String
@@ -46,8 +46,8 @@ model Lesson {
 }
 
 model LessonSection {
-  id        Int              @id @default(autoincrement())
-  lessonId  Int
+  id        String           @id @default(uuid())
+  lessonId  String
   title     String
   type      String
   content   String?
@@ -59,8 +59,8 @@ model LessonSection {
 }
 
 model LessonExercise {
-  id            Int           @id @default(autoincrement())
-  sectionId     Int
+  id            String        @id @default(uuid())
+  sectionId     String
   type          String
   question      String
   options       String[]
@@ -70,9 +70,9 @@ model LessonExercise {
 }
 
 model LessonProgress {
-  id          Int       @id @default(autoincrement())
-  lessonId    Int
-  userId      Int
+  id          String    @id @default(uuid())
+  lessonId    String
+  userId      String
   completed   Boolean   @default(false)
   score       Int       @default(0)
   startedAt   DateTime?
@@ -85,7 +85,7 @@ model LessonProgress {
 }
 
 model Vocabulary {
-  id             Int              @id @default(autoincrement())
+  id             String           @id @default(uuid())
   word           String           @unique
   translation    String
   example        String
@@ -98,9 +98,9 @@ model Vocabulary {
 }
 
 model UserVocabulary {
-  id              Int        @id @default(autoincrement())
-  userId          Int
-  vocabularyId    Int
+  id              String     @id @default(uuid())
+  userId          String
+  vocabularyId    String
   learned         Boolean    @default(false)
   lastPracticed   DateTime?
   nextReviewDate  DateTime?
@@ -113,19 +113,19 @@ model UserVocabulary {
 
 model Conversation {
   id            String                @id @default(uuid())
-  userId        Int
+  userId        String
   title         String
   context       String
   startedAt     DateTime              @default(now())
   lastMessageAt DateTime              @default(now())
-  templateId    Int?
+  templateId    String?
   template      ConversationTemplate? @relation(fields: [templateId], references: [id])
   user          User                  @relation(fields: [userId], references: [id])
   messages      Message[]
 }
 
 model Message {
-  id                  Int          @id @default(autoincrement())
+  id                  String       @id @default(uuid())
   conversationId      String
   role                String
   content             String
@@ -137,7 +137,7 @@ model Message {
 }
 
 model ConversationTemplate {
-  id                Int                 @id @default(autoincrement())
+  id                String              @id @default(uuid())
   title             String
   description       String
   systemPrompt      String
@@ -149,17 +149,17 @@ model ConversationTemplate {
 }
 
 model UserTemplateUsage {
-  id         Int                  @id @default(autoincrement())
-  userId     Int
-  templateId Int
+  id         String               @id @default(uuid())
+  userId     String
+  templateId String
   usedAt     DateTime             @default(now())
   template   ConversationTemplate @relation(fields: [templateId], references: [id])
   user       User                 @relation(fields: [userId], references: [id])
 }
 
 model ExamResult {
-  id          Int      @id @default(autoincrement())
-  userId      Int
+  id          String   @id @default(uuid())
+  userId      String
   examId      String
   section     String
   level       String
@@ -172,7 +172,7 @@ model ExamResult {
 
 model PracticeSession {
   id                 String                      @id @default(uuid())
-  userId             Int
+  userId             String
   type               String
   duration           Int
   createdAt          DateTime                    @default(now())
@@ -185,9 +185,9 @@ model PracticeSession {
 }
 
 model PracticeItem {
-  id             Int             @id @default(autoincrement())
+  id             String          @id @default(uuid())
   sessionId      String
-  vocabularyId   Int
+  vocabularyId   String
   exerciseType   String
   isCorrect      Boolean
   userAnswer     String
@@ -197,7 +197,7 @@ model PracticeItem {
 }
 
 model PronunciationExercise {
-  id                    Int                         @id @default(autoincrement())
+  id                    String                      @id @default(uuid())
   text                  String
   translation           String?
   difficulty            String
@@ -207,9 +207,9 @@ model PronunciationExercise {
 }
 
 model PronunciationPracticeItem {
-  id              Int                   @id @default(autoincrement())
+  id              String                @id @default(uuid())
   sessionId       String
-  exerciseId      Int
+  exerciseId      String
   userAudioUrl    String?
   transcript      String?
   similarityScore Float?
@@ -219,7 +219,7 @@ model PronunciationPracticeItem {
 }
 
 model GrammarRule {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   title       String
   description String
   examples    String[]
