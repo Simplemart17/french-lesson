@@ -221,7 +221,7 @@ const verbConjugationExercises: Record<string, VerbConjugationExercise[]> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<VerbConjugationExercise[] | VerbConjugationExercise>>
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   // GET request to retrieve verb conjugation exercises
   if (req.method === 'GET') {
