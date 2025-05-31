@@ -107,7 +107,10 @@ export const conversationApiService = {
         formData.append('content', request.content);
         formData.append('audio', request.audioBlob);
 
-        const response = await apiClient.post<ApiResponse<Message>>('/conversation/message', formData, {
+        const response = await apiClient.request<ApiResponse<Message>>({
+          method: 'POST',
+          url: '/conversation/message',
+          data: formData,
           headers: {
             'Content-Type': 'multipart/form-data'
           }
