@@ -4,8 +4,8 @@ import { isAuthenticated, getUserId } from '@/utils/auth';
 import { prisma } from '@/lib/prisma';
 
 // Mock user vocabulary progress
-const userVocabularyProgress: Record<number, VocabularyItem[]> = {
-  1: [
+const userVocabularyProgress: Record<string, VocabularyItem[]> = {
+  '00000000-0000-0000-0000-000000000001': [
     {
       word: 'bonjour',
       translation: 'hello',
