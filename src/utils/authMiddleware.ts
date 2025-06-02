@@ -1,70 +1,73 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { verify } from 'jsonwebtoken';
-import { AuthService } from './authService';
+import { createClient } from '@supabase/supabase-js';
 
 type NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void;
 
+// Create Supabase client for server-side auth verification (only if service key is available)
+const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2aG1kZ2Jxam9zaGNkYnF5aXR4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODY1NDM3NCwiZXhwIjoyMDY0MjMwMzc0fQ.Ej6mJOQJGKJOQJGKJOQJGKJOQJGKJOQJGKJOQJGKJOQ'
+  ? createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+  : null;
+
 /**
- * Authentication middleware for API routes
- * 
- * @param handler The API route handler
- * @returns The handler with authentication check
+ * Simple authentication middleware for API routes
  */
 export function authMiddleware(handler: NextApiHandler): NextApiHandler {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      // Skip auth check for specific routes
-      const isPublicRoute = req.url && [
-        '/api/auth/login',
-        '/api/auth/register',
-        '/api/auth/logout',
-      ].includes(req.url);
-      
-      if (isPublicRoute) {
+      // Get token from Authorization header
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'Unauthorized - Missing or invalid authorization header' }
+        });
+      }
+
+      const token = authHeader.substring(7);
+
+      // Development mode: Accept test tokens
+      if (process.env.NODE_ENV === 'development' && token.startsWith('test-token-')) {
+        // Create a mock user for development
+        const mockUser = {
+          id: 'test-user-id',
+          email: 'test@example.com',
+          user_metadata: {
+            name: 'Test User'
+          }
+        };
+
+        // Attach mock user to request
+        (req as any).user = mockUser;
+
+        // Proceed to handler
         return handler(req, res);
       }
 
-      // Get token from request headers
-      const authHeader = req.headers.authorization;
-      
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        // Also check for auth cookie as fallback
-        const token = req.cookies['auth_token'];
-        
-        if (!token) {
-          return res.status(401).json({
-            success: false,
-            error: { message: 'Unauthorized - No valid authentication token' }
-          });
-        }
-        
-        // Verify token
-        try {
-          const decoded = verify(token, process.env.JWT_SECRET || 'default-secret');
-          // Attach user to request
-          (req as any).user = decoded;
-        } catch (err) {
-          return res.status(401).json({
-            success: false,
-            error: { message: 'Unauthorized - Invalid token' }
-          });
-        }
-      } else {
-        // Extract token from Bearer header
-        const token = authHeader.split(' ')[1];
-        
-        // Verify token
-        try {
-          const decoded = verify(token, process.env.JWT_SECRET || 'default-secret');
-          // Attach user to request
-          (req as any).user = decoded;
-        } catch (err) {
-          return res.status(401).json({
-            success: false,
-            error: { message: 'Unauthorized - Invalid token' }
-          });
-        }
+      // Production mode: Verify token with Supabase
+      if (!supabase) {
+        console.error('Auth middleware - Supabase service role key not configured');
+        return res.status(500).json({
+          success: false,
+          error: { message: 'Authentication service not configured' }
+        });
       }
+
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+
+      if (error || !user) {
+        console.log('Auth middleware - token verification failed:', error?.message);
+        return res.status(401).json({
+          success: false,
+          error: { message: 'Unauthorized - Invalid token' }
+        });
+      }
+
+      // Attach user to request
+      (req as any).user = user;
 
       // Proceed to handler
       return handler(req, res);
@@ -76,4 +79,4 @@ export function authMiddleware(handler: NextApiHandler): NextApiHandler {
       });
     }
   };
-} 
+}

@@ -1,74 +1,71 @@
-import { parseCookies, setCookie, destroyCookie } from 'nookies';
+/**
+ * Simplified Authentication Storage
+ * Uses localStorage only for simplicity and reliability
+ */
 
-// Constants
-const TOKEN_NAME = 'auth_token';
-const USER_DATA = 'user_data';
-// Cookie lifetime in seconds (30 days)
-const MAX_AGE = 30 * 24 * 60 * 60;
+const TOKEN_KEY = 'supabase_auth_token';
+const USER_KEY = 'supabase_user_data';
 
 /**
- * Set the authentication token cookie
+ * Set authentication token
  */
-export const setAuthToken = (token: string) => {
-  setCookie(null, TOKEN_NAME, token, {
-    maxAge: MAX_AGE,
-    path: '/',
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax', // Changed from strict to lax for better UX with redirects
-    // httpOnly can only be set by the server, not client-side JavaScript
-  });
-};
-
-/**
- * Set user data in a cookie (non-sensitive info only)
- */
-export const setUserData = (userData: any) => {
-  // Remove sensitive data before storing
-  const { password, ...safeUserData } = userData;
-
-  setCookie(null, USER_DATA, JSON.stringify(safeUserData), {
-    maxAge: MAX_AGE,
-    path: '/',
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-  });
-};
-
-/**
- * Get the authentication token from cookies
- */
-export const getAuthToken = () => {
-  const cookies = parseCookies();
-  return cookies[TOKEN_NAME];
-};
-
-/**
- * Get user data from cookies
- */
-export const getUserData = () => {
-  const cookies = parseCookies();
-  if (!cookies[USER_DATA]) return null;
-
-  try {
-    // First decode the URI component, then parse the JSON
-    const decodedData = decodeURIComponent(cookies[USER_DATA]);
-    return JSON.parse(decodedData);
-  } catch (error) {
-    console.error('Error parsing user data from cookie:', error);
-    return null;
+export const setAuthToken = (token: string): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(TOKEN_KEY, token);
   }
 };
 
 /**
- * Remove all authentication cookies
+ * Get authentication token
  */
-export const clearAuthCookies = () => {
-  destroyCookie(null, TOKEN_NAME, { path: '/' });
-  destroyCookie(null, USER_DATA, { path: '/' });
+export const getAuthToken = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+  return null;
 };
 
 /**
- * Check if the user is authenticated based on token presence
+ * Set user data
+ */
+export const setUserData = (userData: any): void => {
+  if (typeof window !== 'undefined') {
+    // Remove sensitive data
+    const { password, ...safeUserData } = userData;
+    localStorage.setItem(USER_KEY, JSON.stringify(safeUserData));
+  }
+};
+
+/**
+ * Get user data
+ */
+export const getUserData = (): any => {
+  if (typeof window !== 'undefined') {
+    const userData = localStorage.getItem(USER_KEY);
+    if (userData) {
+      try {
+        return JSON.parse(userData);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        return null;
+      }
+    }
+  }
+  return null;
+};
+
+/**
+ * Clear all authentication data
+ */
+export const clearAuthCookies = (): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  }
+};
+
+/**
+ * Check if user is authenticated
  */
 export const isAuthenticated = (): boolean => {
   return !!getAuthToken();

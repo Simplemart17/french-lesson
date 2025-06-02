@@ -1,6 +1,5 @@
 import { NextApiRequest } from "next";
 import { verify } from "jsonwebtoken";
-import { findUserById } from "@/lib/db";
 
 // Secret key for JWT verification - in production, use environment variables
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
@@ -16,6 +15,11 @@ export function isAuthenticated(req: NextApiRequest): boolean {
 
   const token = authHeader.split(" ")[1];
   if (!token) return false;
+
+  // Development mode: Accept test tokens
+  if (process.env.NODE_ENV === 'development' && token.startsWith('test-token-')) {
+    return true;
+  }
 
   try {
     // Verify the token
@@ -37,6 +41,11 @@ export function getUserIdFromToken(req: NextApiRequest): string | null {
   const token = authHeader.split(" ")[1];
   if (!token) return null;
 
+  // Development mode: Return test user ID for test tokens
+  if (process.env.NODE_ENV === 'development' && token.startsWith('test-token-')) {
+    return 'test-user-id';
+  }
+
   try {
     // Decode and verify the token
     const decoded = verify(token, JWT_SECRET) as { userId: string };
@@ -47,9 +56,16 @@ export function getUserIdFromToken(req: NextApiRequest): string | null {
 }
 
 // Helper to get user ID, with fallback for development
-export function getUserId(req: NextApiRequest): string {
+export function getUserId(req: NextApiRequest): string | null {
+  // First try to get from the user object attached by authMiddleware
+  const user = (req as any).user;
+  if (user && user.id) {
+    return user.id;
+  }
+
+  // Fallback to token-based extraction
   const id = getUserIdFromToken(req);
-  return id!;
+  return id;
 }
 
 /**

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import { getAuthToken, clearAuthCookies } from '@/utils/authCookies';
 
 // Define API response interface
 export interface ApiResponse<T = any> {
@@ -48,22 +49,10 @@ class ApiClient {
     );
   }
 
-  // Get auth token from cookies or localStorage
+  // Get auth token from localStorage
   private getAuthToken(): string | null {
-    // Try to get from cookie first
-    const cookieToken = this.getCookie('auth_token');
-    if (cookieToken) return cookieToken;
-
-    // Fallback to localStorage
-    return localStorage.getItem('auth_token');
-  }
-
-  // Helper to get cookie value
-  private getCookie(name: string): string | null {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-    return null;
+    const token = getAuthToken();
+    return token;
   }
 
   // Handle API errors
@@ -83,8 +72,7 @@ class ApiClient {
       // Handle authentication errors
       if (error.response.status === 401) {
         // Clear auth tokens
-        document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        localStorage.removeItem('auth_token');
+        clearAuthCookies();
 
         // Redirect to login page if not already there
         if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {

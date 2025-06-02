@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthService } from '@/utils/authService';
+import { getAuthToken } from '@/utils/authCookies';
 import { localStorageCache } from '@/utils/cache';
 
 // Create axios instance with default config
@@ -13,7 +13,7 @@ const api = axios.create({
 
 // Add token to requests if available
 api.interceptors.request.use((config) => {
-  const token = AuthService.getToken();
+  const token = getAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
