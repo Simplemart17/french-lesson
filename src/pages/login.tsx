@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{email?: string; password?: string; general?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login, isLoading, isAuthenticated, error, clearError, isInitialized } = useAuth();
+  const { login, isLoading, isAuthenticated, error, clearError, isInitialized, user } = useAuth();
   const router = useRouter();
   const { redirect, session } = router.query;
 
@@ -29,6 +29,7 @@ export default function LoginPage() {
 
   // If already authenticated, redirect to dashboard or the redirect URL
   useEffect(() => {
+    console.log('🔄 Login page auth state:', { isAuthenticated, isInitialized, isLoading, user });
     // Only redirect if we're authenticated, initialized, and not in a loading state
     if (isAuthenticated && isInitialized && !isLoading) {
       // Prevent redirect loops by checking if we're being redirected back to login
@@ -36,10 +37,11 @@ export default function LoginPage() {
         ? redirect
         : '/dashboard';
 
+      console.log('🔄 Redirecting to:', redirectPath);
       // Use router.push for navigation
       router.push(redirectPath);
     }
-  }, [isAuthenticated, isLoading, isInitialized, redirect, router]);
+  }, [isAuthenticated, isLoading, isInitialized, user, router, redirect]);
 
   // Show auth error from context if present
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function LoginPage() {
       setErrors({ general: error });
       clearError(); // Clear the error from context after displaying it
     }
-  }, [error, clearError]);
+  }, [error]);
 
   const validateForm = () => {
     const newErrors: {email?: string; password?: string} = {};
@@ -87,16 +89,8 @@ export default function LoginPage() {
         duration: 2000,
       });
 
-      // Small delay to allow the toast to be seen before redirecting
-      setTimeout(() => {
-        // Redirect to the original page or dashboard
-        const redirectPath = redirect && typeof redirect === 'string' && !redirect.includes('/login')
-          ? redirect
-          : '/dashboard';
-
-        // Use router.push for navigation
-        router.push(redirectPath);
-      }, 1000);
+      // The redirect will be handled by the useEffect in AuthContext after login
+      // No need for manual redirect here as it causes conflicts
 
     } catch (err: any) {
       console.error('Login form error:', err);
