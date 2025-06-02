@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonSection } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { prisma } from '@/lib/prisma';
 
 async function handler(
   req: NextApiRequest,
@@ -26,37 +25,44 @@ async function handler(
     
     const lessonId = id;
     
-    // Check if the lesson exists
-    const lesson = await prisma.lesson.findUnique({
-      where: { id: lessonId }
-    });
-    
-    if (!lesson) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          message: 'Lesson not found'
-        }
-      });
-    }
-    
-    // Get sections for the lesson
-    const sections = await prisma.lessonSection.findMany({
-      where: { lessonId },
-      orderBy: { order: 'asc' }
-    });
-    
-    // Format the sections for the response
-    const formattedSections: LessonSection[] = sections.map(section => ({
-      id: section.id,
-      lessonId: section.lessonId,
-      title: section.title,
-      type: section.type as any,
-      content: section.content || undefined,
-      audioUrl: section.audioUrl || undefined,
-      videoUrl: section.videoUrl || undefined,
-      order: section.order
-    }));
+    // Mock lesson sections data
+    const mockSections: LessonSection[] = [
+      {
+        id: `section-${lessonId}-1`,
+        lessonId,
+        title: 'Introduction',
+        type: 'text',
+        content: 'Welcome to this French lesson! In this section, we will learn basic French greetings and expressions.',
+        order: 1
+      },
+      {
+        id: `section-${lessonId}-2`,
+        lessonId,
+        title: 'Vocabulary',
+        type: 'text',
+        content: 'Key vocabulary words for this lesson: bonjour (hello), au revoir (goodbye), merci (thank you), s\'il vous plaît (please).',
+        order: 2
+      },
+      {
+        id: `section-${lessonId}-3`,
+        lessonId,
+        title: 'Practice Exercise',
+        type: 'exercise',
+        content: 'Complete the following exercises to practice what you\'ve learned.',
+        order: 3
+      },
+      {
+        id: `section-${lessonId}-4`,
+        lessonId,
+        title: 'Audio Practice',
+        type: 'audio',
+        content: 'Listen to the pronunciation and repeat.',
+        audioUrl: '/audio/lesson-pronunciation.mp3',
+        order: 4
+      }
+    ];
+
+    const formattedSections = mockSections;
     
     return res.status(200).json({
       success: true,
