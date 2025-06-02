@@ -25,11 +25,11 @@ export default function LoginPage() {
       const { pathname } = router;
       router.replace(pathname, undefined, { shallow: true });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   // If already authenticated, redirect to dashboard or the redirect URL
   useEffect(() => {
-    console.log('🔄 Login page auth state:', { isAuthenticated, isInitialized, isLoading, user });
     // Only redirect if we're authenticated, initialized, and not in a loading state
     if (isAuthenticated && isInitialized && !isLoading) {
       // Prevent redirect loops by checking if we're being redirected back to login
@@ -49,6 +49,7 @@ export default function LoginPage() {
       setErrors({ general: error });
       clearError(); // Clear the error from context after displaying it
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   const validateForm = () => {
@@ -92,7 +93,7 @@ export default function LoginPage() {
       // The redirect will be handled by the useEffect in AuthContext after login
       // No need for manual redirect here as it causes conflicts
 
-    } catch (err: any) {
+    } catch (err) {
       console.error('Login form error:', err);
       // Error is already set in the auth context and will be displayed via the useEffect
     } finally {

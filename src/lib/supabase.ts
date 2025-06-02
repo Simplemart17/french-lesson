@@ -47,7 +47,7 @@ export const TABLES = {
   LESSONS: 'Lesson',
   LESSON_SECTIONS: 'LessonSection',
   LESSON_PROGRESS: 'LessonProgress',
-  VOCABULARY: 'VocabularyItem',
+  VOCABULARY: 'Vocabulary',
   USER_VOCABULARY: 'UserVocabulary',
   CONVERSATIONS: 'Conversation',
   MESSAGES: 'Message',
@@ -78,6 +78,11 @@ export type Database = {
           dailyGoal: number;
           notifications: boolean;
           theme: string;
+          aiCorrectionEnabled: boolean;
+          aiVocabSuggestionsEnabled: boolean;
+          preferredVoice: string;
+          speechRecognitionEnabled: boolean;
+          
         };
         Insert: Omit<Database['public']['Tables']['User']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['User']['Insert']>;
@@ -121,18 +126,19 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['LessonProgress']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['LessonProgress']['Insert']>;
       };
-      VocabularyItem: {
+      Vocabulary: {
         Row: {
           id: string;
-          french: string;
-          english: string;
-          pronunciation: string | null;
+          word: string;
+          translation: string;
+          example: string;
+          level: string;
           category: string;
-          difficulty: string;
-          audioUrl: string | null;
+          pronunciation: string;
+          usageContext: string[];
         };
-        Insert: Omit<Database['public']['Tables']['VocabularyItem']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['VocabularyItem']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['Vocabulary']['Row'], 'id'>;
+        Update: Partial<Database['public']['Tables']['Vocabulary']['Insert']>;
       };
       UserVocabulary: {
         Row: {
@@ -141,8 +147,8 @@ export type Database = {
           vocabularyId: string;
           learned: boolean;
           lastPracticed: string | null;
-          correctCount: number;
-          incorrectCount: number;
+          nextReviewDate: string;
+          repetitionStage: number;
         };
         Insert: Omit<Database['public']['Tables']['UserVocabulary']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['UserVocabulary']['Insert']>;
