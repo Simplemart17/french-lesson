@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, VocabularyItem } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,33 +22,49 @@ export default async function handler(
   // GET request to retrieve user vocabulary progress
   if (req.method === 'GET') {
     try {
-      // Get user vocabulary progress from database
-      const userVocabularyItems = await prisma.userVocabulary.findMany({
-        where: {
-          userId
-        },
-        include: {
-          vocabulary: true
-        },
-        orderBy: {
-          lastPracticed: 'desc'
-        }
-      });
+      const supabase = getSupabaseClient();
+
+      // Get user vocabulary progress with vocabulary details
+      const { data: userVocabularyItems, error } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .select(`
+          *,
+          vocabulary:vocabularyId (
+            id,
+            french,
+            english,
+            pronunciation,
+            category,
+            difficulty
+          )
+        `)
+        .eq('userId', userId)
+        .order('lastPracticed', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching user vocabulary:', error);
+        return res.status(500).json({
+          success: false,
+          error: {
+            message: 'Failed to fetch vocabulary progress'
+          }
+        });
+      }
 
       // Format the response
-      const userProgress = userVocabularyItems.map(item => ({
+      const userProgress = (userVocabularyItems || []).map((item: any) => ({
         id: item.vocabularyId,
-        word: item.vocabulary.word,
-        translation: item.vocabulary.translation,
-        example: item.vocabulary.example,
-        level: item.vocabulary.level,
-        category: item.vocabulary.category || undefined,
-        pronunciation: item.vocabulary.pronunciation || undefined,
-        usageContext: item.vocabulary.usageContext,
+        word: item.vocabulary?.french || '',
+        translation: item.vocabulary?.english || '',
+        example: '', // Not available in current schema
+        level: item.vocabulary?.difficulty || '',
+        category: item.vocabulary?.category || undefined,
+        pronunciation: item.vocabulary?.pronunciation || undefined,
+        usageContext: [], // Not available in current schema
         learned: item.learned,
-        lastPracticed: item.lastPracticed ? item.lastPracticed.toISOString() : undefined,
-        nextReview: item.nextReviewDate ? item.nextReviewDate.toISOString() : undefined,
-        repetitionStage: item.repetitionStage
+        lastPracticed: item.lastPracticed || undefined,
+        nextReview: undefined, // Not available in current schema
+        repetitionStage: 0 // Not available in current schema
       }));
 
       return res.status(200).json({
@@ -82,11 +98,14 @@ export default async function handler(
       }
 
       // Find the vocabulary item
-      const vocabularyItem = await prisma.vocabulary.findUnique({
-        where: { word }
-      });
+      const supabase = getSupabaseClient();
+      const { data: vocabularyItem, error: vocabError } = await supabase
+        .from(TABLES.VOCABULARY)
+        .select('*')
+        .eq('french', word)
+        .single();
 
-      if (!vocabularyItem) {
+      if (vocabError || !vocabularyItem) {
         return res.status(404).json({
           success: false,
           error: {
@@ -111,46 +130,57 @@ export default async function handler(
       }
 
       // Update or create user vocabulary progress
-      const updatedUserVocabulary = await prisma.userVocabulary.upsert({
-        where: {
-          userId_vocabularyId: {
-            userId,
-            vocabularyId: vocabularyItem.id
+      const progressData = {
+        userId,
+        vocabularyId: vocabularyItem.id,
+        learned: learned !== undefined ? learned : false,
+        lastPracticed: lastPracticed ? lastPracticed : new Date().toISOString(),
+        correctCount: 0, // Default value
+        incorrectCount: 0 // Default value
+      };
+
+      const { data: updatedUserVocabulary, error: upsertError } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .upsert(progressData, {
+          onConflict: 'userId,vocabularyId'
+        })
+        .select(`
+          *,
+          vocabulary:vocabularyId (
+            id,
+            french,
+            english,
+            pronunciation,
+            category,
+            difficulty
+          )
+        `)
+        .single();
+
+      if (upsertError) {
+        console.error('Error updating user vocabulary:', upsertError);
+        return res.status(500).json({
+          success: false,
+          error: {
+            message: 'Failed to update vocabulary progress'
           }
-        },
-        update: {
-          learned: learned !== undefined ? learned : undefined,
-          lastPracticed: lastPracticed ? new Date(lastPracticed) : new Date(),
-          nextReviewDate: nextReviewDate,
-          repetitionStage: repetitionStage !== undefined ? repetitionStage : undefined
-        },
-        create: {
-          userId,
-          vocabularyId: vocabularyItem.id,
-          learned: learned !== undefined ? learned : false,
-          lastPracticed: lastPracticed ? new Date(lastPracticed) : new Date(),
-          nextReviewDate: nextReviewDate,
-          repetitionStage: repetitionStage !== undefined ? repetitionStage : 0
-        },
-        include: {
-          vocabulary: true
-        }
-      });
+        });
+      }
 
       // Format the response
       const result = {
         id: updatedUserVocabulary.vocabularyId,
-        word: updatedUserVocabulary.vocabulary.word,
-        translation: updatedUserVocabulary.vocabulary.translation,
-        example: updatedUserVocabulary.vocabulary.example,
-        level: updatedUserVocabulary.vocabulary.level,
-        category: updatedUserVocabulary.vocabulary.category || undefined,
-        pronunciation: updatedUserVocabulary.vocabulary.pronunciation || undefined,
-        usageContext: updatedUserVocabulary.vocabulary.usageContext,
+        word: updatedUserVocabulary.vocabulary?.french || '',
+        translation: updatedUserVocabulary.vocabulary?.english || '',
+        example: '', // Not available in current schema
+        level: updatedUserVocabulary.vocabulary?.difficulty || '',
+        category: updatedUserVocabulary.vocabulary?.category || undefined,
+        pronunciation: updatedUserVocabulary.vocabulary?.pronunciation || undefined,
+        usageContext: [], // Not available in current schema
         learned: updatedUserVocabulary.learned,
-        lastPracticed: updatedUserVocabulary.lastPracticed ? updatedUserVocabulary.lastPracticed.toISOString() : undefined,
-        nextReview: updatedUserVocabulary.nextReviewDate ? updatedUserVocabulary.nextReviewDate.toISOString() : undefined,
-        repetitionStage: updatedUserVocabulary.repetitionStage
+        lastPracticed: updatedUserVocabulary.lastPracticed || undefined,
+        nextReview: undefined, // Not available in current schema
+        repetitionStage: 0 // Not available in current schema
       };
 
       return res.status(200).json({

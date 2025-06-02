@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { prisma } from '@/lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow GET requests
@@ -14,17 +14,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     // Get all vocabulary items
-    const vocabulary = await prisma.vocabulary.findMany({
-      select: {
-        level: true
-      }
-    });
+    const supabase = getSupabaseClient();
+    const { data: vocabulary, error } = await supabase
+      .from(TABLES.VOCABULARY)
+      .select('difficulty'); // Note: using 'difficulty' instead of 'level' based on the schema
+
+    if (error) {
+      console.error('Error fetching vocabulary:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch vocabulary levels' }
+      });
+    }
 
     // Extract unique levels
     const levels = new Set<string>();
-    vocabulary.forEach(item => {
-      if (item.level) {
-        levels.add(item.level);
+    (vocabulary || []).forEach((item: any) => {
+      if (item.difficulty) {
+        levels.add(item.difficulty);
       }
     });
 
