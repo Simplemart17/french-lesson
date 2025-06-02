@@ -2,10 +2,10 @@ import Head from 'next/head';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { AuthService } from '@/utils/authService';
+import { getUserData } from '@/utils/authCookies';
 
 export default function SettingsPage() {
-  const storedUser = AuthService.getUserData();
+  const storedUser = getUserData();
   // User preferences state
   const [preferences, setPreferences] = useState({
     dailyGoal: 15, // minutes
