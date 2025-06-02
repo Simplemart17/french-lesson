@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { authApiService, userApiService } from '@/services';
 import { User, ApiResponse } from '@/types/api';
-import { AuthService } from '@/utils/authService';
+import { supabaseAuth } from '@/lib/supabaseAuth';
 
 // Helper function to convert API user to our User type
 const convertApiUserToUser = (apiUser: any): User => {
@@ -66,41 +66,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Initialize auth state from stored data
   const initialize = useCallback(async () => {
     try {
+      console.log("Are we even passing through here at all???????????????")
       setIsLoading(true);
 
-      if (AuthService.isAuthenticated()) {
+      // Check if we have a stored token
+      const token = authApiService.getAuthToken();
+      const storedUser = authApiService.getUserData();
 
-        // Try to get user data from cookie first (faster)
-        const storedUser = AuthService.getUserData();
-
-        if (storedUser) {
-          setUser(storedUser);
-        }
-
-        // For development, we'll skip the API call and just use the stored data
-        // In production, you would uncomment this to refresh user data from API
-
-        try {
-          const response = await userApiService.getProfile();
-          const apiResponse = response.data as unknown as ApiResponse<any>;
-
-          // Convert API user profile to our User type
-          if (apiResponse && apiResponse.success && apiResponse.data) {
-            setUser(convertApiUserToUser(apiResponse.data));
-          }
-        } catch (profileError) {
-
-          // If API call fails but we have stored user data, keep using that
-          if (!storedUser) {
-            // Only logout if we don't have stored user data
-            await authApiService.logout();
-            setUser(null);
-          }
-        }
+      if (token && storedUser) {
+        setUser(storedUser);
       } else {
         setUser(null);
       }
     } catch (error) {
+      console.error('Auth initialization error:', error);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -115,25 +94,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Login function
   const login = async (email: string, password: string) => {
+    console.log('🔐 Login function called with:', email);
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await authApiService.login({ email, password });
-      const apiResponse = response.data as unknown as ApiResponse<any>;
+      console.log('🔐 Login API response:', response.data);
 
-      // Set user state if response is successful
-      if (apiResponse && apiResponse.success && apiResponse.data && apiResponse.data.user) {
-        setUser(convertApiUserToUser(apiResponse.data.user));
+      if (response.data && response.data.success && response.data.data) {
+        const { user, access_token } = response.data.data;
+        console.log('🔐 Login successful, user:', user);
+
+        if (user && access_token) {
+          // Token and user data are already stored by authApiService.login
+          const convertedUser = convertApiUserToUser(user);
+          console.log('🔐 Setting user in context:', convertedUser);
+          setUser(convertedUser);
+        }
       }
-
-      // Force initialize to refresh auth state
-      await initialize();
     } catch (error: any) {
+      console.error('🔐 Login error:', error);
       setError(error.message || 'Failed to login. Please try again.');
       throw error;
     } finally {
       setIsLoading(false);
+      console.log('🔐 Login function completed');
     }
   };
 
@@ -143,17 +129,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
 
     try {
-      const response = await authApiService.register({
-        name,
-        email,
-        password,
-        passwordConfirmation: password // Use the same password for confirmation
-      });
-      const apiResponse = response.data as unknown as ApiResponse<any>;
+      const { user, error: authError } = await supabaseAuth.signUp(email, password, name);
 
-      // Set user state if response is successful
-      if (apiResponse && apiResponse.success && apiResponse.data && apiResponse.data.user) {
-        setUser(convertApiUserToUser(apiResponse.data.user));
+      if (authError) {
+        setError(authError);
+        throw new Error(authError);
+      }
+
+      if (user) {
+        setUser(user);
       }
 
       // Force initialize to refresh auth state
@@ -168,8 +152,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Logout function
   const logout = async () => {
-    setIsLoading(true);
-
     try {
       await authApiService.logout();
       setUser(null);
