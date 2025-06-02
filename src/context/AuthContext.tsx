@@ -66,7 +66,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Initialize auth state from stored data
   const initialize = useCallback(async () => {
     try {
-      console.log("Are we even passing through here at all???????????????")
       setIsLoading(true);
 
       // Check if we have a stored token
@@ -94,22 +93,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Login function
   const login = async (email: string, password: string) => {
-    console.log('🔐 Login function called with:', email);
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await authApiService.login({ email, password });
-      console.log('🔐 Login API response:', response.data);
 
       if (response.data && response.data.success && response.data.data) {
         const { user, access_token } = response.data.data;
-        console.log('🔐 Login successful, user:', user);
 
         if (user && access_token) {
           // Token and user data are already stored by authApiService.login
           const convertedUser = convertApiUserToUser(user);
-          console.log('🔐 Setting user in context:', convertedUser);
           setUser(convertedUser);
         }
       }
@@ -119,7 +114,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       throw error;
     } finally {
       setIsLoading(false);
-      console.log('🔐 Login function completed');
     }
   };
 
