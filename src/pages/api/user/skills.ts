@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '@/lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 
 interface SkillResponse {
@@ -26,12 +26,17 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      // Get user from database
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
+      // Get Supabase client
+      const supabase = getSupabaseClient();
 
-      if (!user) {
+      // Get user from database
+      const { data: user, error: userError } = await supabase
+        .from(TABLES.USERS)
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !user) {
         return res.status(404).json({
           success: false,
           error: { message: 'User not found' }
@@ -39,52 +44,53 @@ export default async function handler(
       }
 
       // Get lesson progress to calculate skills based on real data
-      const lessonProgress = await prisma.lessonProgress.findMany({
-        where: {
-          userId,
-          completed: true
-        },
-        include: {
-          lesson: {
-            select: {
-              topics: true,
-              level: true
-            }
-          }
-        }
-      });
+      const { data: lessonProgress, error: progressError } = await supabase
+        .from(TABLES.LESSON_PROGRESS)
+        .select(`
+          *,
+          lesson:${TABLES.LESSONS}(topics, level)
+        `)
+        .eq('userId', userId)
+        .eq('completed', true);
+
+      if (progressError) {
+        console.error('Error fetching lesson progress:', progressError);
+      }
 
       // Get vocabulary progress
-      const vocabularyCount = await prisma.userVocabulary.count({
-        where: {
-          userId,
-          learned: true
-        }
-      });
+      const { count: vocabularyCount, error: vocabError } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .select('*', { count: 'exact', head: true })
+        .eq('userId', userId)
+        .eq('learned', true);
+
+      if (vocabError) {
+        console.error('Error fetching vocabulary count:', vocabError);
+      }
 
       // Calculate skill levels based on actual progress
-      const completedLessons = lessonProgress.length;
+      const completedLessons = (lessonProgress || []).length;
       const basePercentage = Math.min(80, completedLessons * 3); // Base skill from lesson completion
 
       // Calculate specific skill percentages
-      const listeningLessons = lessonProgress.filter(p =>
-        p.lesson.topics.includes('listening') || p.lesson.topics.includes('comprehension')
+      const listeningLessons = (lessonProgress || []).filter((p: any) =>
+        p.lesson?.topics?.includes('listening') || p.lesson?.topics?.includes('comprehension')
       ).length;
 
-      const speakingLessons = lessonProgress.filter(p =>
-        p.lesson.topics.includes('speaking') || p.lesson.topics.includes('pronunciation') || p.lesson.topics.includes('conversation')
+      const speakingLessons = (lessonProgress || []).filter((p: any) =>
+        p.lesson?.topics?.includes('speaking') || p.lesson?.topics?.includes('pronunciation') || p.lesson?.topics?.includes('conversation')
       ).length;
 
-      const readingLessons = lessonProgress.filter(p =>
-        p.lesson.topics.includes('reading')
+      const readingLessons = (lessonProgress || []).filter((p: any) =>
+        p.lesson?.topics?.includes('reading')
       ).length;
 
-      const writingLessons = lessonProgress.filter(p =>
-        p.lesson.topics.includes('writing')
+      const writingLessons = (lessonProgress || []).filter((p: any) =>
+        p.lesson?.topics?.includes('writing')
       ).length;
 
-      const grammarLessons = lessonProgress.filter(p =>
-        p.lesson.topics.includes('grammar')
+      const grammarLessons = (lessonProgress || []).filter((p: any) =>
+        p.lesson?.topics?.includes('grammar')
       ).length;
 
       // Map user level to CEFR level
@@ -119,7 +125,7 @@ export default async function handler(
         {
           skill: 'Vocabulary',
           level: cefrLevel,
-          percentage: Math.min(100, Math.max(30, basePercentage + Math.floor(vocabularyCount / 5) * 3))
+          percentage: Math.min(100, Math.max(30, basePercentage + Math.floor((vocabularyCount || 0) / 5) * 3))
         }
       ];
 

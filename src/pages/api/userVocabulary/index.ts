@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -16,21 +16,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // GET request to retrieve user's vocabulary
   if (req.method === 'GET') {
     try {
-      const vocabularyItems = await prisma.userVocabulary.findMany({
-        where: {
-          userId
-        },
-        include: {
-          vocabulary: true
-        },
-        orderBy: {
-          lastPracticed: 'desc'
-        }
-      });
-      
+      const supabase = getSupabaseClient();
+
+      const { data: vocabularyItems, error } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .select(`
+          *,
+          vocabulary:${TABLES.VOCABULARY}(*)
+        `)
+        .eq('userId', userId)
+        .order('lastPracticed', { ascending: false });
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+
       return res.status(200).json({
         success: true,
-        data: vocabularyItems
+        data: vocabularyItems || []
       });
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
@@ -44,47 +47,79 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // POST request to add vocabulary to user's list
   if (req.method === 'POST') {
     try {
+      const supabase = getSupabaseClient();
       const { vocabularyId, learned } = req.body;
-      
+
       if (!vocabularyId) {
         return res.status(400).json({
           success: false,
           error: { message: 'Missing required vocabulary ID' }
         });
       }
-      
+
       // Check if vocabulary exists
-      const vocabularyExists = await prisma.vocabulary.findUnique({
-        where: { id: vocabularyId }
-      });
-      
-      if (!vocabularyExists) {
+      const { data: vocabularyExists, error: vocabError } = await supabase
+        .from(TABLES.VOCABULARY)
+        .select('id')
+        .eq('id', vocabularyId)
+        .single();
+
+      if (vocabError || !vocabularyExists) {
         return res.status(404).json({
           success: false,
           error: { message: 'Vocabulary not found' }
         });
       }
-      
-      // Create or update user vocabulary
-      const userVocabulary = await prisma.userVocabulary.upsert({
-        where: {
-          userId_vocabularyId: {
-            userId,
-            vocabularyId
-          }
-        },
-        update: {
-          learned: learned !== undefined ? learned : undefined,
-          lastPracticed: new Date()
-        },
-        create: {
-          userId,
-          vocabularyId,
-          learned: learned || false,
-          lastPracticed: new Date()
+
+      // Check if user vocabulary already exists
+      const { data: existingUserVocab } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .select('*')
+        .eq('userId', userId)
+        .eq('vocabularyId', vocabularyId)
+        .single();
+
+      let userVocabulary;
+      const now = new Date().toISOString();
+
+      if (existingUserVocab) {
+        // Update existing record
+        const { data, error } = await supabase
+          .from(TABLES.USER_VOCABULARY)
+          .update({
+            learned: learned !== undefined ? learned : existingUserVocab.learned,
+            lastPracticed: now
+          })
+          .eq('userId', userId)
+          .eq('vocabularyId', vocabularyId)
+          .select()
+          .single();
+
+        if (error) {
+          throw new Error(`Update error: ${error.message}`);
         }
-      });
-      
+        userVocabulary = data;
+      } else {
+        // Create new record
+        const { data, error } = await supabase
+          .from(TABLES.USER_VOCABULARY)
+          .insert({
+            userId,
+            vocabularyId,
+            learned: learned || false,
+            lastPracticed: now,
+            correctCount: 0,
+            incorrectCount: 0
+          })
+          .select()
+          .single();
+
+        if (error) {
+          throw new Error(`Insert error: ${error.message}`);
+        }
+        userVocabulary = data;
+      }
+
       return res.status(201).json({
         success: true,
         data: userVocabulary
@@ -101,25 +136,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // DELETE request to remove vocabulary from user's list
   if (req.method === 'DELETE') {
     try {
+      const supabase = getSupabaseClient();
       const { vocabularyId } = req.body;
-      
+
       if (!vocabularyId) {
         return res.status(400).json({
           success: false,
           error: { message: 'Missing required vocabulary ID' }
         });
       }
-      
+
       // Delete the user vocabulary entry
-      await prisma.userVocabulary.delete({
-        where: {
-          userId_vocabularyId: {
-            userId,
-            vocabularyId
-          }
-        }
-      });
-      
+      const { error } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .delete()
+        .eq('userId', userId)
+        .eq('vocabularyId', vocabularyId);
+
+      if (error) {
+        throw new Error(`Delete error: ${error.message}`);
+      }
+
       return res.status(200).json({
         success: true,
         message: 'Vocabulary removed successfully'

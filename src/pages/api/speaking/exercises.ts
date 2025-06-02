@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
@@ -35,11 +35,14 @@ async function handler(
         const exerciseId = id as string;
 
         // Get exercise from database
-        const dbExercise = await prisma.pronunciationExercise.findUnique({
-          where: { id: exerciseId }
-        });
+        const supabase = getSupabaseClient();
+        const { data: dbExercise, error } = await supabase
+          .from(TABLES.PRONUNCIATION_EXERCISES)
+          .select('*')
+          .eq('id', exerciseId)
+          .single();
 
-        if (!dbExercise) {
+        if (error || !dbExercise) {
           return res.status(404).json({
             success: false,
             error: { message: 'Exercise not found' }
@@ -61,29 +64,35 @@ async function handler(
         });
       }
 
-      // Build where clause for filtering
-      const where: any = {};
 
+
+      // Get exercises from database
+      const supabase = getSupabaseClient();
+      let query = supabase
+        .from(TABLES.PRONUNCIATION_EXERCISES)
+        .select('*')
+        .order('id', { ascending: true });
+
+      // Apply filters
       if (difficulty) {
-        // Map difficulty levels
         const dbDifficulty = mapDifficultyToDb(difficulty as string);
         if (dbDifficulty) {
-          where.difficulty = dbDifficulty;
+          query = query.eq('difficulty', dbDifficulty);
         }
       }
 
       if (category) {
-        where.category = category as string;
+        query = query.eq('category', category);
       }
 
-      // Get exercises from database
-      const dbExercises = await prisma.pronunciationExercise.findMany({
-        where,
-        orderBy: { id: 'asc' }
-      });
+      const { data: dbExercises, error } = await query;
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
 
       // Transform to speaking exercise format
-      const exercises: SpeakingExercise[] = dbExercises.map(exercise => ({
+      const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: any) => ({
         id: exercise.id,
         prompt: exercise.text,
         translation: exercise.translation || '',
@@ -118,11 +127,14 @@ async function handler(
       }
 
       // Find the exercise in database
-      const dbExercise = await prisma.pronunciationExercise.findUnique({
-        where: { id: exerciseId }
-      });
+      const supabase = getSupabaseClient();
+      const { data: dbExercise, error } = await supabase
+        .from(TABLES.PRONUNCIATION_EXERCISES)
+        .select('*')
+        .eq('id', exerciseId)
+        .single();
 
-      if (!dbExercise) {
+      if (error || !dbExercise) {
         return res.status(404).json({
           success: false,
           error: { message: 'Exercise not found' }
