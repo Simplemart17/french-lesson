@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
 
 // Define the exam module type
 interface ExamModule {
