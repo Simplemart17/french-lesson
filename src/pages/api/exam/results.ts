@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUserExamResults } from '@/lib/db';
 import { ApiResponse, ExamResult } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,21 +20,50 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      // Get the user's exam results
+      // Get the user's exam results (mock data)
       const { examId, level, section } = req.query;
 
-      let results = await getUserExamResults(userId);
+      let results: ExamResult[] = [
+        {
+          examId: 'french-a1-basics',
+          userId: userId || 'test-user-id',
+          level: 'A1',
+          section: 'grammar',
+          score: 85,
+          details: [
+            { questionIndex: 0, correct: true, userAnswer: 'le' },
+            { questionIndex: 1, correct: false, userAnswer: 'la' },
+            { questionIndex: 2, correct: true, userAnswer: 'les' }
+          ],
+          completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          timeSpent: 1200 // 20 minutes
+        },
+        {
+          examId: 'french-a1-vocabulary',
+          userId: userId || 'test-user-id',
+          level: 'A1',
+          section: 'vocabulary',
+          score: 92,
+          details: [
+            { questionIndex: 0, correct: true, userAnswer: 'bonjour' },
+            { questionIndex: 1, correct: true, userAnswer: 'merci' },
+            { questionIndex: 2, correct: false, userAnswer: 'au revoir' }
+          ],
+          completedAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+          timeSpent: 900 // 15 minutes
+        }
+      ];
 
       // Filter results if query parameters are provided
-      if (examId) {
+      if (examId && typeof examId === 'string') {
         results = results.filter(r => r.examId === examId);
       }
 
-      if (level) {
+      if (level && typeof level === 'string') {
         results = results.filter(r => r.level === level);
       }
 
-      if (section) {
+      if (section && typeof section === 'string') {
         results = results.filter(r => r.section === section);
       }
 
@@ -70,18 +97,27 @@ export default async function handler(
       }
       
       // Create the exam result object and save to database
-      const savedResult = await prisma.examResult.create({
-        data: {
+      const { getSupabaseClient, TABLES } = await import('@/lib/supabase');
+      const supabase = getSupabaseClient();
+
+      const { data: savedResult, error: createError } = await supabase
+        .from(TABLES.EXAM_RESULTS)
+        .insert({
           userId,
-          examId,
-          section,
-          level,
+          examType: examId, // Map examId to examType
           score,
-          details,
-          completedAt: new Date(),
-          timeSpent: req.body.timeSpent || 0
-        }
-      });
+          totalQuestions: 10, // Default value
+          correctAnswers: Math.round((score / 100) * 10), // Calculate from score
+          timeSpent: req.body.timeSpent || 0,
+          completedAt: new Date().toISOString(),
+          answers: details
+        })
+        .select()
+        .single();
+
+      if (createError || !savedResult) {
+        throw new Error(`Failed to save exam result: ${createError?.message}`);
+      }
       
       return res.status(201).json({
         success: true,
