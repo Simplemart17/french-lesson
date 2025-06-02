@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 interface DashboardData {
@@ -55,21 +55,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    // Get user data
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        name: true,
-        level: true,
-        points: true,
-        streakDays: true,
-        dailyGoal: true,
-        completedLessons: true,
-        lastActive: true
-      }
-    });
+    // Production mode: Use Supabase
+    const supabase = getSupabaseClient();
 
-    if (!user) {
+    // Get user data
+    const { data: user, error: userError } = await supabase
+      .from(TABLES.USERS)
+      .select('name, level, points, streakDays, dailyGoal, completedLessons, lastActive')
+      .eq('id', userId)
+      .single();
+
+      console.log(user, "Is there user in the database")
+      console.log(userError, "what error exist here")
+
+    if (userError || !user) {
       return res.status(404).json({
         success: false,
         error: { message: 'User not found' }
@@ -77,107 +76,112 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get lesson progress
-    const lessonProgress = await prisma.lessonProgress.findMany({
-      where: { userId },
-      include: {
-        lesson: {
-          select: {
-            title: true,
-            duration: true
-          }
-        }
-      },
-      orderBy: {
-        completedAt: 'desc'
-      },
-      take: 10
-    });
+    const { data: lessonProgress, error: progressError } = await supabase
+      .from(TABLES.LESSON_PROGRESS)
+      .select(`
+        *,
+        lesson:${TABLES.LESSONS}(title, duration)
+      `)
+      .eq('userId', userId)
+      .order('completedAt', { ascending: false })
+      .limit(10);
+
+    if (progressError) {
+      console.error('Error fetching lesson progress:', progressError);
+    }
 
     // Get vocabulary progress
-    const vocabularyProgress = await prisma.userVocabulary.findMany({
-      where: { 
-        userId,
-        learned: true
-      },
-      include: {
-        vocabulary: {
-          select: {
-            word: true
-          }
-        }
-      },
-      orderBy: {
-        lastPracticed: 'desc'
-      },
-      take: 5
-    });
+    const { data: vocabularyProgress, error: vocabError } = await supabase
+      .from(TABLES.USER_VOCABULARY)
+      .select(`
+        *,
+        vocabulary:${TABLES.VOCABULARY}(french, english)
+      `)
+      .eq('userId', userId)
+      .eq('learned', true)
+      .order('lastPracticed', { ascending: false })
+      .limit(5);
+
+    if (vocabError) {
+      console.error('Error fetching vocabulary progress:', vocabError);
+    }
 
     // Calculate daily progress (simplified - you might want to track actual study time)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    const todayProgress = await prisma.lessonProgress.findMany({
-      where: {
-        userId,
-        completedAt: {
-          gte: today
-        }
-      },
-      include: {
-        lesson: {
-          select: {
-            duration: true
-          }
-        }
-      }
-    });
+    const { data: todayProgress, error: todayError } = await supabase
+      .from(TABLES.LESSON_PROGRESS)
+      .select(`
+        *,
+        lesson:${TABLES.LESSONS}(duration)
+      `)
+      .eq('userId', userId)
+      .gte('completedAt', today.toISOString());
 
-    const minutesStudiedToday = todayProgress.reduce((total, progress) => {
-      return total + (progress.lesson.duration || 0);
+    if (todayError) {
+      console.error('Error fetching today progress:', todayError);
+    }
+
+    const minutesStudiedToday = (todayProgress || []).reduce((total, progress: any) => {
+      return total + (progress.lesson?.duration || 0);
     }, 0);
 
     // Get total lesson count
-    const totalLessons = await prisma.lesson.count();
+    const { count: totalLessons, error: countError } = await supabase
+      .from(TABLES.LESSONS)
+      .select('*', { count: 'exact', head: true });
+
+    if (countError) {
+      console.error('Error fetching lesson count:', countError);
+    }
 
     // Build recent activities
     const recentActivities = [
-      ...lessonProgress.slice(0, 5).map(progress => ({
+      ...(lessonProgress || []).slice(0, 5).map((progress: any) => ({
         id: `lesson-${progress.id}`,
         type: 'lesson' as const,
-        title: `Completed Lesson: ${progress.lesson.title}`,
-        description: `Score: ${progress.score}%`,
-        timestamp: progress.completedAt?.toISOString() || new Date().toISOString(),
+        title: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
+        description: `Score: ${progress.score || 0}%`,
+        timestamp: progress.completedAt || new Date().toISOString(),
         score: progress.score
       })),
-      ...vocabularyProgress.slice(0, 3).map(vocab => ({
+      ...(vocabularyProgress || []).slice(0, 3).map((vocab: any) => ({
         id: `vocab-${vocab.id}`,
         type: 'vocabulary' as const,
-        title: `Learned new word: ${vocab.vocabulary.word}`,
+        title: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
         description: 'Added to vocabulary',
-        timestamp: vocab.lastPracticed?.toISOString() || new Date().toISOString()
+        timestamp: vocab.lastPracticed || new Date().toISOString()
       }))
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
     // Generate recommendations based on user level and progress
     const recommendations = [];
     
+    // Get completed lesson IDs
+    const completedLessonIds = (lessonProgress || [])
+      .filter((p: any) => p.completed)
+      .map((p: any) => p.lessonId);
+
     // Get next lesson recommendation
-    const nextLesson = await prisma.lesson.findFirst({
-      where: {
-        level: user.level,
-        NOT: {
-          progress: {
-            some: {
-              userId,
-              completed: true
-            }
-          }
-        }
-      },
-      orderBy: {
-        id: 'asc'
-      }
-    });
+    let nextLessonQuery = supabase
+      .from(TABLES.LESSONS)
+      .select('id, title, description, duration')
+      .eq('level', user.level)
+      .order('id', { ascending: true })
+      .limit(1);
+
+    if (completedLessonIds.length > 0) {
+      nextLessonQuery = nextLessonQuery.not('id', 'in', `(${completedLessonIds.join(',')})`);
+    }
+
+    const { data: nextLessons, error: nextLessonError } = await nextLessonQuery;
+
+    if (nextLessonError) {
+      console.error('Error fetching next lesson:', nextLessonError);
+    }
+
+    const nextLesson = nextLessons?.[0];
 
     if (nextLesson) {
       recommendations.push({
@@ -190,16 +194,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Add vocabulary review recommendation
-    const vocabularyToReview = await prisma.userVocabulary.count({
-      where: {
-        userId,
-        nextReviewDate: {
-          lte: new Date()
-        }
-      }
-    });
+    const { count: vocabularyToReview, error: vocabReviewError } = await supabase
+      .from(TABLES.USER_VOCABULARY)
+      .select('*', { count: 'exact', head: true })
+      .eq('userId', userId)
+      .lte('nextReviewDate', new Date().toISOString());
 
-    if (vocabularyToReview > 0) {
+    if (vocabReviewError) {
+      console.error('Error fetching vocabulary to review:', vocabReviewError);
+    }
+
+    if ((vocabularyToReview || 0) > 0) {
       recommendations.push({
         id: 'vocab-review',
         type: 'review' as const,
@@ -235,9 +240,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       recentActivities,
       recommendations: recommendations.slice(0, 3),
       stats: {
-        totalLessons,
-        completedLessons: lessonProgress.filter(p => p.completed).length,
-        vocabularyLearned: vocabularyProgress.length,
+        totalLessons: totalLessons || 0,
+        completedLessons: (lessonProgress || []).filter((p: any) => p.completed).length,
+        vocabularyLearned: (vocabularyProgress || []).length,
         currentStreak: user.streakDays,
         totalPoints: user.points
       }

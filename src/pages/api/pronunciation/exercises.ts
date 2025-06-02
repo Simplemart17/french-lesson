@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationExercise as ImportedPronunciationExercise, PronunciationPhrase as ImportedPronunciationPhrase } from '@/services/api/pronunciationApiService';
-import { prisma } from '@/lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 // Extended PronunciationPhrase interface for the mock data
 interface PronunciationPhrase extends ImportedPronunciationPhrase {
@@ -40,40 +40,43 @@ async function handler(
     // Get query parameters
     const { difficulty, search, page = '1', limit = '10' } = req.query;
 
-    // Build where clause for database query
-    const where: any = {};
-
-    if (difficulty) {
-      where.difficulty = difficulty as string;
-    }
-
-    if (search && typeof search === 'string') {
-      where.OR = [
-        { text: { contains: search, mode: 'insensitive' } },
-        { translation: { contains: search, mode: 'insensitive' } }
-      ];
-    }
+    // Get Supabase client
+    const supabase = getSupabaseClient();
 
     // Calculate pagination
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
-    const skip = (pageNum - 1) * limitNum;
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
 
-    // Get exercises from database
-    const [exercises, total] = await Promise.all([
-      prisma.pronunciationExercise.findMany({
-        where,
-        skip,
-        take: limitNum,
-        orderBy: { id: 'asc' }
-      }),
-      prisma.pronunciationExercise.count({ where })
-    ]);
+    // Build query
+    let query = supabase
+      .from(TABLES.PRONUNCIATION_EXERCISES)
+      .select('*', { count: 'exact' })
+      .order('id', { ascending: true })
+      .range(from, to);
+
+    // Apply filters
+    if (difficulty) {
+      query = query.eq('difficulty', difficulty as string);
+    }
+
+    if (search && typeof search === 'string') {
+      query = query.or(`text.ilike.%${search}%,translation.ilike.%${search}%`);
+    }
+
+    const { data: exercises, error, count } = await query;
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    const total = count || 0;
 
     // Group exercises by difficulty and create exercise objects
     const exerciseGroups: { [key: string]: any[] } = {};
 
-    exercises.forEach(exercise => {
+    (exercises || []).forEach((exercise: any) => {
       const difficulty = mapDifficultyLevel(exercise.difficulty);
       if (!exerciseGroups[difficulty]) {
         exerciseGroups[difficulty] = [];
