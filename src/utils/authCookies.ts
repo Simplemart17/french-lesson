@@ -26,12 +26,23 @@ export const getAuthToken = (): string | null => {
 };
 
 /**
+ * Define the user data type
+ */
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  [key: string]: unknown;
+}
+
+/**
  * Set user data
  */
-export const setUserData = (userData: any): void => {
+export const setUserData = (userData: UserData): void => {
   if (typeof window !== 'undefined') {
-    // Remove sensitive data
-    const { password, ...safeUserData } = userData;
+    // Remove sensitive data if present
+    const safeUserData = { ...userData } as UserData & { password?: string };
+    delete safeUserData.password;
     localStorage.setItem(USER_KEY, JSON.stringify(safeUserData));
   }
 };
@@ -39,12 +50,12 @@ export const setUserData = (userData: any): void => {
 /**
  * Get user data
  */
-export const getUserData = (): any => {
+export const getUserData = (): UserData | null => {
   if (typeof window !== 'undefined') {
     const userData = localStorage.getItem(USER_KEY);
     if (userData) {
       try {
-        return JSON.parse(userData);
+        return JSON.parse(userData) as UserData;
       } catch (error) {
         console.error('Error parsing user data:', error);
         return null;
