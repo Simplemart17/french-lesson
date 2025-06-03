@@ -55,7 +55,11 @@ export const TABLES = {
   USER_TEMPLATE_USAGE: 'UserTemplateUsage',
   PRONUNCIATION_EXERCISES: 'PronunciationExercise',
   GRAMMAR_RULES: 'GrammarRule',
-  EXAM_RESULTS: 'ExamResult'
+  EXAM_RESULTS: 'ExamResult',
+  LESSON_EXERCISES: 'LessonExercise',
+  PRACTICE_ITEMS: 'PracticeItem',
+  PRACTICE_SESSIONS: 'PracticeSession',
+  PRONUNCIATION_PRACTICE_ITEMS: 'PronunciationPracticeItem',
 } as const;
 
 // Type definitions for better TypeScript support
@@ -120,7 +124,8 @@ export type Database = {
           lessonId: string;
           completed: boolean;
           score: number | null;
-          timeSpent: number;
+          answers: string[] | null;
+          startedAt: string;
           completedAt: string | null;
         };
         Insert: Omit<Database['public']['Tables']['LessonProgress']['Row'], 'id'>;
@@ -174,8 +179,8 @@ export type Database = {
           content: string;
           timestamp: string;
           audioUrl: string | null;
-          corrections: any | null;
-          suggestedVocabulary: any | null;
+          corrections: string[] | null;
+          suggestedVocabulary: string[] | null;
         };
         Insert: Omit<Database['public']['Tables']['Message']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['Message']['Insert']>;
@@ -200,7 +205,7 @@ export type Database = {
           translation: string | null;
           difficulty: string;
           category: string;
-          audioUrl: string | null;
+          expectedPronunciation: string | null;
         };
         Insert: Omit<Database['public']['Tables']['PronunciationExercise']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['PronunciationExercise']['Insert']>;
@@ -210,7 +215,6 @@ export type Database = {
           id: string;
           title: string;
           description: string;
-          rule: string;
           examples: string[];
           level: string;
           category: string;
@@ -222,16 +226,69 @@ export type Database = {
         Row: {
           id: string;
           userId: string;
-          examType: string;
+          examId: string;
           score: number;
-          totalQuestions: number;
-          correctAnswers: number;
           timeSpent: number;
           completedAt: string;
-          answers: any;
+          section: string;
+          level: string;
+          details: string[];
         };
         Insert: Omit<Database['public']['Tables']['ExamResult']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['ExamResult']['Insert']>;
+      };
+      LessonExercise: {
+        Row: {
+          id: string;
+          sectionId: string;
+          type: string;
+          question: string;
+          options: string[];
+          correctAnswer: string;
+          explanation: string;
+        };
+        Insert: Omit<Database['public']['Tables']['LessonExercise']['Row'], 'id'>;
+        Update: Partial<Database['public']['Tables']['LessonExercise']['Insert']>;
+      };
+      PracticeItem: {
+        Row: {
+          id: string;
+          sessionId: string;
+          vocabularyId: string;
+          exerciseType: string;
+          isCorrect: boolean;
+          userAnswer: string;
+          expectedAnswer: string;
+        };
+        Insert: Omit<Database['public']['Tables']['PracticeItem']['Row'], 'id'>;
+        Update: Partial<Database['public']['Tables']['PracticeItem']['Insert']>;
+      };
+      PracticeSession: {
+        Row: {
+          id: string;
+          userId: string;
+          type: string;
+          duration: number;
+          createdAt: string;
+          aiGenerated: boolean;
+          difficulty: string;
+          score: number;
+        };
+        Insert: Omit<Database['public']['Tables']['PracticeSession']['Row'], 'id'>;
+        Update: Partial<Database['public']['Tables']['PracticeSession']['Insert']>;
+      };
+      PronunciationPracticeItem: {
+        Row: {
+          id: string;
+          sessionId: string;
+          exerciseId: string;
+          similarityScore: number;
+          transcript: string;
+          userAudioUrl: string;
+          feedback: string[];
+        };
+        Insert: Omit<Database['public']['Tables']['PronunciationPracticeItem']['Row'], 'id'>;
+        Update: Partial<Database['public']['Tables']['PronunciationPracticeItem']['Insert']>;
       };
     };
   };
