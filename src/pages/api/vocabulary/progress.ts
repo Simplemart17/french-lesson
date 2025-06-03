@@ -1,23 +1,35 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, VocabularyItem } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
+import { getUserId } from '@/utils/auth';
 import { getSupabaseClient, TABLES } from '@/lib/supabase';
+
+interface UserVocabularyWithDetails {
+  vocabularyId: string;
+  learned: boolean;
+  lastPracticed: string | null;
+  vocabulary?: {
+    word: string;
+    translation: string;
+    example: string;
+    level: string;
+    category: string;
+    pronunciation: string;
+    usageContext: string[];
+  };
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<VocabularyItem[] | VocabularyItem>>
 ) {
   // Check if user is authenticated
-  if (!isAuthenticated(req)) {
-    return res.status(401).json({
-      success: false,
-      error: {
-        message: 'Unauthorized'
-      }
-    });
-  }
-
-  const userId = getUserId(req);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'User not authenticated' }
+      });
+    }
 
   // GET request to retrieve user vocabulary progress
   if (req.method === 'GET') {
@@ -29,14 +41,13 @@ export default async function handler(
         .from(TABLES.USER_VOCABULARY)
         .select(`
           *,
-          vocabulary:vocabularyId (
-            id,
-            french,
-            english,
-            pronunciation,
-            category,
-            difficulty
-          )
+        vocabulary:vocabularyId (
+          word,
+          translation,
+          pronunciation,
+          category,
+          level
+        )
         `)
         .eq('userId', userId)
         .order('lastPracticed', { ascending: false });
@@ -52,15 +63,15 @@ export default async function handler(
       }
 
       // Format the response
-      const userProgress = (userVocabularyItems || []).map((item: any) => ({
+      const userProgress = (userVocabularyItems || []).map((item: UserVocabularyWithDetails) => ({
         id: item.vocabularyId,
-        word: item.vocabulary?.french || '',
-        translation: item.vocabulary?.english || '',
-        example: '', // Not available in current schema
-        level: item.vocabulary?.difficulty || '',
+        word: item.vocabulary?.word || '',
+        translation: item.vocabulary?.translation || '',
+        example: item.vocabulary?.example || '', // Not available in current schema
+        level: item.vocabulary?.level || '',
         category: item.vocabulary?.category || undefined,
         pronunciation: item.vocabulary?.pronunciation || undefined,
-        usageContext: [], // Not available in current schema
+        usageContext: item.vocabulary?.usageContext || [], // Not available in current schema
         learned: item.learned,
         lastPracticed: item.lastPracticed || undefined,
         nextReview: undefined, // Not available in current schema
@@ -146,14 +157,13 @@ export default async function handler(
         })
         .select(`
           *,
-          vocabulary:vocabularyId (
-            id,
-            french,
-            english,
-            pronunciation,
-            category,
-            difficulty
-          )
+        vocabulary:vocabularyId (
+          word,
+          translation,
+          pronunciation,
+          category,
+          level
+        )
         `)
         .single();
 
@@ -173,7 +183,7 @@ export default async function handler(
         word: updatedUserVocabulary.vocabulary?.french || '',
         translation: updatedUserVocabulary.vocabulary?.english || '',
         example: '', // Not available in current schema
-        level: updatedUserVocabulary.vocabulary?.difficulty || '',
+        level: updatedUserVocabulary.vocabulary?.level || '',
         category: updatedUserVocabulary.vocabulary?.category || undefined,
         pronunciation: updatedUserVocabulary.vocabulary?.pronunciation || undefined,
         usageContext: [], // Not available in current schema
