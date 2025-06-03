@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { translateText, detectLanguage, getLanguageName, LanguageCode } from '@/services/translationService';
+import { translateText, detectLanguage, LanguageCode } from '@/services/translationService';
 import { Button } from '@/components/ui/Button';
+import { toast } from 'sonner';
 
 interface TranslatorProps {
   initialText?: string;
@@ -159,7 +160,7 @@ const Translator = ({
     localStorage.setItem('savedTranslations', JSON.stringify(updatedPhrases));
     
     // Show confirmation
-    alert('Phrase saved to vocabulary!');
+    toast.success('Phrase saved to vocabulary!');
   };
   
   const handleSourceLangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
