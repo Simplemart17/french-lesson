@@ -4,7 +4,7 @@ import { TABLES } from './supabase';
 
 export interface SupabaseAuthUser {
   id: string;
-  email: string;
+  email?: string;
   user_metadata: {
     name?: string;
   };
@@ -13,15 +13,31 @@ export interface SupabaseAuthUser {
 export interface AuthResult {
   user: User | null;
   error: string | null;
-  session?: any;
+  session?: AuthSession | null;
 }
 
 export interface AuthSession {
   access_token: string;
   refresh_token: string;
-  expires_at: number;
+  expires_at?: number;
   user: SupabaseAuthUser;
 }
+
+export interface MapUser {
+    id: string;
+    name: string;
+    email: string;
+    level: string;
+    points: number;
+    streakDays: number;
+    joinedAt: string;
+    learningGoals: string[];
+    completedLessons: number;
+    lastActive: string;
+    dailyGoal: number;
+    notifications: boolean;
+    theme: 'light' | 'dark';
+  }
 
 /**
  * Enhanced Supabase Authentication Service
@@ -74,8 +90,9 @@ export const supabaseAuth = {
         error: null,
         session: authData.session
       };
-    } catch (error: any) {
-      return { user: null, error: error.message || 'Registration failed' };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      return { user: null, error: errorMessage };
     }
   },
 
@@ -109,8 +126,9 @@ export const supabaseAuth = {
         error: null,
         session: authData.session
       };
-    } catch (error: any) {
-      return { user: null, error: error.message || 'Login failed' };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      return { user: null, error: errorMessage };
     }
   },
 
@@ -124,8 +142,9 @@ export const supabaseAuth = {
         return { error: error.message };
       }
       return { error: null };
-    } catch (error: any) {
-      return { error: error.message || 'Sign out failed' };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Sign out failed';
+      return { error: errorMessage };
     }
   },
 
@@ -140,8 +159,9 @@ export const supabaseAuth = {
         return { session: null, error: error.message };
       }
       return { session, error: null };
-    } catch (error: any) {
-      return { session: null, error: error.message };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get session';
+      return { session: null, error: errorMessage };
     }
   },
 
@@ -155,8 +175,9 @@ export const supabaseAuth = {
         return { user: null, error: error.message };
       }
       return { user, error: null };
-    } catch (error: any) {
-      return { user: null, error: error.message };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get current user';
+      return { user: null, error: errorMessage };
     }
   },
 
@@ -172,8 +193,9 @@ export const supabaseAuth = {
         return { error: error.message };
       }
       return { error: null };
-    } catch (error: any) {
-      return { error: error.message || 'Password reset failed' };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Password reset failed';
+      return { error: errorMessage };
     }
   },
 
@@ -189,8 +211,9 @@ export const supabaseAuth = {
         return { error: error.message };
       }
       return { error: null };
-    } catch (error: any) {
-      return { error: error.message || 'Password update failed' };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Password update failed';
+      return { error: errorMessage };
     }
   },
 
@@ -210,8 +233,9 @@ export const supabaseAuth = {
         return { error: error.message };
       }
       return { error: null };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to resend confirmation' };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to resend confirmation';
+      return { error: errorMessage };
     }
   },
 
@@ -227,7 +251,7 @@ export const supabaseAuth = {
       }
 
       return await supabaseAuth.getUserProfile(authUser.id);
-    } catch (error) {
+    } catch {
       return null;
     }
   },
@@ -280,37 +304,6 @@ export const supabaseAuth = {
         .eq('id', authUserId)
         .single();
 
-      // if (error && error.code === 'PGRST116') {
-      //   // User profile doesn't exist, try to create it
-      //   console.log('User profile not found, attempting to create default profile for:', authUserId);
-
-      //   // Get user info from Supabase Auth
-      //   const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.admin.getUserById(authUserId);
-
-      //   if (authError || !authUser) {
-      //     console.error('Failed to get auth user:', authError);
-      //     return null;
-      //   }
-
-      //   // Create default profile
-      //   const defaultProfile = await supabaseAuth.createUserProfile(authUserId, {
-      //     name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
-      //     email: authUser.email || '',
-      //     level: 'A1',
-      //     points: 0,
-      //     streakDays: 0,
-      //     learningGoals: [],
-      //     completedLessons: 0,
-      //     preferences: {
-      //       dailyGoal: 15,
-      //       notifications: true,
-      //       theme: 'light'
-      //     }
-      //   });
-
-      //   return defaultProfile;
-      // }
-
       if (error || !user) {
         console.error('Error fetching user profile:', error);
         return null;
@@ -326,7 +319,7 @@ export const supabaseAuth = {
   /**
    * Map database user to User type
    */
-  mapDbUserToUser: (dbUser: any): User => {
+  mapDbUserToUser: (dbUser: MapUser): User => {
     return {
       id: dbUser.id,
       name: dbUser.name,
