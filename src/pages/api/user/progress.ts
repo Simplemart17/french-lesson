@@ -36,6 +36,30 @@ interface ProgressData {
   xpForNextLevel: number;
 }
 
+interface LessonProgress {
+  id: string;
+  completed: boolean;
+  score: number;
+  completedAt: string | null;
+  lesson?: {
+    title?: string;
+    duration?: number;
+    topics?: string[];
+  };
+}
+
+interface VocabularyProgress {
+  id: string;
+  lastPracticed: string | null;
+  vocabulary?: {
+    word: string;
+    translation: string;
+    pronunciation?: string;
+    category?: string;
+    level?: string;
+  };
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
@@ -94,7 +118,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .select(`
         *,
         vocabulary:vocabularyId (
-          french
+          word,
+          translation,
+          pronunciation,
+          category,
+          level
         )
       `)
       .eq('userId', userId)
@@ -114,27 +142,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const skillProgress: SkillProgress[] = [
       {
         name: 'Pronunciation',
-        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: any) => p.lesson?.topics?.includes('pronunciation')).length * 10 + 30)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('pronunciation')).length * 10 + 30)),
         category: 'speaking'
       },
       {
         name: 'Conversation',
-        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: any) => p.lesson?.topics?.includes('conversation')).length * 8 + 25)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('conversation')).length * 8 + 25)),
         category: 'speaking'
       },
       {
         name: 'Comprehension',
-        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: any) => p.completed).length * 5 + 40)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.completed).length * 5 + 40)),
         category: 'listening'
       },
       {
         name: 'Reading',
-        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: any) => p.lesson?.topics?.includes('reading')).length * 12 + 35)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('reading')).length * 12 + 35)),
         category: 'reading'
       },
       {
         name: 'Writing',
-        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: any) => p.lesson?.topics?.includes('writing')).length * 15 + 20)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('writing')).length * 15 + 20)),
         category: 'writing'
       },
       {
@@ -144,14 +172,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
       {
         name: 'Grammar',
-        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: any) => p.lesson?.topics?.includes('grammar')).length * 8 + 35)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('grammar')).length * 8 + 35)),
         category: 'grammar'
       }
     ];
 
     // Build activity log from real data
     const activityLog: ActivityLog[] = [
-      ...(lessonProgress || []).map((progress: any) => ({
+      ...(lessonProgress || []).map((progress: LessonProgress) => ({
         id: progress.id,
         date: progress.completedAt?.split('T')[0] || new Date().toISOString().split('T')[0],
         activity: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
@@ -159,10 +187,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         xpEarned: progress.score || 100,
         category: determineCategory(progress.lesson?.topics || [])
       })),
-      ...(vocabularyProgress || []).slice(0, 5).map((vocab: any) => ({
+      ...(vocabularyProgress || []).slice(0, 5).map((vocab: VocabularyProgress) => ({
         id: `vocab-${vocab.id}`,
         date: vocab.lastPracticed?.split('T')[0] || new Date().toISOString().split('T')[0],
-        activity: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
+        activity: `Learned new word: ${vocab.vocabulary?.word || 'Unknown Word'}`,
         duration: 5,
         xpEarned: 25,
         category: 'vocabulary' as const
