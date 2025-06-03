@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import UserProfile, { UserProfileData } from '@/components/features/UserProfile';
@@ -8,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import LoadingState from '@/components/ui/LoadingState';
 import apiClient from '@/services/api/apiClient';
 import { User, ApiResponse } from '@/types/api';
+import { toast } from 'sonner';
 
 interface UserProfileFullData extends User {
   achievements: {
@@ -106,50 +108,23 @@ export default function ProfilePage() {
   // Fetch language skills from API
   useEffect(() => {
     const fetchLanguageSkills = async () => {
-      if (!isAuthenticated || !user) {
-        return;
-      }
-
       try {
         const response = await apiClient.get<ApiResponse<LanguageSkill[]>>('/user/skills');
 
         if (response.data && response.data.success && response.data.data) {
           setLanguageSkills(response.data.data);
-        } else {
-          // Fallback to default skills if API fails
-          setLanguageSkills([
-            { skill: 'Listening', level: 'B1', percentage: 65 },
-            { skill: 'Speaking', level: 'B1', percentage: 60 },
-            { skill: 'Reading', level: 'B2', percentage: 75 },
-            { skill: 'Writing', level: 'B1', percentage: 55 },
-            { skill: 'Grammar', level: 'B1', percentage: 70 },
-            { skill: 'Vocabulary', level: 'B2', percentage: 80 },
-          ]);
         }
       } catch (err) {
         console.error('Error fetching language skills:', err);
-        // Fallback to default skills if API fails
-        setLanguageSkills([
-          { skill: 'Listening', level: 'B1', percentage: 65 },
-          { skill: 'Speaking', level: 'B1', percentage: 60 },
-          { skill: 'Reading', level: 'B2', percentage: 75 },
-          { skill: 'Writing', level: 'B1', percentage: 55 },
-          { skill: 'Grammar', level: 'B1', percentage: 70 },
-          { skill: 'Vocabulary', level: 'B2', percentage: 80 },
-        ]);
       }
     };
 
     fetchLanguageSkills();
-  }, [isAuthenticated, user]);
+  }, []);
 
   // Fetch resources from API
   useEffect(() => {
     const fetchRecommendedResources = async () => {
-      if (!isAuthenticated || !user) {
-        return;
-      }
-
       try {
         const response = await apiClient.get<ApiResponse<{resources: ResourceItem[]}>>('/learning/recommended-resources');
 
@@ -165,7 +140,7 @@ export default function ProfilePage() {
     };
 
     fetchRecommendedResources();
-  }, [isAuthenticated, user]);
+  }, []);
 
   // Handle profile save
   const handleProfileSave = async (data: UserProfileData) => {
@@ -189,13 +164,13 @@ export default function ProfilePage() {
         } : null);
 
         setProfileData(data);
-        alert('Profile saved successfully!');
+        toast.success('Profile saved successfully!');
       } else {
         throw new Error('Failed to update profile');
       }
     } catch (error) {
       console.error('Error saving profile:', error);
-      alert('Failed to save profile. Please try again.');
+      toast.error('Failed to save profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -446,7 +421,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
                 <p className="text-sm text-gray-600">
-                  You've practiced {user.streakDays % 7} days this week. Keep going to maintain your streak!
+                  You&apos;ve practiced {user.streakDays % 7} days this week. Keep going to maintain your streak!
                 </p>
               </div>
             </div>
@@ -471,10 +446,11 @@ export default function ProfilePage() {
                 <Card key={resource.id} className="overflow-hidden transition-shadow hover:shadow-lg">
                   <div className="relative h-40 bg-gray-200">
                     {resource.imageUrl ? (
-                      <img
+                      <Image
                         src={resource.imageUrl}
                         alt={resource.title}
-                        className="object-cover w-full h-full"
+                        fill
+                        className="object-cover"
                         onError={(e) => {
                           // Fallback if image fails to load
                           const target = e.target as HTMLImageElement;
