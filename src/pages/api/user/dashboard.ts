@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { getSupabaseClient, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
+import { LessonProgress } from '@/types/api';
 
 interface DashboardData {
   user: {
@@ -65,9 +66,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .eq('id', userId)
       .single();
 
-      console.log(user, "Is there user in the database")
-      console.log(userError, "what error exist here")
-
     if (userError || !user) {
       return res.status(404).json({
         success: false,
@@ -95,7 +93,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .from(TABLES.USER_VOCABULARY)
       .select(`
         *,
-        vocabulary:${TABLES.VOCABULARY}(french, english)
+        vocabulary:${TABLES.VOCABULARY}()
       `)
       .eq('userId', userId)
       .eq('learned', true)
@@ -123,7 +121,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       console.error('Error fetching today progress:', todayError);
     }
 
-    const minutesStudiedToday = (todayProgress || []).reduce((total, progress: any) => {
+    const minutesStudiedToday = (todayProgress || []).reduce((total, progress: LessonProgress & { lesson?: { duration: number } }) => {
       return total + (progress.lesson?.duration || 0);
     }, 0);
 
@@ -138,7 +136,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Build recent activities
     const recentActivities = [
-      ...(lessonProgress || []).slice(0, 5).map((progress: any) => ({
+      ...(lessonProgress || []).slice(0, 5).map((progress: LessonProgress & { lesson?: { title: string } }) => ({
         id: `lesson-${progress.id}`,
         type: 'lesson' as const,
         title: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
@@ -146,7 +144,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         timestamp: progress.completedAt || new Date().toISOString(),
         score: progress.score
       })),
-      ...(vocabularyProgress || []).slice(0, 3).map((vocab: any) => ({
+      ...(vocabularyProgress || []).slice(0, 3).map((vocab: { id: string; vocabulary?: { french: string }; lastPracticed?: string }) => ({
         id: `vocab-${vocab.id}`,
         type: 'vocabulary' as const,
         title: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
@@ -160,8 +158,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     
     // Get completed lesson IDs
     const completedLessonIds = (lessonProgress || [])
-      .filter((p: any) => p.completed)
-      .map((p: any) => p.lessonId);
+      .filter((p: LessonProgress) => p.completed)
+      .map((p: LessonProgress) => p.lessonId);
 
     // Get next lesson recommendation
     let nextLessonQuery = supabase
@@ -241,7 +239,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       recommendations: recommendations.slice(0, 3),
       stats: {
         totalLessons: totalLessons || 0,
-        completedLessons: (lessonProgress || []).filter((p: any) => p.completed).length,
+        completedLessons: (lessonProgress || []).filter((p: LessonProgress) => p.completed).length,
         vocabularyLearned: (vocabularyProgress || []).length,
         currentStreak: user.streakDays,
         totalPoints: user.points
