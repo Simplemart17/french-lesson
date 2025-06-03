@@ -1,10 +1,27 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { authApiService, userApiService } from '@/services';
-import { User, ApiResponse } from '@/types/api';
+import { authApiService } from '@/services';
+import { User } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
 
+// Define the shape of the API user
+interface ApiUser {
+  id: string;
+  name: string;
+  email: string;
+  level?: string;
+  points?: number;
+  streakDays?: number;
+  joinedAt?: string;
+  learningGoals?: string[];
+  completedLessons?: number;
+  lastActive?: string;
+  dailyGoal?: number;
+  notifications?: boolean;
+  theme?: string;
+}
+
 // Helper function to convert API user to our User type
-const convertApiUserToUser = (apiUser: any): User => {
+const convertApiUserToUser = (apiUser: ApiUser): User => {
   return {
     id: apiUser.id,
     name: apiUser.name,
@@ -19,7 +36,7 @@ const convertApiUserToUser = (apiUser: any): User => {
     preferences: {
       dailyGoal: apiUser.dailyGoal || 15,
       notifications: apiUser.notifications !== undefined ? apiUser.notifications : true,
-      theme: apiUser.theme || 'light'
+      theme: (apiUser.theme || 'light') as 'light' | 'dark'
     }
   };
 };
@@ -77,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } else {
         setUser(null);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Auth initialization error:', error);
       setUser(null);
     } finally {
@@ -104,13 +121,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         if (user && access_token) {
           // Token and user data are already stored by authApiService.login
-          const convertedUser = convertApiUserToUser(user);
+          const convertedUser = convertApiUserToUser(user as ApiUser);
           setUser(convertedUser);
         }
       }
-    } catch (error: any) {
-      console.error('🔐 Login error:', error);
-      setError(error.message || 'Failed to login. Please try again.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to login. Please try again.';
+      setError(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);
@@ -136,8 +153,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Force initialize to refresh auth state
       await initialize();
-    } catch (error: any) {
-      setError(error.message || 'Failed to register. Please try again.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to register. Please try again.';
+      setError(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);
@@ -149,7 +167,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await authApiService.logout();
       setUser(null);
-    } catch (error) {
+    } catch {
       // Even if the API call fails, we still want to clear local state
       setUser(null);
     } finally {
