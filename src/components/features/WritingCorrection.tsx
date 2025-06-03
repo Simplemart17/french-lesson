@@ -4,6 +4,7 @@ import { Card } from '../ui/Card';
 import LoadingState from '../ui/LoadingState';
 import ErrorMessage from '../ui/ErrorMessage';
 import { aiService } from '@/services';
+import { toast } from 'sonner';
 
 interface WritingCorrectionProps {
   initialText?: string;
@@ -374,7 +375,7 @@ const WritingCorrection = ({
               <Button
                 onClick={() => {
                   // In a real app, this would save the writing to the user's history
-                  alert('Your writing has been saved to your practice history!');
+                  toast.success('Your writing has been saved to your practice history!');
                 }}
               >
                 Save to My Practice
