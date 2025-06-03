@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { toast } from 'sonner';
 
 interface ConjugationItem {
   pronoun: string;
@@ -43,7 +44,7 @@ const VerbConjugation = ({
     // Check if all fields have been filled
     const allFilled = conjugations.every(item => userAnswers[item.pronoun]?.trim());
     if (!allFilled) {
-      alert('Please fill in all conjugations before submitting.');
+      toast.info('Please fill in all conjugations before submitting.');
       return;
     }
     
