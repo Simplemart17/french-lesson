@@ -7,16 +7,16 @@ export default async function handler(
   res: NextApiResponse<ApiResponse<any>>
 ) {
   // Check authentication
-  if (!isAuthenticated(req)) {
-    return res.status(401).json({ 
-      success: false, 
+  if (!(await isAuthenticated(req))) {
+    return res.status(401).json({
+      success: false,
       error: {
         message: 'Unauthorized'
       }
     });
   }
 
-  const userId = getUserId(req);
+  const userId = await getUserId(req);
 
   if (req.method === 'GET') {
     try {
