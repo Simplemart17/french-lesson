@@ -42,12 +42,42 @@ async function handler(
       }
 
       if (!userProfile) {
-        return res.status(404).json({
-          success: false,
-          error: {
-            message: 'User profile not found'
-          }
-        });
+        // Create a default user profile if none exists
+        const defaultProfile = {
+          id: userId,
+          name: 'New User',
+          email: 'user@example.com',
+          level: 'A1',
+          points: 0,
+          streak_days: 0,
+          joined_at: new Date().toISOString(),
+          learning_goals: [],
+          completed_lessons: 0,
+          last_active: new Date().toISOString(),
+          daily_goal: 15,
+          notifications: true,
+          theme: 'light',
+          ai_correction_enabled: true,
+          ai_vocab_suggestions_enabled: true,
+          preferred_voice: 'alloy',
+          speech_recognition_enabled: true
+        };
+
+        const { error: createError } = await supabase
+          .from(TABLES.USERS)
+          .insert(defaultProfile);
+
+        if (createError) {
+          console.error('Error creating default user profile:', createError);
+          return res.status(500).json({
+            success: false,
+            error: {
+              message: 'Failed to create user profile'
+            }
+          });
+        }
+
+        userProfile = defaultProfile;
       }
 
       // Transform to match expected User type

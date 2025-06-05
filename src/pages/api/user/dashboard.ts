@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -62,7 +62,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Get user data
     const { data: user, error: userError } = await supabase
       .from(TABLES.USERS)
-      .select('name, level, points, streakDays, dailyGoal, completedLessons, lastActive')
+      .select('name, level, points, streak_days, daily_goal, completed_lessons, last_active')
       .eq('id', userId)
       .single();
 
@@ -78,10 +78,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .from(TABLES.LESSON_PROGRESS)
       .select(`
         *,
-        lesson:${TABLES.LESSONS}(title, duration)
+        lesson:lesson_id(title, duration)
       `)
-      .eq('userId', userId)
-      .order('completedAt', { ascending: false })
+      .eq('user_id', userId)
+      .order('completed_at', { ascending: false })
       .limit(10);
 
     if (progressError) {
@@ -93,11 +93,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .from(TABLES.USER_VOCABULARY)
       .select(`
         *,
-        vocabulary:${TABLES.VOCABULARY}()
+        vocabulary:vocabulary_id(*)
       `)
-      .eq('userId', userId)
+      .eq('user_id', userId)
       .eq('learned', true)
-      .order('lastPracticed', { ascending: false })
+      .order('last_practiced', { ascending: false })
       .limit(5);
 
     if (vocabError) {
@@ -112,10 +112,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .from(TABLES.LESSON_PROGRESS)
       .select(`
         *,
-        lesson:${TABLES.LESSONS}(duration)
+        lesson:lesson_id(duration)
       `)
-      .eq('userId', userId)
-      .gte('completedAt', today.toISOString());
+      .eq('user_id', userId)
+      .gte('completed_at', today.toISOString());
 
     if (todayError) {
       console.error('Error fetching today progress:', todayError);
@@ -141,7 +141,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         type: 'lesson' as const,
         title: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
         description: `Score: ${progress.score || 0}%`,
-        timestamp: progress.completedAt || new Date().toISOString(),
+        timestamp: progress.completed_at || new Date().toISOString(),
         score: progress.score
       })),
       ...(vocabularyProgress || []).slice(0, 3).map((vocab: { id: string; vocabulary?: { french: string }; lastPracticed?: string }) => ({
@@ -149,7 +149,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         type: 'vocabulary' as const,
         title: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
         description: 'Added to vocabulary',
-        timestamp: vocab.lastPracticed || new Date().toISOString()
+        timestamp: vocab.last_practiced || new Date().toISOString()
       }))
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
@@ -159,7 +159,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Get completed lesson IDs
     const completedLessonIds = (lessonProgress || [])
       .filter((p: LessonProgress) => p.completed)
-      .map((p: LessonProgress) => p.lessonId);
+      .map((p: LessonProgress) => p.lesson_id);
 
     // Get next lesson recommendation
     let nextLessonQuery = supabase
@@ -226,14 +226,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         name: user.name,
         level: user.level,
         points: user.points,
-        streakDays: user.streakDays,
-        dailyGoal: user.dailyGoal,
-        completedLessons: user.completedLessons
+        streakDays: user.streak_days,
+        dailyGoal: user.daily_goal,
+        completedLessons: user.completed_lessons
       },
       dailyProgress: {
         minutesStudied: minutesStudiedToday,
-        goalMinutes: user.dailyGoal,
-        progressPercentage: Math.min(100, Math.round((minutesStudiedToday / user.dailyGoal) * 100))
+        goalMinutes: user.daily_goal,
+        progressPercentage: Math.min(100, Math.round((minutesStudiedToday / user.daily_goal) * 100))
       },
       recentActivities,
       recommendations: recommendations.slice(0, 3),
@@ -241,7 +241,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         totalLessons: totalLessons || 0,
         completedLessons: (lessonProgress || []).filter((p: LessonProgress) => p.completed).length,
         vocabularyLearned: (vocabularyProgress || []).length,
-        currentStreak: user.streakDays,
+        currentStreak: user.streak_days,
         totalPoints: user.points
       }
     };
