@@ -66,7 +66,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -78,7 +78,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const supabase = getSupabaseClient();
     const { data: user, error: userError } = await supabase
       .from(TABLES.USERS)
-      .select('points, streakDays, level')
+      .select('points, streak_days, level')
       .eq('id', userId)
       .single();
 
@@ -94,14 +94,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .from(TABLES.LESSON_PROGRESS)
       .select(`
         *,
-        lesson:lessonId (
+        lesson:lesson_id (
           title,
           duration,
           topics
         )
       `)
-      .eq('userId', userId)
-      .order('completedAt', { ascending: false })
+      .eq('user_id', userId)
+      .order('completed_at', { ascending: false })
       .limit(20);
 
     if (lessonError) {
@@ -117,17 +117,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .from(TABLES.USER_VOCABULARY)
       .select(`
         *,
-        vocabulary:vocabularyId (
-          word,
-          translation,
+        vocabulary:vocabulary_id (
+          french,
+          english,
           pronunciation,
           category,
-          level
+          difficulty
         )
       `)
-      .eq('userId', userId)
+      .eq('user_id', userId)
       .eq('learned', true)
-      .order('lastPracticed', { ascending: false })
+      .order('last_practiced', { ascending: false })
       .limit(10);
 
     if (vocabError) {
@@ -220,7 +220,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Calculate totals
     const totalXP = user.points;
     const totalStudyTime = activityLog.reduce((sum, activity) => sum + activity.duration, 0);
-    const currentStreak = user.streakDays;
+    const currentStreak = user.streak_days;
 
     // Calculate level based on XP
     const userLevel = Math.floor(totalXP / 500) + 1;
