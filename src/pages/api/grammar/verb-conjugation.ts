@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
-import { prisma } from '@/lib/prisma';
 
 // Define the verb conjugation exercise type
 interface VerbConjugationExercise {
@@ -221,7 +220,7 @@ const verbConjugationExercises: Record<string, VerbConjugationExercise[]> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<VerbConjugationExercise[] | VerbConjugationExercise>>
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   // GET request to retrieve verb conjugation exercises
   if (req.method === 'GET') {

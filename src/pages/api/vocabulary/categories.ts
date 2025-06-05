@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { prisma } from '@/lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow GET requests
@@ -14,15 +14,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     // Get all vocabulary items
-    const vocabulary = await prisma.vocabulary.findMany({
-      select: {
-        category: true
-      }
-    });
+    const supabase = getSupabaseClient();
+    const { data: vocabulary, error } = await supabase
+      .from(TABLES.VOCABULARY)
+      .select('category');
+
+    if (error) {
+      console.error('Error fetching vocabulary:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch vocabulary categories' }
+      });
+    }
 
     // Extract unique categories
     const categories = new Set<string>();
-    vocabulary.forEach(item => {
+    (vocabulary || []).forEach((item: any) => {
       if (item.category) {
         categories.add(item.category);
       }

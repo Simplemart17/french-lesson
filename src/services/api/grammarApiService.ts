@@ -53,31 +53,47 @@ export const grammarApiService = {
     page?: number;
     limit?: number;
   }): Promise<ApiResponse<GrammarExerciseListResponse>> => {
-    return apiClient.get<GrammarExerciseListResponse>(API_ENDPOINTS.GRAMMAR.EXERCISES, params);
+    const response = await apiClient.get<GrammarExerciseListResponse>(API_ENDPOINTS.GRAMMAR.EXERCISES, params);
+    return {
+      success: true,
+      data: response.data
+    };
   },
 
   /**
    * Get exercise by ID
    */
   getExercise: async (id: number): Promise<ApiResponse<GrammarExercise>> => {
-    return apiClient.get<GrammarExercise>(`${API_ENDPOINTS.GRAMMAR.EXERCISES}/${id}`);
+    const response = await apiClient.get<GrammarExercise>(`${API_ENDPOINTS.GRAMMAR.EXERCISES}/${id}`);
+    return {
+      success: true,
+      data: response.data
+    };
   },
 
   /**
    * Get progress
    */
   getProgress: async (): Promise<ApiResponse<any[]>> => {
-    return apiClient.get<any[]>(API_ENDPOINTS.GRAMMAR.PROGRESS);
+    const response = await apiClient.get<any[]>(API_ENDPOINTS.GRAMMAR.PROGRESS);
+    return {
+      success: true,
+      data: response.data
+    };
   },
 
   /**
    * Update progress
    */
   updateProgress: async (exerciseId: number, score: number): Promise<ApiResponse<any>> => {
-    return apiClient.post<any>(API_ENDPOINTS.GRAMMAR.PROGRESS, {
+    const response = await apiClient.post<any>(API_ENDPOINTS.GRAMMAR.PROGRESS, {
       exerciseId,
       score
     });
+    return {
+      success: true,
+      data: response.data
+    };
   },
   /**
    * Get verb conjugation exercises with optional filtering

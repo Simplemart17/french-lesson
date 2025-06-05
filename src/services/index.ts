@@ -11,6 +11,7 @@ import grammarService from './grammarService';
 import examService from './examService';
 import listeningService from './listeningService';
 import speakingService from './speakingService';
+import speechRecognitionService from './speechRecognitionService';
 import aiService from './aiService';
 
 // Import direct API services
@@ -42,6 +43,7 @@ export {
   lessonService,
   conversationService,
   pronunciationService,
+  speechRecognitionService,
   grammarService,
   examService,
   listeningService,

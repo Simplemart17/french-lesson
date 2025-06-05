@@ -1,15 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { findUserByEmail, createUser } from '@/lib/db';
 import { RegisterRequest, AuthResponse, ApiResponse } from '@/types/api';
-import { sign } from 'jsonwebtoken';
-
-// Secret key for JWT signing - in production, use environment variables
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-// Cookie constants
-const TOKEN_NAME = 'auth_token';
-const USER_DATA = 'user_data';
-const MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
+import { supabaseAuth } from '@/lib/supabaseAuth';
+import supabase from '@/lib/supabase';
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,60 +28,59 @@ export default async function handler(
       });
     }
 
-    // Check if user already exists
-    const existingUser = await findUserByEmail(email);
-    if (existingUser) {
-      return res.status(409).json({
+    // Sign up with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name
+        }
+      }
+    });
+
+    if (authError || !authData.user) {
+      return res.status(400).json({
         success: false,
         error: {
-          message: 'User with this email already exists'
+          message: authError?.message || 'Registration failed'
         }
       });
     }
 
-    // Create new user using our database service
-    const newUser = await createUser({
+    // Create user profile in our database
+    const userProfile = await supabaseAuth.createUserProfile(authData.user.id, {
       name,
       email,
-      password,
-      level: 'A1', // Starting level for new users
+      level: 'A1',
       points: 0,
       streakDays: 0,
-      joinedAt: new Date().toISOString(),
       learningGoals: [],
       completedLessons: 0,
-      lastActive: new Date().toISOString(),
       preferences: {
-        dailyGoal: 15, // Default 15 minutes per day
+        dailyGoal: 15,
         notifications: true,
         theme: 'light'
       }
     });
 
-    // Create JWT token
-    const token = sign(
-      {
-        userId: newUser.id,
-        email: newUser.email
-      },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    if (!userProfile) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          message: 'Failed to create user profile'
+        }
+      });
+    }
 
-    // Set cookies directly using the Set-Cookie header with a very simple approach
-    res.setHeader('Set-Cookie', [
-      `${TOKEN_NAME}=${token}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`,
-      `${USER_DATA}=${encodeURIComponent(JSON.stringify(newUser))}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`
-    ]);
-
-    // Log cookie setting
-    console.log('Setting auth cookies for new user:', newUser.email);
+    // Log successful registration
+    console.log('User registered successfully:', userProfile.email);
 
     return res.status(201).json({
       success: true,
       data: {
-        user: newUser,
-        token
+        user: userProfile,
+        token: authData.session?.access_token || ''
       }
     });
   } catch (error) {

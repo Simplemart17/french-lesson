@@ -86,15 +86,14 @@ export const speakingApiService = {
       formData.append('audio', audioBlob);
       formData.append('transcript', transcript);
 
-      const response = await apiClient.post<ApiResponse<SpeakingFeedback>>(
-        API_ENDPOINTS.SPEAKING.CHECK, 
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+      const response = await apiClient.request<ApiResponse<SpeakingFeedback>>({
+        method: 'POST',
+        url: API_ENDPOINTS.SPEAKING.CHECK,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      );
+      });
 
       if (response.data.success && response.data.data) {
         return response.data.data;

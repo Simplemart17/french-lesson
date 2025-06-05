@@ -1,6 +1,6 @@
 // User-related types
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   level: string;
@@ -36,8 +36,8 @@ export interface AuthResponse {
 
 // Lesson-related types
 export interface LessonExercise {
-  id: number;
-  sectionId: number;
+  id: string;
+  sectionId: string;
   type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking' | 'translation' | 'true-false';
   question: string;
   options?: string[];
@@ -46,8 +46,8 @@ export interface LessonExercise {
 }
 
 export interface LessonSection {
-  id: number;
-  lessonId: number;
+  id: string;
+  lessonId: string;
   title: string;
   type: 'text' | 'audio' | 'video' | 'image' | 'exercise';
   content?: string;
@@ -59,7 +59,7 @@ export interface LessonSection {
 }
 
 export interface Lesson {
-  id: number;
+  id: string;
   title: string;
   description: string;
   level: string;
@@ -69,19 +69,19 @@ export interface Lesson {
 }
 
 export interface LessonProgress {
-  id?: number;
-  userId?: number;
-  lessonId: number;
+  id?: string;
+  userId?: string;
+  lessonId: string;
   completed: boolean;
   score: number;
   startedAt?: string;
   completedAt?: string | null;
-  answers?: Record<number, string | string[]>;
+  answers?: Record<string, string | string[]>;
 }
 
 export interface LessonSubmissionResult {
   score: number;
-  feedback: Record<number, {
+  feedback: Record<string, {
     correct: boolean;
     explanation?: string;
   }>;
@@ -90,7 +90,7 @@ export interface LessonSubmissionResult {
 
 // Vocabulary and Practice types
 export interface VocabularyItem {
-  id?: number;
+  id?: string;
   word: string;
   translation: string;
   example: string;
@@ -106,7 +106,7 @@ export interface VocabularyItem {
 
 export interface PracticeSession {
   id: string;
-  userId: number;
+  userId: string;
   type: 'vocabulary' | 'grammar' | 'listening' | 'speaking';
   items: Array<VocabularyItem | LessonExercise>;
   startedAt: string;
@@ -123,7 +123,7 @@ export interface Message {
 
 export interface Conversation {
   id: string;
-  userId: number;
+  userId: string;
   title: string;
   context: string;
   messages: Message[];
@@ -140,7 +140,7 @@ export interface ExamSection {
 }
 
 export interface ExamResult {
-  userId: number;
+  userId: string;
   examId: string;
   section: string;
   level: string;

@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { apiClient, ApiResponse } from '@/services/api';
 
 interface DashboardData {
   user: {
@@ -75,13 +76,11 @@ export default function DashboardPage() {
       setError(null);
 
       try {
-        const response = await fetch('/api/user/dashboard');
-        const result = await response.json();
+        const response = await apiClient.get<ApiResponse<DashboardData>>('/user/dashboard');
+        const result = response.data
 
         if (result.success) {
           setDashboardData(result.data);
-        } else {
-          setError(result.error?.message || 'Failed to load dashboard data');
         }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -108,13 +107,13 @@ export default function DashboardPage() {
           </h1>
           <p className="mt-2 text-gray-600">Welcome to your French learning dashboard</p>
           {dashboardData && (
-            <div className="mt-4 flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center mt-4 space-x-4 text-sm text-gray-600">
               <span className="flex items-center">
-                <span className="w-2 h-2 bg-primary-500 rounded-full mr-2"></span>
+                <span className="w-2 h-2 mr-2 rounded-full bg-primary-500"></span>
                 Level: {dashboardData.user.level}
               </span>
               <span className="flex items-center">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                <span className="w-2 h-2 mr-2 bg-yellow-500 rounded-full"></span>
                 {dashboardData.user.points} XP
               </span>
             </div>
@@ -142,93 +141,93 @@ export default function DashboardPage() {
         {dashboardData && !isLoading && (
           <>
 
-        {/* Main dashboard content */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Daily Goal Card */}
-          <div className="p-6 bg-white rounded-xl shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800">Daily Goal</h2>
-            <div className="mt-4">
-              <div className="w-full h-3 bg-gray-200 rounded-full">
-                <div
-                  className="h-3 bg-primary-500 rounded-full transition-all duration-300"
-                  style={{ width: `${dashboardData.dailyProgress.progressPercentage}%` }}
-                ></div>
-              </div>
-              <p className="mt-2 text-sm text-gray-600">
-                {dashboardData.dailyProgress.minutesStudied} minutes of {dashboardData.dailyProgress.goalMinutes} completed today
-              </p>
-            </div>
-          </div>
-
-          {/* Streak Card */}
-          <div className="p-6 bg-white rounded-xl shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800">Current Streak</h2>
-            <div className="flex items-center mt-4">
-              <span className="text-3xl font-bold text-primary-500">{dashboardData.user.streakDays}</span>
-              <span className="ml-2 text-gray-600">days</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600">
-              {dashboardData.user.streakDays > 0 ? 'Keep it up!' : 'Start your streak today!'}
-            </p>
-          </div>
-
-          {/* Level Card */}
-          <div className="p-6 bg-white rounded-xl shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800">Current Level</h2>
-            <div className="flex items-center mt-4">
-              <span className="text-3xl font-bold text-primary-500">{dashboardData.user.level}</span>
-              <span className="ml-2 text-gray-600">
-                {dashboardData.user.level.startsWith('A') ? 'Beginner' :
-                 dashboardData.user.level.startsWith('B') ? 'Intermediate' : 'Advanced'}
-              </span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600">{dashboardData.user.points} XP earned</p>
-          </div>
-        </div>
-
-        {/* Recent Activities */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800">Recent Activities</h2>
-          <div className="mt-4 overflow-hidden bg-white rounded-xl shadow-sm">
-            {dashboardData.recentActivities.length > 0 ? (
-              dashboardData.recentActivities.map((activity, index) => (
-                <div
-                  key={activity.id}
-                  className={`p-4 ${index < dashboardData.recentActivities.length - 1 ? 'border-b border-gray-100' : ''}`}
-                >
-                  <p className="font-medium text-gray-800">{activity.title}</p>
-                  <p className="text-sm text-gray-600">
-                    {new Date(activity.timestamp).toLocaleDateString()} • {activity.description}
+            {/* Main dashboard content */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* Daily Goal Card */}
+              <div className="p-6 bg-white shadow-sm rounded-xl">
+                <h2 className="text-xl font-semibold text-gray-800">Daily Goal</h2>
+                <div className="mt-4">
+                  <div className="w-full h-3 bg-gray-200 rounded-full">
+                    <div
+                      className="h-3 transition-all duration-300 rounded-full bg-primary-500"
+                      style={{ width: `${dashboardData.dailyProgress.progressPercentage}%` }}
+                    ></div>
+                  </div>
+                  <p className="mt-2 text-sm text-gray-600">
+                    {dashboardData.dailyProgress.minutesStudied} minutes of {dashboardData.dailyProgress.goalMinutes} completed today
                   </p>
                 </div>
-              ))
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                <p>No recent activities yet.</p>
-                <p className="text-sm">Start learning to see your progress here!</p>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Recommended Next Steps */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800">Recommended Next Steps</h2>
-          <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
-            {dashboardData.recommendations.map((recommendation) => (
-              <Link key={recommendation.id} href={recommendation.url}>
-                <div className="p-4 transition-all duration-200 bg-white rounded-lg shadow-sm hover:shadow-md cursor-pointer">
-                  <h3 className="text-lg font-medium text-gray-800">{recommendation.title}</h3>
-                  <p className="mt-1 text-sm text-gray-600">{recommendation.description}</p>
-                  <div className="px-4 py-2 mt-4 text-sm text-white rounded-lg bg-primary-500 hover:bg-primary-600 inline-block">
-                    {recommendation.type === 'lesson' ? 'Start Lesson' :
-                     recommendation.type === 'practice' ? 'Start Practice' : 'Review Now'}
-                  </div>
+              {/* Streak Card */}
+              <div className="p-6 bg-white shadow-sm rounded-xl">
+                <h2 className="text-xl font-semibold text-gray-800">Current Streak</h2>
+                <div className="flex items-center mt-4">
+                  <span className="text-3xl font-bold text-primary-500">{dashboardData.user.streakDays}</span>
+                  <span className="ml-2 text-gray-600">days</span>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+                <p className="mt-2 text-sm text-gray-600">
+                  {dashboardData.user.streakDays > 0 ? 'Keep it up!' : 'Start your streak today!'}
+                </p>
+              </div>
+
+              {/* Level Card */}
+              <div className="p-6 bg-white shadow-sm rounded-xl">
+                <h2 className="text-xl font-semibold text-gray-800">Current Level</h2>
+                <div className="flex items-center mt-4">
+                  <span className="text-3xl font-bold text-primary-500">{dashboardData.user.level}</span>
+                  <span className="ml-2 text-gray-600">
+                    {dashboardData.user.level.startsWith('A') ? 'Beginner' :
+                      dashboardData.user.level.startsWith('B') ? 'Intermediate' : 'Advanced'}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-gray-600">{dashboardData.user.points} XP earned</p>
+              </div>
+            </div>
+
+            {/* Recent Activities */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-gray-800">Recent Activities</h2>
+              <div className="mt-4 overflow-hidden bg-white shadow-sm rounded-xl">
+                {dashboardData.recentActivities.length > 0 ? (
+                  dashboardData.recentActivities.map((activity, index) => (
+                    <div
+                      key={activity.id}
+                      className={`p-4 ${index < dashboardData.recentActivities.length - 1 ? 'border-b border-gray-100' : ''}`}
+                    >
+                      <p className="font-medium text-gray-800">{activity.title}</p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(activity.timestamp).toLocaleDateString()} • {activity.description}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center text-gray-500">
+                    <p>No recent activities yet.</p>
+                    <p className="text-sm">Start learning to see your progress here!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Recommended Next Steps */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-gray-800">Recommended Next Steps</h2>
+              <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+                {dashboardData.recommendations.map((recommendation) => (
+                  <Link key={recommendation.id} href={recommendation.url}>
+                    <div className="p-4 transition-all duration-200 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-md">
+                      <h3 className="text-lg font-medium text-gray-800">{recommendation.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">{recommendation.description}</p>
+                      <div className="inline-block px-4 py-2 mt-4 text-sm text-white rounded-lg bg-primary-500 hover:bg-primary-600">
+                        {recommendation.type === 'lesson' ? 'Start Lesson' :
+                          recommendation.type === 'practice' ? 'Start Practice' : 'Review Now'}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </>
         )}
       </div>

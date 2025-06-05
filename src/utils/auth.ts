@@ -1,82 +1,51 @@
-import { NextApiRequest } from 'next';
-import { verify } from 'jsonwebtoken';
-import { findUserById } from '@/lib/db';
+import { NextApiRequest } from "next";
+import { verify } from "jsonwebtoken";
 
 // Secret key for JWT verification - in production, use environment variables
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-/**
- * Checks if the request is authenticated using the Authorization header
- * This is a mock implementation for demonstration purposes
- * In a real application, you would verify JWT tokens, session cookies, etc.
- */
-export function isAuthenticated(req: NextApiRequest): boolean {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return false;
-
-  const token = authHeader.split(' ')[1];
-  if (!token) return false;
-
-  try {
-    // Verify the token
-    verify(token, JWT_SECRET);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 /**
  * Gets the user ID from the authenticated request
  * In a real application, this would decode the JWT token or retrieve from session
  */
-export function getUserIdFromToken(req: NextApiRequest): number | null {
+export function getUserIdFromToken(req: NextApiRequest): string | null {
   const authHeader = req.headers.authorization;
   if (!authHeader) return null;
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.split(" ")[1];
   if (!token) return null;
+
+  // Development mode: Return test user ID for test tokens
+  if (process.env.NODE_ENV === 'development' && token.startsWith('test-token-')) {
+    return 'test-user-id';
+  }
 
   try {
     // Decode and verify the token
-    const decoded = verify(token, JWT_SECRET) as { userId: number };
+    const decoded = verify(token, JWT_SECRET) as { userId: string };
     return decoded.userId;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
 
+// Define the user type for the request
+interface RequestWithUser extends NextApiRequest {
+  user?: {
+    id: string;
+    [key: string]: unknown;
+  };
+}
+
 // Helper to get user ID, with fallback for development
-export function getUserId(req: NextApiRequest): number {
+export function getUserId(req: NextApiRequest): string | null {
+  // First try to get from the user object attached by authMiddleware
+  const userReq = req as RequestWithUser;
+  if (userReq.user && userReq.user.id) {
+    return userReq.user.id;
+  }
+
+  // Fallback to token-based extraction
   const id = getUserIdFromToken(req);
-  
-  // In development, if token verification fails, return a default user ID
-  if (process.env.NODE_ENV === 'development' && !id) {
-    return 1; // Default user ID for development
-  }
-  
-  return id || 1; // Fallback to user ID 1 if something goes wrong
+  return id;
 }
-
-/**
- * Checks if the user has the required role
- * This is a mock implementation
- */
-export function hasRole(req: NextApiRequest, role: string): boolean {
-  // Mock implementation - in a real app, this would check the user's roles
-  return isAuthenticated(req);
-}
-
-/**
- * Validates user credentials and returns the user if valid
- */
-export async function validateCredentials(email: string, password: string): Promise<boolean> {
-  try {
-    // In a real app, we would validate the password here
-    // For now, just checking if the user exists is enough
-    const user = await findUserById(1);
-    return !!user;
-  } catch (error) {
-    return false;
-  }
-} 

@@ -34,7 +34,7 @@ class ConversationService {
       // Create a local conversation if API fails
       const localConversation: Conversation = {
         id: `local-${Date.now()}`,
-        userId: -1, // Default value for offline mode
+        userId: 'offline-user', // Default value for offline mode
         title: topic,
         context: `Conversation about ${topic}`,
         messages: [],

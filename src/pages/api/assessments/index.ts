@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
@@ -16,18 +16,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // GET request to retrieve assessments
   if (req.method === 'GET') {
     try {
-      const assessments = await prisma.examResult.findMany({
-        where: {
-          userId
-        },
-        orderBy: {
-          completedAt: 'desc'
-        }
-      });
+      const supabase = getSupabaseClient();
+
+      const { data: assessments, error } = await supabase
+        .from(TABLES.EXAM_RESULTS)
+        .select('*')
+        .eq('userId', userId)
+        .order('completedAt', { ascending: false });
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
 
       return res.status(200).json({
         success: true,
-        data: assessments
+        data: assessments || []
       });
     } catch (error) {
       console.error('Error fetching assessments:', error);
@@ -41,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // POST request to create a new assessment
   if (req.method === 'POST') {
     try {
-      const { level, score, section, examId, details, timeSpent } = req.body;
+      const { level, score, section, examId, details, timeSpent, totalQuestions } = req.body;
 
       if (!level || score === undefined || !section || !examId) {
         return res.status(400).json({
@@ -51,39 +54,42 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Create new assessment using the ExamResult model
-      const assessment = await prisma.examResult.create({
-        data: {
+      const supabase = getSupabaseClient();
+      const defaultTotalQuestions = totalQuestions || 10;
+
+      const { data: assessment, error: createError } = await supabase
+        .from(TABLES.EXAM_RESULTS)
+        .insert({
           userId,
-          level,
+          examType: level, // Map level to examType
           score,
-          section,
-          examId,
-          details: details || {},
-          completedAt: new Date(),
-          timeSpent: timeSpent || 0, // Add the timeSpent field with a default value of 0
-          user: {
-            connect: {
-              id: userId
-            }
-          }
-        }
-      });
+          totalQuestions: defaultTotalQuestions,
+          correctAnswers: Math.round((score / 100) * defaultTotalQuestions), // Calculate from score
+          timeSpent: timeSpent || 0,
+          completedAt: new Date().toISOString(),
+          answers: details || {}
+        })
+        .select()
+        .single();
+
+      if (createError || !assessment) {
+        throw new Error(`Failed to create assessment: ${createError?.message}`);
+      }
 
       // Check if this is the user's best score by finding previous results for this exam
-      const previousResults = await prisma.examResult.findMany({
-        where: {
-          userId,
-          examId,
-          section,
-          level
-        },
-        orderBy: {
-          score: 'desc'
-        },
-        take: 1
-      });
+      const { data: previousResults, error: previousError } = await supabase
+        .from(TABLES.EXAM_RESULTS)
+        .select('*')
+        .eq('userId', userId)
+        .eq('examType', level)
+        .order('score', { ascending: false })
+        .limit(1);
 
-      const isNewHighScore = previousResults.length === 0 ||
+      if (previousError) {
+        console.error('Error fetching previous results:', previousError);
+      }
+
+      const isNewHighScore = !previousResults || previousResults.length === 0 ||
                              (previousResults.length > 0 && assessment.score > previousResults[0].score);
 
       return res.status(201).json({

@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
 import { getOpenAIClient } from '../../../utils/openaiClient';
 import { ChatCompletionMessageParam } from 'openai/resources';
+import { getSupabaseClient, TABLES } from '../../../lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -29,21 +29,41 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const includeLearned = (includeLearnedItems as string) === 'true';
     
     // Fetch user's vocabulary items
-    const userVocabulary = await prisma.userVocabulary.findMany({
-      where: {
-        userId,
-        ...(includeLearned ? {} : { learned: false })
-      },
-      include: {
-        vocabulary: true
-      },
-      orderBy: {
-        lastPracticed: 'asc'
-      },
-      take: limit
-    });
-    
-    if (userVocabulary.length === 0) {
+    const supabase = getSupabaseClient();
+
+    let query = supabase
+      .from(TABLES.USER_VOCABULARY)
+      .select(`
+        *,
+        vocabulary:vocabularyId (
+          id,
+          french,
+          english,
+          pronunciation,
+          category,
+          difficulty
+        )
+      `)
+      .eq('userId', userId)
+      .order('lastPracticed', { ascending: true })
+      .limit(limit);
+
+    // Add learned filter if needed
+    if (!includeLearned) {
+      query = query.eq('learned', false);
+    }
+
+    const { data: userVocabulary, error } = await query;
+
+    if (error) {
+      console.error('Error fetching user vocabulary:', error);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch vocabulary items' }
+      });
+    }
+
+    if (!userVocabulary || userVocabulary.length === 0) {
       return res.status(200).json({
         success: true,
         data: {
@@ -52,27 +72,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       });
     }
-    
+
     // Generate practice exercises based on vocabulary
-    const vocabularyItems = userVocabulary.map(item => item.vocabulary);
+    const vocabularyItems = userVocabulary.map((item: any) => item.vocabulary);
     const exercises = await generateExercises(vocabularyItems, limit);
     
     // Update lastPracticed for all vocabulary items
-    await Promise.all(
-      userVocabulary.map(item => 
-        prisma.userVocabulary.update({
-          where: {
-            userId_vocabularyId: {
-              userId,
-              vocabularyId: item.vocabularyId
-            }
-          },
-          data: {
-            lastPracticed: new Date()
-          }
-        })
-      )
-    );
+    const updatePromises = userVocabulary.map(async (item: any) => {
+      const { error } = await supabase
+        .from(TABLES.USER_VOCABULARY)
+        .update({ lastPracticed: new Date().toISOString() })
+        .eq('userId', userId)
+        .eq('vocabularyId', item.vocabularyId);
+
+      if (error) {
+        console.error('Error updating lastPracticed:', error);
+      }
+    });
+
+    await Promise.all(updatePromises);
     
     return res.status(200).json({
       success: true,
@@ -144,8 +162,8 @@ async function generateExercises(vocabularyItems: any[], count: number) {
     // Fallback to simple exercises if AI generation fails
     return vocabularyItems.slice(0, count).map(item => ({
       type: 'translation',
-      question: `Translate to French: ${item.englishText}`,
-      answer: item.frenchText,
+      question: `Translate to French: ${item.english}`,
+      answer: item.french,
       vocabularyId: item.id
     }));
   }

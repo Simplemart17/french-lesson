@@ -1,124 +1,78 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { findUserByEmail } from '@/lib/db';
-import { LoginRequest, AuthResponse, ApiResponse } from '@/types/api';
-import { sign } from 'jsonwebtoken';
-import { compare } from 'bcrypt';
-import { prisma } from '@/lib/prisma';
-
-// Secret key for JWT signing - in production, use environment variables
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-// Cookie constants
-const TOKEN_NAME = 'auth_token';
-const USER_DATA = 'user_data';
-const MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
+import { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "@/lib/supabase";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<AuthResponse>>
+  res: NextApiResponse
 ) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
+  if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      error: {
-        message: 'Method not allowed'
-      }
+      error: { message: "Method not allowed" }
     });
   }
 
   try {
-    const { email, password } = req.body as LoginRequest;
+    const { email, password } = req.body;
 
-    // Input validation
-    if (!email) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: {
-          message: 'Email is required'
+        error: { message: "Email and password are required" }
+      });
+    }
+
+    // Development mode: Allow test user without Supabase
+    if (process.env.NODE_ENV === 'development' && email === 'test@example.com' && password === 'password123') {
+      return res.status(200).json({
+        success: true,
+        data: {
+          user: {
+            id: 'test-user-id',
+            email: 'test@example.com',
+            name: 'Test User',
+            level: 'A1'
+          },
+          access_token: 'test-token-' + Date.now(),
+          refresh_token: 'test-refresh-token',
+          expires_at: Date.now() + 3600000 // 1 hour
         }
       });
     }
 
-    if (!password) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          message: 'Password is required'
-        }
-      });
-    }
-
-    // Find user by email
-    const user = await findUserByEmail(email);
-
-    // Check if user exists
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          message: 'Invalid email or password'
-        }
-      });
-    }
-
-    // Get user with password from database
-    const userWithPassword = await prisma.user.findUnique({
-      where: { email }
+    // Sign in with Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
     });
 
-    if (!userWithPassword || !userWithPassword.password) {
+    if (error || !data.user || !data.session) {
       return res.status(401).json({
         success: false,
-        error: {
-          message: 'Invalid email or password'
-        }
+        error: { message: error?.message || "Invalid credentials" }
       });
     }
 
-    // Check password
-    const isPasswordValid = await compare(password, userWithPassword.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          message: 'Invalid email or password'
-        }
-      });
-    }
-
-    // Create JWT token
-    const token = sign(
-      {
-        userId: user.id,
-        email: user.email
-      },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    // Set cookies directly using the Set-Cookie header with a very simple approach
-    const cookieHeaders = [
-      `${TOKEN_NAME}=${token}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`,
-      `${USER_DATA}=${encodeURIComponent(JSON.stringify(user))}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`
-    ];
-    res.setHeader('Set-Cookie', cookieHeaders);
-
-    // Return user data and token
+    // Return the session data
     return res.status(200).json({
       success: true,
       data: {
-        user,
-        token
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.name || data.user.email,
+          level: data.user.user_metadata?.level || 'beginner'
+        },
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+        expires_at: data.session.expires_at
       }
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Login error:", error);
     return res.status(500).json({
       success: false,
-      error: {
-        message: 'Internal server error'
-      }
+      error: { message: "Internal server error" }
     });
   }
 }

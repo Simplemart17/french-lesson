@@ -237,6 +237,31 @@ class PronunciationService {
   }
 
   /**
+   * Speak the provided text using the browser's built-in speech synthesis
+   */
+  speakWithBrowser(text: string, options: { lang?: string; rate?: number; pitch?: number; volume?: number } = {}): void {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      console.log('Speech synthesis not supported');
+      return;
+    }
+
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Set options
+    utterance.lang = options.lang || 'fr-FR';
+    utterance.rate = options.rate || 1;
+    utterance.pitch = options.pitch || 1;
+    utterance.volume = options.volume || 1;
+    
+    // Speak
+    window.speechSynthesis.speak(utterance);
+  }
+
+  /**
    * Check if cache is valid
    */
   private isValidCache(key: string): boolean {

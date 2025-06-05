@@ -63,11 +63,14 @@ export default function RegisterPage() {
         duration: 2000,
       });
 
+      // Store email for the success page
+      localStorage.setItem('registration_email', email);
+
       // Small delay to allow the toast to be seen before redirecting
       setTimeout(() => {
-        console.log('Registration successful, redirecting to dashboard');
-        // Use router.push for navigation
-        router.push('/dashboard');
+        console.log('Registration successful, redirecting to success page');
+        // Redirect to registration success page with email
+        router.push(`/auth/registration-success?email=${encodeURIComponent(email)}`);
       }, 1000);
     } catch (err) {
       // Error is already set in the auth context and will be displayed via the useEffect

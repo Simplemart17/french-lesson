@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import pronunciationService from '../services/pronunciationService';
 
+interface PronunciationPlayerProps {
+  text: string;
+  displayText?: string;
+  translation?: string;
+  useAI?: boolean;
+  voice?: string;
+  className?: string;
+}
+
 /**
  * PronunciationPlayer - A component for playing text-to-speech
- * 
- * @param {Object} props
- * @param {string} props.text - The text to pronounce
- * @param {string} [props.displayText] - Optional text to display (if different from pronunciation text)
- * @param {string} [props.translation] - Optional translation to display
- * @param {boolean} [props.useAI=true] - Whether to use AI TTS (falls back to browser TTS if false or on error)
- * @param {string} [props.voice='alloy'] - Voice to use for AI TTS
- * @param {string} [props.className=''] - Additional CSS classes
  */
-const PronunciationPlayer = ({
+const PronunciationPlayer: React.FC<PronunciationPlayerProps> = ({
   text,
   displayText,
   translation,
@@ -20,10 +21,10 @@ const PronunciationPlayer = ({
   voice = 'alloy',
   className = '',
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [error, setError] = useState(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handlePlay = async () => {
+  const handlePlay = async (): Promise<void> => {
     if (isPlaying) return;
     
     setIsPlaying(true);

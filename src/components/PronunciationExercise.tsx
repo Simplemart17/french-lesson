@@ -1,24 +1,41 @@
 import React, { useState } from 'react';
 import PronunciationPlayer from './PronunciationPlayer';
+import pronunciationService from '../services/pronunciationService';
+
+interface ExerciseData {
+  text: string;
+  translation: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  category?: string;
+  expectedPronunciation?: string;
+}
+
+interface FeedbackHighlight {
+  index: number;
+  message: string;
+}
+
+interface FeedbackData {
+  score: number;
+  message: string;
+  status: 'success' | 'good' | 'needs-work';
+  highlights?: FeedbackHighlight[];
+}
+
+interface PronunciationExerciseProps {
+  exercise: ExerciseData;
+}
 
 /**
  * PronunciationExercise - A component for pronunciation practice
- * 
- * @param {Object} props
- * @param {Object} props.exercise - The pronunciation exercise data
- * @param {string} props.exercise.text - The text to pronounce
- * @param {string} props.exercise.translation - The translation
- * @param {string} props.exercise.difficulty - The difficulty level
- * @param {string} [props.exercise.category] - Optional category
- * @param {string} [props.exercise.expectedPronunciation] - Optional phonetic transcription
  */
-const PronunciationExercise = ({ exercise }) => {
+const PronunciationExercise: React.FC<PronunciationExerciseProps> = ({ exercise }) => {
   const { text, translation, difficulty, category, expectedPronunciation } = exercise;
-  const [isRecording, setIsRecording] = useState(false);
-  const [feedback, setFeedback] = useState(null);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<FeedbackData | null>(null);
   
   // Simulate recording and providing feedback
-  const handleRecordClick = () => {
+  const handleRecordClick = (): void => {
     if (isRecording) return;
     
     setIsRecording(true);
@@ -57,7 +74,7 @@ const PronunciationExercise = ({ exercise }) => {
   };
   
   // Get status color based on difficulty
-  const getDifficultyColor = () => {
+  const getDifficultyColor = (): string => {
     switch (difficulty) {
       case 'beginner': return 'bg-green-100 text-green-800';
       case 'intermediate': return 'bg-yellow-100 text-yellow-800';
@@ -67,7 +84,7 @@ const PronunciationExercise = ({ exercise }) => {
   };
   
   // Get status color based on feedback
-  const getFeedbackColor = () => {
+  const getFeedbackColor = (): string => {
     if (!feedback) return '';
     
     switch (feedback.status) {
@@ -79,29 +96,29 @@ const PronunciationExercise = ({ exercise }) => {
   };
 
   return (
-    <div className="pronunciation-exercise border rounded-lg p-4 mb-4 shadow-sm bg-white">
+    <div className="p-4 mb-4 bg-white rounded-lg border shadow-sm pronunciation-exercise">
       <div className="flex justify-between items-start mb-3">
         <h3 className="text-lg font-semibold">Pronunciation Exercise</h3>
         <div className="flex items-center space-x-2">
-          <span className={`difficulty-badge px-2 py-1 text-xs rounded ${getDifficultyColor()}`}>
+          <span className={`px-2 py-1 text-xs rounded difficulty-badge ${getDifficultyColor()}`}>
             {difficulty}
           </span>
           {category && (
-            <span className="category-badge px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">
+            <span className="px-2 py-1 text-xs text-gray-800 bg-gray-100 rounded category-badge">
               {category}
             </span>
           )}
         </div>
       </div>
       
-      <div className="exercise-content mb-4">
-        <div className="text-section mb-2">
-          <p className="text-to-pronounce text-xl font-medium">{text}</p>
-          <p className="translation text-gray-600">{translation}</p>
+      <div className="mb-4 exercise-content">
+        <div className="mb-2 text-section">
+          <p className="text-xl font-medium text-to-pronounce">{text}</p>
+          <p className="text-gray-600 translation">{translation}</p>
         </div>
         
         {expectedPronunciation && (
-          <div className="phonetic-section mt-2 p-2 bg-gray-50 rounded">
+          <div className="p-2 mt-2 bg-gray-50 rounded phonetic-section">
             <p className="text-sm text-gray-700">
               <span className="font-medium">Phonetic: </span>
               <code className="font-mono">{expectedPronunciation}</code>
@@ -110,12 +127,12 @@ const PronunciationExercise = ({ exercise }) => {
         )}
       </div>
       
-      <div className="exercise-controls flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4 exercise-controls">
         <PronunciationPlayer 
           text={text} 
           useAI={true}
           voice="nova" // Using a different voice for variety
-          className="flex items-center px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          className="flex items-center px-3 py-2 text-white bg-blue-600 rounded transition-colors hover:bg-blue-700"
         />
         
         <button
@@ -123,20 +140,20 @@ const PronunciationExercise = ({ exercise }) => {
           disabled={isRecording}
           className={`flex items-center px-3 py-2 rounded transition-colors ${
             isRecording 
-              ? 'bg-red-600 text-white animate-pulse' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              ? 'text-white bg-red-600 animate-pulse' 
+              : 'text-gray-800 bg-gray-100 hover:bg-gray-200'
           }`}
         >
           {isRecording ? (
             <>
-              <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <svg className="mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
               </svg>
               Recording...
             </>
           ) : (
             <>
-              <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <svg className="mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
               </svg>
               Record Your Pronunciation
@@ -145,14 +162,14 @@ const PronunciationExercise = ({ exercise }) => {
         </button>
         
         <button
-          className="flex items-center px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors"
+          className="flex items-center px-3 py-2 text-gray-800 bg-gray-100 rounded transition-colors hover:bg-gray-200"
           onClick={() => {
             // Play at slower speed for learning
             const slowOptions = { rate: 0.7 };
             pronunciationService.speakWithBrowser(text, { lang: 'fr-FR', ...slowOptions });
           }}
         >
-          <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <svg className="mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
           </svg>
           Slow Version
@@ -160,19 +177,19 @@ const PronunciationExercise = ({ exercise }) => {
       </div>
       
       {feedback && (
-        <div className={`feedback-section p-3 border rounded mt-3 ${getFeedbackColor()}`}>
-          <div className="flex items-center justify-between">
+        <div className={`p-3 mt-3 rounded border feedback-section ${getFeedbackColor()}`}>
+          <div className="flex justify-between items-center">
             <h4 className="font-medium">Your Pronunciation</h4>
-            <span className="score px-2 py-1 bg-white rounded-full text-sm font-medium">
+            <span className="px-2 py-1 text-sm font-medium bg-white rounded-full score">
               Score: {feedback.score}/100
             </span>
           </div>
           <p className="mt-1">{feedback.message}</p>
           
           {feedback.highlights && feedback.highlights.length > 0 && (
-            <div className="highlights mt-2 p-2 bg-white bg-opacity-50 rounded">
+            <div className="p-2 mt-2 bg-white bg-opacity-50 rounded highlights">
               <p className="text-sm font-medium">Focus on improving:</p>
-              <ul className="list-disc list-inside text-sm">
+              <ul className="text-sm list-disc list-inside">
                 {feedback.highlights.map((highlight, index) => (
                   <li key={index}>{highlight.message}</li>
                 ))}

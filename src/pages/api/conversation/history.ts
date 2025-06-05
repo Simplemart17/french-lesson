@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { Conversation } from '@/services/api/conversationApiService';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(
@@ -29,35 +29,38 @@ async function handler(
     }
 
     // Get conversations from database
-    const conversations = await prisma.conversation.findMany({
-      where: { userId },
-      include: {
-        messages: {
-          orderBy: {
-            timestamp: 'desc'
-          },
-          take: 1 // Get only the last message for preview
-        }
-      },
-      orderBy: {
-        lastMessageAt: 'desc'
-      }
-    });
+    const supabase = getSupabaseClient();
+
+    const { data: conversations, error } = await supabase
+      .from(TABLES.CONVERSATIONS)
+      .select(`
+        *,
+        messages:${TABLES.MESSAGES}(*)
+      `)
+      .eq('userId', userId)
+      .order('lastMessageAt', { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to fetch conversations: ${error.message}`);
+    }
 
     // Transform to API format
-    const conversationHistory: Conversation[] = conversations.map(conv => ({
+    const conversationHistory: Conversation[] = (conversations || []).map((conv: any) => ({
       id: conv.id,
       topic: conv.title,
       level: 'beginner', // Default level since it's not in the schema
-      messages: conv.messages.map(msg => ({
-        id: msg.id.toString(),
-        conversationId: msg.conversationId,
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content,
-        createdAt: msg.timestamp.toISOString()
-      })),
-      createdAt: conv.startedAt.toISOString(),
-      updatedAt: conv.lastMessageAt.toISOString()
+      messages: (conv.messages || [])
+        .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 1) // Get only the last message for preview
+        .map((msg: any) => ({
+          id: msg.id.toString(),
+          conversationId: msg.conversationId,
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content,
+          createdAt: msg.timestamp
+        })),
+      createdAt: conv.startedAt,
+      updatedAt: conv.lastMessageAt
     }));
 
     // If no conversations exist, return empty array

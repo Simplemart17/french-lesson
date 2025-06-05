@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonProgress } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { prisma } from '@/lib/prisma';
 import { getUserId } from '@/utils/auth';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<LessonProgress | LessonProgress[]>>) {
   // Handle GET request
@@ -22,29 +22,38 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       let { lessonId } = req.query;
       const lessonIdNum = lessonId ? parseInt(lessonId as string, 10) : undefined;
 
-      // Build query
-      const query: any = { userId };
+      // Get progress from database
+      const supabase = getSupabaseClient();
+      let supabaseQuery = supabase
+        .from(TABLES.LESSON_PROGRESS)
+        .select('*')
+        .eq('userId', userId)
+        .order('lessonId', { ascending: true });
+
+      // Add lessonId filter if provided
       if (lessonIdNum && !isNaN(lessonIdNum)) {
-        query.lessonId = lessonIdNum;
+        supabaseQuery = supabaseQuery.eq('lessonId', lessonIdNum.toString());
       }
 
-      // Get progress from database
-      const progress = await prisma.lessonProgress.findMany({
-        where: query,
-        orderBy: {
-          lessonId: 'asc',
-        },
-      });
+      const { data: progress, error } = await supabaseQuery;
+
+      if (error) {
+        console.error('Error fetching lesson progress:', error);
+        return res.status(500).json({
+          success: false,
+          error: { message: 'Failed to fetch lesson progress' }
+        });
+      }
 
       // Format the data for the response
-      const formattedProgress = progress.map(item => ({
+      const formattedProgress = (progress || []).map((item: any) => ({
         id: item.id,
         userId: item.userId,
         lessonId: item.lessonId,
         completed: item.completed,
         score: item.score,
-        startedAt: item.startedAt?.toISOString(),
-        completedAt: item.completedAt?.toISOString() || null,
+        startedAt: item.startedAt,
+        completedAt: item.completedAt || null,
         answers: item.answers as Record<number, string | string[]> | undefined
       }));
 
@@ -66,7 +75,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
     try {
       const { lessonId, completed, score, answers } = req.body;
 
-      if (!lessonId || typeof lessonId !== 'number') {
+      if (!lessonId || typeof lessonId !== 'string') {
         return res.status(400).json({
           success: false,
           error: { message: 'Invalid or missing lessonId' }
@@ -98,11 +107,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Check if lesson exists
-      const lesson = await prisma.lesson.findUnique({
-        where: { id: lessonId }
-      });
+      const supabase = getSupabaseClient();
+      const { data: lesson, error: lessonError } = await supabase
+        .from(TABLES.LESSONS)
+        .select('*')
+        .eq('id', lessonId)
+        .single();
 
-      if (!lesson) {
+      if (lessonError || !lesson) {
         return res.status(404).json({
           success: false,
           error: { message: 'Lesson not found' }
@@ -112,31 +124,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       // Get current timestamp
       const now = new Date();
 
-      // Update or create progress
-      const updatedProgress = await prisma.lessonProgress.upsert({
-        where: {
-          userId_lessonId: {
-            userId,
-            lessonId
-          }
-        },
-        update: {
-          completed,
-          score,
-          startedAt: { set: now },
-          completedAt: completed ? now : undefined,
-          answers: answers || undefined
-        },
-        create: {
-          userId,
-          lessonId,
-          completed,
-          score,
-          startedAt: now,
-          completedAt: completed ? now : null,
-          answers: answers || undefined
-        }
-      });
+      // Update or create progress (Supabase upsert)
+      const progressData = {
+        userId,
+        lessonId,
+        completed,
+        score,
+        startedAt: now.toISOString(),
+        completedAt: completed ? now.toISOString() : null,
+        answers: answers || null
+      };
+
+      const { data: updatedProgress, error: upsertError } = await supabase
+        .from(TABLES.LESSON_PROGRESS)
+        .upsert(progressData, {
+          onConflict: 'userId,lessonId'
+        })
+        .select()
+        .single();
+
+      if (upsertError) {
+        console.error('Error updating lesson progress:', upsertError);
+        return res.status(500).json({
+          success: false,
+          error: { message: 'Failed to update lesson progress' }
+        });
+      }
 
       // Format the data for the response
       const formattedProgress: LessonProgress = {
@@ -145,9 +158,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
         lessonId: updatedProgress.lessonId,
         completed: updatedProgress.completed,
         score: updatedProgress.score,
-        startedAt: updatedProgress.startedAt?.toISOString(),
-        completedAt: updatedProgress.completedAt?.toISOString() || null,
-        answers: updatedProgress.answers as Record<number, string | string[]> | undefined
+        startedAt: updatedProgress.startedAt,
+        completedAt: updatedProgress.completedAt || null,
+        answers: updatedProgress.answers as Record<string, string | string[]> | undefined
       };
 
       return res.status(200).json({

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getOpenAIClient, safeJSONParse } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
+import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 // Define interface for chat message
 interface ChatMessage {
@@ -51,63 +51,41 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         levelInstructions = 'Use simple, everyday vocabulary and basic grammar structures.';
     }
 
-    // Get the conversation or create a new one
+    // For development, use mock conversation handling
     let conversation;
     let messageHistory: ChatMessage[] = [];
-    
+
     if (conversationId) {
-      // Get existing conversation
-      conversation = await prisma.conversation.findFirst({
-        where: { 
-          id: conversationId,
-          userId 
-        },
-        include: {
-          messages: {
-            orderBy: { timestamp: 'asc' }
-          }
-        }
-      });
-      
-      if (!conversation) {
-        return res.status(404).json({
-          success: false,
-          error: { message: 'Conversation not found' }
-        });
-      }
-      
-      // Format message history for the AI
-      messageHistory = conversation.messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
-        content: msg.content
-      }));
+      // Mock existing conversation
+      conversation = {
+        id: conversationId,
+        userId,
+        title: 'French Tutoring Session',
+        context: 'French language tutoring',
+        startedAt: new Date(),
+        lastMessageAt: new Date()
+      };
+
+      // Mock message history (empty for simplicity)
+      messageHistory = [];
     } else {
-      // Create a new conversation
-      conversation = await prisma.conversation.create({
-        data: {
-          userId,
-          title: message.slice(0, 30) + '...',
-          context: 'French language tutoring',
-          startedAt: new Date(),
-          lastMessageAt: new Date()
-        }
-      });
+      // Create a mock new conversation
+      conversation = {
+        id: 'conv_' + Date.now(),
+        userId,
+        title: message.slice(0, 30) + '...',
+        context: 'French language tutoring',
+        startedAt: new Date(),
+        lastMessageAt: new Date()
+      };
     }
 
-    // Save the user's message to the database
-    await prisma.message.create({
-      data: {
-        conversationId: conversation.id,
-        role: 'user',
-        content: message,
-        timestamp: new Date()
-      }
-    });
-
-    // Update the conversation's lastMessageAt
-    await prisma.conversation.update({
-      where: { id: conversation.id },
-      data: { lastMessageAt: new Date() }
+    // Mock saving user's message (for development)
+    console.log('Mock: Saving user message:', {
+      conversationId: conversation.id,
+      role: 'user',
+      content: message,
+      timestamp: new Date()
     });
 
     // Get OpenAI client
@@ -147,14 +125,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Get the AI's response
     const aiResponse = response.choices[0].message.content || '';
 
-    // Save the AI's response to the database
-    await prisma.message.create({
-      data: {
-        conversationId: conversation.id,
-        role: 'assistant',
-        content: aiResponse,
-        timestamp: new Date()
-      }
+    // Mock saving AI's response (for development)
+    console.log('Mock: Saving AI response:', {
+      conversationId: conversation.id,
+      role: 'assistant',
+      content: aiResponse,
+      timestamp: new Date()
     });
 
     // Extract any corrections if present (for future enhancement, currently simplified)

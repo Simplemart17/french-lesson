@@ -77,14 +77,14 @@ export default async function handler(
     // Handle form data if there's an audio file
     if (req.headers['content-type']?.includes('multipart/form-data')) {
       const { fields, files } = await parseFormData(req);
-      conversationId = fields.conversationId as string;
-      content = fields.content as string;
+      conversationId = Array.isArray(fields.conversationId) ? fields.conversationId[0] : (fields.conversationId || '');
+      content = Array.isArray(fields.content) ? fields.content[0] : (fields.content || '');
       audioFile = files.audio;
     } else {
       // Handle JSON data
       const body = req.body;
-      conversationId = body.conversationId;
-      content = body.content;
+      conversationId = body.conversationId || '';
+      content = body.content || '';
     }
     
     // Validate input

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { prisma } from '../../../lib/prisma';
 import { getUserId } from '@/utils/auth';
+import { getSupabaseClient, TABLES } from '../../../lib/supabase';
 
 interface SkillProgress {
   name: string;
@@ -10,7 +10,7 @@ interface SkillProgress {
 }
 
 interface ActivityLog {
-  id: number;
+  id: string;
   date: string;
   activity: string;
   duration: number; // in minutes
@@ -36,6 +36,30 @@ interface ProgressData {
   xpForNextLevel: number;
 }
 
+interface LessonProgress {
+  id: string;
+  completed: boolean;
+  score: number;
+  completedAt: string | null;
+  lesson?: {
+    title?: string;
+    duration?: number;
+    topics?: string[];
+  };
+}
+
+interface VocabularyProgress {
+  id: string;
+  lastPracticed: string | null;
+  vocabulary?: {
+    word: string;
+    translation: string;
+    pronunciation?: string;
+    category?: string;
+    level?: string;
+  };
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
@@ -51,16 +75,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get user data
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        points: true,
-        streakDays: true,
-        level: true
-      }
-    });
+    const supabase = getSupabaseClient();
+    const { data: user, error: userError } = await supabase
+      .from(TABLES.USERS)
+      .select('points, streakDays, level')
+      .eq('id', userId)
+      .single();
 
-    if (!user) {
+    if (userError || !user) {
       return res.status(404).json({
         success: false,
         error: { message: 'User not found' }
@@ -68,95 +90,107 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get lesson progress for activity log
-    const lessonProgress = await prisma.lessonProgress.findMany({
-      where: { userId },
-      include: {
-        lesson: {
-          select: {
-            title: true,
-            duration: true,
-            topics: true
-          }
-        }
-      },
-      orderBy: {
-        completedAt: 'desc'
-      },
-      take: 20
-    });
+    const { data: lessonProgress, error: lessonError } = await supabase
+      .from(TABLES.LESSON_PROGRESS)
+      .select(`
+        *,
+        lesson:lessonId (
+          title,
+          duration,
+          topics
+        )
+      `)
+      .eq('userId', userId)
+      .order('completedAt', { ascending: false })
+      .limit(20);
+
+    if (lessonError) {
+      console.error('Error fetching lesson progress:', lessonError);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch lesson progress' }
+      });
+    }
 
     // Get vocabulary progress
-    const vocabularyProgress = await prisma.userVocabulary.findMany({
-      where: { 
-        userId,
-        learned: true
-      },
-      include: {
-        vocabulary: {
-          select: {
-            word: true
-          }
-        }
-      },
-      orderBy: {
-        lastPracticed: 'desc'
-      },
-      take: 10
-    });
+    const { data: vocabularyProgress, error: vocabError } = await supabase
+      .from(TABLES.USER_VOCABULARY)
+      .select(`
+        *,
+        vocabulary:vocabularyId (
+          word,
+          translation,
+          pronunciation,
+          category,
+          level
+        )
+      `)
+      .eq('userId', userId)
+      .eq('learned', true)
+      .order('lastPracticed', { ascending: false })
+      .limit(10);
+
+    if (vocabError) {
+      console.error('Error fetching vocabulary progress:', vocabError);
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch vocabulary progress' }
+      });
+    }
 
     // Calculate skill progress based on actual data
     const skillProgress: SkillProgress[] = [
       {
         name: 'Pronunciation',
-        level: Math.min(100, Math.max(0, lessonProgress.filter(p => p.lesson.topics.includes('pronunciation')).length * 10 + 30)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('pronunciation')).length * 10 + 30)),
         category: 'speaking'
       },
       {
         name: 'Conversation',
-        level: Math.min(100, Math.max(0, lessonProgress.filter(p => p.lesson.topics.includes('conversation')).length * 8 + 25)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('conversation')).length * 8 + 25)),
         category: 'speaking'
       },
       {
         name: 'Comprehension',
-        level: Math.min(100, Math.max(0, lessonProgress.filter(p => p.completed).length * 5 + 40)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.completed).length * 5 + 40)),
         category: 'listening'
       },
       {
         name: 'Reading',
-        level: Math.min(100, Math.max(0, lessonProgress.filter(p => p.lesson.topics.includes('reading')).length * 12 + 35)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('reading')).length * 12 + 35)),
         category: 'reading'
       },
       {
         name: 'Writing',
-        level: Math.min(100, Math.max(0, lessonProgress.filter(p => p.lesson.topics.includes('writing')).length * 15 + 20)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('writing')).length * 15 + 20)),
         category: 'writing'
       },
       {
         name: 'Vocabulary',
-        level: Math.min(100, Math.max(0, vocabularyProgress.length * 2 + 30)),
+        level: Math.min(100, Math.max(0, (vocabularyProgress || []).length * 2 + 30)),
         category: 'vocabulary'
       },
       {
         name: 'Grammar',
-        level: Math.min(100, Math.max(0, lessonProgress.filter(p => p.lesson.topics.includes('grammar')).length * 8 + 35)),
+        level: Math.min(100, Math.max(0, (lessonProgress || []).filter((p: LessonProgress) => p.lesson?.topics?.includes('grammar')).length * 8 + 35)),
         category: 'grammar'
       }
     ];
 
     // Build activity log from real data
     const activityLog: ActivityLog[] = [
-      ...lessonProgress.map((progress, index) => ({
+      ...(lessonProgress || []).map((progress: LessonProgress) => ({
         id: progress.id,
-        date: progress.completedAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
-        activity: `Completed Lesson: ${progress.lesson.title}`,
-        duration: progress.lesson.duration || 15,
+        date: progress.completedAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+        activity: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
+        duration: progress.lesson?.duration || 15,
         xpEarned: progress.score || 100,
-        category: determineCategory(progress.lesson.topics)
+        category: determineCategory(progress.lesson?.topics || [])
       })),
-      ...vocabularyProgress.slice(0, 5).map((vocab, index) => ({
-        id: vocab.id + 10000,
-        date: vocab.lastPracticed?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
-        activity: `Learned new word: ${vocab.vocabulary.word}`,
+      ...(vocabularyProgress || []).slice(0, 5).map((vocab: VocabularyProgress) => ({
+        id: `vocab-${vocab.id}`,
+        date: vocab.lastPracticed?.split('T')[0] || new Date().toISOString().split('T')[0],
+        activity: `Learned new word: ${vocab.vocabulary?.word || 'Unknown Word'}`,
         duration: 5,
         xpEarned: 25,
         category: 'vocabulary' as const
