@@ -48,9 +48,11 @@ CREATE TABLE public.lesson_sections (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   lesson_id UUID NOT NULL REFERENCES public.lessons(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
+  type TEXT NOT NULL,
   content JSONB,
   order_index INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Lesson progress table
@@ -75,9 +77,9 @@ CREATE TABLE public.vocabulary (
   french TEXT NOT NULL,
   english TEXT NOT NULL,
   example TEXT,
-  pronunciation TEXT,
-  difficulty TEXT NOT NULL CHECK (difficulty IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+  level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
   category TEXT,
+  pronunciation TEXT,
   usage_context TEXT[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -115,7 +117,8 @@ CREATE TABLE public.messages (
   role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
   content TEXT NOT NULL,
   translation TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Conversation templates table
@@ -123,10 +126,10 @@ CREATE TABLE public.conversation_templates (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
   description TEXT,
-  scenario TEXT NOT NULL,
-  level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+  system_prompt TEXT NOT NULL,
   initial_message TEXT NOT NULL,
-  possible_responses JSONB,
+  topics TEXT[] DEFAULT '{}',
+  level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -134,11 +137,11 @@ CREATE TABLE public.conversation_templates (
 -- Pronunciation exercises table
 CREATE TABLE public.pronunciation_exercises (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  phrase TEXT NOT NULL,
+  text TEXT NOT NULL,
   translation TEXT,
   level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
-  difficulty TEXT DEFAULT 'intermediate',
-  audio_url TEXT,
+  category TEXT,
+  expected_pronunciation TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -148,8 +151,7 @@ CREATE TABLE public.grammar_rules (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
   description TEXT NOT NULL,
-  rule TEXT NOT NULL,
-  examples JSONB,
+  examples TEXT[],
   level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
   category TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -173,11 +175,12 @@ CREATE TABLE public.exam_results (
 -- Lesson exercises table
 CREATE TABLE public.lesson_exercises (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  lesson_id UUID NOT NULL REFERENCES public.lessons(id) ON DELETE CASCADE,
-  type TEXT NOT NULL, -- vocabulary, grammar, listening, speaking, etc.
-  title TEXT NOT NULL,
-  content JSONB NOT NULL,
-  order_index INTEGER DEFAULT 0,
+  session_id UUID NOT NULL REFERENCES public.lesson_sections(id) ON DELETE CASCADE,
+  type TEXT NOT NULL,
+  question TEXT NOT NULL,
+  options TEXT[],
+  correct_answer TEXT,
+  explanation TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -223,7 +226,7 @@ CREATE INDEX idx_lessons_level ON public.lessons(level);
 CREATE INDEX idx_lessons_published ON public.lessons(is_published);
 CREATE INDEX idx_lesson_progress_user ON public.lesson_progress(user_id);
 CREATE INDEX idx_lesson_progress_lesson ON public.lesson_progress(lesson_id);
-CREATE INDEX idx_vocabulary_difficulty ON public.vocabulary(difficulty);
+CREATE INDEX idx_vocabulary_level ON public.vocabulary(level);
 CREATE INDEX idx_vocabulary_category ON public.vocabulary(category);
 CREATE INDEX idx_user_vocabulary_user ON public.user_vocabulary(user_id);
 CREATE INDEX idx_conversations_user ON public.conversations(user_id);
@@ -323,10 +326,12 @@ $$ LANGUAGE plpgsql;
 -- Create triggers for updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_lessons_updated_at BEFORE UPDATE ON public.lessons FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_lesson_sections_updated_at BEFORE UPDATE ON public.lesson_sections FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_lesson_progress_updated_at BEFORE UPDATE ON public.lesson_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_vocabulary_updated_at BEFORE UPDATE ON public.vocabulary FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_user_vocabulary_updated_at BEFORE UPDATE ON public.user_vocabulary FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_conversations_updated_at BEFORE UPDATE ON public.conversations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_messages_updated_at BEFORE UPDATE ON public.messages FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_conversation_templates_updated_at BEFORE UPDATE ON public.conversation_templates FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_pronunciation_exercises_updated_at BEFORE UPDATE ON public.pronunciation_exercises FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_grammar_rules_updated_at BEFORE UPDATE ON public.grammar_rules FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
