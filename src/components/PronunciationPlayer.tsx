@@ -31,11 +31,16 @@ const PronunciationPlayer: React.FC<PronunciationPlayerProps> = ({
     setError(null);
     
     try {
-      await pronunciationService.speak(text, {
-        useAI,
-        voice,
-        cacheKey: text, // Use the text as cache key
-      });
+      if (useAI) {
+        await pronunciationService.speak(text, {
+          voice,
+        });
+      } else {
+        // Use browser's built-in speech synthesis
+        pronunciationService.speakWithBrowser(text, {
+          lang: 'fr-FR'
+        });
+      }
     } catch (err) {
       console.error('Failed to play pronunciation', err);
       setError('Unable to play pronunciation. Please try again.');
