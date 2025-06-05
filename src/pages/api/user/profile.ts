@@ -10,7 +10,7 @@ async function handler(
 ) {
   try {
     // Get user ID from the authenticated request
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
 
     if (!userId) {
       return res.status(401).json({
@@ -32,36 +32,11 @@ async function handler(
         .single();
 
       if (error) {
-        // If table doesn't exist, return mock user data for development
-        if (error.message.includes('does not exist')) {
-          const mockProfile: User = {
-            id: userId,
-            name: 'Test User',
-            email: 'test@example.com',
-            level: 'A1',
-            points: 150,
-            streakDays: 5,
-            joinedAt: new Date().toISOString(),
-            learningGoals: ['conversation', 'grammar'],
-            completedLessons: 3,
-            lastActive: new Date().toISOString(),
-            preferences: {
-              dailyGoal: 15,
-              notifications: true,
-              theme: 'light'
-            }
-          };
-
-          return res.status(200).json({
-            success: true,
-            data: mockProfile
-          });
-        }
-
-        return res.status(404).json({
+        console.error('Error fetching user profile:', error);
+        return res.status(500).json({
           success: false,
           error: {
-            message: 'User profile not found'
+            message: 'Failed to fetch user profile'
           }
         });
       }
@@ -82,13 +57,13 @@ async function handler(
         email: userProfile.email,
         level: userProfile.level,
         points: userProfile.points,
-        streakDays: userProfile.streakDays,
-        joinedAt: userProfile.joinedAt,
-        learningGoals: userProfile.learningGoals,
-        completedLessons: userProfile.completedLessons,
-        lastActive: userProfile.lastActive,
+        streakDays: userProfile.streak_days,
+        joinedAt: userProfile.joined_at,
+        learningGoals: userProfile.learning_goals,
+        completedLessons: userProfile.completed_lessons,
+        lastActive: userProfile.last_active,
         preferences: {
-          dailyGoal: userProfile.dailyGoal,
+          dailyGoal: userProfile.daily_goal,
           notifications: userProfile.notifications,
           theme: userProfile.theme as 'light' | 'dark'
         }
