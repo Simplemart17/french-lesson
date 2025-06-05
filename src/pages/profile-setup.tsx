@@ -101,7 +101,7 @@ export default function ProfileSetupPage() {
         }
       });
 
-      if (response.data.success) {
+      if ((response.data as any)?.success) {
         toast.success('Profile setup complete! Welcome to French Tutor AI!');
         router.push('/dashboard');
       } else {
