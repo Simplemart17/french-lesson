@@ -26,7 +26,7 @@ async function handler(
   }
 
   try {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -52,15 +52,15 @@ async function handler(
     // Get user's completed lessons
     const { data: completedLessons, error: progressError } = await supabase
       .from(TABLES.LESSON_PROGRESS)
-      .select('lessonId')
-      .eq('userId', userId)
+      .select('lesson_id')
+      .eq('user_id', userId)
       .eq('completed', true);
 
     if (progressError) {
       console.error('Error fetching completed lessons:', progressError);
     }
 
-    const completedLessonIds = new Set((completedLessons || []).map(p => p.lessonId));
+    const completedLessonIds = new Set((completedLessons || []).map(p => p.lesson_id));
 
     // Get recommended lessons based on user's level
     const { data: lessons, error: lessonsError } = await supabase
