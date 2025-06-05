@@ -18,9 +18,9 @@ export default function SettingsPage() {
 
   // Profile information state
   const [profile, setProfile] = useState({
-    name: storedUser?.name,
-    email: storedUser?.email,
-    level: storedUser?.level
+    name: storedUser?.name || '',
+    email: storedUser?.email || '',
+    level: storedUser?.level || 'beginner'
   });
 
   // Form state
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                   <select
                     id="level"
                     name="level"
-                    value={formData.level}
+                    value={typeof formData.level === 'string' ? formData.level : 'beginner'}
                     onChange={(e) => setFormData({...formData, level: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                   >
