@@ -23,7 +23,7 @@ async function handler(
 
   try {
     // Get user ID from the authenticated request
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -53,9 +53,9 @@ async function handler(
       .from(TABLES.LESSON_PROGRESS)
       .select(`
         *,
-        lesson:${TABLES.LESSONS}(topics, level)
+        lesson:lesson_id(topics, level)
       `)
-      .eq('userId', userId)
+      .eq('user_id', userId)
       .eq('completed', true);
 
     if (progressError) {
@@ -66,7 +66,7 @@ async function handler(
     const { count: vocabularyCount, error: vocabError } = await supabase
       .from(TABLES.USER_VOCABULARY)
       .select('*', { count: 'exact', head: true })
-      .eq('userId', userId)
+      .eq('user_id', userId)
       .eq('learned', true);
 
     if (vocabError) {
