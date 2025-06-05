@@ -7,12 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-vocabulary": "node scripts/generate-vocabulary.js",
-    "seed-vocabulary": "node scripts/seed-vocabulary.js",
-    "add-vocabulary": "node scripts/add-vocabulary.js",
-    "check-vocabulary": "node scripts/check-vocabulary.js",
-    "add-lessons": "node scripts/add-lessons.js",
-    "check-lessons": "node scripts/check-lessons.js",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
