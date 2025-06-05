@@ -110,7 +110,7 @@ export type Database = {
           lesson_id: string;
           title: string;
           type: string;
-          content: any;
+          content: Record<string, unknown> | null;
           order_index: number;
           created_at: string;
           updated_at: string;
@@ -128,7 +128,7 @@ export type Database = {
           time_spent: number | null;
           started_at: string;
           completed_at: string | null;
-          answers: any;
+          answers: Record<string, unknown> | null;
           created_at: string;
           updated_at: string;
         };
@@ -258,7 +258,7 @@ export type Database = {
           type: string;
           question: string;
           options: string[];
-          correct_answer: string | string[];
+          correct_answer: string;
           explanation: string;
           created_at: string;
           updated_at: string;
@@ -271,7 +271,7 @@ export type Database = {
           id: string;
           user_id: string;
           type: string;
-          content: any;
+          content: Record<string, unknown>;
           score: number | null;
           completed: boolean;
           created_at: string;
@@ -287,7 +287,7 @@ export type Database = {
           type: string;
           duration: number | null;
           score: number | null;
-          items: any;
+          items: Record<string, unknown> | null;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['practice_sessions']['Row'], 'id' | 'created_at'>;
@@ -300,7 +300,7 @@ export type Database = {
           user_id: string | null;
           transcript: string | null;
           score: number | null;
-          feedback: any;
+          feedback: Record<string, unknown> | null;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['pronunciation_practice_items']['Row'], 'id' | 'created_at'>;
