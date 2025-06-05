@@ -164,6 +164,20 @@ export const authApiService = {
     return getUserData();
   },
 
+  /**
+   * Set auth token
+   */
+  setAuthToken: (token: string): void => {
+    setAuthTokenCookie(token);
+  },
+
+  /**
+   * Set user data
+   */
+  setUserData: (userData: any): void => {
+    setUserDataCookie(userData);
+  },
+
 };
 
 export default authApiService;
