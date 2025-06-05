@@ -6,98 +6,192 @@ A full-stack web application designed to help users learn French from beginner t
 
 ### Frontend
 - **Framework:** React.js with Next.js
-- **State Management:** Redux/Context API
-- **Styling:** Tailwind CSS
+- **State Management:** Context API (AuthContext implemented)
+- **Styling:** Tailwind CSS with custom components
 - **Responsive Design:** Mobile-first approach
 
 ### Backend
-- **Language:** Node.js (Express)
+- **Language:** Next.js API routes
 - **API:** RESTful
-- **Real-time Communication:** WebSocket
-- **Architecture:** Microservices
+- **Authentication:** Supabase Auth with JWT
+- **Database:** PostgreSQL with Prisma ORM
 
 ## Core Functional Requirements
 
 ### 1. Speech Technology Module
-- Multi-dialect speech recognition (including French accent variations)
-- Real-time pronunciation scoring
-- Noise reduction algorithms
-- Accent detection and correction
-- **APIs:** Google Web Speech, Azure Cognitive Services
-- **Input Methods:** Microphone, Audio file upload, Text-to-speech conversion
+- **Current Implementation:**
+  - Basic text-to-speech using OpenAI's TTS API
+  - PronunciationPlayer component for audio playback
+  - PronunciationExercise component with simulated feedback
+- **Gaps to Address:**
+  - Implement real speech recognition (currently simulated)
+  - Add multi-dialect support for French accent variations
+  - Implement real-time pronunciation scoring
+  - Add noise reduction algorithms
+  - Implement accent detection and correction
+  - Add support for audio file upload
 
 ### 2. AI Language Learning Engine
-- **NLP:** OpenAI GPT-4, Hugging Face Transformers, Custom French model training
-- **Features:**
-    - Contextual grammar correction
-    - Vocabulary recommendation
-    - Adaptive learning algorithms & personalized paths
-    - CEFR level assessment and tracking
+- **Current Implementation:**
+  - OpenAI GPT-4 integration via aiService
+  - Grammar correction functionality
+  - Conversation generation
+- **Gaps to Address:**
+  - Implement vocabulary recommendation system
+  - Develop adaptive learning algorithms & personalized paths
+  - Add CEFR level assessment and tracking
+  - Integrate Hugging Face Transformers for specialized tasks
 
 ### 3. TCF/TEF Exam Preparation Module
-- **Simulation:** Practice test generator, Timed assessments, Performance analytics, Adaptive difficulty
-- **Assessment Categories:** Compréhension écrite/orale, Expression écrite/orale, Grammaire et vocabulaire
+- **Current Implementation:**
+  - Basic exam practice pages exist but functionality is limited
+- **Gaps to Address:**
+  - Implement practice test generator
+  - Add timed assessments
+  - Develop performance analytics
+  - Create adaptive difficulty system
+  - Implement all assessment categories: Compréhension écrite/orale, Expression écrite/orale, Grammaire et vocabulaire
 
 ### 4. Personalization Engine
-- Learning style assessment
-- Goal-based curriculum generation
-- Adaptive difficulty scaling
-- Weak point targeted learning
+- **Current Implementation:**
+  - Basic user profiles with level selection
+  - Simple authentication system with Supabase
+- **Gaps to Address:**
+  - Implement learning style assessment
+  - Develop goal-based curriculum generation
+  - Add adaptive difficulty scaling
+  - Create weak point targeted learning system
 
-## Recommended Technology Stack
+## Current Technology Stack
 
-- **Frontend:** React + TypeScript, Next.js, Redux/Context API, Tailwind CSS
-- **Backend:** Python/Django or Node.js (Express), GraphQL, WebSocket
-- **Database:** PostgreSQL
-- **AI Services:** OpenAI GPT-4, Hugging Face Transformers, Google Web Speech, Azure Cognitive Services
-- **Infrastructure:** AWS/Google Cloud, Docker, Kubernetes
+- **Frontend:** React + TypeScript, Next.js, Context API, Tailwind CSS
+- **Backend:** Next.js API routes
+- **Database:** PostgreSQL with Prisma ORM
+- **Authentication:** Supabase Auth
+- **AI Services:** OpenAI GPT-4 for text generation and TTS
+
+## Recommended Technology Additions
+
+- **State Management:** Consider adding Redux for more complex state management
+- **API Layer:** Consider GraphQL for more efficient data fetching
+- **Real-time Features:** Add WebSocket support for real-time interactions
+- **Additional AI Services:** Integrate Hugging Face Transformers, Google Web Speech or Azure Cognitive Services for speech recognition
+- **Infrastructure:** Consider AWS/Google Cloud, Docker, and Kubernetes for production deployment
 
 ## Infrastructure Requirements
 
-### Cloud Services
-- **Deployment:** AWS/Google Cloud
-- **Containerization:** Docker
-- **Orchestration:** Kubernetes
-- **Architecture:** Scalable microservices
+### Current Infrastructure
+- **Deployment:** Local development environment
+- **Authentication:** Supabase Auth with JWT tokens
+- **Database:** PostgreSQL with Prisma ORM
 
-### Security Protocols
-- OAuth 2.0 authentication
-- JWT token management
-- GDPR compliance
-- End-to-end encryption
+### Future Infrastructure Needs
+- **Cloud Deployment:** AWS/Google Cloud
+- **Containerization:** Docker
+- **Orchestration:** Kubernetes for scaling
+- **Architecture:** Consider microservices for scaling
+
+### Security Implementation
+- **Current:** Basic JWT token management via Supabase
+- **Needed:** 
+  - Enhanced OAuth 2.0 authentication
+  - GDPR compliance measures
+  - End-to-end encryption for sensitive data
 
 ## Machine Learning Components
 
-- Transfer learning implementation
+### Current Implementation
+- Basic OpenAI GPT-4 integration for text generation
+- OpenAI TTS API for pronunciation
+
+### Future ML Enhancements
+- Transfer learning implementation for French-specific models
 - Continuous model improvement via user feedback loop
 - Multi-language support expansion planning
+- Custom speech recognition models for French dialects
 
 ## Monetization Model
 
-- Freemium tier
-- Subscription-based premium features
-- Enterprise training packages
+### Proposed Strategy
+- Freemium tier with basic features
+- Subscription-based premium features (advanced AI tools, unlimited practice)
+- Enterprise training packages for schools and businesses
 
 ## Development Phases
 
-### Phase 1: MVP
-- Core language learning features
-- Basic speech recognition
-- Initial exam preparation module
+### Phase 1: MVP (Current Status - Partially Implemented)
+- ✅ Basic user authentication
+- ✅ Simple lesson structure
+- ✅ Basic AI text generation
+- ✅ Text-to-speech functionality
+- ⏳ Complete core language learning features
+- ⏳ Implement real speech recognition
+- ⏳ Enhance exam preparation module
 
 ### Phase 2: Advanced Features
-- Enhanced AI capabilities
-- Comprehensive exam simulations
-- Advanced personalization
+- Enhanced AI capabilities with specialized models
+- Comprehensive exam simulations with real-time feedback
+- Advanced personalization based on learning patterns
+- Expanded vocabulary and grammar exercises
 
 ### Phase 3: Scaling & Integration
-- Multi-platform support
+- Multi-platform support (mobile apps)
 - Enterprise solution development
-- Global language expansion
+- Global language expansion beyond French
 
 ## Technical Challenges
 
-- High-accuracy speech recognition
+### Current Challenges
+- Implementing accurate speech recognition for French pronunciation
+- Creating a robust scoring system for pronunciation accuracy
+- Developing adaptive learning algorithms that respond to user progress
+- Scaling AI capabilities while managing API costs
+- Ensuring low-latency audio processing for real-time feedback
+
+## Implementation Priorities
+
+### Immediate (Next Sprint)
+1. **Complete Speech Recognition Integration**
+   - Implement real speech recognition using Web Speech API or a third-party service
+   - Add audio recording capabilities to pronunciation exercises
+   - Develop basic pronunciation scoring algorithm
+
+2. **Enhance Authentication System**
+   - Complete Supabase integration with proper error handling
+   - Add social login options
+   - Implement proper profile management
+
+3. **Improve Lesson Structure**
+   - Create a more comprehensive lesson progression system
+   - Implement proper tracking of user progress
+   - Add more interactive exercise types
+
+### Medium-term (1-3 Months)
+1. **Advanced AI Features**
+   - Implement more sophisticated grammar correction
+   - Add contextual vocabulary recommendations
+   - Develop personalized learning paths
+
+2. **Exam Preparation Module**
+   - Build comprehensive TCF/TEF practice tests
+   - Implement scoring and feedback systems
+   - Create study plans based on test results
+
+3. **User Experience Improvements**
+   - Enhance mobile responsiveness
+   - Add offline capabilities for basic features
+   - Implement gamification elements
+
+### Long-term (3-6 Months)
+1. **Advanced Speech Technology**
+   - Implement dialect-specific recognition
+   - Add detailed phonetic feedback
+   - Create conversation practice with AI
+
+2. **Scaling Infrastructure**
+   - Move to cloud deployment
+   - Implement proper caching and optimization
+   - Set up monitoring and analytics
 - Context-aware language processing
 - Low-latency real-time interactions
 - Seamless user experience
