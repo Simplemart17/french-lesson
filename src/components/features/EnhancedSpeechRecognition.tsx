@@ -57,7 +57,7 @@ const EnhancedSpeechRecognition = ({
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const windowWithSpeech = window as WindowWithSpeechRecognition;
+      const windowWithSpeech = window as unknown as WindowWithSpeechRecognition;
       const SpeechRecognition = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
 
       if (SpeechRecognition) {
