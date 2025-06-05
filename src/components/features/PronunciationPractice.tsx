@@ -29,7 +29,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
 
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInterface | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize speech recognition
@@ -41,8 +41,8 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     }
 
     // Create speech recognition instance
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-    recognitionRef.current = new SpeechRecognition();
+    const SpeechRecognitionClass = window.webkitSpeechRecognition || window.SpeechRecognition;
+    recognitionRef.current = new SpeechRecognitionClass();
 
     // Configure recognition
     recognitionRef.current.continuous = false;
@@ -89,8 +89,10 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     setIsCorrect(null);
 
     try {
-      recognitionRef.current.start();
-      setIsListening(true);
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+      }
     } catch (err) {
       console.error('Failed to start speech recognition:', err);
       setError('Failed to start speech recognition. Please try again.');
@@ -360,11 +362,28 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   );
 };
 
+// Define Web Speech API types
+interface SpeechRecognitionInterface {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: (event: any) => void;
+  onerror: (event: any) => void;
+  onend: () => void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognitionInterface;
+}
+
 // Add type definitions for the Web Speech API
 declare global {
   interface Window {
-    webkitSpeechRecognition: any;
-    SpeechRecognition: any;
+    webkitSpeechRecognition: SpeechRecognitionConstructor;
+    SpeechRecognition: SpeechRecognitionConstructor;
   }
 }
 
