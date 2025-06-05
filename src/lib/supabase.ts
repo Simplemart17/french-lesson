@@ -94,12 +94,8 @@ export type Database = {
         Row: {
           id: string;
           title: string;
-          description: string | null;
+          description: string;
           level: string;
-          category: string | null;
-          content: any;
-          order_index: number;
-          is_published: boolean;
           duration: number;
           topics: string[];
           created_at: string;
@@ -113,11 +109,13 @@ export type Database = {
           id: string;
           lesson_id: string;
           title: string;
+          type: string;
           content: any;
           order_index: number;
           created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['lesson_sections']['Row'], 'id' | 'created_at'>;
+        Insert: Omit<Database['public']['Tables']['lesson_sections']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['lesson_sections']['Insert']>;
       };
       lesson_progress: {
@@ -142,10 +140,10 @@ export type Database = {
           id: string;
           french: string;
           english: string;
-          example: string | null;
-          pronunciation: string | null;
-          difficulty: string;
-          category: string | null;
+          example: string;
+          level: string;
+          category: string;
+          pronunciation: string;
           usage_context: string[];
           created_at: string;
           updated_at: string;
@@ -189,19 +187,20 @@ export type Database = {
           content: string;
           translation: string | null;
           created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['messages']['Row'], 'id' | 'created_at'>;
+        Insert: Omit<Database['public']['Tables']['messages']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['messages']['Insert']>;
       };
       conversation_templates: {
         Row: {
           id: string;
           title: string;
-          description: string | null;
-          scenario: string;
-          level: string;
+          description: string;
+          system_prompt: string;
           initial_message: string;
-          possible_responses: any;
+          topics: string[];
+          level: string;
           created_at: string;
           updated_at: string;
         };
@@ -211,11 +210,11 @@ export type Database = {
       pronunciation_exercises: {
         Row: {
           id: string;
-          phrase: string;
+          text: string;
           translation: string | null;
           level: string;
-          difficulty: string;
-          audio_url: string | null;
+          category: string;
+          expected_pronunciation: string;
           created_at: string;
           updated_at: string;
         };
@@ -227,8 +226,7 @@ export type Database = {
           id: string;
           title: string;
           description: string;
-          rule: string;
-          examples: any;
+          examples: string[];
           level: string;
           category: string | null;
           created_at: string;
@@ -256,11 +254,12 @@ export type Database = {
       lesson_exercises: {
         Row: {
           id: string;
-          lesson_id: string;
+          session_id: string;
           type: string;
-          title: string;
-          content: any;
-          order_index: number;
+          question: string;
+          options: string[];
+          correct_answer: string | string[];
+          explanation: string;
           created_at: string;
           updated_at: string;
         };
