@@ -174,11 +174,23 @@ const comprehensionExercises = [
 export default function ListeningPage() {
   const { isAuthenticated } = useAuth();
   const [exerciseType, setExerciseType] = useState<'dictation' | 'comprehension' | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<any | null>(null);
+  interface ListeningExercise {
+    id: string | number;
+    title: string;
+    description: string;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    audioUrl: string;
+    type?: 'dictation' | 'comprehension';
+    text?: string;
+    questions?: Array<{ id: string; text: string; options: string[]; correctAnswer: string; explanation: string }>;
+    transcript?: string;
+  }
+
+  const [selectedExercise, setSelectedExercise] = useState<ListeningExercise | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
 
   // State for API data
-  const [listeningExercises, setListeningExercises] = useState<any[]>([]);
+  const [listeningExercises, setListeningExercises] = useState<ListeningExercise[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -193,7 +205,19 @@ export default function ListeningPage() {
           selectedDifficulty !== 'all' ? selectedDifficulty : undefined
         );
 
-        setListeningExercises(exercises);
+        // Convert the exercises to match the expected interface
+        const convertedExercises = exercises.map(exercise => ({
+          ...exercise,
+          id: exercise.id.toString(), // Convert number to string
+          questions: exercise.questions?.map(q => ({
+            id: q.id,
+            text: (q as { question?: string }).question || q.text || '',
+            options: q.options,
+            correctAnswer: q.correctAnswer?.toString() || '',
+            explanation: q.explanation || ''
+          }))
+        }));
+        setListeningExercises(convertedExercises);
       } catch (err) {
         console.error('Error fetching listening exercises:', err);
         setError('Failed to load listening exercises. Please try again later.');
@@ -478,7 +502,7 @@ export default function ListeningPage() {
                 {exerciseType === 'dictation' ? (
                   <DictationExercise
                     audioUrl={selectedExercise.audioUrl}
-                    text={selectedExercise.text}
+                    text={selectedExercise.text || ''}
                     difficulty={selectedExercise.difficulty}
                     onComplete={handleDictationComplete}
                   />
@@ -487,7 +511,7 @@ export default function ListeningPage() {
                     audioUrl={selectedExercise.audioUrl}
                     title={selectedExercise.title}
                     description={selectedExercise.description}
-                    questions={selectedExercise.questions}
+                    questions={selectedExercise.questions || []}
                     difficulty={selectedExercise.difficulty}
                     transcript={selectedExercise.transcript}
                     onComplete={handleComprehensionComplete}
