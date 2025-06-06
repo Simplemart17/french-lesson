@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, VocabularyItem } from '@/types/api';
 import { getUserId } from '@/utils/auth';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 interface UserVocabularyWithDetails {
   vocabularyId: string;
@@ -34,23 +34,21 @@ export default async function handler(
   // GET request to retrieve user vocabulary progress
   if (req.method === 'GET') {
     try {
-      const supabase = getSupabaseClient();
-
       // Get user vocabulary progress with vocabulary details
       const { data: userVocabularyItems, error } = await supabase
         .from(TABLES.USER_VOCABULARY)
         .select(`
           *,
-        vocabulary:vocabularyId (
-          word,
-          translation,
+        vocabulary:vocabulary_id (
+          french,
+          english,
           pronunciation,
           category,
           level
         )
         `)
-        .eq('userId', userId)
-        .order('lastPracticed', { ascending: false });
+        .eq('user_id', userId)
+        .order('last_practiced', { ascending: false });
 
       if (error) {
         console.error('Error fetching user vocabulary:', error);
@@ -109,7 +107,6 @@ export default async function handler(
       }
 
       // Find the vocabulary item
-      const supabase = getSupabaseClient();
       const { data: vocabularyItem, error: vocabError } = await supabase
         .from(TABLES.VOCABULARY)
         .select('*')
