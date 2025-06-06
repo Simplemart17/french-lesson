@@ -45,7 +45,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Format the data for the response
-      const formattedProgress = (progress || []).map((item: any) => ({
+      interface DatabaseProgress {
+        id: string;
+        userId: string;
+        lessonId: string;
+        completed: boolean;
+        score: number;
+        startedAt: string;
+        completedAt: string | null;
+        answers: Record<string, unknown>;
+      }
+      const formattedProgress = (progress || []).map((item: DatabaseProgress) => ({
         id: item.id,
         userId: item.userId,
         lessonId: item.lessonId,

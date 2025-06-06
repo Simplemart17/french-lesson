@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
+// import { isAuthenticated, getUserId } from '@/utils/auth'; // Available for future authentication
 
 // Define the verb conjugation exercise type
 interface VerbConjugationExercise {
@@ -220,7 +220,7 @@ const verbConjugationExercises: Record<string, VerbConjugationExercise[]> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
+  res: NextApiResponse<ApiResponse<unknown>>
 ) {
   // GET request to retrieve verb conjugation exercises
   if (req.method === 'GET') {
