@@ -15,9 +15,33 @@ const conversationContexts = {
 
 
 
+interface ConversationData {
+  conversationId: string;
+  message: string | { conversation: Array<{ role: string; content: string }>; vocabulary: Array<{ word: string; translation: string; usage: string }> };
+  context: string;
+  history: Message[];
+}
+
+interface Message {
+  id?: string;
+  role: string;
+  content: string | { conversation: Array<{ role: string; content: string }>; vocabulary: Array<{ word: string; translation: string; usage: string }> };
+  timestamp?: string;
+}
+
+interface Conversation {
+  id: string;
+  userId: string;
+  title: string;
+  context: string;
+  startedAt: string;
+  lastMessageAt: string;
+  messages?: Message[];
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
+  res: NextApiResponse<ApiResponse<ConversationData | Conversation | Conversation[]>>
 ) {
   // Check authentication
   if (!isAuthenticated(req)) {
@@ -44,8 +68,8 @@ export default async function handler(
         });
       }
 
-      let conversation: any;
-      let messages: any[] = [];
+      let conversation: Conversation;
+      let messages: Message[] = [];
 
       // Start a new conversation if no ID provided
       if (!conversationId) {
@@ -117,7 +141,7 @@ export default async function handler(
         conversation = existingConversation;
 
         // Check if the conversation belongs to the user
-        if (conversation.userId !== userId) {
+        if (conversation.userId !== (await userId)) {
           return res.status(403).json({
             success: false,
             error: {
@@ -152,7 +176,7 @@ export default async function handler(
           throw new Error(`Failed to update conversation: ${updateError.message}`);
         }
 
-        messages = [...conversation.messages, { role: 'user', content: message }];
+        messages = [...(conversation.messages || []), { role: 'user', content: message }];
       }
 
       // Generate AI response using aiService
@@ -237,8 +261,8 @@ export default async function handler(
 
         // Sort messages by timestamp
         if (conversation.messages) {
-          conversation.messages.sort((a: any, b: any) =>
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          conversation.messages.sort((a: Message, b: Message) =>
+            new Date(a.timestamp || '').getTime() - new Date(b.timestamp || '').getTime()
           );
         }
 
@@ -262,10 +286,10 @@ export default async function handler(
         }
 
         // Get only the last message for each conversation
-        const conversationsWithLastMessage = (conversations || []).map((conv: any) => ({
+        const conversationsWithLastMessage = (conversations || []).map((conv: Conversation) => ({
           ...conv,
           messages: conv.messages
-            ?.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+            ?.sort((a: Message, b: Message) => new Date(b.timestamp || '').getTime() - new Date(a.timestamp || '').getTime())
             ?.slice(0, 1) || []
         }));
 

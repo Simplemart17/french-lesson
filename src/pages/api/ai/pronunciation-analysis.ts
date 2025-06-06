@@ -3,7 +3,6 @@ import { getOpenAIClient, createAudioTranscription } from '../../../utils/openai
 import { authMiddleware } from '../../../utils/authMiddleware';
 import fs from 'fs';
 import formidable from 'formidable';
-import path from 'path';
 import os from 'os';
 
 // Configure Next.js API route to handle file uploads
