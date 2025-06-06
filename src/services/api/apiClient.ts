@@ -34,6 +34,7 @@ class ApiClient {
     this.client.interceptors.request.use(
       (config) => {
         const token = this.getAuthToken();
+
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }

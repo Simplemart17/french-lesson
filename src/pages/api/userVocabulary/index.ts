@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -16,16 +16,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // GET request to retrieve user's vocabulary
   if (req.method === 'GET') {
     try {
-      const supabase = getSupabaseClient();
-
       const { data: vocabularyItems, error } = await supabase
         .from(TABLES.USER_VOCABULARY)
         .select(`
           *,
           vocabulary:${TABLES.VOCABULARY}(*)
         `)
-        .eq('userId', userId)
-        .order('lastPracticed', { ascending: false });
+        .eq('user_id', userId)
+        .order('last_practiced', { ascending: false });
 
       if (error) {
         throw new Error(`Database error: ${error.message}`);
@@ -47,7 +45,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // POST request to add vocabulary to user's list
   if (req.method === 'POST') {
     try {
-      const supabase = getSupabaseClient();
       const { vocabularyId, learned } = req.body;
 
       if (!vocabularyId) {
@@ -136,7 +133,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // DELETE request to remove vocabulary from user's list
   if (req.method === 'DELETE') {
     try {
-      const supabase = getSupabaseClient();
       const { vocabularyId } = req.body;
 
       if (!vocabularyId) {
@@ -150,8 +146,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { error } = await supabase
         .from(TABLES.USER_VOCABULARY)
         .delete()
-        .eq('userId', userId)
-        .eq('vocabularyId', vocabularyId);
+        .eq('user_id', userId)
+        .eq('vocabulary_id', vocabularyId);
 
       if (error) {
         throw new Error(`Delete error: ${error.message}`);
