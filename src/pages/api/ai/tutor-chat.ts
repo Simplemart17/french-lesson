@@ -1,14 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { getOpenAIClient } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
+import { AuthenticatedRequest, ChatMessage } from '@/types/api';
 
-// Define interface for chat message
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
@@ -25,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
     
     // Get user ID from authenticated user
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({
