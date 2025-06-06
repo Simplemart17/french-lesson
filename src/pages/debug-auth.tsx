@@ -10,8 +10,8 @@ export default function DebugAuthPage() {
   const [password, setPassword] = useState('password123');
   const [loginLoading, setLoginLoading] = useState(false);
   const [localStorageState, setLocalStorageState] = useState<{ token: string | null; userData: string | null }>({ token: null, userData: null });
-  const [supabaseSession, setSupabaseSession] = useState<any>(null);
-  const [supabaseUser, setSupabaseUser] = useState<any>(null);
+  const [supabaseSession, setSupabaseSession] = useState<unknown>(null);
+  const [supabaseUser, setSupabaseUser] = useState<unknown>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('supabase_auth_token');

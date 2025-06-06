@@ -49,6 +49,8 @@ const conversationStarters = [
 
 export default function ChatPage() {
   const { isAuthenticated } = useAuth();
+  // Note: isAuthenticated available for future authentication checks
+  console.log('User authenticated:', isAuthenticated);
   const [selectedTopic, setSelectedTopic] = useState<typeof conversationTopics[0] | null>(null);
   const [enableCorrections, setEnableCorrections] = useState(true);
   const [enableVocabSuggestions, setEnableVocabSuggestions] = useState(true);
@@ -109,10 +111,10 @@ export default function ChatPage() {
               <h2 className="mb-3 text-xl font-semibold text-blue-800">Tips for Effective Practice</h2>
               <ul className="space-y-2 text-blue-700 list-disc list-inside">
                 <li>Try to respond in complete sentences rather than single words.</li>
-                <li>Don't worry about making mistakes - they're part of learning!</li>
-                <li>If you don't know a word, try to describe it or use another word.</li>
+                <li>Don&apos;t worry about making mistakes - they&apos;re part of learning!</li>
+                <li>If you don&apos;t know a word, try to describe it or use another word.</li>
                 <li>Aim to use different tenses (present, past, future) in your responses.</li>
-                <li>Practice regularly, even if it's just for a few minutes each day.</li>
+                <li>Practice regularly, even if it&apos;s just for a few minutes each day.</li>
               </ul>
             </div>
           </>
@@ -173,7 +175,7 @@ export default function ChatPage() {
             <div className="p-4 mt-8 border rounded-lg bg-amber-50 border-amber-200">
               <h3 className="mb-2 font-medium text-amber-800">Practice Makes Perfect</h3>
               <p className="text-amber-700">
-                Learning a language takes time and consistent practice. Don't be afraid to make mistakes - they're an important part of the learning process!
+                Learning a language takes time and consistent practice. Don&apos;t be afraid to make mistakes - they&apos;re an important part of the learning process!
               </p>
             </div>
           </div>
