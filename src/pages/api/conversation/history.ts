@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse } from '@/types/api';
+import { ApiResponse, DatabaseConversation, DatabaseMessage } from '@/types/api';
 import { Conversation } from '@/services/api/conversationApiService';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
@@ -43,14 +43,14 @@ async function handler(
     }
 
     // Transform to API format
-    const conversationHistory: Conversation[] = (conversations || []).map((conv: any) => ({
+    const conversationHistory: Conversation[] = (conversations || []).map((conv: DatabaseConversation) => ({
       id: conv.id,
       topic: conv.title,
       level: 'beginner', // Default level since it's not in the schema
       messages: (conv.messages || [])
-        .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .sort((a: DatabaseMessage, b: DatabaseMessage) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, 1) // Get only the last message for preview
-        .map((msg: any) => ({
+        .map((msg: DatabaseMessage) => ({
           id: msg.id.toString(),
           conversationId: msg.conversationId,
           role: msg.role as 'user' | 'assistant',

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
+// import { isAuthenticated, getUserId } from '@/utils/auth'; // Available for future authentication
 
 // Define the listening exercise types
 interface DictationExercise {
