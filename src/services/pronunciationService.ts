@@ -11,7 +11,7 @@ import pronunciationApiService, {
  * functionality for caching and offline support.
  */
 class PronunciationService {
-  private cache: Map<string, any> = new Map();
+  private cache: Map<string, unknown> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
   private cacheDuration = 30 * 60 * 1000; // 30 minutes
 
@@ -25,7 +25,7 @@ class PronunciationService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as PronunciationExercise[];
     }
 
     try {
@@ -45,7 +45,7 @@ class PronunciationService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as PronunciationExercise[];
       }
 
       return [];
@@ -60,7 +60,7 @@ class PronunciationService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as PronunciationExercise | null;
     }
 
     try {
@@ -78,7 +78,7 @@ class PronunciationService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as PronunciationExercise | null;
       }
 
       return null;
@@ -127,7 +127,7 @@ class PronunciationService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as PronunciationProgress[];
     }
 
     try {
@@ -145,7 +145,7 @@ class PronunciationService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as PronunciationProgress[];
       }
 
       return [];
@@ -276,7 +276,7 @@ class PronunciationService {
   /**
    * Set cache with expiry
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: unknown): void {
     this.cache.set(key, data);
     this.cacheExpiry.set(key, Date.now() + this.cacheDuration);
   }

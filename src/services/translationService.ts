@@ -61,9 +61,10 @@ export const translateText = async (
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Translation API error:', error);
-    throw new Error(error.response?.data?.message || 'Translation failed');
+    const errorMessage = error instanceof Error ? error.message : 'Translation failed';
+    throw new Error(errorMessage);
   }
 };
 
@@ -92,9 +93,10 @@ export const detectLanguage = async (text: string): Promise<DetectionResult> => 
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Language detection API error:', error);
-    throw new Error(error.response?.data?.message || 'Language detection failed');
+    const errorMessage = error instanceof Error ? error.message : 'Language detection failed';
+    throw new Error(errorMessage);
   }
 };
 
@@ -197,10 +199,12 @@ const simulateDetection = (text: string): DetectionResult => {
   };
 };
 
-export default {
+const translationService = {
   translateText,
   detectLanguage
 };
+
+export default translationService;
 
 /**
  * Get language display name from language code

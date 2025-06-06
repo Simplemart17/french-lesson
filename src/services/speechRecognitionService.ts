@@ -1,4 +1,4 @@
-import speechRecognitionApiService, { SpeechRecognitionResponse } from './api/speechRecognitionApiService';
+import speechRecognitionApiService, { SpeechRecognitionResponse, Language } from './api/speechRecognitionApiService';
 
 /**
  * Speech Recognition Service
@@ -7,7 +7,7 @@ import speechRecognitionApiService, { SpeechRecognitionResponse } from './api/sp
  * functionality for caching and error handling.
  */
 class SpeechRecognitionService {
-  private cache: Map<string, any> = new Map();
+  private cache: Map<string, unknown> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
   private cacheDuration = 30 * 60 * 1000; // 30 minutes
 
@@ -54,7 +54,7 @@ class SpeechRecognitionService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as Language[];
     }
 
     try {
@@ -73,7 +73,7 @@ class SpeechRecognitionService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as Language[];
       }
 
       // Default to French
@@ -112,7 +112,7 @@ class SpeechRecognitionService {
   /**
    * Set cache with expiry
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: unknown): void {
     this.cache.set(key, data);
     this.cacheExpiry.set(key, Date.now() + this.cacheDuration);
   }
