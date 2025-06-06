@@ -55,13 +55,13 @@ const WritingCorrection = ({
 
     try {
       // Get the topic context if one is selected
-      let context = '';
-      if (selectedTopic) {
-        const topic = writingTopics.find(t => t.id === selectedTopic);
-        if (topic) {
-          context = `Topic: ${topic.title}. Prompt: ${topic.prompt}`;
-        }
-      }
+      // let _context = '';
+      // if (selectedTopic) {
+      //   const topic = writingTopics.find(t => t.id === selectedTopic);
+      //   if (topic) {
+      //     _context = `Topic: ${topic.title}. Prompt: ${topic.prompt}`;
+      //   }
+      // }
 
       // Use the AI service to check the writing
       const result = await aiService.checkWriting(text);
@@ -120,7 +120,7 @@ const WritingCorrection = ({
   };
 
   const handleSelectTopic = (topicId: string) => {
-    const topic = writingTopics.find(t => t.id === topicId);
+    // const _topic = writingTopics.find(t => t.id === topicId);
     setSelectedTopic(topicId);
     setShowTopics(false);
     setCorrections([]);

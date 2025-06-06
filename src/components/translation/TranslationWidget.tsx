@@ -32,9 +32,9 @@ const TranslationWidget: React.FC = () => {
       if (sourceLanguage === 'auto' && result.detectedLanguage) {
         setSourceLanguage(result.detectedLanguage);
       }
-    } catch (err: any) {
-      setError(err.message || 'Translation failed');
-      toast.error(err.message || 'Translation failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Translation failed');
+      toast.error(err instanceof Error ? err.message : 'Translation failed');
     } finally {
       setIsLoading(false);
     }
@@ -91,9 +91,9 @@ const TranslationWidget: React.FC = () => {
       const result = await detectLanguage(inputText);
       setSourceLanguage(result.language);
       toast.success(`Detected language: ${result.language === 'en' ? 'English' : 'French'}`);
-    } catch (err: any) {
-      setError(err.message || 'Language detection failed');
-      toast.error(err.message || 'Language detection failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Language detection failed');
+      toast.error(err instanceof Error ? err.message : 'Language detection failed');
     } finally {
       setIsLoading(false);
     }
