@@ -20,7 +20,7 @@ export default async function handler(
       success: true,
       data: null
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Logout error:', error);
     return res.status(500).json({
       success: false,

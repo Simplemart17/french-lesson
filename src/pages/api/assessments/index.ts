@@ -1,10 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
+import { AuthenticatedRequest } from '@/types/api';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
-  const userId = (req as any).user?.id;
+  const userId = req.user?.id;
 
   if (!userId) {
     return res.status(401).json({
