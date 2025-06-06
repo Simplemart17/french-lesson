@@ -2,6 +2,22 @@ import { localStorageCache } from '@/utils/cache';
 import aiService from './aiService';
 import speakingApiService from './api/speakingApiService';
 
+interface SpeakingExercise {
+  id: number;
+  title: string;
+  prompt: string;
+  translation: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  type: 'pronunciation' | 'conversation' | 'reading';
+}
+
+interface SpeakingPhrase {
+  id: number;
+  text: string;
+  translation: string;
+  difficulty: string;
+}
+
 /**
  * Speaking Service
  *
@@ -14,11 +30,11 @@ class SpeakingService {
   /**
    * Get speaking exercises with optional filtering
    */
-  async getSpeakingExercises(difficulty?: string): Promise<any[]> {
+  async getSpeakingExercises(difficulty?: string): Promise<SpeakingExercise[]> {
     const cacheKey = `speaking-exercises-${difficulty || 'all'}`;
 
     // Check cache first
-    const cachedData = this.cache.get<any[]>(cacheKey);
+    const cachedData = this.cache.get<SpeakingExercise[]>(cacheKey);
     if (cachedData) {
       return cachedData;
     }
@@ -31,10 +47,20 @@ class SpeakingService {
       }
 
       // Call the API service
-      const exercises = await speakingApiService.getExercises(
+      const apiExercises = await speakingApiService.getExercises(
         difficulty,
         undefined // category
       );
+
+      // Transform API response to match our interface
+      const exercises = apiExercises.map(exercise => ({
+        id: exercise.id,
+        title: `Speaking Exercise ${exercise.id}`, // Generate a title
+        prompt: exercise.prompt,
+        translation: exercise.translation,
+        difficulty: exercise.difficulty,
+        type: 'pronunciation' as const // Default type
+      }));
 
       // Cache the result
       this.cache.set(cacheKey, exercises, this.cacheDuration);
@@ -49,22 +75,32 @@ class SpeakingService {
   /**
    * Get a specific speaking exercise by ID
    */
-  async getSpeakingExercise(id: number): Promise<any | null> {
+  async getSpeakingExercise(id: number): Promise<SpeakingExercise | null> {
     const cacheKey = `speaking-exercise-${id}`;
 
     // Check cache first
-    const cachedData = this.cache.get<any>(cacheKey);
+    const cachedData = this.cache.get<SpeakingExercise>(cacheKey);
     if (cachedData) {
       return cachedData;
     }
 
     try {
       // Call the API service
-      const exercise = await speakingApiService.getExercise(id);
+      const apiExercise = await speakingApiService.getExercise(id);
 
-      if (!exercise) {
+      if (!apiExercise) {
         return null;
       }
+
+      // Transform API response to match our interface
+      const exercise = {
+        id: apiExercise.id,
+        title: `Speaking Exercise ${apiExercise.id}`, // Generate a title
+        prompt: apiExercise.prompt,
+        translation: apiExercise.translation,
+        difficulty: apiExercise.difficulty,
+        type: 'pronunciation' as const // Default type
+      };
 
       // Cache the result
       this.cache.set(cacheKey, exercise, this.cacheDuration);
@@ -79,11 +115,11 @@ class SpeakingService {
   /**
    * Get a specific phrase by ID
    */
-  async getPhrase(id: number): Promise<any | null> {
+  async getPhrase(id: number): Promise<SpeakingPhrase | null> {
     const cacheKey = `phrase-${id}`;
 
     // Check cache first
-    const cachedData = this.cache.get<any>(cacheKey);
+    const cachedData = this.cache.get<SpeakingPhrase>(cacheKey);
     if (cachedData) {
       return cachedData;
     }
@@ -124,7 +160,7 @@ class SpeakingService {
   ): Promise<{
     accuracy: number;
     feedback: string[];
-    details?: any;
+    details?: Record<string, unknown>;
   }> {
     try {
       // Get the phrase text
@@ -174,7 +210,7 @@ class SpeakingService {
 
         // Add specific feedback from the analysis
         if (result.problemSounds && result.problemSounds.length > 0) {
-          result.problemSounds.forEach((problem: any) => {
+          result.problemSounds.forEach((problem: { sound: string; description: string }) => {
             feedback.push(`Work on the "${problem.sound}" sound: ${problem.description}`);
           });
         }

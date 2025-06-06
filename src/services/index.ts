@@ -52,7 +52,7 @@ export {
 };
 
 // Export default object with all services
-export default {
+const services = {
   // Auth and user services
   auth: authApiService,
   user: userApiService,
@@ -78,3 +78,5 @@ export default {
   listeningApi: listeningApiService,
   speakingApi: speakingApiService
 };
+
+export default services;
