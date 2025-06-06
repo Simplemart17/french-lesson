@@ -2,7 +2,31 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
-// Define the SpeechRecognition type
+// Define the SpeechRecognition types
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
@@ -10,8 +34,8 @@ interface SpeechRecognition extends EventTarget {
   start: () => void;
   stop: () => void;
   abort: () => void;
-  onerror: (event: any) => void;
-  onresult: (event: any) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
   onend: () => void;
 }
 
@@ -116,7 +140,7 @@ const EnhancedSpeechRecognition = ({
   const startAudioAnalysis = async () => {
     try {
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContextRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
