@@ -124,12 +124,11 @@ const DictationExercise = ({
     if (!isSubmitted) return userText;
     
     const correctWords = text.toLowerCase().replace(/[.,!?;:]/g, '').split(/\s+/);
-    const userWords = userText.toLowerCase().replace(/[.,!?;:]/g, '').split(/\s+/);
     
     // Create a highlighted version of the user's text
     const userTextWords = userText.split(/\s+/);
     
-    const highlightedWords = userTextWords.map((word, index) => {
+    const highlightedWords = userTextWords.map((word) => {
       const wordWithoutPunctuation = word.toLowerCase().replace(/[.,!?;:]/g, '');
       
       if (correctWords.includes(wordWithoutPunctuation)) {
