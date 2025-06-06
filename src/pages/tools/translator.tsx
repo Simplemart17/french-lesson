@@ -37,7 +37,7 @@ const TranslatorPage = () => {
                 <li>Type or paste text in the left box to translate automatically</li>
                 <li>Click the swap button to switch between languages</li>
                 <li>The translator will automatically detect the language of your text</li>
-                <li>Use the "Save" button to save useful phrases for later review</li>
+                <li>Use the &quot;Save&quot; button to save useful phrases for later review</li>
                 <li>For better learning, try to translate by yourself first, then check your answer</li>
               </ul>
             </div>

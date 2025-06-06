@@ -28,6 +28,21 @@ interface GrammarCheckResponse {
   score: number;
 }
 
+interface ApiGrammarProgress {
+  exerciseId?: number;
+  id?: number;
+  score?: number;
+  completedAt?: string;
+  attempts?: number;
+}
+
+interface GrammarProgress {
+  exerciseId: number;
+  score: number;
+  completedAt: string;
+  attempts: number;
+}
+
 /**
  * Grammar Service
  *
@@ -35,7 +50,7 @@ interface GrammarCheckResponse {
  * functionality for caching and offline support.
  */
 class GrammarService {
-  private cache: Map<string, any> = new Map();
+  private cache: Map<string, unknown> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
   private cacheDuration = 30 * 60 * 1000; // 30 minutes
 
@@ -50,7 +65,7 @@ class GrammarService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as GrammarExercise[];
     }
 
     try {
@@ -62,7 +77,7 @@ class GrammarService {
       if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data.items);
-        return response.data.items;
+        return response.data.items as GrammarExercise[];
       }
 
       return [];
@@ -71,7 +86,7 @@ class GrammarService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as GrammarExercise[];
       }
 
       return [];
@@ -86,7 +101,7 @@ class GrammarService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as GrammarExercise | null;
     }
 
     try {
@@ -95,7 +110,7 @@ class GrammarService {
       if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
-        return response.data;
+        return response.data as GrammarExercise;
       }
 
       return null;
@@ -104,7 +119,7 @@ class GrammarService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as GrammarExercise | null;
       }
 
       return null;
@@ -118,8 +133,8 @@ class GrammarService {
     try {
       const response = await grammarApiService.checkGrammar(text);
 
-      if (response.data) {
-        return response.data;
+      if (response) {
+        return response as GrammarCheckResponse;
       }
 
       throw new Error('Failed to check grammar');
@@ -138,21 +153,28 @@ class GrammarService {
   /**
    * Get grammar progress
    */
-  async getGrammarProgress(): Promise<any[]> {
+  async getGrammarProgress(): Promise<GrammarProgress[]> {
     const cacheKey = 'grammar-progress';
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as GrammarProgress[];
     }
 
     try {
       const response = await grammarApiService.getProgress();
 
       if (response.data) {
+        // Transform the API response to match our interface
+        const progressData = (response.data as ApiGrammarProgress[]).map(item => ({
+          exerciseId: item.exerciseId || item.id || 0,
+          score: item.score || 0,
+          completedAt: item.completedAt || new Date().toISOString(),
+          attempts: item.attempts || 1
+        }));
         // Cache the result
-        this.setCache(cacheKey, response.data);
-        return response.data;
+        this.setCache(cacheKey, progressData);
+        return progressData;
       }
 
       return [];
@@ -161,7 +183,7 @@ class GrammarService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as GrammarProgress[];
       }
 
       return [];
@@ -203,7 +225,7 @@ class GrammarService {
   /**
    * Set cache with expiry
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: unknown): void {
     this.cache.set(key, data);
     this.cacheExpiry.set(key, Date.now() + this.cacheDuration);
   }
