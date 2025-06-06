@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 
@@ -30,7 +30,84 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const [showTranslation, setShowTranslation] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognitionInterface | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // const _audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Evaluate pronunciation using string similarity
+  const evaluatePronunciation = useCallback((userTranscript: string) => {
+    // Levenshtein distance calculation for string similarity
+    const levenshteinDistance = (a: string, b: string): number => {
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+
+      const matrix = [];
+
+      // Initialize matrix
+      for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      }
+
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+
+      // Fill matrix
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1, // deletion
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j - 1] + cost // substitution
+          );
+        }
+      }
+
+      return matrix[b.length][a.length];
+    };
+    setIsLoading(true);
+
+    // Normalize strings for comparison
+    const normalizedPhrase = phrase.toLowerCase().trim();
+    const normalizedTranscript = userTranscript.toLowerCase().trim();
+
+    // Simple string similarity calculation (Levenshtein distance)
+    const distance = levenshteinDistance(normalizedPhrase, normalizedTranscript);
+    const maxLength = Math.max(normalizedPhrase.length, normalizedTranscript.length);
+    const similarityScore = 1 - distance / maxLength;
+
+    // Convert to percentage
+    const accuracyPercentage = Math.round(similarityScore * 100);
+    setAccuracy(accuracyPercentage);
+
+    // Determine if pronunciation is correct
+    const isCorrectPronunciation = accuracyPercentage >= 75;
+    setIsCorrect(isCorrectPronunciation);
+
+    // Generate feedback
+    let feedbackMessage = '';
+    if (accuracyPercentage >= 90) {
+      feedbackMessage = 'Excellent pronunciation! Perfect!';
+    } else if (accuracyPercentage >= 75) {
+      feedbackMessage = 'Good pronunciation! Keep practicing.';
+    } else if (accuracyPercentage >= 50) {
+      feedbackMessage = 'Fair pronunciation. Try again and focus on the difficult sounds.';
+    } else {
+      feedbackMessage = 'Needs improvement. Listen to the audio and try again.';
+    }
+
+    setFeedback(feedbackMessage);
+    setIsLoading(false);
+
+    // Call onResult callback if provided
+    if (onResult) {
+      onResult({
+        transcript: userTranscript,
+        accuracy: accuracyPercentage,
+        feedback: feedbackMessage,
+        isCorrect: isCorrectPronunciation
+      });
+    }
+  }, [phrase, onResult]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -50,7 +127,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     recognitionRef.current.lang = 'fr-FR'; // Set language to French
 
     // Set up event handlers
-    recognitionRef.current.onresult = (event: any) => {
+    recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
       const result = event.results[0][0];
       const userTranscript = result.transcript.trim().toLowerCase();
       setTranscript(userTranscript);
@@ -59,7 +136,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
       evaluatePronunciation(userTranscript);
     };
 
-    recognitionRef.current.onerror = (event: any) => {
+    recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error:', event.error);
       setError(`Error: ${event.error}. Please try again.`);
       setIsListening(false);
@@ -75,7 +152,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
         recognitionRef.current.abort();
       }
     };
-  }, []);
+  }, [evaluatePronunciation]);
 
   // No need to create audio element for TTS anymore
   // We'll use the pronunciation service instead
@@ -132,83 +209,7 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
     }
   };
 
-  // Evaluate pronunciation using string similarity
-  const evaluatePronunciation = (userTranscript: string) => {
-    setIsLoading(true);
 
-    // Normalize strings for comparison
-    const normalizedPhrase = phrase.toLowerCase().trim();
-    const normalizedTranscript = userTranscript.toLowerCase().trim();
-
-    // Simple string similarity calculation (Levenshtein distance)
-    const distance = levenshteinDistance(normalizedPhrase, normalizedTranscript);
-    const maxLength = Math.max(normalizedPhrase.length, normalizedTranscript.length);
-    const similarityScore = 1 - distance / maxLength;
-
-    // Convert to percentage
-    const accuracyPercentage = Math.round(similarityScore * 100);
-    setAccuracy(accuracyPercentage);
-
-    // Determine if pronunciation is correct
-    const isCorrectPronunciation = accuracyPercentage >= 75;
-    setIsCorrect(isCorrectPronunciation);
-
-    // Generate feedback
-    let feedbackMessage = '';
-    if (accuracyPercentage >= 90) {
-      feedbackMessage = 'Excellent pronunciation! Perfect!';
-    } else if (accuracyPercentage >= 75) {
-      feedbackMessage = 'Good pronunciation! Keep practicing.';
-    } else if (accuracyPercentage >= 50) {
-      feedbackMessage = 'Fair pronunciation. Try again and focus on the difficult sounds.';
-    } else {
-      feedbackMessage = 'Needs improvement. Listen to the audio and try again.';
-    }
-
-    setFeedback(feedbackMessage);
-    setIsLoading(false);
-
-    // Call onResult callback if provided
-    if (onResult) {
-      onResult({
-        transcript: userTranscript,
-        accuracy: accuracyPercentage,
-        feedback: feedbackMessage,
-        isCorrect: isCorrectPronunciation
-      });
-    }
-  };
-
-  // Levenshtein distance calculation for string similarity
-  const levenshteinDistance = (a: string, b: string): number => {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-
-    const matrix = [];
-
-    // Initialize matrix
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    // Fill matrix
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1, // deletion
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j - 1] + cost // substitution
-        );
-      }
-    }
-
-    return matrix[b.length][a.length];
-  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -363,6 +364,30 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
 };
 
 // Define Web Speech API types
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
 interface SpeechRecognitionInterface {
   continuous: boolean;
   interimResults: boolean;
@@ -370,8 +395,8 @@ interface SpeechRecognitionInterface {
   start(): void;
   stop(): void;
   abort(): void;
-  onresult: (event: any) => void;
-  onerror: (event: any) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
   onend: () => void;
 }
 
