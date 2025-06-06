@@ -128,7 +128,7 @@ export default function LessonPage() {
             {error || 'Lesson Not Found'}
           </h1>
           <p className="mb-6 text-gray-600">
-            Sorry, the lesson you're looking for doesn't exist or has been removed.
+            Sorry, the lesson you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Link href="/lessons">
             <Button>
@@ -161,7 +161,9 @@ export default function LessonPage() {
       videoUrl: section.videoUrl,
       exercise: section.exercises && section.exercises.length > 0
         ? {
-            type: section.exercises[0].type as any,
+            type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(section.exercises[0].type)
+              ? section.exercises[0].type
+              : 'multiple-choice') as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'true-false' | 'reorder',
             question: section.exercises[0].question,
             options: section.exercises[0].options || [],
             correctAnswer: section.exercises[0].correctAnswer,

@@ -1,6 +1,14 @@
 import conversationApiService from './api/conversationApiService';
 import { Conversation, Message } from '@/types/api';
 
+interface ConversationTopic {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  category: string;
+}
+
 /**
  * Conversation Service
  *
@@ -8,7 +16,7 @@ import { Conversation, Message } from '@/types/api';
  * functionality for caching and offline support.
  */
 class ConversationService {
-  private cache: Map<string, any> = new Map();
+  private cache: Map<string, unknown> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
   private cacheDuration = 5 * 60 * 1000; // 5 minutes
   private pendingMessages: Map<string, Message[]> = new Map();
@@ -24,7 +32,7 @@ class ConversationService {
       });
 
       if (response.data) {
-        return response.data;
+        return response.data as Conversation;
       }
 
       throw new Error('Failed to start conversation');
@@ -54,7 +62,7 @@ class ConversationService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as Conversation[];
     }
 
     try {
@@ -63,7 +71,7 @@ class ConversationService {
       if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
-        return response.data;
+        return response.data as Conversation[];
       }
 
       return [];
@@ -72,7 +80,7 @@ class ConversationService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as Conversation[];
       }
 
       return [];
@@ -87,23 +95,24 @@ class ConversationService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as Conversation | null;
     }
 
     try {
       const response = await conversationApiService.getConversation(conversationId);
 
       if (response.data) {
+        const conversation = response.data as Conversation;
         // Cache the result
-        this.setCache(cacheKey, response.data);
+        this.setCache(cacheKey, conversation);
 
         // Add any pending messages
         if (this.pendingMessages.has(conversationId)) {
           const pendingMessages = this.pendingMessages.get(conversationId) || [];
-          response.data.messages = [...response.data.messages, ...pendingMessages];
+          conversation.messages = [...conversation.messages, ...pendingMessages];
         }
 
-        return response.data;
+        return conversation;
       }
 
       return null;
@@ -112,7 +121,7 @@ class ConversationService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as Conversation | null;
       }
 
       return null;
@@ -134,7 +143,7 @@ class ConversationService {
         // Invalidate conversation cache
         this.invalidateCache(`conversation-${conversationId}`);
 
-        return response.data;
+        return response.data as Message;
       }
 
       throw new Error('Failed to send message');
@@ -158,12 +167,12 @@ class ConversationService {
   /**
    * Get conversation topics
    */
-  async getConversationTopics(level?: string): Promise<any[]> {
+  async getConversationTopics(level?: string): Promise<ConversationTopic[]> {
     const cacheKey = `conversation-topics-${level || 'all'}`;
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as ConversationTopic[];
     }
 
     try {
@@ -172,7 +181,7 @@ class ConversationService {
       if (response.data) {
         // Cache the result
         this.setCache(cacheKey, response.data);
-        return response.data;
+        return response.data as ConversationTopic[];
       }
 
       return [];
@@ -181,7 +190,7 @@ class ConversationService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as ConversationTopic[];
       }
 
       return [];
@@ -216,7 +225,7 @@ class ConversationService {
   /**
    * Set cache with expiry
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: unknown): void {
     this.cache.set(key, data);
     this.cacheExpiry.set(key, Date.now() + this.cacheDuration);
   }
