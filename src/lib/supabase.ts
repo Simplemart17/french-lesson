@@ -33,14 +33,6 @@ export const supabaseAdmin = supabaseServiceRoleKey
     })
   : null;
 
-// Helper function to get the appropriate client
-export const getSupabaseClient = (useAdmin = false) => {
-  if (useAdmin && supabaseAdmin) {
-    return supabaseAdmin;
-  }
-  return supabase;
-};
-
 // Database table names (Supabase naming convention)
 export const TABLES = {
   USERS: 'users',

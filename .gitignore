@@ -8,3 +8,4 @@ node_modules
 .vscode
 supabase/.temp
 supabase/config.toml
+tsconfig.tsbuildinfo

@@ -101,6 +101,7 @@ export const supabaseAuth = {
    */
   signIn: async (email: string, password: string): Promise<AuthResult> => {
     try {
+      // Production mode: Use Supabase authentication
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -168,9 +169,9 @@ export const supabaseAuth = {
   /**
    * Get current user
    */
-  getCurrentUser: async () => {
+  getCurrentUser: async (token: string) => {
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const { data: { user }, error } = await supabase.auth.getUser(token);
       if (error) {
         return { user: null, error: error.message };
       }

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import Link from 'next/link';
 import Header from './Header';
 
 type LayoutProps = {
@@ -7,35 +8,35 @@ type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 md:px-6 md:py-12">
+      <main className="container flex-grow px-4 py-8 mx-auto md:px-6 md:py-12">
         {children}
       </main>
-      <footer className="bg-white shadow-sm py-8 mt-12 border-t border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="py-8 mt-12 bg-white border-t border-gray-100 shadow-sm">
+        <div className="container px-4 mx-auto">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">French Tutor AI</h3>
-              <p className="text-gray-600 mb-4">Your personal assistant for learning French from beginner to advanced levels.</p>
-              <p className="text-gray-500 text-sm">© {new Date().getFullYear()} French Tutor AI. All rights reserved.</p>
+              <h3 className="mb-4 text-xl font-bold text-gray-800">French Tutor AI</h3>
+              <p className="mb-4 text-gray-600">Your personal assistant for learning French from beginner to advanced levels.</p>
+              <p className="text-sm text-gray-500">© {new Date().getFullYear()} French Tutor AI. All rights reserved.</p>
             </div>
             <div>
-              <h4 className="text-gray-800 font-semibold mb-3">Learn</h4>
+              <h4 className="mb-3 font-semibold text-gray-800">Learn</h4>
               <ul className="space-y-2">
-                <li><a href="/lessons" className="text-gray-600 hover:text-primary-600 transition-colors">Lessons</a></li>
-                <li><a href="/vocabulary" className="text-gray-600 hover:text-primary-600 transition-colors">Vocabulary</a></li>
-                <li><a href="/practice" className="text-gray-600 hover:text-primary-600 transition-colors">Practice</a></li>
-                <li><a href="/exam-practice" className="text-gray-600 hover:text-primary-600 transition-colors">Exam Prep</a></li>
+                <li><Link href="/lessons" className="text-gray-600 transition-colors hover:text-primary-600">Lessons</Link></li>
+                <li><Link href="/vocabulary" className="text-gray-600 transition-colors hover:text-primary-600">Vocabulary</Link></li>
+                <li><Link href="/practice" className="text-gray-600 transition-colors hover:text-primary-600">Practice</Link></li>
+                <li><Link href="/exam-practice" className="text-gray-600 transition-colors hover:text-primary-600">Exam Prep</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-gray-800 font-semibold mb-3">Company</h4>
+              <h4 className="mb-3 font-semibold text-gray-800">Company</h4>
               <ul className="space-y-2">
-                <li><a href="/about" className="text-gray-600 hover:text-primary-600 transition-colors">About Us</a></li>
-                <li><a href="/privacy" className="text-gray-600 hover:text-primary-600 transition-colors">Privacy Policy</a></li>
-                <li><a href="/terms" className="text-gray-600 hover:text-primary-600 transition-colors">Terms of Service</a></li>
-                <li><a href="/contact" className="text-gray-600 hover:text-primary-600 transition-colors">Contact</a></li>
+                <li><Link href="/about" className="text-gray-600 transition-colors hover:text-primary-600">About Us</Link></li>
+                <li><Link href="/privacy" className="text-gray-600 transition-colors hover:text-primary-600">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-gray-600 transition-colors hover:text-primary-600">Terms of Service</Link></li>
+                <li><Link href="/contact" className="text-gray-600 transition-colors hover:text-primary-600">Contact</Link></li>
               </ul>
             </div>
           </div>
