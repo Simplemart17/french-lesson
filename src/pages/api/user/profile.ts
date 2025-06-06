@@ -6,7 +6,7 @@ import { getUserId } from "@/utils/auth";
 
 async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
+  res: NextApiResponse<ApiResponse<User>>
 ) {
   try {
     // Get user ID from the authenticated request
@@ -76,7 +76,7 @@ async function handler(
       const { name, level, learningGoals, preferences } = req.body;
 
       // Prepare updates (using database field names)
-      const updates: any = {
+      const updates: Record<string, unknown> = {
         last_active: new Date().toISOString(),
       };
 

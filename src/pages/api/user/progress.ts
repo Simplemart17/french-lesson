@@ -190,8 +190,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       })),
       ...(vocabularyProgress || []).slice(0, 5).map((vocab: VocabularyProgress) => ({
         id: `vocab-${vocab.id}`,
-        date: vocab.last_practiced?.split('T')[0] || new Date().toISOString().split('T')[0],
-        activity: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
+        date: vocab.lastPracticed?.split('T')[0] || new Date().toISOString().split('T')[0],
+        activity: `Learned new word: ${vocab.vocabulary?.word || 'Unknown Word'}`,
         duration: 5,
         xpEarned: 25,
         category: 'vocabulary' as const

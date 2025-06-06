@@ -27,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Extract unique levels
     const levels = new Set<string>();
-    (vocabulary || []).forEach((item: any) => {
+    (vocabulary || []).forEach((item: { difficulty?: string }) => {
       if (item.difficulty) {
         levels.add(item.difficulty);
       }

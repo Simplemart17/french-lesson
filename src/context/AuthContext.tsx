@@ -52,7 +52,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const storedUser = authApiService.getUserData();
 
       if (token && storedUser) {
-        setUser(storedUser);
+        setUser({
+          id: storedUser.id,
+          name: storedUser.name,
+          email: storedUser.email,
+          level: 'beginner',
+          points: 0,
+          streakDays: 0,
+          joinedAt: new Date().toISOString(),
+          learningGoals: [],
+          completedLessons: 0,
+          lastActive: new Date().toISOString(),
+          preferences: {
+            dailyGoal: 30,
+            notifications: true,
+            theme: 'light'
+          }
+        });
       }
     } catch (error: unknown) {
       console.error('Auth initialization error:', error);
@@ -107,18 +123,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const authResult = await authApiService.login({ email, password });
 
-      if (!authResult.success) {
-        setError(authResult.data.error as string);
-        throw new Error(authResult.data.error);
-      }
-
       if (authResult.data && authResult.data.user) {
-        // Set user immediately
-        setUser(authResult.data.user);
+        // Map the auth user to our User type
+        const user: User = {
+          id: authResult.data.user.id,
+          name: authResult.data.user.name,
+          email: authResult.data.user.email,
+          level: 'beginner',
+          points: 0,
+          streakDays: 0,
+          joinedAt: new Date().toISOString(),
+          learningGoals: [],
+          completedLessons: 0,
+          lastActive: new Date().toISOString(),
+          preferences: {
+            dailyGoal: 30,
+            notifications: true,
+            theme: 'light'
+          }
+        };
+        setUser(user);
       }
       // Force initialize to refresh auth state
       await initialize();
-      return authResult.data;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login. Please try again.';
       setError(errorMessage);

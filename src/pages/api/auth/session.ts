@@ -35,7 +35,7 @@ export default async function handler(
       success: true,
       ...session,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Login error:', error);
     return res.status(500).json({
       success: false,
