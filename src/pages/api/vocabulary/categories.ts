@@ -27,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Extract unique categories
     const categories = new Set<string>();
-    (vocabulary || []).forEach((item: any) => {
+    (vocabulary || []).forEach((item: { category?: string }) => {
       if (item.category) {
         categories.add(item.category);
       }
