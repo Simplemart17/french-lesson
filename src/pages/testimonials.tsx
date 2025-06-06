@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 
 interface Testimonial {
@@ -85,10 +86,12 @@ export default function TestimonialsPage() {
                 <div className="flex items-center mb-4">
                   <div className="flex-shrink-0 mr-4">
                     {testimonial.imageUrl ? (
-                      <img
+                      <Image
                         src={testimonial.imageUrl}
                         alt={testimonial.name}
-                        className="object-cover w-12 h-12 rounded-full"
+                        width={48}
+                        height={48}
+                        className="object-cover rounded-full"
                         onError={(e) => {
                           // Fallback if image fails to load
                           (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`;
@@ -106,7 +109,7 @@ export default function TestimonialsPage() {
                   </div>
                 </div>
                 
-                <p className="mb-4 text-gray-600">"{testimonial.content}"</p>
+                <p className="mb-4 text-gray-600">&quot;{testimonial.content}&quot;</p>
                 
                 <div className="flex text-yellow-400">
                   {[...Array(5)].map((_, i) => (

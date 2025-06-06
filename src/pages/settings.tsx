@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const [formData, setFormData] = useState(profile);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const handlePreferenceChange = (key: string, value: any) => {
+  const handlePreferenceChange = (key: string, value: string | boolean | number) => {
     setPreferences({
       ...preferences,
       [key]: value
