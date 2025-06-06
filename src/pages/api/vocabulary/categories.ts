@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow GET requests
@@ -14,7 +13,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     // Get all vocabulary items
-    const supabase = getSupabaseClient();
     const { data: vocabulary, error } = await supabase
       .from(TABLES.VOCABULARY)
       .select('category');

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { getUserId } from '@/utils/auth';
-import { getSupabaseClient, TABLES } from '../../../lib/supabase';
+import { supabase, TABLES } from '../../../lib/supabase';
 
 interface SkillProgress {
   name: string;
@@ -75,7 +75,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get user data
-    const supabase = getSupabaseClient();
     const { data: user, error: userError } = await supabase
       .from(TABLES.USERS)
       .select('points, streak_days, level')
@@ -83,10 +82,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .single();
 
     if (userError || !user) {
-      return res.status(404).json({
-        success: false,
-        error: { message: 'User not found' }
-      });
+      if (userError?.code === 'PGRST116') {
+        return res.status(404).json({
+          success: false,
+          error: { message: 'User not found' }
+        });
+      }
     }
 
     // Get lesson progress for activity log
@@ -122,7 +123,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           english,
           pronunciation,
           category,
-          difficulty
+          level
         )
       `)
       .eq('user_id', userId)
@@ -189,8 +190,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       })),
       ...(vocabularyProgress || []).slice(0, 5).map((vocab: VocabularyProgress) => ({
         id: `vocab-${vocab.id}`,
-        date: vocab.lastPracticed?.split('T')[0] || new Date().toISOString().split('T')[0],
-        activity: `Learned new word: ${vocab.vocabulary?.word || 'Unknown Word'}`,
+        date: vocab.last_practiced?.split('T')[0] || new Date().toISOString().split('T')[0],
+        activity: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
         duration: 5,
         xpEarned: 25,
         category: 'vocabulary' as const
@@ -218,9 +219,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     );
 
     // Calculate totals
-    const totalXP = user.points;
+    const totalXP = user?.points;
     const totalStudyTime = activityLog.reduce((sum, activity) => sum + activity.duration, 0);
-    const currentStreak = user.streak_days;
+    const currentStreak = user?.streak_days;
 
     // Calculate level based on XP
     const userLevel = Math.floor(totalXP / 500) + 1;

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 import { LessonProgress } from '@/types/api';
 
@@ -55,16 +55,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         error: { message: 'User not authenticated' }
       });
     }
-
-    // Production mode: Use Supabase
-    const supabase = getSupabaseClient();
-
+    
     // Get user data
     const { data: user, error: userError } = await supabase
-      .from(TABLES.USERS)
-      .select('name, level, points, streak_days, daily_goal, completed_lessons, last_active')
-      .eq('id', userId)
-      .single();
+    .from('users')
+    .select('name, level, points, streak_days, daily_goal, completed_lessons, last_active')
+    .eq('id', userId)
+    .single();
 
     if (userError || !user) {
       return res.status(404).json({
@@ -144,7 +141,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         timestamp: progress.completed_at || new Date().toISOString(),
         score: progress.score
       })),
-      ...(vocabularyProgress || []).slice(0, 3).map((vocab: { id: string; vocabulary?: { french: string }; lastPracticed?: string }) => ({
+      ...(vocabularyProgress || []).slice(0, 3).map((vocab: { id: string; vocabulary?: { french: string }; last_practiced?: string }) => ({
         id: `vocab-${vocab.id}`,
         type: 'vocabulary' as const,
         title: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
@@ -195,8 +192,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { count: vocabularyToReview, error: vocabReviewError } = await supabase
       .from(TABLES.USER_VOCABULARY)
       .select('*', { count: 'exact', head: true })
-      .eq('userId', userId)
-      .lte('nextReviewDate', new Date().toISOString());
+      .eq('user_id', userId)
+      .lte('next_review_date', new Date().toISOString());
 
     if (vocabReviewError) {
       console.error('Error fetching vocabulary to review:', vocabReviewError);
