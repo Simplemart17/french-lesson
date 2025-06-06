@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getOpenAIClient, safeJSONParse } from '../../../utils/openaiClient';
+import { getOpenAIClient } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
 
 // Define interface for chat message
 interface ChatMessage {
@@ -79,14 +78,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         lastMessageAt: new Date()
       };
     }
-
-    // Mock saving user's message (for development)
-    console.log('Mock: Saving user message:', {
-      conversationId: conversation.id,
-      role: 'user',
-      content: message,
-      timestamp: new Date()
-    });
 
     // Get OpenAI client
     const openai = getOpenAIClient();

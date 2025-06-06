@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { GetServerSideProps } from 'next';
+// import { authApiService } from '@/services';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
