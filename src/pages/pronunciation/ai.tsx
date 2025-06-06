@@ -7,16 +7,7 @@ import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { pronunciationApiService, PronunciationResponse } from '@/services/api/pronunciationApiService';
 
-interface PronunciationWordScore {
-  word: string;
-  score: number;
-  feedback: string;
-}
 
-interface PronunciationProblemSound {
-  sound: string;
-  description: string;
-}
 
 const AI_PRONUNCIATION_PHRASES = [
   {

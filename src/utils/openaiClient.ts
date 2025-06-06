@@ -27,7 +27,7 @@ export async function createAudioTranscription(
   const openai = getOpenAIClient();
   
   try {
-    let file: any;
+    let file: fs.ReadStream;
     
     if (typeof audioFile === 'string') {
       // If it's a file path
@@ -48,7 +48,7 @@ export async function createAudioTranscription(
       }, 5000);
     } else {
       // It's already a ReadStream
-      file = audioFile;
+      file = audioFile as fs.ReadStream;
     }
     
     const response = await openai.audio.transcriptions.create({

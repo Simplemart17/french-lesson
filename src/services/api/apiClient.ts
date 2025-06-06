@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 import { getAuthToken, clearAuthCookies } from '@/utils/authCookies';
 
 // Define API response interface
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   status: number;
   message?: string;
@@ -34,6 +34,7 @@ class ApiClient {
     this.client.interceptors.request.use(
       (config) => {
         const token = this.getAuthToken();
+
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -65,7 +66,7 @@ class ApiClient {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      const data = error.response.data as any;
+      const data = error.response.data as { message?: string; errors?: Record<string, string[]> };
       apiError.message = data.message || `Error: ${error.response.status}`;
       apiError.errors = data.errors;
 
@@ -102,7 +103,7 @@ class ApiClient {
   }
 
   // GET method
-  public async get<T>(url: string, params?: any): Promise<ApiResponse<T>> {
+  public async get<T>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
     return this.request<T>({
       method: 'GET',
       url,
@@ -111,7 +112,7 @@ class ApiClient {
   }
 
   // POST method
-  public async post<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  public async post<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>({
       method: 'POST',
       url,
@@ -120,7 +121,7 @@ class ApiClient {
   }
 
   // PUT method
-  public async put<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  public async put<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>({
       method: 'PUT',
       url,
@@ -129,7 +130,7 @@ class ApiClient {
   }
 
   // PATCH method
-  public async patch<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  public async patch<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>({
       method: 'PATCH',
       url,
@@ -138,7 +139,7 @@ class ApiClient {
   }
 
   // DELETE method
-  public async delete<T>(url: string, params?: any): Promise<ApiResponse<T>> {
+  public async delete<T>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
     return this.request<T>({
       method: 'DELETE',
       url,

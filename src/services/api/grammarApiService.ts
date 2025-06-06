@@ -74,8 +74,8 @@ export const grammarApiService = {
   /**
    * Get progress
    */
-  getProgress: async (): Promise<ApiResponse<any[]>> => {
-    const response = await apiClient.get<any[]>(API_ENDPOINTS.GRAMMAR.PROGRESS);
+  getProgress: async (): Promise<ApiResponse<Array<{ exerciseId: number; score: number; completedAt: string }>>> => {
+    const response = await apiClient.get<Array<{ exerciseId: number; score: number; completedAt: string }>>(API_ENDPOINTS.GRAMMAR.PROGRESS);
     return {
       success: true,
       data: response.data
@@ -85,8 +85,8 @@ export const grammarApiService = {
   /**
    * Update progress
    */
-  updateProgress: async (exerciseId: number, score: number): Promise<ApiResponse<any>> => {
-    const response = await apiClient.post<any>(API_ENDPOINTS.GRAMMAR.PROGRESS, {
+  updateProgress: async (exerciseId: number, score: number): Promise<ApiResponse<{ success: boolean; message: string }>> => {
+    const response = await apiClient.post<{ success: boolean; message: string }>(API_ENDPOINTS.GRAMMAR.PROGRESS, {
       exerciseId,
       score
     });
@@ -144,9 +144,9 @@ export const grammarApiService = {
   /**
    * Check grammar in a text
    */
-  checkGrammar: async (text: string): Promise<any> => {
+  checkGrammar: async (text: string): Promise<{ corrections: Array<{ original: string; corrected: string; explanation: string }>; score: number }> => {
     try {
-      const response = await apiClient.post<ApiResponse<any>>('/grammar/check', { text });
+      const response = await apiClient.post<ApiResponse<{ corrections: Array<{ original: string; corrected: string; explanation: string }>; score: number }>>('/grammar/check', { text });
 
       if (response.data.success && response.data.data) {
         return response.data.data;

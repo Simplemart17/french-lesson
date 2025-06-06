@@ -1,4 +1,4 @@
-import supabase from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 type NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void;
@@ -28,9 +28,11 @@ export function authMiddleware(handler: NextApiHandler): NextApiHandler {
         });
       }
 
+      // Verify the token with Supabase
       const { data: { user }, error } = await supabase.auth.getUser(token);
 
       if (error || !user) {
+        console.error('Auth middleware - Invalid token:', error?.message);
         return res.status(401).json({
           success: false,
           error: { message: 'Unauthorized - Invalid token' }

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { LoginRequest, AuthResponse, ApiResponse } from '@/types/api';
+import { AuthResponse, ApiResponse } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
 
 export default async function handler(
@@ -35,7 +35,7 @@ export default async function handler(
       success: true,
       ...session,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Login error:', error);
     return res.status(500).json({
       success: false,

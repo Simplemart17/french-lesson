@@ -134,7 +134,7 @@ const SpacedRepetition = ({ words, onComplete }: SpacedRepetitionProps) => {
           </Button>
         ) : (
           <p className="font-medium text-green-600">
-            You're all caught up! No words to review today.
+            You&apos;re all caught up! No words to review today.
           </p>
         )}
       </Card>
@@ -146,7 +146,7 @@ const SpacedRepetition = ({ words, onComplete }: SpacedRepetitionProps) => {
       <Card className="p-6 text-center">
         <h2 className="mb-4 text-xl font-semibold text-gray-800">Review Complete!</h2>
         <p className="mb-6 text-gray-600">
-          You've reviewed {reviewedWords.length} words. Great job!
+          You&apos;ve reviewed {reviewedWords.length} words. Great job!
         </p>
         <div className="flex justify-center space-x-4">
           <Button variant="outline" onClick={() => setSessionStarted(false)}>

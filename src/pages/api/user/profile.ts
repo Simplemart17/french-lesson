@@ -1,77 +1,50 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, User } from '@/types/api';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
-import { authMiddleware } from '@/utils/authMiddleware';
-import { getUserId } from '@/utils/auth';
+import { NextApiRequest, NextApiResponse } from "next";
+import { ApiResponse, User } from "@/types/api";
+import { supabase, TABLES } from "@/lib/supabase";
+import { authMiddleware } from "@/utils/authMiddleware";
+import { getUserId } from "@/utils/auth";
 
 async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
+  res: NextApiResponse<ApiResponse<User>>
 ) {
   try {
     // Get user ID from the authenticated request
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
 
     if (!userId) {
       return res.status(401).json({
         success: false,
         error: {
-          message: 'Unauthorized'
-        }
+          message: "Unauthorized",
+        },
       });
     }
 
-    if (req.method === 'GET') {
+    if (req.method === "GET") {
       // Get user profile from User table
-      const supabase = getSupabaseClient();
-
       const { data: userProfile, error } = await supabase
         .from(TABLES.USERS)
-        .select('*')
-        .eq('id', userId)
+        .select("*")
+        .eq("id", userId)
         .single();
 
-      if (error) {
-        // If table doesn't exist, return mock user data for development
-        if (error.message.includes('does not exist')) {
-          const mockProfile: User = {
-            id: userId,
-            name: 'Test User',
-            email: 'test@example.com',
-            level: 'A1',
-            points: 150,
-            streakDays: 5,
-            joinedAt: new Date().toISOString(),
-            learningGoals: ['conversation', 'grammar'],
-            completedLessons: 3,
-            lastActive: new Date().toISOString(),
-            preferences: {
-              dailyGoal: 15,
-              notifications: true,
-              theme: 'light'
-            }
-          };
-
-          return res.status(200).json({
-            success: true,
-            data: mockProfile
-          });
-        }
-
-        return res.status(404).json({
+      if (error && error.code !== "PGRST116") {
+        console.error("Error fetching user profile:", error);
+        return res.status(500).json({
           success: false,
           error: {
-            message: 'User profile not found'
-          }
+            message: "Failed to fetch user profile",
+          },
         });
       }
-
+      
       if (!userProfile) {
         return res.status(404).json({
           success: false,
           error: {
-            message: 'User profile not found'
-          }
+            message: "User profile not found",
+          },
         });
       }
 
@@ -82,45 +55,40 @@ async function handler(
         email: userProfile.email,
         level: userProfile.level,
         points: userProfile.points,
-        streakDays: userProfile.streakDays,
-        joinedAt: userProfile.joinedAt,
-        learningGoals: userProfile.learningGoals,
-        completedLessons: userProfile.completedLessons,
-        lastActive: userProfile.lastActive,
+        streakDays: userProfile.streak_days,
+        joinedAt: userProfile.joined_at,
+        learningGoals: userProfile.learning_goals,
+        completedLessons: userProfile.completed_lessons,
+        lastActive: userProfile.last_active,
         preferences: {
-          dailyGoal: userProfile.dailyGoal,
+          dailyGoal: userProfile.daily_goal,
           notifications: userProfile.notifications,
-          theme: userProfile.theme as 'light' | 'dark'
-        }
+          theme: userProfile.theme as "light" | "dark",
+        },
       };
 
       return res.status(200).json({
         success: true,
-        data: transformedProfile
+        data: transformedProfile,
       });
-    } else if (req.method === 'PUT' || req.method === 'PATCH') {
+    } else if (req.method === "PUT" || req.method === "PATCH") {
       // Update user profile
-      const {
-        name,
-        level,
-        learningGoals,
-        preferences
-      } = req.body;
+      const { name, level, learningGoals, preferences } = req.body;
 
-      const supabase = getSupabaseClient();
-
-      // Prepare updates
-      const updates: any = {
-        lastActive: new Date().toISOString()
+      // Prepare updates (using database field names)
+      const updates: Record<string, unknown> = {
+        last_active: new Date().toISOString(),
       };
 
       if (name) updates.name = name;
       if (level) updates.level = level;
-      if (learningGoals) updates.learningGoals = learningGoals;
+      if (learningGoals) updates.learning_goals = learningGoals;
 
       if (preferences) {
-        if (preferences.dailyGoal !== undefined) updates.dailyGoal = preferences.dailyGoal;
-        if (preferences.notifications !== undefined) updates.notifications = preferences.notifications;
+        if (preferences.dailyGoal !== undefined)
+          updates.daily_goal = preferences.dailyGoal;
+        if (preferences.notifications !== undefined)
+          updates.notifications = preferences.notifications;
         if (preferences.theme !== undefined) updates.theme = preferences.theme;
       }
 
@@ -128,7 +96,7 @@ async function handler(
       const { data: updatedProfile, error } = await supabase
         .from(TABLES.USERS)
         .update(updates)
-        .eq('id', userId)
+        .eq("id", userId)
         .select()
         .single();
 
@@ -136,8 +104,8 @@ async function handler(
         return res.status(500).json({
           success: false,
           error: {
-            message: 'Failed to update profile'
-          }
+            message: "Failed to update profile",
+          },
         });
       }
 
@@ -148,37 +116,37 @@ async function handler(
         email: updatedProfile.email,
         level: updatedProfile.level,
         points: updatedProfile.points,
-        streakDays: updatedProfile.streakDays,
-        joinedAt: updatedProfile.joinedAt,
-        learningGoals: updatedProfile.learningGoals,
-        completedLessons: updatedProfile.completedLessons,
-        lastActive: updatedProfile.lastActive,
+        streakDays: updatedProfile.streak_days,
+        joinedAt: updatedProfile.joined_at,
+        learningGoals: updatedProfile.learning_goals,
+        completedLessons: updatedProfile.completed_lessons,
+        lastActive: updatedProfile.last_active,
         preferences: {
-          dailyGoal: updatedProfile.dailyGoal,
+          dailyGoal: updatedProfile.daily_goal,
           notifications: updatedProfile.notifications,
-          theme: updatedProfile.theme as 'light' | 'dark'
-        }
+          theme: updatedProfile.theme as "light" | "dark",
+        },
       };
 
       return res.status(200).json({
         success: true,
-        data: transformedProfile
+        data: transformedProfile,
       });
     } else {
       return res.status(405).json({
         success: false,
         error: {
-          message: 'Method not allowed'
-        }
+          message: "Method not allowed",
+        },
       });
     }
   } catch (error) {
-    console.error('Profile API error:', error);
+    console.error("Profile API error:", error);
     return res.status(500).json({
       success: false,
       error: {
-        message: 'Internal server error'
-      }
+        message: "Internal server error",
+      },
     });
   }
 }

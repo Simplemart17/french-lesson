@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 
 export type QuestionType = 'multiple-choice' | 'text-input' | 'audio-response';
@@ -169,9 +170,11 @@ export default function ExamQuestion({
     <div className="p-6 bg-white rounded-lg shadow-md">
       {question.imageUrl && (
         <div className="mb-4">
-          <img 
-            src={question.imageUrl} 
-            alt="Question visual" 
+          <Image
+            src={question.imageUrl}
+            alt="Question visual"
+            width={800}
+            height={400}
             className="w-full h-auto rounded-lg"
           />
         </div>

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import path from 'path';
-import fs from 'fs';
+// import path from 'path'; // Available for future file operations
+// import fs from 'fs'; // Available for future file operations
 
 export default function handler(
   req: NextApiRequest,

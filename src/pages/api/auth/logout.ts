@@ -1,3 +1,4 @@
+import { supabaseAuth } from '@/lib/supabaseAuth';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
@@ -14,13 +15,12 @@ export default async function handler(
   }
 
   try {
-    // For now, just return success
-    // Client-side will handle clearing localStorage
+    await supabaseAuth.signOut();
     return res.status(200).json({
       success: true,
       data: null
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Logout error:', error);
     return res.status(500).json({
       success: false,

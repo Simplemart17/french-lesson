@@ -1,3 +1,5 @@
+import { NextApiRequest } from 'next';
+
 // User-related types
 export interface User {
   id: string;
@@ -162,6 +164,149 @@ export interface ApiResponse<T> {
     message: string;
     code?: string;
   };
+}
+
+// Generic API error response
+export interface ApiErrorResponse {
+  success: false;
+  error: {
+    message: string;
+    code?: string;
+  };
+}
+
+// Next.js API request with user
+export interface AuthenticatedRequest extends NextApiRequest {
+  user?: {
+    id: string;
+    email: string;
+    name: string;
+  };
+}
+
+// Common database row types
+export interface DatabaseRow {
+  id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Request body types for various endpoints
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: string;
+}
+
+export interface TutorChatRequest {
+  message: string;
+  conversationId?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+}
+
+export interface AssessmentRequest {
+  answers: Record<string, string | string[]>;
+  timeSpent?: number;
+}
+
+export interface ExamSubmissionRequest {
+  answers: Record<string, string | string[]>;
+  timeSpent: number;
+  sectionId?: string;
+}
+
+export interface VocabularyPracticeRequest {
+  level?: string;
+  category?: string;
+  count?: number;
+}
+
+export interface PronunciationRequest {
+  text: string;
+  audioData?: string;
+  language?: string;
+}
+
+export interface ConversationMessageRequest {
+  message: string;
+  conversationId?: string;
+  context?: string;
+}
+
+// Database response types
+export interface DatabaseConversation {
+  id: string;
+  user_id: string;
+  title: string;
+  context?: string;
+  startedAt: string;
+  lastMessageAt: string;
+  created_at: string;
+  updated_at: string;
+  messages?: DatabaseMessage[];
+}
+
+export interface DatabaseMessage {
+  id: string;
+  conversationId: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseExamResult {
+  id: string;
+  user_id: string;
+  exam_type: string;
+  score: number;
+  total_questions: number;
+  correct_answers: number;
+  time_spent: number;
+  completed_at: string;
+  answers: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseLesson {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  duration: number;
+  topics: string[];
+  sections?: DatabaseLessonSection[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseLessonSection {
+  id: string;
+  lessonId: string;
+  title: string;
+  type: string;
+  content?: string;
+  audioUrl?: string;
+  videoUrl?: string;
+  order: number;
+  exercises?: DatabaseLessonExercise[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseLessonExercise {
+  id: string;
+  sectionId: string;
+  type: string;
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
+  explanation?: string;
+  order: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // HTTP request method types

@@ -33,65 +33,56 @@ export const supabaseAdmin = supabaseServiceRoleKey
     })
   : null;
 
-// Helper function to get the appropriate client
-export const getSupabaseClient = (useAdmin = false) => {
-  if (useAdmin && supabaseAdmin) {
-    return supabaseAdmin;
-  }
-  return supabase;
-};
-
-// Database table names (matching Prisma schema)
+// Database table names (Supabase naming convention)
 export const TABLES = {
-  USERS: 'User',
-  LESSONS: 'Lesson',
-  LESSON_SECTIONS: 'LessonSection',
-  LESSON_PROGRESS: 'LessonProgress',
-  VOCABULARY: 'Vocabulary',
-  USER_VOCABULARY: 'UserVocabulary',
-  CONVERSATIONS: 'Conversation',
-  MESSAGES: 'Message',
-  CONVERSATION_TEMPLATES: 'ConversationTemplate',
-  USER_TEMPLATE_USAGE: 'UserTemplateUsage',
-  PRONUNCIATION_EXERCISES: 'PronunciationExercise',
-  GRAMMAR_RULES: 'GrammarRule',
-  EXAM_RESULTS: 'ExamResult',
-  LESSON_EXERCISES: 'LessonExercise',
-  PRACTICE_ITEMS: 'PracticeItem',
-  PRACTICE_SESSIONS: 'PracticeSession',
-  PRONUNCIATION_PRACTICE_ITEMS: 'PronunciationPracticeItem',
+  USERS: 'users',
+  LESSONS: 'lessons',
+  LESSON_SECTIONS: 'lesson_sections',
+  LESSON_PROGRESS: 'lesson_progress',
+  VOCABULARY: 'vocabulary',
+  USER_VOCABULARY: 'user_vocabulary',
+  CONVERSATIONS: 'conversations',
+  MESSAGES: 'messages',
+  CONVERSATION_TEMPLATES: 'conversation_templates',
+  PRONUNCIATION_EXERCISES: 'pronunciation_exercises',
+  GRAMMAR_RULES: 'grammar_rules',
+  EXAM_RESULTS: 'exam_results',
+  LESSON_EXERCISES: 'lesson_exercises',
+  PRACTICE_ITEMS: 'practice_items',
+  PRACTICE_SESSIONS: 'practice_sessions',
+  PRONUNCIATION_PRACTICE_ITEMS: 'pronunciation_practice_items',
 } as const;
 
 // Type definitions for better TypeScript support
 export type Database = {
   public: {
     Tables: {
-      User: {
+      users: {
         Row: {
           id: string;
           name: string;
           email: string;
-          password: string;
           level: string;
           points: number;
-          streakDays: number;
-          joinedAt: string;
-          learningGoals: string[];
-          completedLessons: number;
-          lastActive: string;
-          dailyGoal: number;
+          streak_days: number;
+          joined_at: string;
+          learning_goals: string[];
+          completed_lessons: number;
+          last_active: string;
+          daily_goal: number;
           notifications: boolean;
           theme: string;
-          aiCorrectionEnabled: boolean;
-          aiVocabSuggestionsEnabled: boolean;
-          preferredVoice: string;
-          speechRecognitionEnabled: boolean;
-          
+          ai_correction_enabled: boolean;
+          ai_vocab_suggestions_enabled: boolean;
+          preferred_voice: string;
+          speech_recognition_enabled: boolean;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['User']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['User']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['users']['Insert']>;
       };
-      Lesson: {
+      lessons: {
         Row: {
           id: string;
           title: string;
@@ -99,196 +90,213 @@ export type Database = {
           level: string;
           duration: number;
           topics: string[];
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['Lesson']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['Lesson']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['lessons']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['lessons']['Insert']>;
       };
-      LessonSection: {
+      lesson_sections: {
         Row: {
           id: string;
-          lessonId: string;
+          lesson_id: string;
           title: string;
           type: string;
-          content: string | null;
-          audioUrl: string | null;
-          videoUrl: string | null;
-          order: number;
+          content: Record<string, unknown> | null;
+          order_index: number;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['LessonSection']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['LessonSection']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['lesson_sections']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['lesson_sections']['Insert']>;
       };
-      LessonProgress: {
+      lesson_progress: {
         Row: {
           id: string;
-          userId: string;
-          lessonId: string;
+          user_id: string;
+          lesson_id: string;
           completed: boolean;
           score: number | null;
-          answers: string[] | null;
-          startedAt: string;
-          completedAt: string | null;
+          time_spent: number | null;
+          started_at: string;
+          completed_at: string | null;
+          answers: Record<string, unknown> | null;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['LessonProgress']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['LessonProgress']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['lesson_progress']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['lesson_progress']['Insert']>;
       };
-      Vocabulary: {
+      vocabulary: {
         Row: {
           id: string;
-          word: string;
-          translation: string;
+          french: string;
+          english: string;
           example: string;
           level: string;
           category: string;
           pronunciation: string;
-          usageContext: string[];
+          usage_context: string[];
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['Vocabulary']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['Vocabulary']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['vocabulary']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['vocabulary']['Insert']>;
       };
-      UserVocabulary: {
+      user_vocabulary: {
         Row: {
           id: string;
-          userId: string;
-          vocabularyId: string;
+          user_id: string;
+          vocabulary_id: string;
           learned: boolean;
-          lastPracticed: string | null;
-          nextReviewDate: string;
-          repetitionStage: number;
+          last_practiced: string | null;
+          next_review_date: string | null;
+          repetition_stage: number;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['UserVocabulary']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['UserVocabulary']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['user_vocabulary']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['user_vocabulary']['Insert']>;
       };
-      Conversation: {
+      conversations: {
         Row: {
           id: string;
-          userId: string;
-          title: string;
-          context: string;
-          startedAt: string;
-          lastMessageAt: string;
-          templateId: string | null;
+          user_id: string;
+          title: string | null;
+          scenario: string | null;
+          language: string;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['Conversation']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['Conversation']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['conversations']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['conversations']['Insert']>;
       };
-      Message: {
+      messages: {
         Row: {
           id: string;
-          conversationId: string;
+          conversation_id: string;
           role: string;
           content: string;
-          timestamp: string;
-          audioUrl: string | null;
-          corrections: string[] | null;
-          suggestedVocabulary: string[] | null;
+          translation: string | null;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['Message']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['Message']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['messages']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['messages']['Insert']>;
       };
-      ConversationTemplate: {
+      conversation_templates: {
         Row: {
           id: string;
           title: string;
           description: string;
-          systemPrompt: string;
-          initialMessage: string;
+          system_prompt: string;
+          initial_message: string;
           topics: string[];
           level: string;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['ConversationTemplate']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['ConversationTemplate']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['conversation_templates']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['conversation_templates']['Insert']>;
       };
-      PronunciationExercise: {
+      pronunciation_exercises: {
         Row: {
-          id: number;
+          id: string;
           text: string;
           translation: string | null;
-          difficulty: string;
+          level: string;
           category: string;
-          expectedPronunciation: string | null;
+          expected_pronunciation: string;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['PronunciationExercise']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['PronunciationExercise']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['pronunciation_exercises']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['pronunciation_exercises']['Insert']>;
       };
-      GrammarRule: {
+      grammar_rules: {
         Row: {
           id: string;
           title: string;
           description: string;
           examples: string[];
           level: string;
-          category: string;
+          category: string | null;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['GrammarRule']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['GrammarRule']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['grammar_rules']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['grammar_rules']['Insert']>;
       };
-      ExamResult: {
+      exam_results: {
         Row: {
           id: string;
-          userId: string;
-          examId: string;
+          user_id: string;
+          exam_type: string;
+          module: string;
           score: number;
-          timeSpent: number;
-          completedAt: string;
-          section: string;
-          level: string;
-          details: string[];
+          max_score: number;
+          percentage: number;
+          level: string | null;
+          completed_at: string;
+          created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['ExamResult']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['ExamResult']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['exam_results']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['exam_results']['Insert']>;
       };
-      LessonExercise: {
+      lesson_exercises: {
         Row: {
           id: string;
-          sectionId: string;
+          session_id: string;
           type: string;
           question: string;
           options: string[];
-          correctAnswer: string;
+          correct_answer: string;
           explanation: string;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['LessonExercise']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['LessonExercise']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['lesson_exercises']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['lesson_exercises']['Insert']>;
       };
-      PracticeItem: {
+      practice_items: {
         Row: {
           id: string;
-          sessionId: string;
-          vocabularyId: string;
-          exerciseType: string;
-          isCorrect: boolean;
-          userAnswer: string;
-          expectedAnswer: string;
-        };
-        Insert: Omit<Database['public']['Tables']['PracticeItem']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['PracticeItem']['Insert']>;
-      };
-      PracticeSession: {
-        Row: {
-          id: string;
-          userId: string;
+          user_id: string;
           type: string;
-          duration: number;
-          createdAt: string;
-          aiGenerated: boolean;
-          difficulty: string;
-          score: number;
+          content: Record<string, unknown>;
+          score: number | null;
+          completed: boolean;
+          created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['PracticeSession']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['PracticeSession']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['practice_items']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['practice_items']['Insert']>;
       };
-      PronunciationPracticeItem: {
+      practice_sessions: {
         Row: {
           id: string;
-          sessionId: string;
-          exerciseId: string;
-          similarityScore: number;
-          transcript: string;
-          userAudioUrl: string;
-          feedback: string[];
+          user_id: string;
+          type: string;
+          duration: number | null;
+          score: number | null;
+          items: Record<string, unknown> | null;
+          created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['PronunciationPracticeItem']['Row'], 'id'>;
-        Update: Partial<Database['public']['Tables']['PronunciationPracticeItem']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['practice_sessions']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['practice_sessions']['Insert']>;
+      };
+      pronunciation_practice_items: {
+        Row: {
+          id: string;
+          exercise_id: string;
+          user_id: string | null;
+          transcript: string | null;
+          score: number | null;
+          feedback: Record<string, unknown> | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['pronunciation_practice_items']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['pronunciation_practice_items']['Insert']>;
       };
     };
   };

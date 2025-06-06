@@ -302,9 +302,12 @@ export default function ExamPage() {
   const { isAuthenticated } = useAuth();
   const [selectedExamType, setSelectedExamType] = useState<string | null>(null);
   const [examResults, setExamResults] = useState<ExamResult | null>(null);
-  
+
   // Get selected exam
   const selectedExam = examTypes.find(exam => exam.id === selectedExamType);
+
+  // Log exam results for debugging
+  console.log('Current exam results:', examResults ? 'Available' : 'None');
   
   // Handle exam completion
   const handleExamComplete = (results: ExamResult) => {
@@ -406,7 +409,7 @@ export default function ExamPage() {
                 </Card>
                 
                 <Card className="p-6">
-                  <h3 className="mb-4 text-xl font-semibold text-gray-800">TEF (Test d'Évaluation de Français)</h3>
+                  <h3 className="mb-4 text-xl font-semibold text-gray-800">TEF (Test d&apos;Évaluation de Français)</h3>
                   <p className="mb-4 text-gray-600">
                     The TEF is a standardized test that measures French language skills for academic, professional, or immigration purposes. It is recognized by Canadian immigration authorities.
                   </p>
@@ -445,7 +448,7 @@ export default function ExamPage() {
                 <div>
                   <h3 className="mb-3 font-medium text-gray-800">Exam Day Tips</h3>
                   <ul className="pl-5 space-y-2 text-gray-600 list-disc">
-                    <li>Get a good night's sleep before the exam</li>
+                    <li>Get a good night&apos;s sleep before the exam</li>
                     <li>Arrive early to the exam center</li>
                     <li>Read instructions carefully before starting each section</li>
                     <li>Manage your time effectively during the exam</li>

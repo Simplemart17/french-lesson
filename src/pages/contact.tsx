@@ -53,7 +53,7 @@ export default function ContactPage() {
         <div className="mb-8">
           <h1 className="mb-4 text-3xl font-bold text-gray-800">Contact Us</h1>
           <p className="text-lg text-gray-600">
-            Have questions or feedback? We'd love to hear from you.
+            Have questions or feedback? We&apos;d love to hear from you.
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export default function ContactPage() {
               {submitSuccess ? (
                 <div className="p-4 mb-4 text-green-700 bg-green-100 rounded-lg">
                   <p className="font-medium">Thank you for your message!</p>
-                  <p>We've received your inquiry and will get back to you as soon as possible.</p>
+                  <p>We&apos;ve received your inquiry and will get back to you as soon as possible.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -228,7 +228,7 @@ export default function ContactPage() {
             <div>
               <h3 className="mb-2 text-lg font-medium text-gray-800">How do I reset my password?</h3>
               <p className="text-gray-600">
-                You can reset your password by clicking on the "Forgot Password" link on the login page. You'll receive an email with instructions to create a new password.
+                You can reset your password by clicking on the &quot;Forgot Password&quot; link on the login page. You&apos;ll receive an email with instructions to create a new password.
               </p>
             </div>
             
@@ -242,14 +242,14 @@ export default function ContactPage() {
             <div>
               <h3 className="mb-2 text-lg font-medium text-gray-800">Is there a mobile app available?</h3>
               <p className="text-gray-600">
-                We're currently developing mobile apps for iOS and Android. In the meantime, our website is fully responsive and works great on mobile devices.
+                We&apos;re currently developing mobile apps for iOS and Android. In the meantime, our website is fully responsive and works great on mobile devices.
               </p>
             </div>
             
             <div>
               <h3 className="mb-2 text-lg font-medium text-gray-800">How do I report a technical issue?</h3>
               <p className="text-gray-600">
-                You can report technical issues by contacting our support team through the form above or by emailing support@frenchtutor.ai. Please include as much detail as possible about the issue you're experiencing.
+                You can report technical issues by contacting our support team through the form above or by emailing support@frenchtutor.ai. Please include as much detail as possible about the issue you&apos;re experiencing.
               </p>
             </div>
           </div>

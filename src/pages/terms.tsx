@@ -19,7 +19,7 @@ export default function TermsOfServicePage() {
         <div className="p-6 mb-8 prose bg-white shadow-sm rounded-xl prose-gray max-w-none">
           <h2>1. Introduction</h2>
           <p>
-            Welcome to French Tutor AI. These Terms of Service ("Terms") govern your access to and use of the French Tutor AI website and services (the "Service"). By accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service.
+            Welcome to French Tutor AI. These Terms of Service (&quot;Terms&quot;) govern your access to and use of the French Tutor AI website and services (the &quot;Service&quot;). By accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service.
           </p>
 
           <h2>2. Accounts</h2>
@@ -37,7 +37,7 @@ export default function TermsOfServicePage() {
 
           <h2>4. User Content</h2>
           <p>
-            Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, videos, or other material ("User Content"). You are responsible for the User Content that you post on or through the Service, including its legality, reliability, and appropriateness.
+            Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, videos, or other material (&quot;User Content&quot;). You are responsible for the User Content that you post on or through the Service, including its legality, reliability, and appropriateness.
           </p>
           <p>
             By posting User Content on or through the Service, you represent and warrant that: (i) the User Content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms, and (ii) the posting of your User Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person.
@@ -66,7 +66,7 @@ export default function TermsOfServicePage() {
 
           <h2>8. Disclaimer</h2>
           <p>
-            Your use of the Service is at your sole risk. The Service is provided on an "AS IS" and "AS AVAILABLE" basis. The Service is provided without warranties of any kind, whether express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.
+            Your use of the Service is at your sole risk. The Service is provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. The Service is provided without warranties of any kind, whether express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.
           </p>
           <p>
             French Tutor AI, its subsidiaries, affiliates, and its licensors do not warrant that a) the Service will function uninterrupted, secure or available at any particular time or location; b) any errors or defects will be corrected; c) the Service is free of viruses or other harmful components; or d) the results of using the Service will meet your requirements.
@@ -79,7 +79,7 @@ export default function TermsOfServicePage() {
 
           <h2>10. Changes to Terms</h2>
           <p>
-            We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
+            We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material we will provide at least 30 days&apos; notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
           </p>
           <p>
             By continuing to access or use our Service after any revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use the Service.

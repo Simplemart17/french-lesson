@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
 
           <h3>Usage Data</h3>
           <p>
-            We may also collect information about how the website is accessed and used. This usage data may include information such as your computer's Internet Protocol address (IP address), browser type, browser version, the pages of our website that you visit, the time and date of your visit, the time spent on those pages, and other diagnostic data.
+            We may also collect information about how the website is accessed and used. This usage data may include information such as your computer&apos;s Internet Protocol address (IP address), browser type, browser version, the pages of our website that you visit, the time and date of your visit, the time spent on those pages, and other diagnostic data.
           </p>
 
           <h2>How We Use Your Information</h2>
@@ -98,7 +98,7 @@ export default function PrivacyPolicyPage() {
 
           <h2>Changes to This Privacy Policy</h2>
           <p>
-            We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date at the top of this policy.
+            We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date at the top of this policy.
           </p>
           <p>
             You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.

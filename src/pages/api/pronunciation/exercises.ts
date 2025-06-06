@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationExercise as ImportedPronunciationExercise, PronunciationPhrase as ImportedPronunciationPhrase } from '@/services/api/pronunciationApiService';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 // Extended PronunciationPhrase interface for the mock data
 interface PronunciationPhrase extends ImportedPronunciationPhrase {
@@ -40,9 +40,6 @@ async function handler(
     // Get query parameters
     const { difficulty, search, page = '1', limit = '10' } = req.query;
 
-    // Get Supabase client
-    const supabase = getSupabaseClient();
-
     // Calculate pagination
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
@@ -65,26 +62,36 @@ async function handler(
       query = query.or(`text.ilike.%${search}%,translation.ilike.%${search}%`);
     }
 
-    const { data: exercises, error, count } = await query;
+    const { data: exercises, error } = await query;
 
     if (error) {
       throw new Error(`Database error: ${error.message}`);
     }
 
-    const total = count || 0;
+    // const total = count || 0; // Unused for now
 
     // Group exercises by difficulty and create exercise objects
-    const exerciseGroups: { [key: string]: any[] } = {};
+    interface DatabasePronunciationExercise {
+      id: string;
+      text: string;
+      difficulty: string;
+      translation?: string;
+      expectedPronunciation?: string;
+      phonetic?: string;
+      audio_url?: string;
+    }
+    const exerciseGroups: { [key: string]: PronunciationPhrase[] } = {};
 
-    (exercises || []).forEach((exercise: any) => {
+    (exercises || []).forEach((exercise: DatabasePronunciationExercise) => {
       const difficulty = mapDifficultyLevel(exercise.difficulty);
       if (!exerciseGroups[difficulty]) {
         exerciseGroups[difficulty] = [];
       }
       exerciseGroups[difficulty].push({
-        id: exercise.id,
+        id: parseInt(exercise.id),
         text: exercise.text,
         translation: exercise.translation || '',
+        difficulty: difficulty as 'beginner' | 'intermediate' | 'advanced',
         audioUrl: `/api/tts?text=${encodeURIComponent(exercise.text)}&lang=fr`,
         phonetics: exercise.expectedPronunciation || '',
         focusSounds: []
@@ -104,7 +111,7 @@ async function handler(
             id: exerciseId++,
             title: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Pronunciation Practice`,
             description: `Practice French pronunciation with ${difficulty} level phrases.`,
-            difficulty: difficulty as any,
+            difficulty: difficulty as 'beginner' | 'intermediate' | 'advanced',
             phrases: exercisePhrases,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()

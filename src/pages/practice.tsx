@@ -229,7 +229,7 @@ export default function PracticePage() {
           {transcript && (
             <div className="p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
               <h4 className="mb-2 text-sm font-medium text-gray-700">Your speech:</h4>
-              <p className="text-gray-800">"{transcript}"</p>
+              <p className="text-gray-800">&quot;{transcript}&quot;</p>
             </div>
           )}
           

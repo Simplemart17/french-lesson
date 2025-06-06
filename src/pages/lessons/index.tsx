@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
@@ -73,7 +74,7 @@ export default function LessonsPage() {
 
   // State for lessons and progress
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [progressData, setProgressData] = useState<any[]>([]);
+  const [progressData, setProgressData] = useState<Array<{ lessonId: string; completed: boolean; score: number }>>([]);
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
   const [lessonsError, setLessonsError] = useState<string | null>(null);
@@ -388,10 +389,11 @@ export default function LessonsPage() {
                 <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
                   <div className="relative h-48 overflow-hidden">
                     {getImageUrl(lesson) ? (
-                      <img
+                      <Image
                         src={getImageUrl(lesson)}
                         alt={lesson.title}
-                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex items-center justify-center w-full h-full bg-gray-200">

@@ -1,8 +1,32 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
-// Define the SpeechRecognition type
+// Define the SpeechRecognition types
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
@@ -10,8 +34,8 @@ interface SpeechRecognition extends EventTarget {
   start: () => void;
   stop: () => void;
   abort: () => void;
-  onerror: (event: any) => void;
-  onresult: (event: any) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
   onend: () => void;
 }
 
@@ -69,10 +93,137 @@ const ConversationPractice = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Text-to-speech function
+  const speakText = useCallback((text: string) => {
+    if ('speechSynthesis' in window) {
+      setIsSpeaking(true);
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language;
+      utterance.rate = 0.8;
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+      };
+
+      speechSynthesis.speak(utterance);
+    }
+  }, [language]);
+
+  // Mock translation function (in a real app, this would call an API)
+  const translateToEnglish = useCallback((text: string): string => {
+    // This is a very simple mock translation - in a real app, use a translation API
+    const translations: Record<string, string> = {
+      'Bonjour! Comment allez-vous aujourd\'hui?': 'Hello! How are you today?',
+      'Comment allez-vous': 'How are you',
+      'Je vais bien, merci': 'I am well, thank you',
+      'Qu\'est-ce que vous aimez faire pendant votre temps libre?': 'What do you like to do in your free time?',
+      'temps libre': 'free time',
+      'C\'est intéressant! Moi, j\'aime lire et voyager. Avez-vous déjà visité la France?': 'That\'s interesting! I like reading and traveling. Have you ever visited France?',
+      'Je comprends. Parlons d\'autre chose. Quel temps fait-il aujourd\'hui?': 'I understand. Let\'s talk about something else. How is the weather today?',
+      'C\'était une conversation agréable! Au revoir et à bientôt!': 'It was a pleasant conversation! Goodbye and see you soon!',
+      'Je ne suis pas sûr de comprendre. Pouvez-vous répéter d\'une autre façon?': 'I\'m not sure I understand. Can you repeat that in another way?',
+      'Je suis désolé, je ne sais pas comment répondre à cela.': 'I\'m sorry, I don\'t know how to respond to that.',
+    };
+
+    // Try to find an exact match
+    if (translations[text]) {
+      return translations[text];
+    }
+
+    // Try to find partial matches
+    for (const [french, english] of Object.entries(translations)) {
+      if (text.includes(french)) {
+        return english;
+      }
+    }
+
+    // Default response if no translation is found
+    return 'Translation not available';
+  }, []);
+
+  // Generate bot response
+  const generateBotResponse = useCallback((userInput: string) => {
+    setIsTyping(true);
+
+    // In a real app, this would call an API
+    setTimeout(() => {
+      // Find a matching response or use a default
+      let botReply = '';
+
+      if (scenario.possibleResponses) {
+        // Try to find a matching response based on keywords
+        const matchingResponse = scenario.possibleResponses.find(response =>
+          userInput.toLowerCase().includes(response.userInput.toLowerCase())
+        );
+
+        if (matchingResponse) {
+          botReply = matchingResponse.botReply;
+        } else {
+          // Default responses based on conversation context
+          const lastBotMessage = [...messages].reverse().find(m => m.role === 'assistant')?.content;
+
+          if (lastBotMessage?.includes('Comment allez-vous')) {
+            botReply = "C'est bien! Qu'est-ce que vous aimez faire pendant votre temps libre?";
+          } else if (lastBotMessage?.includes('temps libre')) {
+            botReply = "C'est intéressant! Moi, j'aime lire et voyager. Avez-vous déjà visité la France?";
+          } else if (userInput.toLowerCase().includes('oui') || userInput.toLowerCase().includes('non')) {
+            botReply = "Je comprends. Parlons d'autre chose. Quel temps fait-il aujourd'hui?";
+          } else if (messages.length > 6) {
+            botReply = "C'était une conversation agréable! Au revoir et à bientôt!";
+            setConversationEnded(true);
+          } else {
+            botReply = "Je ne suis pas sûr de comprendre. Pouvez-vous répéter d'une autre façon?";
+          }
+        }
+      } else {
+        botReply = "Je suis désolé, je ne sais pas comment répondre à cela.";
+      }
+
+      // Add bot message
+      const botMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: botReply,
+        timestamp: new Date(),
+        translation: translateToEnglish(botReply),
+        showTranslation: false
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+      setIsTyping(false);
+
+      // Speak the bot's response
+      speakText(botReply);
+
+    }, 1500);
+  }, [scenario, messages, speakText, translateToEnglish]);
+
+  // Define functions that will be used in useEffects
+  const sendMessage = useCallback((text: string) => {
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+
+    // Generate bot response
+    generateBotResponse(text);
+  }, [generateBotResponse]);
+
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const windowWithSpeech = window as WindowWithSpeechRecognition;
+      const windowWithSpeech = window as unknown as WindowWithSpeechRecognition;
       const SpeechRecognition = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
 
       if (SpeechRecognition) {
@@ -128,7 +279,7 @@ const ConversationPractice = ({
         recognitionRef.current.abort();
       }
     };
-  }, [language, transcript]);
+  }, [language, transcript, sendMessage, translateToEnglish]);
 
   // Add initial message from the bot
   useEffect(() => {
@@ -151,7 +302,7 @@ const ConversationPractice = ({
         speakText(scenario.initialMessage);
       }, 1000);
     }
-  }, [scenario]);
+  }, [scenario, speakText, translateToEnglish]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -183,98 +334,10 @@ const ConversationPractice = ({
     }
   };
 
-  const sendMessage = (text: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: text,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-
-    // Generate bot response
-    generateBotResponse(text);
-  };
-
   const handleInputSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputText.trim()) {
       sendMessage(inputText.trim());
-    }
-  };
-
-  const generateBotResponse = (userInput: string) => {
-    setIsTyping(true);
-
-    // In a real app, this would call an API
-    setTimeout(() => {
-      // Find a matching response or use a default
-      let botReply = '';
-
-      if (scenario.possibleResponses) {
-        // Try to find a matching response based on keywords
-        const matchingResponse = scenario.possibleResponses.find(response =>
-          userInput.toLowerCase().includes(response.userInput.toLowerCase())
-        );
-
-        if (matchingResponse) {
-          botReply = matchingResponse.botReply;
-        } else {
-          // Default responses based on conversation context
-          const lastBotMessage = [...messages].reverse().find(m => m.role === 'assistant')?.content;
-
-          if (lastBotMessage?.includes('Comment allez-vous')) {
-            botReply = "C'est bien! Qu'est-ce que vous aimez faire pendant votre temps libre?";
-          } else if (lastBotMessage?.includes('temps libre')) {
-            botReply = "C'est intéressant! Moi, j'aime lire et voyager. Avez-vous déjà visité la France?";
-          } else if (userInput.toLowerCase().includes('oui') || userInput.toLowerCase().includes('non')) {
-            botReply = "Je comprends. Parlons d'autre chose. Quel temps fait-il aujourd'hui?";
-          } else if (messages.length > 6) {
-            botReply = "C'était une conversation agréable! Au revoir et à bientôt!";
-            setConversationEnded(true);
-          } else {
-            botReply = "Je ne suis pas sûr de comprendre. Pouvez-vous répéter d'une autre façon?";
-          }
-        }
-      } else {
-        botReply = "Je suis désolé, je ne sais pas comment répondre à cela.";
-      }
-
-      // Add bot message
-      const botMessage: Message = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: botReply,
-        timestamp: new Date(),
-        translation: translateToEnglish(botReply),
-        showTranslation: false
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-      setIsTyping(false);
-
-      // Speak the bot's response
-      speakText(botReply);
-
-    }, 1500);
-  };
-
-  const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
-      setIsSpeaking(true);
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language;
-      utterance.rate = 0.9; // Slightly slower for learning
-
-      utterance.onend = () => {
-        setIsSpeaking(false);
-      };
-
-      window.speechSynthesis.speak(utterance);
     }
   };
 
@@ -286,38 +349,6 @@ const ConversationPractice = ({
           : message
       )
     );
-  };
-
-  // Mock translation function (in a real app, this would call an API)
-  const translateToEnglish = (text: string): string => {
-    // This is a very simple mock translation - in a real app, use a translation API
-    const translations: Record<string, string> = {
-      'Bonjour! Comment allez-vous aujourd\'hui?': 'Hello! How are you today?',
-      'Comment allez-vous': 'How are you',
-      'Je vais bien, merci': 'I am well, thank you',
-      'Qu\'est-ce que vous aimez faire pendant votre temps libre?': 'What do you like to do in your free time?',
-      'temps libre': 'free time',
-      'C\'est intéressant! Moi, j\'aime lire et voyager. Avez-vous déjà visité la France?': 'That\'s interesting! I like reading and traveling. Have you ever visited France?',
-      'Je comprends. Parlons d\'autre chose. Quel temps fait-il aujourd\'hui?': 'I understand. Let\'s talk about something else. How is the weather today?',
-      'C\'était une conversation agréable! Au revoir et à bientôt!': 'It was a pleasant conversation! Goodbye and see you soon!',
-      'Je ne suis pas sûr de comprendre. Pouvez-vous répéter d\'une autre façon?': 'I\'m not sure I understand. Can you repeat that in another way?',
-      'Je suis désolé, je ne sais pas comment répondre à cela.': 'I\'m sorry, I don\'t know how to respond to that.',
-    };
-
-    // Try to find an exact match
-    if (translations[text]) {
-      return translations[text];
-    }
-
-    // Try to find partial matches
-    for (const [french, english] of Object.entries(translations)) {
-      if (text.includes(french)) {
-        return english;
-      }
-    }
-
-    // Default response if no translation is found
-    return 'Translation not available';
   };
 
   const endConversation = () => {
@@ -488,7 +519,7 @@ const ConversationPractice = ({
           <div className="p-6 text-center border-t border-gray-200 bg-gray-50">
             <h3 className="mb-2 text-lg font-medium text-gray-800">Conversation Completed!</h3>
             <p className="mb-4 text-gray-600">
-              You've successfully completed this conversation practice.
+              You&apos;ve successfully completed this conversation practice.
             </p>
             <Button onClick={() => window.location.reload()}>
               Start a New Conversation

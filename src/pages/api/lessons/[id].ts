@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, Lesson } from '@/types/api';
+import { ApiResponse, Lesson, DatabaseLessonSection, DatabaseLessonExercise } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(
   req: NextApiRequest,
@@ -22,9 +22,6 @@ async function handler(
       }
 
       const lessonId = id;
-
-      // Get Supabase client
-      const supabase = getSupabaseClient();
 
       // Find the lesson by ID with its sections
       const { data: lesson, error } = await supabase
@@ -49,7 +46,7 @@ async function handler(
       }
 
       // Get user ID if authenticated
-      const userId = (req as any).user?.id;
+      const userId = (req as { user?: { id: string } }).user?.id;
 
       // Note: We're retrieving the user's progress but not using it in the response yet
       // This could be used in the future to customize the response based on user progress
@@ -57,8 +54,8 @@ async function handler(
         await supabase
           .from(TABLES.LESSON_PROGRESS)
           .select('*')
-          .eq('userId', userId)
-          .eq('lessonId', lessonId)
+          .eq('user_id', userId)
+          .eq('lesson_id', lessonId)
           .single();
       }
 
@@ -71,20 +68,20 @@ async function handler(
         duration: lesson.duration,
         topics: lesson.topics,
         sections: (lesson.sections || [])
-          .sort((a: any, b: any) => a.order - b.order)
-          .map((section: any) => ({
+          .sort((a: DatabaseLessonSection, b: DatabaseLessonSection) => a.order - b.order)
+          .map((section: DatabaseLessonSection) => ({
             id: section.id,
             lessonId: section.lessonId,
             title: section.title,
-            type: section.type as any,
+            type: section.type,
             content: section.content || undefined,
             audioUrl: section.audioUrl || undefined,
             videoUrl: section.videoUrl || undefined,
             order: section.order,
-            exercises: (section.exercises || []).map((exercise: any) => ({
+            exercises: (section.exercises || []).map((exercise: DatabaseLessonExercise) => ({
               id: exercise.id,
               sectionId: exercise.sectionId,
-              type: exercise.type as any,
+              type: exercise.type,
               question: exercise.question,
               options: exercise.options,
               correctAnswer: exercise.correctAnswer,

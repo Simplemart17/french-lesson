@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
+import { supabase } from '@/lib/supabase';
 
 export default function DebugAuthPage() {
   const { user, isAuthenticated, isLoading, isInitialized, error, login, logout } = useAuth();
@@ -9,11 +10,30 @@ export default function DebugAuthPage() {
   const [password, setPassword] = useState('password123');
   const [loginLoading, setLoginLoading] = useState(false);
   const [localStorageState, setLocalStorageState] = useState<{ token: string | null; userData: string | null }>({ token: null, userData: null });
+  const [supabaseSession, setSupabaseSession] = useState<unknown>(null);
+  const [supabaseUser, setSupabaseUser] = useState<unknown>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('supabase_auth_token');
     const userData = localStorage.getItem('supabase_user_data');
     setLocalStorageState({ token, userData });
+
+    // Check Supabase session
+    const checkSupabaseSession = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        setSupabaseSession(session);
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        setSupabaseUser(user);
+
+        console.log('Supabase session check:', { session, user, sessionError, userError });
+      } catch (error) {
+        console.error('Error checking Supabase session:', error);
+      }
+    };
+
+    checkSupabaseSession();
   }, [isAuthenticated]); // Re-check when auth state changes
 
   const handleTestLogin = async () => {
@@ -96,6 +116,25 @@ export default function DebugAuthPage() {
                 <strong>User Data:</strong>
                 <pre className="mt-2 p-2 bg-gray-100 rounded text-sm overflow-x-auto">
                   {localStorageState.userData || 'null'}
+                </pre>
+              </div>
+            </div>
+          </div>
+
+          {/* Supabase Session State */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">Supabase Session State</h2>
+            <div className="space-y-2">
+              <div>
+                <strong>Session:</strong>
+                <pre className="mt-2 p-2 bg-gray-100 rounded text-sm overflow-x-auto">
+                  {supabaseSession ? JSON.stringify(supabaseSession, null, 2) : 'null'}
+                </pre>
+              </div>
+              <div>
+                <strong>User (from getUser()):</strong>
+                <pre className="mt-2 p-2 bg-gray-100 rounded text-sm overflow-x-auto">
+                  {supabaseUser ? JSON.stringify(supabaseUser, null, 2) : 'null'}
                 </pre>
               </div>
             </div>

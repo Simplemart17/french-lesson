@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { isAuthenticated, getUserId } from '@/utils/auth';
 
 // Define the conversation scenario type
 interface ConversationScenario {

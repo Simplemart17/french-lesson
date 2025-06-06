@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { translateText, detectLanguage, LanguageCode } from '@/services/translationService';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
@@ -59,34 +59,12 @@ const Translator = ({
     };
   }, []);
 
-  // Auto-translate when source text changes (with debounce)
-  useEffect(() => {
-    if (!sourceText.trim()) {
-      setTranslatedText('');
-      return;
-    }
-
-    if (translateTimeoutRef.current) {
-      clearTimeout(translateTimeoutRef.current);
-    }
-
-    translateTimeoutRef.current = setTimeout(() => {
-      handleTranslate();
-    }, 800); // Debounce for 800ms
-    
-    return () => {
-      if (translateTimeoutRef.current) {
-        clearTimeout(translateTimeoutRef.current);
-      }
-    };
-  }, [sourceText, sourceLang, targetLang]);
-
-  const handleTranslate = async () => {
+  const handleTranslate = useCallback(async () => {
     if (!sourceText.trim()) return;
-    
+
     setIsTranslating(true);
     setError(null);
-    
+
     try {
       // Auto-detect language if set to auto
       let actualSourceLang = sourceLang;
@@ -95,18 +73,18 @@ const Translator = ({
         actualSourceLang = detection.language;
         setDetectedLanguage(actualSourceLang);
       }
-      
+
       // Don't translate if source and target languages are the same
       if (actualSourceLang === targetLang) {
         setTranslatedText(sourceText);
         setIsTranslating(false);
         return;
       }
-      
+
       const result = await translateText(sourceText, actualSourceLang, targetLang);
-      
+
       setTranslatedText(result.translatedText);
-      
+
       if (onTranslationComplete) {
         onTranslationComplete({
           original: sourceText,
@@ -121,7 +99,30 @@ const Translator = ({
     } finally {
       setIsTranslating(false);
     }
-  };
+  }, [sourceText, sourceLang, targetLang, onTranslationComplete]);
+
+  // Auto-translate when source text changes (with debounce)
+  useEffect(() => {
+    if (!sourceText.trim()) {
+      setTranslatedText('');
+      return;
+    }
+
+    if (translateTimeoutRef.current) {
+      clearTimeout(translateTimeoutRef.current);
+    }
+
+    translateTimeoutRef.current = setTimeout(() => {
+      handleTranslate();
+    }, 800); // Debounce for 800ms
+
+    return () => {
+      if (translateTimeoutRef.current) {
+        clearTimeout(translateTimeoutRef.current);
+      }
+    };
+  }, [sourceText, sourceLang, targetLang, handleTranslate]);
+
   
   const handleSwapLanguages = () => {
     // Don't swap if either language is auto-detect

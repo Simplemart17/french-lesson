@@ -101,15 +101,16 @@ export default function ProfileSetupPage() {
         }
       });
 
-      if (response.data.success) {
+      if ((response.data as { success?: boolean })?.success) {
         toast.success('Profile setup complete! Welcome to French Tutor AI!');
         router.push('/dashboard');
       } else {
         throw new Error('Failed to update profile');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Profile setup error:', error);
-      toast.error(error.message || 'Failed to save profile. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save profile. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +152,7 @@ export default function ProfileSetupPage() {
             {/* Step 1: French Level */}
             {currentStep === 1 && (
               <div>
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">What's your current French level?</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">What&apos;s your current French level?</h2>
                 <p className="text-gray-600 mb-6">This helps us personalize your learning experience.</p>
                 
                 <div className="space-y-3">

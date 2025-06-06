@@ -252,7 +252,7 @@ const examModules: Record<string, ExamModule> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
+  res: NextApiResponse<ApiResponse<unknown>>
 ) {
   // GET request to retrieve exam modules
   if (req.method === 'GET') {
@@ -261,9 +261,9 @@ export default async function handler(
       
       // If ID is provided, return that specific module
       if (id) {
-        const module = examModules[id as string];
-        
-        if (!module) {
+        const examModule = examModules[id as string];
+
+        if (!examModule) {
           return res.status(404).json({
             success: false,
             error: {
@@ -271,10 +271,10 @@ export default async function handler(
             }
           });
         }
-        
+
         return res.status(200).json({
           success: true,
-          data: module
+          data: examModule
         });
       }
       
@@ -284,26 +284,32 @@ export default async function handler(
       // Filter by exam type if provided
       if (examType) {
         filteredModules = filteredModules.filter(
-          module => module.examType === examType
+          examModule => examModule.examType === examType
         );
       }
-      
+
       // Filter by section if provided
       if (section) {
         filteredModules = filteredModules.filter(
-          module => module.section === section
+          examModule => examModule.section === section
         );
       }
-      
+
       // Filter by difficulty if provided
       if (difficulty) {
         filteredModules = filteredModules.filter(
-          module => module.difficulty === difficulty
+          examModule => examModule.difficulty === difficulty
         );
       }
       
       // Return basic module info without questions for the list view
-      const modulesList = filteredModules.map(({ questions, ...moduleInfo }) => moduleInfo);
+      // Return basic module info without questions for the list view
+      const modulesList = filteredModules.map((module) => {
+        // Exclude questions from the response to reduce payload size
+        const { questions: _questions, ...moduleInfo } = module;
+        void _questions; // Explicitly mark as used to avoid lint error
+        return moduleInfo;
+      });
       
       return res.status(200).json({
         success: true,
@@ -332,7 +338,7 @@ export default async function handler(
       });
     }
     
-    const userId = getUserId(req);
+    getUserId(req);
     
     try {
       const { moduleId, answers } = req.body;
@@ -348,9 +354,9 @@ export default async function handler(
       }
       
       // Find the module
-      const module = examModules[moduleId];
-      
-      if (!module) {
+      const examModule = examModules[moduleId];
+
+      if (!examModule) {
         return res.status(404).json({
           success: false,
           error: {
@@ -358,10 +364,10 @@ export default async function handler(
           }
         });
       }
-      
+
       // Process answers based on question type
       const results = answers.map((answer: { questionId: string; answer: string }) => {
-        const question = module.questions?.find(q => q.id === answer.questionId);
+        const question = examModule.questions?.find(q => q.id === answer.questionId);
         
         if (!question) {
           return {
@@ -427,7 +433,7 @@ export default async function handler(
           score,
           totalCorrect: correctCount,
           totalGraded: totalCount,
-          totalQuestions: module.questions?.length || 0,
+          totalQuestions: examModule.questions?.length || 0,
           submittedAt: new Date().toISOString()
         }
       });

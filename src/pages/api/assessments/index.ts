@@ -1,10 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
+import { AuthenticatedRequest } from '@/types/api';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
-  const userId = (req as any).user?.id;
+  const userId = req.user?.id;
 
   if (!userId) {
     return res.status(401).json({
@@ -16,13 +17,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // GET request to retrieve assessments
   if (req.method === 'GET') {
     try {
-      const supabase = getSupabaseClient();
-
       const { data: assessments, error } = await supabase
         .from(TABLES.EXAM_RESULTS)
         .select('*')
-        .eq('userId', userId)
-        .order('completedAt', { ascending: false });
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false });
 
       if (error) {
         throw new Error(`Database error: ${error.message}`);
@@ -54,7 +53,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Create new assessment using the ExamResult model
-      const supabase = getSupabaseClient();
       const defaultTotalQuestions = totalQuestions || 10;
 
       const { data: assessment, error: createError } = await supabase

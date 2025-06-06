@@ -6,3 +6,6 @@ node_modules
 .env
 .env.local
 .vscode
+supabase/.temp
+supabase/config.toml
+tsconfig.tsbuildinfo

@@ -1,7 +1,11 @@
 import * as React from "react";
 
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  // Custom props for the textarea component
+  error?: boolean;
+  helperText?: string;
+}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className = "", ...props }, ref) => {

@@ -92,7 +92,7 @@ export default function ExamProgress({ examType, results = [] }: ExamProgressPro
           {['all', 'listening', 'reading', 'writing', 'speaking'].map((section) => (
             <button
               key={section}
-              onClick={() => setSelectedSection(section as any)}
+              onClick={() => setSelectedSection(section as 'all' | 'listening' | 'reading' | 'writing' | 'speaking')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedSection === section
                 ? 'bg-indigo-600 text-white'
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}

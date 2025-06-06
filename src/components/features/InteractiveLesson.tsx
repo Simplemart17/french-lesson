@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
@@ -43,10 +44,19 @@ export interface Lesson {
   }[];
 }
 
+interface SubmissionResult {
+  score?: number;
+  feedback?: Record<string, {
+    correct: boolean;
+    explanation?: string;
+  }>;
+  completed?: boolean;
+}
+
 interface InteractiveLessonProps {
   lesson: Lesson;
   onComplete?: (score: number) => void;
-  onSubmitAnswers?: (answers: Record<number, string | string[]>) => Promise<any>;
+  onSubmitAnswers?: (answers: Record<number, string | string[]>) => Promise<SubmissionResult | null>;
   initialProgress?: { completed: boolean; score: number } | null;
 }
 
@@ -62,7 +72,7 @@ const InteractiveLesson = ({
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(initialProgress?.completed || false);
   const [score, setScore] = useState(initialProgress?.score || 0);
-  const [submitting, setSubmitting] = useState(false);
+  const [, setSubmitting] = useState(false);
 
   const currentSection = lesson.sections[currentSectionIndex];
   const totalSections = lesson.sections.length;
@@ -317,9 +327,11 @@ const InteractiveLesson = ({
             </div>
             {currentSection.imageUrl && (
               <div className="mt-4">
-                <img
+                <Image
                   src={currentSection.imageUrl}
                   alt={currentSection.title || 'Lesson image'}
+                  width={800}
+                  height={400}
                   className="h-auto max-w-full rounded-lg"
                 />
               </div>
@@ -395,7 +407,7 @@ const InteractiveLesson = ({
             {score}%
           </div>
           <p className="text-gray-600">
-            Congratulations on completing the lesson. You've made great progress in your French learning journey.
+            Congratulations on completing the lesson. You&apos;ve made great progress in your French learning journey.
           </p>
           {score < 70 && (
             <p className="mt-2 text-yellow-600">

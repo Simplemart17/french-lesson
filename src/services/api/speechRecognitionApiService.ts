@@ -36,7 +36,7 @@ const speechRecognitionApiService = {
       const { transcript, referenceText, audioBlob } = params;
       
       // Create request data
-      const requestData: any = {
+      const requestData: { transcript: string; referenceText: string } = {
         transcript,
         referenceText
       };

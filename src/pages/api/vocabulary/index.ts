@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
-  const userId = getUserId(req);
+  const userId = await getUserId(req);
   if (!userId) {
     return res.status(401).json({
       success: false,
@@ -17,7 +17,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
       const { level, category } = req.query;
-      const supabase = getSupabaseClient();
 
       // Build query for vocabulary items
       let vocabularyQuery = supabase
@@ -27,7 +26,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       // Apply filters
       if (level && typeof level === 'string') {
-        vocabularyQuery = vocabularyQuery.eq('difficulty', level);
+        vocabularyQuery = vocabularyQuery.eq('level', level);
       }
 
       if (category && typeof category === 'string') {
@@ -37,67 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { data: vocabulary, error: vocabularyError } = await vocabularyQuery;
 
       if (vocabularyError) {
-        // If table doesn't exist, return mock data for development
-        if (vocabularyError.message.includes('does not exist')) {
-          const mockVocabulary = [
-            {
-              id: '1',
-              word: 'bonjour',
-              translation: 'hello',
-              example: 'Bonjour, comment allez-vous?',
-              level: 'A1',
-              category: 'greetings',
-              pronunciation: 'bon-ZHOOR',
-              learned: false,
-              lastPracticed: null,
-              nextReview: null,
-              repetitionStage: 0
-            },
-            {
-              id: '2',
-              word: 'merci',
-              translation: 'thank you',
-              example: 'Merci beaucoup pour votre aide.',
-              level: 'A1',
-              category: 'politeness',
-              pronunciation: 'mer-SEE',
-              learned: true,
-              lastPracticed: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-              nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-              repetitionStage: 2
-            },
-            {
-              id: '3',
-              word: 'au revoir',
-              translation: 'goodbye',
-              example: 'Au revoir, à bientôt!',
-              level: 'A1',
-              category: 'greetings',
-              pronunciation: 'oh ruh-VWAR',
-              learned: false,
-              lastPracticed: null,
-              nextReview: null,
-              repetitionStage: 0
-            }
-          ];
-
-          // Apply filters
-          let filteredVocabulary = mockVocabulary;
-
-          if (level && typeof level === 'string') {
-            filteredVocabulary = filteredVocabulary.filter(item => item.level === level);
-          }
-
-          if (category && typeof category === 'string') {
-            filteredVocabulary = filteredVocabulary.filter(item => item.category === category);
-          }
-
-          return res.status(200).json({
-            success: true,
-            data: filteredVocabulary
-          });
-        }
-
+        console.error('Error fetching vocabulary:', vocabularyError);
         throw new Error(`Failed to fetch vocabulary: ${vocabularyError.message}`);
       }
 
@@ -112,8 +51,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { data: userVocabularyItems, error: userVocabError } = await supabase
         .from(TABLES.USER_VOCABULARY)
         .select('*')
-        .eq('userId', userId)
-        .in('vocabularyId', vocabulary.map(item => item.id));
+        .eq('user_id', userId)
+        .in('vocabulary_id', vocabulary.map(item => item.id));
 
       if (userVocabError) {
         console.error('Error fetching user vocabulary progress:', userVocabError);
@@ -122,11 +61,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       // Create a map of vocabulary ID to user progress
       const userProgressMap = new Map();
       (userVocabularyItems || []).forEach(item => {
-        userProgressMap.set(item.vocabularyId, {
+        userProgressMap.set(item.vocabulary_id, {
           learned: item.learned,
-          lastPracticed: item.lastPracticed,
-          nextReviewDate: item.nextReviewDate,
-          repetitionStage: item.repetitionStage
+          lastPracticed: item.last_practiced,
+          nextReviewDate: item.next_review_date,
+          repetitionStage: item.repetition_stage
         });
       });
 
@@ -138,7 +77,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           word: item.french,
           translation: item.english,
           example: item.example || '',
-          level: item.difficulty,
+          level: item.level,
           category: item.category,
           pronunciation: item.pronunciation,
           usageContext: [],
@@ -182,8 +121,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         });
       }
 
-      const supabase = getSupabaseClient();
-
       // Check if vocabulary already exists
       const { data: existingVocabulary, error: checkError } = await supabase
         .from(TABLES.VOCABULARY)
@@ -209,7 +146,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           french: word,
           english: translation,
           example: example || '',
-          difficulty: level,
+          level: level,
           category: category || 'general',
           pronunciation: pronunciation || null
         })
@@ -227,7 +164,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           word: newVocabulary.french,
           translation: newVocabulary.english,
           example: newVocabulary.example,
-          level: newVocabulary.difficulty,
+          level: newVocabulary.level,
           category: newVocabulary.category,
           pronunciation: newVocabulary.pronunciation
         }

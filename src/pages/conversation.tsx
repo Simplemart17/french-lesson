@@ -144,8 +144,13 @@ export default function ConversationPage() {
     ? conversationScenarios 
     : conversationScenarios.filter(scenario => scenario.difficulty === selectedDifficulty);
   
-  const handleScenarioComplete = (messages: any[]) => {
-    console.log('Conversation completed with messages:', messages);
+  const handleScenarioComplete = (messages: Array<{ role: string; content: string; timestamp: Date }>) => {
+    // Convert timestamps to strings for API compatibility
+    const messagesWithStringTimestamps = messages.map(msg => ({
+      ...msg,
+      timestamp: msg.timestamp.toISOString()
+    }));
+    console.log('Conversation completed with messages:', messagesWithStringTimestamps);
     // In a real app, this would save the conversation history and update user progress
   };
   
@@ -306,7 +311,7 @@ export default function ConversationPage() {
                   <h3 className="mb-2 font-medium text-gray-800">Speaking Tips</h3>
                   <ul className="space-y-1 text-gray-600 list-disc list-inside">
                     <li>Speak clearly and at a moderate pace</li>
-                    <li>Don't worry about making mistakes - it's part of learning</li>
+                    <li>Don&apos;t worry about making mistakes - it&apos;s part of learning</li>
                     <li>Try to use complete sentences</li>
                     <li>Practice common phrases and expressions</li>
                     <li>Record yourself to hear your pronunciation</li>

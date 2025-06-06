@@ -13,14 +13,14 @@ interface UseFetchOptions<T> {
   cacheStorage?: 'memory' | 'localStorage' | 'sessionStorage';
   retry?: boolean | number; // Whether to retry failed requests (true = 3 retries, number = specific retries)
   retryDelay?: number; // Delay between retries in milliseconds
-  dependencies?: any[]; // Dependencies that trigger a refetch when changed
+  dependencies?: unknown[]; // Dependencies that trigger a refetch when changed
   skipInitialFetch?: boolean; // Skip the initial fetch when the component mounts
   staleWhileRevalidate?: boolean; // Return stale data while fetching fresh data
   dedupingInterval?: number; // Interval in milliseconds to dedupe requests
 }
 
 // Keep track of in-flight requests to avoid duplicate requests
-const inFlightRequests: Record<string, Promise<any>> = {};
+const inFlightRequests: Record<string, Promise<unknown>> = {};
 
 // Define the return type for better type safety
 interface UseFetchReturn<T> {
@@ -53,7 +53,7 @@ export function useFetch<T>(
 
 
   // Get the appropriate cache based on storage option
-  const getCache = (): Cache => {
+  const getCache = useCallback((): Cache => {
     switch (cacheStorage) {
       case 'localStorage':
         return localStorageCache;
@@ -62,7 +62,7 @@ export function useFetch<T>(
       default:
         return memoryCache;
     }
-  };
+  }, [cacheStorage]);
 
   // State
   const [data, setData] = useState<T | undefined>(initialData);
@@ -76,9 +76,27 @@ export function useFetch<T>(
   const lastFetchTimeRef = useRef(0);
 
   // Function to safely update state only if component is mounted
-  const safeSetState = useCallback(<S>(setter: React.Dispatch<React.SetStateAction<S>>, value: any) => {
+  const safeSetData = useCallback((value: T | undefined) => {
     if (isMountedRef.current) {
-      setter(value as React.SetStateAction<S>);
+      setData(value);
+    }
+  }, []);
+
+  const safeSetIsLoading = useCallback((value: boolean) => {
+    if (isMountedRef.current) {
+      setIsLoading(value);
+    }
+  }, []);
+
+  const safeSetIsValidating = useCallback((value: boolean) => {
+    if (isMountedRef.current) {
+      setIsValidating(value);
+    }
+  }, []);
+
+  const safeSetError = useCallback((value: Error | null) => {
+    if (isMountedRef.current) {
+      setError(value);
     }
   }, []);
 
@@ -119,7 +137,7 @@ export function useFetch<T>(
     if (cacheKey && !skipCache) {
       const cachedData = cache.get<T>(cacheKey);
       if (cachedData) {
-        safeSetState(setData, cachedData);
+        safeSetData(cachedData);
         onSuccess?.(cachedData);
 
         // If staleWhileRevalidate is false, we're done
@@ -138,18 +156,18 @@ export function useFetch<T>(
     if (cacheKey && cacheKey in inFlightRequests && !skipCache) {
       try {
         const result = await inFlightRequests[cacheKey];
-        safeSetState(setData, result);
-        onSuccess?.(result);
+        safeSetData(result as T);
+        onSuccess?.(result as T);
         return;
-      } catch (err) {
+      } catch {
         // If the in-flight request fails, we'll continue with a new request
       }
     }
 
     // Start loading
-    safeSetState(setIsLoading, true);
-    safeSetState(setIsValidating, true);
-    safeSetState(setError, null);
+    safeSetIsLoading(true);
+    safeSetIsValidating(true);
+    safeSetError(null);
 
     // Create the fetch promise
     const fetchPromise = async (): Promise<T> => {
@@ -165,8 +183,8 @@ export function useFetch<T>(
         if (result === undefined || result === null) {
           console.warn('useFetch received undefined/null result from fetchFn');
           // Don't update state with undefined/null
-          safeSetState(setIsLoading, false);
-          safeSetState(setIsValidating, false);
+          safeSetIsLoading(false);
+          safeSetIsValidating(false);
           return result;
         }
 
@@ -176,18 +194,18 @@ export function useFetch<T>(
         }
 
         // Update state and call onSuccess
-        safeSetState(setData, result);
-        safeSetState(setIsLoading, false);
-        safeSetState(setIsValidating, false);
+        safeSetData(result);
+        safeSetIsLoading(false);
+        safeSetIsValidating(false);
         onSuccess?.(result);
 
         return result;
       } catch (err) {
         // Handle error
         const error = err instanceof Error ? err : new Error(String(err));
-        safeSetState(setError, error);
-        safeSetState(setIsLoading, false);
-        safeSetState(setIsValidating, false);
+        safeSetError(error);
+        safeSetIsLoading(false);
+        safeSetIsValidating(false);
         onError?.(error);
         throw error;
       } finally {
@@ -209,15 +227,18 @@ export function useFetch<T>(
     fetchFn,
     cacheKey,
     cacheDuration,
-    cacheStorage,
     onSuccess,
     onError,
     staleWhileRevalidate,
     isLoading,
     dedupingInterval,
-    safeSetState,
+    safeSetData,
+    safeSetIsLoading,
+    safeSetIsValidating,
+    safeSetError,
     fetchWithRetry,
-    retry
+    retry,
+    getCache
   ]);
 
   // Effect to fetch data on mount and when dependencies change
@@ -225,7 +246,7 @@ export function useFetch<T>(
     if (!skipInitialFetch) {
       fetchData();
     }
-  }, [fetchData, skipInitialFetch, ...dependencies]);
+  }, [fetchData, skipInitialFetch, dependencies]);
 
   // Cleanup effect
   useEffect(() => {
@@ -243,7 +264,7 @@ export function useFetch<T>(
     if (cacheKey) {
       getCache().remove(cacheKey);
     }
-  }, [cacheKey, cacheStorage]);
+  }, [cacheKey, getCache]);
 
   return {
     data,

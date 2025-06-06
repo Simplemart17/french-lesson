@@ -28,10 +28,11 @@ export const getAuthToken = (): string | null => {
 /**
  * Define the user data type
  */
-interface UserData {
+export interface UserData {
   id: string;
   name: string;
   email: string;
+  role?: string;
   [key: string]: unknown;
 }
 

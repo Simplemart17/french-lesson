@@ -8,7 +8,7 @@ import { Lesson, LessonProgress, LessonSection, LessonExercise, LessonSubmission
  * functionality for caching and offline support.
  */
 class LessonService {
-  private cache: Map<string, any> = new Map();
+  private cache: Map<string, unknown> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
   private cacheDuration = 30 * 60 * 1000; // 30 minutes
 
@@ -26,7 +26,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as Lesson[];
     }
 
     try {
@@ -40,7 +40,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as Lesson[];
       }
 
       return [];
@@ -57,7 +57,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as Lesson | null;
     }
 
     try {
@@ -75,7 +75,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as Lesson | null;
       }
 
       return null;
@@ -92,7 +92,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as LessonSection[];
     }
 
     try {
@@ -106,7 +106,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as LessonSection[];
       }
 
       return [];
@@ -123,7 +123,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as LessonExercise[];
     }
 
     try {
@@ -137,7 +137,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as LessonExercise[];
       }
 
       return [];
@@ -154,7 +154,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as LessonProgress | null;
     }
 
     try {
@@ -173,7 +173,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as LessonProgress | null;
       }
 
       return null;
@@ -258,7 +258,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as LessonProgress[];
     }
 
     try {
@@ -273,7 +273,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as LessonProgress[];
       }
 
       return [];
@@ -290,7 +290,7 @@ class LessonService {
 
     // Check cache first
     if (this.isValidCache(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey) as Lesson[];
     }
 
     try {
@@ -304,7 +304,7 @@ class LessonService {
 
       // Return cached data if available, even if expired
       if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+        return this.cache.get(cacheKey) as Lesson[];
       }
 
       return [];
@@ -330,7 +330,7 @@ class LessonService {
    * @param key Cache key
    * @param data Data to cache
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: unknown): void {
     this.cache.set(key, data);
     this.cacheExpiry.set(key, Date.now() + this.cacheDuration);
   }

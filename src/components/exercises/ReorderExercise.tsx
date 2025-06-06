@@ -33,7 +33,7 @@ const ReorderExercise = ({
     setDraggedItem(id);
   };
   
-  const handleDragOver = (e: React.DragEvent, index: number) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
   
@@ -103,7 +103,7 @@ const ReorderExercise = ({
           {userOrder.length === 0 ? (
             <div 
               className="p-4 text-center text-gray-500 border-2 border-gray-300 border-dashed rounded-lg"
-              onDragOver={(e) => handleDragOver(e, 0)}
+              onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, 0)}
             >
               Drag sentences here or click on them below
@@ -126,7 +126,7 @@ const ReorderExercise = ({
                   }`}
                   draggable={!isSubmitted}
                   onDragStart={() => handleDragStart(id)}
-                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, index)}
                   onClick={() => handleItemClick(id)}
                 >

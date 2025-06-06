@@ -49,16 +49,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Send the audio data
     res.send(buffer);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating speech:', error);
     
     // Return appropriate error response
-    if (error.status === 401) {
-      return res.status(401).json({ error: 'Invalid OpenAI API key' });
-    } else if (error.status === 429) {
-      return res.status(429).json({ error: 'OpenAI API rate limit exceeded' });
-    } else {
-      return res.status(500).json({ error: 'Failed to generate speech' });
+    if (error && typeof error === 'object' && 'status' in error) {
+      const errorWithStatus = error as { status: number };
+      if (errorWithStatus.status === 401) {
+        return res.status(401).json({ error: 'Invalid OpenAI API key' });
+      } else if (errorWithStatus.status === 429) {
+        return res.status(429).json({ error: 'OpenAI API rate limit exceeded' });
+      }
     }
+    return res.status(500).json({ error: 'Failed to generate speech' });
   }
 }

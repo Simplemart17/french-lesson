@@ -46,8 +46,8 @@ export const validateMethod = (req: Request, res: NextApiResponse, allowedMethod
   }
 };
 
-export const validateBody = <T extends Record<string, any>>(
-  data: any, 
+export const validateBody = <T extends Record<string, unknown>>(
+  data: unknown,
   requiredFields: (keyof T)[]
 ): T => {
   if (!data) {
@@ -55,7 +55,12 @@ export const validateBody = <T extends Record<string, any>>(
   }
 
   for (const field of requiredFields) {
-    if (data[field] === undefined || data[field] === null) {
+    if (data && typeof data === 'object' && field in data) {
+      const dataObj = data as Record<string, unknown>;
+      if (dataObj[field as string] === undefined || dataObj[field as string] === null) {
+        throw new ApiException(`Missing required field: ${String(field)}`, 400, 'missing_required_field');
+      }
+    } else {
       throw new ApiException(`Missing required field: ${String(field)}`, 400, 'missing_required_field');
     }
   }

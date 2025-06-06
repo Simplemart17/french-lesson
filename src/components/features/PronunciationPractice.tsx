@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 
@@ -29,109 +29,41 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
 
-  const recognitionRef = useRef<any>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Initialize speech recognition
-  useEffect(() => {
-    // Check if browser supports speech recognition
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      setError('Speech recognition is not supported in your browser. Please try Chrome, Edge, or Safari.');
-      return;
-    }
-
-    // Create speech recognition instance
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-    recognitionRef.current = new SpeechRecognition();
-
-    // Configure recognition
-    recognitionRef.current.continuous = false;
-    recognitionRef.current.interimResults = false;
-    recognitionRef.current.lang = 'fr-FR'; // Set language to French
-
-    // Set up event handlers
-    recognitionRef.current.onresult = (event: any) => {
-      const result = event.results[0][0];
-      const userTranscript = result.transcript.trim().toLowerCase();
-      setTranscript(userTranscript);
-
-      // Evaluate pronunciation
-      evaluatePronunciation(userTranscript);
-    };
-
-    recognitionRef.current.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
-      setError(`Error: ${event.error}. Please try again.`);
-      setIsListening(false);
-    };
-
-    recognitionRef.current.onend = () => {
-      setIsListening(false);
-    };
-
-    // Clean up
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-    };
-  }, []);
-
-  // No need to create audio element for TTS anymore
-  // We'll use the pronunciation service instead
-
-  // Start listening
-  const startListening = () => {
-    setError(null);
-    setTranscript('');
-    setFeedback(null);
-    setAccuracy(null);
-    setIsCorrect(null);
-
-    try {
-      recognitionRef.current.start();
-      setIsListening(true);
-    } catch (err) {
-      console.error('Failed to start speech recognition:', err);
-      setError('Failed to start speech recognition. Please try again.');
-    }
-  };
-
-  // Stop listening
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-  };
-
-  // Play TTS audio using AI
-  const playAudio = async () => {
-    try {
-      // Import the pronunciation service
-      const pronunciationService = (await import('@/services/pronunciationService')).default;
-
-      // Use the service to speak the phrase
-      await pronunciationService.speak(phrase, {
-        voice: 'alloy'
-      });
-    } catch (error) {
-      console.error('Error playing audio:', error);
-      setError('Failed to play audio. Please try again.');
-
-      // Fallback to browser TTS
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(phrase);
-        utterance.lang = 'fr-FR';
-        window.speechSynthesis.speak(utterance);
-      } else {
-        setError('Text-to-speech is not supported in your browser.');
-      }
-    }
-  };
+  const recognitionRef = useRef<SpeechRecognitionInterface | null>(null);
+  // const _audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Evaluate pronunciation using string similarity
-  const evaluatePronunciation = (userTranscript: string) => {
+  const evaluatePronunciation = useCallback((userTranscript: string) => {
+    // Levenshtein distance calculation for string similarity
+    const levenshteinDistance = (a: string, b: string): number => {
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+
+      const matrix = [];
+
+      // Initialize matrix
+      for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      }
+
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+
+      // Fill matrix
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1, // deletion
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j - 1] + cost // substitution
+          );
+        }
+      }
+
+      return matrix[b.length][a.length];
+    };
     setIsLoading(true);
 
     // Normalize strings for comparison
@@ -175,38 +107,109 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
         isCorrect: isCorrectPronunciation
       });
     }
+  }, [phrase, onResult]);
+
+  // Initialize speech recognition
+  useEffect(() => {
+    // Check if browser supports speech recognition
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      setError('Speech recognition is not supported in your browser. Please try Chrome, Edge, or Safari.');
+      return;
+    }
+
+    // Create speech recognition instance
+    const SpeechRecognitionClass = window.webkitSpeechRecognition || window.SpeechRecognition;
+    recognitionRef.current = new SpeechRecognitionClass();
+
+    // Configure recognition
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.interimResults = false;
+    recognitionRef.current.lang = 'fr-FR'; // Set language to French
+
+    // Set up event handlers
+    recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+      const result = event.results[0][0];
+      const userTranscript = result.transcript.trim().toLowerCase();
+      setTranscript(userTranscript);
+
+      // Evaluate pronunciation
+      evaluatePronunciation(userTranscript);
+    };
+
+    recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error('Speech recognition error:', event.error);
+      setError(`Error: ${event.error}. Please try again.`);
+      setIsListening(false);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+    };
+
+    // Clean up
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, [evaluatePronunciation]);
+
+  // No need to create audio element for TTS anymore
+  // We'll use the pronunciation service instead
+
+  // Start listening
+  const startListening = () => {
+    setError(null);
+    setTranscript('');
+    setFeedback(null);
+    setAccuracy(null);
+    setIsCorrect(null);
+
+    try {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+      }
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+      setError('Failed to start speech recognition. Please try again.');
+    }
   };
 
-  // Levenshtein distance calculation for string similarity
-  const levenshteinDistance = (a: string, b: string): number => {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-
-    const matrix = [];
-
-    // Initialize matrix
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
+  // Stop listening
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
     }
+  };
 
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
+  // Play TTS audio using AI
+  const playAudio = async () => {
+    try {
+      // Import the pronunciation service
+      const pronunciationService = (await import('@/services/pronunciationService')).default;
 
-    // Fill matrix
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1, // deletion
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j - 1] + cost // substitution
-        );
+      // Use the service to speak the phrase
+      await pronunciationService.speak(phrase, {
+        voice: 'alloy'
+      });
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setError('Failed to play audio. Please try again.');
+
+      // Fallback to browser TTS
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.lang = 'fr-FR';
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setError('Text-to-speech is not supported in your browser.');
       }
     }
-
-    return matrix[b.length][a.length];
   };
+
+
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -360,11 +363,52 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   );
 };
 
+// Define Web Speech API types
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionInterface {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognitionInterface;
+}
+
 // Add type definitions for the Web Speech API
 declare global {
   interface Window {
-    webkitSpeechRecognition: any;
-    SpeechRecognition: any;
+    webkitSpeechRecognition: SpeechRecognitionConstructor;
+    SpeechRecognition: SpeechRecognitionConstructor;
   }
 }
 

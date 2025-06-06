@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let envContent = '';
     try {
       envContent = fs.readFileSync(envFilePath, 'utf8');
-    } catch (error) {
+    } catch {
       // File doesn't exist, create a new one
       envContent = '';
     }

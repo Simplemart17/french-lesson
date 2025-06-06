@@ -9,7 +9,7 @@ interface AudioRecorderProps {
 export default function AudioRecorder({ maxDuration = 120, onRecordingComplete }: AudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string>('');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   

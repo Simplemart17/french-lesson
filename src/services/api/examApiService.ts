@@ -1,7 +1,16 @@
 import { ApiResponse } from '@/types/api';
 import apiClient from '@/services/api/apiClient';
 
-// Define the exam module type
+// Define exam-related interfaces
+interface ExamQuestion {
+  id: string;
+  type: string;
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
+  explanation?: string;
+}
+
 interface ExamModule {
   id: string;
   title: string;
@@ -9,7 +18,36 @@ interface ExamModule {
   section: 'listening' | 'reading' | 'writing' | 'speaking';
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   duration: number; // in minutes
-  questions: any[];
+  questions: ExamQuestion[];
+}
+
+interface ExamAnswer {
+  questionId: string;
+  answer: string | string[];
+}
+
+interface ExamResult {
+  id: string;
+  moduleId: string;
+  score: number;
+  totalQuestions: number;
+  correctAnswers: number;
+  timeSpent: number;
+  completedAt: string;
+  answers: ExamAnswer[];
+}
+
+interface ExamSubmissionResult {
+  score: number;
+  totalQuestions: number;
+  correctAnswers: number;
+  results: Array<{
+    questionId: string;
+    correct: boolean;
+    userAnswer: string | string[];
+    correctAnswer: string | string[];
+    explanation?: string;
+  }>;
 }
 
 /**
@@ -25,7 +63,7 @@ export const examApiService = {
     examType?: string,
     section?: string,
     difficulty?: string
-  }): Promise<any> => {
+  }): Promise<ExamModule[]> => {
     try {
       const response = await apiClient.get<ApiResponse<ExamModule[]>>('/exam/modules', { params });
 
@@ -63,11 +101,11 @@ export const examApiService = {
    */
   submitExam: async (
     moduleId: string,
-    answers: any[],
+    answers: ExamAnswer[],
     timeSpent: number
-  ): Promise<any> => {
+  ): Promise<ExamSubmissionResult> => {
     try {
-      const response = await apiClient.post<ApiResponse<any>>('/exam/submit', {
+      const response = await apiClient.post<ApiResponse<ExamSubmissionResult>>('/exam/submit', {
         moduleId,
         answers,
         timeSpent
@@ -87,9 +125,9 @@ export const examApiService = {
   /**
    * Get exam results
    */
-  getExamResults: async (): Promise<any> => {
+  getExamResults: async (): Promise<{ success: boolean; data: ExamResult[] }> => {
     try {
-      const response = await apiClient.get<ApiResponse<any[]>>('/exam/results');
+      const response = await apiClient.get<ApiResponse<ExamResult[]>>('/exam/results');
 
       return {
         success: response.data.success,
@@ -107,9 +145,9 @@ export const examApiService = {
   /**
    * Get exam questions
    */
-  getExamQuestions: async (moduleId: string): Promise<any> => {
+  getExamQuestions: async (moduleId: string): Promise<{ success: boolean; data: ExamQuestion[] }> => {
     try {
-      const response = await apiClient.get<ApiResponse<any[]>>(`/exam/modules/${moduleId}/questions`);
+      const response = await apiClient.get<ApiResponse<ExamQuestion[]>>(`/exam/modules/${moduleId}/questions`);
 
       return {
         success: response.data.success,
@@ -127,9 +165,9 @@ export const examApiService = {
   /**
    * Submit exam results
    */
-  submitExamResults: async (results: any): Promise<any> => {
+  submitExamResults: async (results: ExamResult): Promise<{ success: boolean; data?: ExamResult; error?: string }> => {
     try {
-      const response = await apiClient.post<ApiResponse<any>>('/exam/results', results);
+      const response = await apiClient.post<ApiResponse<ExamResult>>('/exam/results', results);
 
       return {
         success: response.data.success,

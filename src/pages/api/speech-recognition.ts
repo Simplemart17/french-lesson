@@ -11,6 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Get transcript and reference text from request body
     const { transcript, referenceText, audioBlob } = req.body;
 
+    // Log audio blob presence for debugging
+    console.log('Audio blob provided:', audioBlob ? 'Yes' : 'No');
+
     // Validate input
     if (!transcript || typeof transcript !== 'string') {
       return res.status(400).json({ error: 'Transcript is required' });
@@ -70,13 +73,14 @@ User transcript: "${transcript}"`
       success: true,
       data: pronunciationAnalysis
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error analyzing pronunciation:', error);
-    
+
     // Return appropriate error response
-    if (error.status === 401) {
+    const errorWithStatus = error as { status?: number };
+    if (errorWithStatus.status === 401) {
       return res.status(401).json({ error: 'Invalid OpenAI API key' });
-    } else if (error.status === 429) {
+    } else if (errorWithStatus.status === 429) {
       return res.status(429).json({ error: 'OpenAI API rate limit exceeded' });
     } else {
       return res.status(500).json({ error: 'Failed to analyze pronunciation' });

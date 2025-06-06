@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       success: true,
       data: SUPPORTED_LANGUAGES
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error getting supported languages:', error);
     return res.status(500).json({ error: 'Failed to get supported languages' });
   }

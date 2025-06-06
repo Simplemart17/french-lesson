@@ -281,8 +281,8 @@ const UserProfile: React.FC<UserProfileProps> = ({
           >
             <option value="none">No specific exam</option>
             <option value="tcf">TCF (Test de Connaissance du Français)</option>
-            <option value="tef">TEF (Test d'Évaluation de Français)</option>
-            <option value="delf">DELF (Diplôme d'Études en Langue Française)</option>
+            <option value="tef">TEF (Test d&apos;Évaluation de Français)</option>
+            <option value="delf">DELF (Diplôme d&apos;Études en Langue Française)</option>
             <option value="dalf">DALF (Diplôme Approfondi de Langue Française)</option>
           </select>
         </div>

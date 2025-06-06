@@ -1,6 +1,45 @@
 import { localStorageCache } from '@/utils/cache';
 import listeningApiService from './api/listeningApiService';
 
+interface ListeningExercise {
+  id: number;
+  title: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  audioUrl: string;
+  transcript?: string;
+  text?: string;
+  type?: 'dictation' | 'comprehension';
+  questions?: Array<{
+    id: string;
+    text: string;
+    options: string[];
+    correctAnswer: string;
+    explanation: string;
+  }>;
+}
+
+interface ApiListeningQuestion {
+  id: string;
+  text?: string;
+  question?: string;
+  options: string[];
+  correctAnswer?: string;
+  explanation?: string;
+}
+
+interface ApiListeningExercise {
+  id: string | number;
+  title: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  audioUrl: string;
+  transcript?: string;
+  text?: string;
+  type?: 'dictation' | 'comprehension';
+  questions?: ApiListeningQuestion[];
+}
+
 /**
  * Listening Service
  *
@@ -13,11 +52,11 @@ class ListeningService {
   /**
    * Get listening exercises with optional filtering
    */
-  async getListeningExercises(difficulty?: string): Promise<any[]> {
+  async getListeningExercises(difficulty?: string): Promise<ListeningExercise[]> {
     const cacheKey = `listening-exercises-${difficulty || 'all'}`;
 
     // Check cache first
-    const cachedData = this.cache.get<any[]>(cacheKey);
+    const cachedData = this.cache.get<ListeningExercise[]>(cacheKey);
     if (cachedData) {
       return cachedData;
     }
@@ -35,10 +74,23 @@ class ListeningService {
         difficulty
       );
 
-      // Cache the result
-      this.cache.set(cacheKey, exercises, this.cacheDuration);
+      // Transform API response to match our interface
+      const transformedExercises = (exercises as ApiListeningExercise[]).map(exercise => ({
+        ...exercise,
+        id: typeof exercise.id === 'string' ? parseInt(exercise.id) : exercise.id,
+        questions: exercise.questions?.map((q: ApiListeningQuestion) => ({
+          id: q.id,
+          text: q.question || q.text || '',
+          options: q.options,
+          correctAnswer: q.correctAnswer?.toString() || '',
+          explanation: q.explanation || ''
+        }))
+      }));
 
-      return exercises;
+      // Cache the result
+      this.cache.set(cacheKey, transformedExercises, this.cacheDuration);
+
+      return transformedExercises;
     } catch (error) {
       console.error('Error fetching listening exercises:', error);
       return [];
@@ -48,11 +100,11 @@ class ListeningService {
   /**
    * Get a specific listening exercise by ID
    */
-  async getListeningExercise(id: number): Promise<any | null> {
+  async getListeningExercise(id: number): Promise<ListeningExercise | null> {
     const cacheKey = `listening-exercise-${id}`;
 
     // Check cache first
-    const cachedData = this.cache.get<any>(cacheKey);
+    const cachedData = this.cache.get<ListeningExercise>(cacheKey);
     if (cachedData) {
       return cachedData;
     }
@@ -65,10 +117,23 @@ class ListeningService {
         return null;
       }
 
-      // Cache the result
-      this.cache.set(cacheKey, exercise, this.cacheDuration);
+      // Transform API response to match our interface
+      const transformedExercise = {
+        ...exercise,
+        id: typeof exercise.id === 'string' ? parseInt(exercise.id) : exercise.id,
+        questions: (exercise as ApiListeningExercise).questions?.map((q: ApiListeningQuestion) => ({
+          id: q.id,
+          text: q.question || q.text || '',
+          options: q.options,
+          correctAnswer: q.correctAnswer?.toString() || '',
+          explanation: q.explanation || ''
+        }))
+      };
 
-      return exercise;
+      // Cache the result
+      this.cache.set(cacheKey, transformedExercise, this.cacheDuration);
+
+      return transformedExercise;
     } catch (error) {
       console.error(`Error fetching listening exercise ${id}:`, error);
       return null;

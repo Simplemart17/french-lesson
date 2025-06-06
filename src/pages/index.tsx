@@ -1,7 +1,6 @@
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -36,8 +35,8 @@ const AuthLink = ({ href, children, className = '' }: { href: string, children: 
 
 export default function Home() {
   const [selectedLevel, setSelectedLevel] = useState('beginner');
-  const { isAuthenticated, user } = useAuth();
-  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  // Note: user and router are available for future features
 
   return (
     <>
@@ -291,7 +290,7 @@ export default function Home() {
               </div>
             </div>
             <p className="mb-4 italic text-gray-600">
-              "After just 3 months with French Tutor AI, I went from knowing almost nothing to being able to have basic conversations during my trip to Paris. The personalized feedback on my pronunciation made all the difference!"
+              &quot;After just 3 months with French Tutor AI, I went from knowing almost nothing to being able to have basic conversations during my trip to Paris. The personalized feedback on my pronunciation made all the difference!&quot;
             </p>
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
@@ -314,7 +313,7 @@ export default function Home() {
               </div>
             </div>
             <p className="mb-4 italic text-gray-600">
-              "The interactive lessons and writing correction features helped me improve my grammar significantly. I passed my DELF B1 exam with flying colors thanks to the structured approach of this platform."
+              &quot;The interactive lessons and writing correction features helped me improve my grammar significantly. I passed my DELF B1 exam with flying colors thanks to the structured approach of this platform.&quot;
             </p>
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
@@ -337,7 +336,7 @@ export default function Home() {
               </div>
             </div>
             <p className="mb-4 italic text-gray-600">
-              "As someone preparing for the TCF exam, the specialized practice modules were invaluable. The AI's ability to simulate real exam conditions and provide detailed feedback on my weak areas helped me achieve a C1 level."
+              &quot;As someone preparing for the TCF exam, the specialized practice modules were invaluable. The AI&apos;s ability to simulate real exam conditions and provide detailed feedback on my weak areas helped me achieve a C1 level.&quot;
             </p>
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (

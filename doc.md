@@ -13,8 +13,8 @@ A full-stack web application designed to help users learn French from beginner t
 ### Backend
 - **Language:** Next.js API routes
 - **API:** RESTful
-- **Authentication:** Supabase Auth with JWT
-- **Database:** PostgreSQL with Prisma ORM
+- **Authentication:** Supabase Auth with Row Level Security
+- **Database:** Supabase (PostgreSQL with real-time features)
 
 ## Core Functional Requirements
 
@@ -66,8 +66,8 @@ A full-stack web application designed to help users learn French from beginner t
 
 - **Frontend:** React + TypeScript, Next.js, Context API, Tailwind CSS
 - **Backend:** Next.js API routes
-- **Database:** PostgreSQL with Prisma ORM
-- **Authentication:** Supabase Auth
+- **Database:** Supabase (PostgreSQL with real-time features and Row Level Security)
+- **Authentication:** Supabase Auth with automatic user profile creation
 - **AI Services:** OpenAI GPT-4 for text generation and TTS
 
 ## Recommended Technology Additions
@@ -82,8 +82,8 @@ A full-stack web application designed to help users learn French from beginner t
 
 ### Current Infrastructure
 - **Deployment:** Local development environment
-- **Authentication:** Supabase Auth with JWT tokens
-- **Database:** PostgreSQL with Prisma ORM
+- **Authentication:** Supabase Auth with automatic session management
+- **Database:** Supabase with Row Level Security policies
 
 ### Future Infrastructure Needs
 - **Cloud Deployment:** AWS/Google Cloud
@@ -355,6 +355,98 @@ Alternatively, deploy the frontend to Vercel or Netlify for automatic CI/CD.
 
 (Contribution guidelines can be added here.)
 
+## Areas for Improvement & Future Features
+
+### Immediate Improvements Needed
+
+1. **Complete Speech Recognition Implementation**
+   - Currently using simulated speech recognition
+   - Need to integrate Web Speech API or third-party service
+   - Add real-time pronunciation scoring
+
+2. **Enhanced Error Handling**
+   - Add comprehensive error boundaries
+   - Implement retry mechanisms for API calls
+   - Better user feedback for errors
+
+3. **Performance Optimization**
+   - Implement proper caching strategies
+   - Optimize bundle size
+   - Add loading states and skeleton screens
+
+4. **Testing Coverage**
+   - Add unit tests for components
+   - Integration tests for API endpoints
+   - End-to-end testing with Cypress
+
+### Medium-term Features
+
+1. **Advanced AI Features**
+   - Contextual vocabulary recommendations
+   - Adaptive learning paths based on user performance
+   - Conversation practice with AI tutors
+
+2. **Gamification**
+   - Achievement system
+   - Learning streaks and rewards
+   - Leaderboards and social features
+
+3. **Offline Support**
+   - Service worker implementation
+   - Offline lesson caching
+   - Sync when back online
+
+4. **Mobile App**
+   - React Native implementation
+   - Push notifications for practice reminders
+   - Mobile-specific features
+
+### Long-term Vision
+
+1. **Multi-language Support**
+   - Expand beyond French to other languages
+   - Shared learning infrastructure
+   - Cross-language learning paths
+
+2. **Enterprise Features**
+   - Classroom management tools
+   - Progress tracking for educators
+   - Bulk user management
+
+3. **Advanced Analytics**
+   - Learning pattern analysis
+   - Predictive modeling for success
+   - Personalized recommendations
+
+4. **Integration Ecosystem**
+   - LMS integrations
+   - Third-party app connections
+   - API for external developers
+
+## Current Implementation Status
+
+### ✅ Completed Features
+- Supabase authentication and database integration
+- Basic lesson structure and progress tracking
+- OpenAI integration for AI features
+- Text-to-speech functionality
+- User profile management
+- Vocabulary practice system
+- Basic conversation features
+
+### 🚧 In Progress
+- Speech recognition implementation
+- Enhanced pronunciation practice
+- Exam preparation modules
+- Advanced AI tutoring features
+
+### 📋 Planned Features
+- Real-time collaboration
+- Advanced analytics dashboard
+- Mobile application
+- Offline functionality
+- Multi-language support
+
 ## License
 
-(Specify project license, e.g., MIT.)
+MIT License - See LICENSE file for details.

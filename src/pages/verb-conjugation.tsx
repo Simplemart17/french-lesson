@@ -313,7 +313,7 @@ export default function VerbConjugationPage() {
             <li>For regular -ER verbs, remove the -er ending and add the appropriate ending (-e, -es, -e, -ons, -ez, -ent).</li>
             <li>For regular -IR verbs, remove the -ir ending and add -is, -is, -it, -issons, -issez, -issent.</li>
             <li>For regular -RE verbs, remove the -re ending and add -s, -s, -, -ons, -ez, -ent.</li>
-            <li>Irregular verbs don't follow these patterns and need to be memorized individually.</li>
+            <li>Irregular verbs don&apos;t follow these patterns and need to be memorized individually.</li>
             <li>Pay attention to the subject pronoun as it determines the verb ending.</li>
           </ul>
         </div>

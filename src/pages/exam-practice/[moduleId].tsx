@@ -48,12 +48,19 @@ export default function ExamModulePage() {
                 questionType = q.type;
               }
 
+              let correctAnswer: string | number | undefined;
+              if (Array.isArray(q.correctAnswer)) {
+                correctAnswer = q.correctAnswer.length > 0 ? q.correctAnswer[0] : undefined;
+              } else {
+                correctAnswer = q.correctAnswer;
+              }
+
               return {
                 id: q.id,
                 type: questionType,
                 text: q.text,
                 options: q.options,
-                correctAnswer: q.correctAnswer,
+                correctAnswer: correctAnswer,
                 audioUrl: q.audioUrl,
                 imageUrl: q.imageUrl,
                 explanation: q.explanation

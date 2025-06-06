@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
@@ -33,9 +33,6 @@ async function handler(
       // If ID is provided, return that specific exercise
       if (id) {
         const exerciseId = id as string;
-
-        // Get exercise from database
-        const supabase = getSupabaseClient();
         const { data: dbExercise, error } = await supabase
           .from(TABLES.PRONUNCIATION_EXERCISES)
           .select('*')
@@ -67,7 +64,6 @@ async function handler(
 
 
       // Get exercises from database
-      const supabase = getSupabaseClient();
       let query = supabase
         .from(TABLES.PRONUNCIATION_EXERCISES)
         .select('*')
@@ -92,12 +88,19 @@ async function handler(
       }
 
       // Transform to speaking exercise format
-      const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: any) => ({
+      interface DatabaseSpeakingExercise {
+        id: string;
+        text: string;
+        translation?: string;
+        difficulty: string;
+        category?: string;
+      }
+      const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: DatabaseSpeakingExercise) => ({
         id: exercise.id,
         prompt: exercise.text,
         translation: exercise.translation || '',
         difficulty: mapDifficultyLevel(exercise.difficulty),
-        category: mapCategory(exercise.category)
+        category: mapCategory(exercise.category || null)
       }));
 
       return res.status(200).json({
@@ -127,7 +130,6 @@ async function handler(
       }
 
       // Find the exercise in database
-      const supabase = getSupabaseClient();
       const { data: dbExercise, error } = await supabase
         .from(TABLES.PRONUNCIATION_EXERCISES)
         .select('*')
@@ -200,18 +202,18 @@ function mapCategory(dbCategory: string | null): 'greetings' | 'travel' | 'dinin
   if (!dbCategory) return undefined;
 
   const validCategories = ['greetings', 'travel', 'dining', 'everyday', 'business', 'shopping'];
-  return validCategories.includes(dbCategory) ? dbCategory as any : 'everyday';
+  return validCategories.includes(dbCategory) ? dbCategory as 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping' : 'everyday';
 }
 
-function generateSpeakingFeedback(transcript: string, exercise: any): SpeakingFeedback {
+function generateSpeakingFeedback(transcript: string, exercise: { text: string }): SpeakingFeedback {
   // Simple feedback generation based on transcript quality
   const transcriptLength = transcript.length;
   const expectedLength = exercise.text.length;
   const lengthRatio = transcriptLength / expectedLength;
 
-  let accuracy = Math.min(100, Math.max(0, lengthRatio * 80 + Math.random() * 20));
-  let pronunciation = Math.min(100, Math.max(0, 70 + Math.random() * 30));
-  let fluency = Math.min(100, Math.max(0, 60 + Math.random() * 40));
+  const accuracy = Math.min(100, Math.max(0, lengthRatio * 80 + Math.random() * 20));
+  const pronunciation = Math.min(100, Math.max(0, 70 + Math.random() * 30));
+  const fluency = Math.min(100, Math.max(0, 60 + Math.random() * 40));
 
   let feedback = '';
   let type: 'success' | 'warning' | 'error' = 'error';

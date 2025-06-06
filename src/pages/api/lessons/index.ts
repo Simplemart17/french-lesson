@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
-import { ApiResponse, Lesson } from '@/types/api';
+import { supabase, TABLES } from '@/lib/supabase';
+import { ApiResponse, Lesson, DatabaseLesson } from '@/types/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Lesson[]>>) {
   // Only allow GET for this endpoint
@@ -12,74 +12,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
   try {
     // Extract query parameters
     const { level, topic } = req.query;
-
-    // Development mode: Return mock data
-    if (process.env.NODE_ENV === 'development') {
-      const mockLessons = [
-        {
-          id: '1',
-          title: 'Basic Greetings',
-          description: 'Learn essential French greetings and introductions',
-          level: 'A1',
-          duration: 15,
-          topics: ['greetings', 'introductions'],
-          sectionCount: 3,
-          imageUrl: '/images/lessons/1.jpg'
-        },
-        {
-          id: '2',
-          title: 'Numbers and Counting',
-          description: 'Master French numbers from 1 to 100',
-          level: 'A1',
-          duration: 20,
-          topics: ['numbers', 'counting'],
-          sectionCount: 4,
-          imageUrl: '/images/lessons/2.jpg'
-        },
-        {
-          id: '3',
-          title: 'Family and Relationships',
-          description: 'Vocabulary for describing family members and relationships',
-          level: 'A2',
-          duration: 25,
-          topics: ['family', 'relationships'],
-          sectionCount: 5,
-          imageUrl: '/images/lessons/3.jpg'
-        },
-        {
-          id: '4',
-          title: 'Past Tense Verbs',
-          description: 'Learn to conjugate and use past tense in French',
-          level: 'B1',
-          duration: 30,
-          topics: ['grammar', 'verbs', 'past-tense'],
-          sectionCount: 6,
-          imageUrl: '/images/lessons/4.jpg'
-        }
-      ];
-
-      // Apply filters
-      let filteredLessons = mockLessons;
-
-      if (level && typeof level === 'string') {
-        filteredLessons = filteredLessons.filter(lesson => lesson.level === level);
-      }
-
-      if (topic && typeof topic === 'string') {
-        filteredLessons = filteredLessons.filter(lesson =>
-          lesson.topics.some(t => t.toLowerCase() === topic.toLowerCase())
-        );
-      }
-
-      return res.status(200).json({
-        success: true,
-        data: filteredLessons
-      });
-    }
-
-    // Production mode: Use Supabase
-    const supabase = getSupabaseClient();
-
     // Build query
     let query = supabase
       .from(TABLES.LESSONS)
@@ -116,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
     }
 
     // Process lessons for client
-    const processedLessons = filteredLessons.map((lesson: any) => {
+    const processedLessons = filteredLessons.map((lesson: DatabaseLesson) => {
       return {
         id: lesson.id,
         title: lesson.title,

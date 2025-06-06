@@ -57,6 +57,7 @@ export interface PronunciationExerciseListParams {
   search?: string;
   page?: number;
   limit?: number;
+  [key: string]: unknown;
 }
 
 export interface PronunciationExerciseListResponse {

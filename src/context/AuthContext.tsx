@@ -2,44 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback 
 import { authApiService } from '@/services';
 import { User } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
-
-// Define the shape of the API user
-interface ApiUser {
-  id: string;
-  name: string;
-  email: string;
-  level?: string;
-  points?: number;
-  streakDays?: number;
-  joinedAt?: string;
-  learningGoals?: string[];
-  completedLessons?: number;
-  lastActive?: string;
-  dailyGoal?: number;
-  notifications?: boolean;
-  theme?: string;
-}
-
-// Helper function to convert API user to our User type
-const convertApiUserToUser = (apiUser: ApiUser): User => {
-  return {
-    id: apiUser.id,
-    name: apiUser.name,
-    email: apiUser.email,
-    level: apiUser.level || 'A1',
-    points: apiUser.points || 0,
-    streakDays: apiUser.streakDays || 0,
-    joinedAt: apiUser.joinedAt || new Date().toISOString(),
-    learningGoals: apiUser.learningGoals || [],
-    completedLessons: apiUser.completedLessons || 0,
-    lastActive: apiUser.lastActive || new Date().toISOString(),
-    preferences: {
-      dailyGoal: apiUser.dailyGoal || 15,
-      notifications: apiUser.notifications !== undefined ? apiUser.notifications : true,
-      theme: (apiUser.theme || 'light') as 'light' | 'dark'
-    }
-  };
-};
+import { supabase } from '@/lib/supabase';
 
 // Define the shape of our auth context
 interface AuthContextType {
@@ -61,10 +24,10 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: false,
   isInitialized: false,
   error: null,
-  login: async () => {},
-  register: async () => {},
-  logout: async () => {},
-  clearError: () => {}
+  login: async () => { },
+  register: async () => { },
+  logout: async () => { },
+  clearError: () => { }
 });
 
 // Custom hook to use the auth context
@@ -80,19 +43,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize auth state from stored data
+  // Initialize auth state from Supabase session or localStorage
   const initialize = useCallback(async () => {
     try {
       setIsLoading(true);
 
-      // Check if we have a stored token
       const token = authApiService.getAuthToken();
       const storedUser = authApiService.getUserData();
 
       if (token && storedUser) {
-        setUser(storedUser);
-      } else {
-        setUser(null);
+        setUser({
+          id: storedUser.id,
+          name: storedUser.name,
+          email: storedUser.email,
+          level: 'beginner',
+          points: 0,
+          streakDays: 0,
+          joinedAt: new Date().toISOString(),
+          learningGoals: [],
+          completedLessons: 0,
+          lastActive: new Date().toISOString(),
+          preferences: {
+            dailyGoal: 30,
+            notifications: true,
+            theme: 'light'
+          }
+        });
       }
     } catch (error: unknown) {
       console.error('Auth initialization error:', error);
@@ -108,23 +84,68 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     initialize();
   }, [initialize]);
 
+  // Listen to Supabase auth state changes
+  useEffect(() => {
+    console.log('Setting up auth state change listener');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
+
+      if (event === 'SIGNED_IN' && session?.user) {
+        // User signed in, get their profile
+        const userProfile = await supabaseAuth.getUserProfile(session.user.id);
+        if (userProfile) {
+          setUser(userProfile);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        // User signed out
+        setUser(null);
+        // Clear any stored tokens
+        authApiService.logout();
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        // Token refreshed, ensure user is still set
+        if (!user) {
+          const userProfile = await supabaseAuth.getUserProfile(session.user.id);
+          if (userProfile) {
+            setUser(userProfile);
+          }
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [user]);
+
   // Login function
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await authApiService.login({ email, password });
+      const authResult = await authApiService.login({ email, password });
 
-      if (response.data && response.data.success && response.data.data) {
-        const { user, access_token } = response.data.data;
-
-        if (user && access_token) {
-          // Token and user data are already stored by authApiService.login
-          const convertedUser = convertApiUserToUser(user as ApiUser);
-          setUser(convertedUser);
-        }
+      if (authResult.data && authResult.data.user) {
+        // Map the auth user to our User type
+        const user: User = {
+          id: authResult.data.user.id,
+          name: authResult.data.user.name,
+          email: authResult.data.user.email,
+          level: 'beginner',
+          points: 0,
+          streakDays: 0,
+          joinedAt: new Date().toISOString(),
+          learningGoals: [],
+          completedLessons: 0,
+          lastActive: new Date().toISOString(),
+          preferences: {
+            dailyGoal: 30,
+            notifications: true,
+            theme: 'light'
+          }
+        };
+        setUser(user);
       }
+      // Force initialize to refresh auth state
+      await initialize();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login. Please try again.';
       setError(errorMessage);
@@ -167,7 +188,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await authApiService.logout();
       setUser(null);
-    } catch {
+    } catch (error) {
+      console.error('Logout error:', error);
       // Even if the API call fails, we still want to clear local state
       setUser(null);
     } finally {
