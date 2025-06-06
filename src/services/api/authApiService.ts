@@ -64,7 +64,7 @@ export const authApiService = {
       }
     }
 
-    return response;
+    return response.data;
   },
   
   /**
@@ -99,6 +99,14 @@ export const authApiService = {
       clearAuthCookies();
       throw error;
     }
+  },
+
+  /**
+   * Get session
+   */
+  getSession: async (): Promise<ApiResponse<AuthResponse>> => {
+    const response = await apiClient.get<AuthResponse>(API_ENDPOINTS.AUTH.SESSION);
+    return response;
   },
   
   /**
