@@ -95,7 +95,7 @@ export default function ProficiencyTest() {
 
     // Determine level based on correct answers
     let level: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
-    
+
     const beginnerQuestions = questions.filter(q => q.level === 'beginner').length;
     const intermediateQuestions = questions.filter(q => q.level === 'intermediate').length;
     const advancedQuestions = questions.filter(q => q.level === 'advanced').length;
@@ -107,6 +107,10 @@ export default function ProficiencyTest() {
     // If they got most intermediate questions right, they're at least intermediate
     else if (intermediateCorrect / intermediateQuestions >= 0.7) {
       level = 'intermediate';
+    }
+    // Use beginnerCorrect and beginnerQuestions for potential future logic
+    else if (beginnerCorrect / beginnerQuestions >= 0.5) {
+      level = 'beginner';
     }
 
     setResult({
@@ -198,7 +202,7 @@ export default function ProficiencyTest() {
           </div>
           <h1 className="mb-2 text-3xl font-bold text-gray-800">Assessment Complete!</h1>
           <p className="text-lg text-gray-600">
-            Based on your answers, we've determined your French level.
+            Based on your answers, we&apos;ve determined your French level.
           </p>
         </div>
         
@@ -217,7 +221,7 @@ export default function ProficiencyTest() {
             <h3 className="mb-3 font-medium text-gray-700">What this means:</h3>
             {result.level === 'beginner' && (
               <p className="text-gray-600">
-                You're at the beginning of your French journey. Focus on building basic vocabulary, simple grammar structures, and everyday phrases.
+                You&apos;re at the beginning of your French journey. Focus on building basic vocabulary, simple grammar structures, and everyday phrases.
               </p>
             )}
             {result.level === 'intermediate' && (
