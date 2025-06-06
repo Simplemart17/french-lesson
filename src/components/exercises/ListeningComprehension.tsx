@@ -128,7 +128,7 @@ const ListeningComprehension = ({
       <div className="max-w-md p-6 mx-auto border border-gray-200 rounded-lg bg-gray-50">
         <h4 className="mb-4 font-medium text-gray-800">Instructions:</h4>
         <ol className="space-y-2 text-left text-gray-600 list-decimal list-inside">
-          <li>Click the "Start Listening" button to play the audio</li>
+          <li>Click the &quot;Start Listening&quot; button to play the audio</li>
           <li>Listen carefully to the audio clip (you can play it up to {maxPlayCount} times)</li>
           <li>Answer the questions about what you heard</li>
           <li>Submit your answers to see your results</li>

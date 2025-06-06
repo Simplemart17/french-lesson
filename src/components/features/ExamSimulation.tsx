@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
-import LoadingState from '@/components/ui/LoadingState';
 
 interface ExamQuestion {
   id: string;
@@ -48,6 +47,60 @@ const ExamSimulation: React.FC<ExamSimulationProps> = ({
   const [examStartTime, setExamStartTime] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
+  // Complete the exam
+  const handleExamComplete = useCallback(() => {
+    setIsTimerRunning(false);
+    setIsExamCompleted(true);
+
+    // Calculate results
+    const timeSpent = examStartTime ? Math.floor((Date.now() - examStartTime) / 1000) : timeLimit * 60 - timeRemaining;
+
+    const answeredQuestions = questions.map(question => {
+      const userAnswer = userAnswers[question.id] || '';
+      const isCorrect = Array.isArray(question.correctAnswer)
+        ? Array.isArray(userAnswer) && question.correctAnswer.every(ans => userAnswer.includes(ans))
+        : userAnswer === question.correctAnswer;
+
+      return {
+        questionId: question.id,
+        userAnswer,
+        isCorrect
+      };
+    });
+
+    const correctAnswers = answeredQuestions.filter(q => q.isCorrect).length;
+    const score = Math.round((correctAnswers / questions.length) * 100);
+
+    // Calculate category scores
+    const categoryScores: Record<string, { correct: number; total: number }> = {};
+    questions.forEach((question, index) => {
+      const category = question.category;
+      if (!categoryScores[category]) {
+        categoryScores[category] = { correct: 0, total: 0 };
+      }
+
+      categoryScores[category].total += 1;
+      if (answeredQuestions[index].isCorrect) {
+        categoryScores[category].correct += 1;
+      }
+    });
+
+    const results: ExamResult = {
+      score,
+      totalQuestions: questions.length,
+      correctAnswers,
+      timeSpent,
+      answeredQuestions,
+      categoryScores
+    };
+
+    setExamResults(results);
+
+    if (onComplete) {
+      onComplete(results);
+    }
+  }, [questions, userAnswers, timeLimit, timeRemaining, examStartTime, onComplete]);
+
   // Start timer when component mounts
   useEffect(() => {
     if (isTimerRunning && timeRemaining > 0) {
@@ -64,7 +117,7 @@ const ExamSimulation: React.FC<ExamSimulationProps> = ({
 
       return () => clearInterval(timer);
     }
-  }, [isTimerRunning, timeRemaining]);
+  }, [isTimerRunning, timeRemaining, handleExamComplete]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -105,59 +158,7 @@ const ExamSimulation: React.FC<ExamSimulationProps> = ({
     }
   };
 
-  // Complete the exam
-  const handleExamComplete = () => {
-    setIsTimerRunning(false);
-    setIsExamCompleted(true);
 
-    // Calculate results
-    const timeSpent = examStartTime ? Math.floor((Date.now() - examStartTime) / 1000) : timeLimit * 60 - timeRemaining;
-    
-    const answeredQuestions = questions.map(question => {
-      const userAnswer = userAnswers[question.id] || '';
-      const isCorrect = Array.isArray(question.correctAnswer)
-        ? Array.isArray(userAnswer) && question.correctAnswer.every(ans => userAnswer.includes(ans))
-        : userAnswer === question.correctAnswer;
-      
-      return {
-        questionId: question.id,
-        userAnswer,
-        isCorrect
-      };
-    });
-
-    const correctAnswers = answeredQuestions.filter(q => q.isCorrect).length;
-    const score = Math.round((correctAnswers / questions.length) * 100);
-
-    // Calculate category scores
-    const categoryScores: Record<string, { correct: number; total: number }> = {};
-    questions.forEach((question, index) => {
-      const category = question.category;
-      if (!categoryScores[category]) {
-        categoryScores[category] = { correct: 0, total: 0 };
-      }
-      
-      categoryScores[category].total += 1;
-      if (answeredQuestions[index].isCorrect) {
-        categoryScores[category].correct += 1;
-      }
-    });
-
-    const results: ExamResult = {
-      score,
-      totalQuestions: questions.length,
-      correctAnswers,
-      timeSpent,
-      answeredQuestions,
-      categoryScores
-    };
-
-    setExamResults(results);
-
-    if (onComplete) {
-      onComplete(results);
-    }
-  };
 
   // Restart the exam
   const handleRestartExam = () => {
@@ -189,7 +190,7 @@ const ExamSimulation: React.FC<ExamSimulationProps> = ({
             This exam contains {questions.length} questions and has a time limit of {timeLimit} minutes.
           </p>
           <p className="text-gray-600">
-            Make sure you're in a quiet environment and ready to focus before starting.
+            Make sure you&apos;re in a quiet environment and ready to focus before starting.
           </p>
         </div>
         
