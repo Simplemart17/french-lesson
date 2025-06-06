@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/Button';
-import ExamQuestion, { ExamQuestionData, QuestionType } from './ExamQuestion';
+import ExamQuestion, { ExamQuestionData } from './ExamQuestion';
 
 interface ExamModuleProps {
   moduleId: string;
@@ -40,52 +40,7 @@ export default function ExamModule({
   const [results, setResults] = useState<ExamResults | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   
-  // Timer effect
-  useEffect(() => {
-    if (currentStep !== 'exam' || timeRemaining <= 0) return;
-    
-    const timer = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleFinishExam();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [currentStep, timeRemaining]);
-  
-  const handleStartExam = () => {
-    setCurrentStep('exam');
-    setStartTime(new Date());
-  };
-  
-  const handleAnswer = (answer: string | number) => {
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = answer;
-    setAnswers(newAnswers);
-  };
-  
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setShowFeedback(false);
-    } else {
-      handleFinishExam();
-    }
-  };
-  
-  const handlePrevQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setShowFeedback(false);
-    }
-  };
-  
-  const handleFinishExam = () => {
+  const handleFinishExam = useCallback(() => {
     if (!startTime) return;
     
     const endTime = new Date();
@@ -118,6 +73,51 @@ export default function ExamModule({
     
     if (onComplete) {
       onComplete(examResults);
+    }
+  }, [startTime, questions, answers, moduleId, onComplete]);
+  
+  // Timer effect
+  useEffect(() => {
+    if (currentStep !== 'exam' || timeRemaining <= 0) return;
+    
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleFinishExam();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [currentStep, timeRemaining, handleFinishExam]);
+
+  const handleStartExam = () => {
+    setCurrentStep('exam');
+    setStartTime(new Date());
+  };
+  
+  const handleAnswer = (answer: string | number) => {
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = answer;
+    setAnswers(newAnswers);
+  };
+  
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setShowFeedback(false);
+    } else {
+      handleFinishExam();
+    }
+  };
+  
+  const handlePrevQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setShowFeedback(false);
     }
   };
   
@@ -163,7 +163,7 @@ export default function ExamModule({
           <li>Read each question carefully before answering</li>
           <li>You can navigate between questions using the previous and next buttons</li>
           <li>Your progress is saved as you go</li>
-          <li>Submit your answers when you're finished</li>
+          <li>Submit your answers when you&apos;re finished</li>
         </ul>
       </div>
       
@@ -259,7 +259,7 @@ export default function ExamModule({
           </div>
           <h1 className="mb-2 text-3xl font-bold text-gray-800">Exam Complete!</h1>
           <p className="text-lg text-gray-600">
-            You've completed the {title} module.
+            You&apos;ve completed the {title} module.
           </p>
         </div>
         
