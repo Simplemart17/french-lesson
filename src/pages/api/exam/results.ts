@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { supabase, TABLES } from'@/lib/supabase';
 import { ApiResponse, ExamResult } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 
@@ -97,8 +98,6 @@ export default async function handler(
       }
       
       // Create the exam result object and save to database
-      const { getSupabaseClient, TABLES } = await import('@/lib/supabase');
-      const supabase = getSupabaseClient();
 
       const { data: savedResult, error: createError } = await supabase
         .from(TABLES.EXAM_RESULTS)

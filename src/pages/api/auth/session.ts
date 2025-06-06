@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { LoginRequest, AuthResponse, ApiResponse } from '@/types/api';
+import { AuthResponse, ApiResponse } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
 
 export default async function handler(

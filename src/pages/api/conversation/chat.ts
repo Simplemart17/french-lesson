@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 import aiService from '@/services/aiService';
@@ -59,7 +59,6 @@ export default async function handler(
         }
 
         // Create a new conversation in the database
-        const supabase = getSupabaseClient();
         const contextDescription = conversationContexts[context as keyof typeof conversationContexts];
         const now = new Date().toISOString();
 
@@ -97,9 +96,6 @@ export default async function handler(
 
         messages = [{ role: 'user', content: message }];
       } else {
-        // Get existing conversation
-        const supabase = getSupabaseClient();
-
         const { data: existingConversation, error: fetchError } = await supabase
           .from(TABLES.CONVERSATIONS)
           .select(`
@@ -170,7 +166,6 @@ export default async function handler(
       );
 
       // Add AI response to conversation
-      const supabase = getSupabaseClient();
       const { error: aiMessageError } = await supabase
         .from(TABLES.MESSAGES)
         .insert({
@@ -212,8 +207,6 @@ export default async function handler(
 
       if (id && typeof id === 'string') {
         // Get specific conversation
-        const supabase = getSupabaseClient();
-
         const { data: conversation, error } = await supabase
           .from(TABLES.CONVERSATIONS)
           .select(`
@@ -255,16 +248,14 @@ export default async function handler(
         });
       } else {
         // Get all user's conversations
-        const supabase = getSupabaseClient();
-
         const { data: conversations, error } = await supabase
           .from(TABLES.CONVERSATIONS)
           .select(`
             *,
             messages:${TABLES.MESSAGES}(*)
           `)
-          .eq('userId', userId)
-          .order('lastMessageAt', { ascending: false });
+          .eq('user_id', userId)
+          .order('updated_at', { ascending: false });
 
         if (error) {
           throw new Error(`Failed to fetch conversations: ${error.message}`);

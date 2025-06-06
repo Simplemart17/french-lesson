@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "@/lib/supabase";
+import { supabaseAuth } from "@/lib/supabaseAuth";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,7 +8,7 @@ export default async function handler(
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      error: { message: "Method not allowed" }
+      data: { error: "Method not allowed" }
     });
   }
 
@@ -18,61 +18,35 @@ export default async function handler(
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: { message: "Email and password are required" }
+        data: { error: "Email and password are required" }
       });
     }
 
-    // Development mode: Allow test user without Supabase
-    if (process.env.NODE_ENV === 'development' && email === 'test@example.com' && password === 'password123') {
-      return res.status(200).json({
-        success: true,
-        data: {
-          user: {
-            id: 'test-user-id',
-            email: 'test@example.com',
-            name: 'Test User',
-            level: 'A1'
-          },
-          access_token: 'test-token-' + Date.now(),
-          refresh_token: 'test-refresh-token',
-          expires_at: Date.now() + 3600000 // 1 hour
-        }
-      });
-    }
+    // Use the supabaseAuth service for proper authentication
+    const authResult = await supabaseAuth.signIn(email, password);
 
-    // Sign in with Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error || !data.user || !data.session) {
+    if (authResult.error || !authResult.user || !authResult.session) {
       return res.status(401).json({
         success: false,
-        error: { message: error?.message || "Invalid credentials" }
+        data: { error: authResult.error || "Invalid credentials" }
       });
     }
 
-    // Return the session data
+    // Return the session data with user profile
     return res.status(200).json({
       success: true,
       data: {
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name || data.user.email,
-          level: data.user.user_metadata?.level || 'beginner'
-        },
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-        expires_at: data.session.expires_at
+        user: authResult.user,
+        access_token: authResult.session.access_token,
+        refresh_token: authResult.session.refresh_token,
+        expires_at: authResult.session.expires_at
       }
     });
   } catch (error: any) {
     console.error("Login error:", error);
     return res.status(500).json({
       success: false,
-      error: { message: "Internal server error" }
+      data: { error: "Internal server error" }
     });
   }
 }
