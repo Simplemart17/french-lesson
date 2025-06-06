@@ -88,12 +88,19 @@ async function handler(
       }
 
       // Transform to speaking exercise format
-      const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: any) => ({
+      interface DatabaseSpeakingExercise {
+        id: string;
+        text: string;
+        translation?: string;
+        difficulty: string;
+        category?: string;
+      }
+      const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: DatabaseSpeakingExercise) => ({
         id: exercise.id,
         prompt: exercise.text,
         translation: exercise.translation || '',
         difficulty: mapDifficultyLevel(exercise.difficulty),
-        category: mapCategory(exercise.category)
+        category: mapCategory(exercise.category || null)
       }));
 
       return res.status(200).json({
@@ -195,10 +202,10 @@ function mapCategory(dbCategory: string | null): 'greetings' | 'travel' | 'dinin
   if (!dbCategory) return undefined;
 
   const validCategories = ['greetings', 'travel', 'dining', 'everyday', 'business', 'shopping'];
-  return validCategories.includes(dbCategory) ? dbCategory as any : 'everyday';
+  return validCategories.includes(dbCategory) ? dbCategory as 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping' : 'everyday';
 }
 
-function generateSpeakingFeedback(transcript: string, exercise: any): SpeakingFeedback {
+function generateSpeakingFeedback(transcript: string, exercise: { text: string }): SpeakingFeedback {
   // Simple feedback generation based on transcript quality
   const transcriptLength = transcript.length;
   const expectedLength = exercise.text.length;
