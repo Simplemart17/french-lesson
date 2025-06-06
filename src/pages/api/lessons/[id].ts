@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, Lesson } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(
   req: NextApiRequest,
@@ -22,9 +22,6 @@ async function handler(
       }
 
       const lessonId = id;
-
-      // Get Supabase client
-      const supabase = getSupabaseClient();
 
       // Find the lesson by ID with its sections
       const { data: lesson, error } = await supabase
@@ -57,8 +54,8 @@ async function handler(
         await supabase
           .from(TABLES.LESSON_PROGRESS)
           .select('*')
-          .eq('userId', userId)
-          .eq('lessonId', lessonId)
+          .eq('user_id', userId)
+          .eq('lesson_id', lessonId)
           .single();
       }
 

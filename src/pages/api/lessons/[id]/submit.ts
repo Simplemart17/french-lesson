@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonSubmissionResult } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(
   req: NextApiRequest,
@@ -49,8 +49,6 @@ async function handler(
     }
     
     // Check if the lesson exists and get its data
-    const supabase = getSupabaseClient();
-
     const { data: lesson, error: lessonError } = await supabase
       .from(TABLES.LESSONS)
       .select('*')
