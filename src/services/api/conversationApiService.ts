@@ -1,6 +1,5 @@
 import { ApiResponse } from '@/types/api';
 import apiClient from '@/services/api/apiClient';
-import { API_ENDPOINTS } from './apiConfig';
 
 // Define interfaces for conversation data
 export interface Conversation {
@@ -50,7 +49,7 @@ export interface SendMessageRequest {
 
 export interface ConversationResponse {
   success: boolean;
-  data: any;
+  data: unknown;
 }
 
 /**
@@ -62,10 +61,10 @@ export const conversationApiService = {
   /**
    * Get conversation scenarios with optional filtering
    */
-  getScenarios: async (difficulty?: string): Promise<any[]> => {
+  getScenarios: async (difficulty?: string): Promise<ConversationTopic[]> => {
     try {
       const params = { difficulty };
-      const response = await apiClient.get<ApiResponse<any[]>>('/conversation/scenarios', { params });
+      const response = await apiClient.get<ApiResponse<ConversationTopic[]>>('/conversation/scenarios', { params });
 
       if (response.data.success && response.data.data) {
         return response.data.data;

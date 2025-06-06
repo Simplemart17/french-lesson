@@ -71,9 +71,9 @@ export default function AuthCallback() {
             router.push('/login');
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Auth callback error:', err);
-        setError(err.message || 'Authentication failed');
+        setError(err instanceof Error ? err.message : 'Authentication failed');
       } finally {
         setLoading(false);
       }

@@ -48,8 +48,8 @@ export default function RegistrationSuccessPage() {
         toast.success('Confirmation email sent! Please check your inbox.');
         setResendCooldown(60); // 60 second cooldown
       }
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to resend confirmation email');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to resend confirmation email');
     } finally {
       setIsResending(false);
     }
@@ -85,7 +85,7 @@ export default function RegistrationSuccessPage() {
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <h2 className="text-lg font-semibold text-blue-800 mb-2">📧 Verify Your Email</h2>
             <p className="text-sm text-blue-700 mb-3">
-              We've sent a verification email to:
+              We&apos;ve sent a verification email to:
             </p>
             <p className="font-medium text-blue-800 mb-3">{email}</p>
             <p className="text-sm text-blue-700">
@@ -95,7 +95,7 @@ export default function RegistrationSuccessPage() {
 
           <div className="space-y-4">
             <div className="text-sm text-gray-600">
-              <p className="mb-2">📱 <strong>Check your spam folder</strong> if you don't see the email</p>
+              <p className="mb-2">📱 <strong>Check your spam folder</strong> if you don&apos;t see the email</p>
               <p className="mb-2">⏰ The verification link expires in 24 hours</p>
               <p>🔄 You can resend the email if needed</p>
             </div>
@@ -129,7 +129,7 @@ export default function RegistrationSuccessPage() {
           </div>
 
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">🚀 What's Next?</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">🚀 What&apos;s Next?</h3>
             <div className="text-sm text-gray-600 space-y-2">
               <p>1. Verify your email address</p>
               <p>2. Complete your learning profile</p>
