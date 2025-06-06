@@ -113,8 +113,8 @@ const Header = () => {
     setProfileMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push('/');
   };
 
@@ -408,31 +408,6 @@ const Header = () => {
     </header>
   );
 };
-
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-  active: boolean;
-}
-
-const NavLink = ({ href, children, active }: NavLinkProps) => {
-  return (
-    <Link
-      href={href}
-      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 relative ${
-        active
-          ? 'text-primary-700 bg-primary-50'
-          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-      }`}
-    >
-      {children}
-      {active && (
-        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-primary-600 rounded-full" />
-      )}
-    </Link>
-  );
-};
-
 interface MobileNavLinkProps {
   href: string;
   children: React.ReactNode;
