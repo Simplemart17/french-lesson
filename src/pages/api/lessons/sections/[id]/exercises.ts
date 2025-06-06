@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonExercise } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(
   req: NextApiRequest,
@@ -27,7 +27,6 @@ async function handler(
     const sectionId = id;
 
     // Check if the section exists
-    const supabase = getSupabaseClient();
 
     const { data: section, error: sectionError } = await supabase
       .from(TABLES.LESSON_SECTIONS)

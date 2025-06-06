@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonProgress } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { getUserId } from '@/utils/auth';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<LessonProgress | LessonProgress[]>>) {
   // Handle GET request
@@ -19,16 +19,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Get lessonId from query if provided
-      let { lessonId } = req.query;
+      const { lessonId } = req.query;
       const lessonIdNum = lessonId ? parseInt(lessonId as string, 10) : undefined;
 
       // Get progress from database
-      const supabase = getSupabaseClient();
       let supabaseQuery = supabase
         .from(TABLES.LESSON_PROGRESS)
         .select('*')
-        .eq('userId', userId)
-        .order('lessonId', { ascending: true });
+        .eq('user_id', userId)
+        .order('lesson_id', { ascending: true });
 
       // Add lessonId filter if provided
       if (lessonIdNum && !isNaN(lessonIdNum)) {
@@ -107,7 +106,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Check if lesson exists
-      const supabase = getSupabaseClient();
       const { data: lesson, error: lessonError } = await supabase
         .from(TABLES.LESSONS)
         .select('*')

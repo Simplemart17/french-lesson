@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationExercise as ImportedPronunciationExercise, PronunciationPhrase as ImportedPronunciationPhrase } from '@/services/api/pronunciationApiService';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 // Extended PronunciationPhrase interface for the mock data
 interface PronunciationPhrase extends ImportedPronunciationPhrase {
@@ -39,9 +39,6 @@ async function handler(
   try {
     // Get query parameters
     const { difficulty, search, page = '1', limit = '10' } = req.query;
-
-    // Get Supabase client
-    const supabase = getSupabaseClient();
 
     // Calculate pagination
     const pageNum = parseInt(page as string, 10);

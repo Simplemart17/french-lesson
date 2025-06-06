@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { getSupabaseClient, TABLES } from '@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
@@ -33,9 +33,6 @@ async function handler(
       // If ID is provided, return that specific exercise
       if (id) {
         const exerciseId = id as string;
-
-        // Get exercise from database
-        const supabase = getSupabaseClient();
         const { data: dbExercise, error } = await supabase
           .from(TABLES.PRONUNCIATION_EXERCISES)
           .select('*')
@@ -67,7 +64,6 @@ async function handler(
 
 
       // Get exercises from database
-      const supabase = getSupabaseClient();
       let query = supabase
         .from(TABLES.PRONUNCIATION_EXERCISES)
         .select('*')
@@ -127,7 +123,6 @@ async function handler(
       }
 
       // Find the exercise in database
-      const supabase = getSupabaseClient();
       const { data: dbExercise, error } = await supabase
         .from(TABLES.PRONUNCIATION_EXERCISES)
         .select('*')
@@ -209,9 +204,9 @@ function generateSpeakingFeedback(transcript: string, exercise: any): SpeakingFe
   const expectedLength = exercise.text.length;
   const lengthRatio = transcriptLength / expectedLength;
 
-  let accuracy = Math.min(100, Math.max(0, lengthRatio * 80 + Math.random() * 20));
-  let pronunciation = Math.min(100, Math.max(0, 70 + Math.random() * 30));
-  let fluency = Math.min(100, Math.max(0, 60 + Math.random() * 40));
+  const accuracy = Math.min(100, Math.max(0, lengthRatio * 80 + Math.random() * 20));
+  const pronunciation = Math.min(100, Math.max(0, 70 + Math.random() * 30));
+  const fluency = Math.min(100, Math.max(0, 60 + Math.random() * 40));
 
   let feedback = '';
   let type: 'success' | 'warning' | 'error' = 'error';

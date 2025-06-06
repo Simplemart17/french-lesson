@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { getOpenAIClient } from '../../../utils/openaiClient';
 import { ChatCompletionMessageParam } from 'openai/resources';
-import { getSupabaseClient, TABLES } from '../../../lib/supabase';
+import { supabase, TABLES } from '../../../lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -29,23 +29,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const includeLearned = (includeLearnedItems as string) === 'true';
     
     // Fetch user's vocabulary items
-    const supabase = getSupabaseClient();
 
     let query = supabase
       .from(TABLES.USER_VOCABULARY)
       .select(`
         *,
-        vocabulary:vocabularyId (
+        vocabulary:vocabulary_id (
           id,
           french,
           english,
           pronunciation,
           category,
-          difficulty
+          level
         )
       `)
-      .eq('userId', userId)
-      .order('lastPracticed', { ascending: true })
+      .eq('user_id', userId)
+      .order('last_practiced', { ascending: true })
       .limit(limit);
 
     // Add learned filter if needed
@@ -77,13 +76,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const vocabularyItems = userVocabulary.map((item: any) => item.vocabulary);
     const exercises = await generateExercises(vocabularyItems, limit);
     
-    // Update lastPracticed for all vocabulary items
+    // Update last_practiced for all vocabulary items
     const updatePromises = userVocabulary.map(async (item: any) => {
       const { error } = await supabase
         .from(TABLES.USER_VOCABULARY)
-        .update({ lastPracticed: new Date().toISOString() })
-        .eq('userId', userId)
-        .eq('vocabularyId', item.vocabularyId);
+        .update({ last_practiced: new Date().toISOString() })
+        .eq('user_id', userId)
+        .eq('vocabulary_id', item.vocabulary_id);
 
       if (error) {
         console.error('Error updating lastPracticed:', error);
@@ -113,14 +112,7 @@ async function generateExercises(vocabularyItems: any[], count: number) {
   try {
     // If we have OpenAI client, use it to generate more interesting exercises
     const openai = getOpenAIClient();
-    
-    const exerciseTypes = [
-      'multiple-choice',
-      'fill-in-blank',
-      'translation',
-      'matching'
-    ];
-    
+  
     // Prepare messages for OpenAI
     const messages: ChatCompletionMessageParam[] = [
       {
