@@ -21,10 +21,10 @@ export default function AboutPage() {
         <div className="p-6 mb-8 bg-white rounded-xl shadow-sm">
           <h2 className="mb-4 text-2xl font-semibold text-gray-800">Our Mission</h2>
           <p className="mb-4 text-gray-600">
-            At French Tutor AI, we believe that language learning should be accessible, effective, and tailored to each individual's needs. Our mission is to break down the barriers to language acquisition by leveraging cutting-edge AI technology to create a personalized learning experience that adapts to your unique learning style, pace, and goals.
+            At French Tutor AI, we believe that language learning should be accessible, effective, and tailored to each individual&apos;s needs. Our mission is to break down the barriers to language acquisition by leveraging cutting-edge AI technology to create a personalized learning experience that adapts to your unique learning style, pace, and goals.
           </p>
           <p className="text-gray-600">
-            We're committed to helping learners of all levels—from complete beginners to advanced speakers—improve their French language skills through interactive lessons, real-time feedback, and engaging practice opportunities.
+            We&apos;re committed to helping learners of all levels—from complete beginners to advanced speakers—improve their French language skills through interactive lessons, real-time feedback, and engaging practice opportunities.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export default function AboutPage() {
             French Tutor AI was founded by a team of language educators, AI specialists, and French language enthusiasts who recognized the potential of artificial intelligence to transform language education.
           </p>
           <p className="text-gray-600">
-            Our diverse team combines expertise in linguistics, machine learning, educational psychology, and software development to create a learning platform that's both technologically advanced and pedagogically sound.
+            Our diverse team combines expertise in linguistics, machine learning, educational psychology, and software development to create a learning platform that&apos;s both technologically advanced and pedagogically sound.
           </p>
         </div>
 

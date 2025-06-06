@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface ProgressData {
   section: string;
@@ -47,10 +48,10 @@ export default function ProgressTracker({ progressData, overallCompletion }: Pro
       </div>
 
       <div className="mt-4 text-right">
-        <a href="/exam-practice/progress" className="inline-flex items-center text-sm font-medium text-indigo-600 transition-all hover:text-indigo-800 group">
+        <Link href="/exam-practice/progress" className="inline-flex items-center text-sm font-medium text-indigo-600 transition-all hover:text-indigo-800 group">
           View detailed progress
           <span className="inline-block ml-1 transition-transform group-hover:translate-x-1">→</span>
-        </a>
+        </Link>
       </div>
     </div>
   );
