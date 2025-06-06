@@ -1,10 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, LessonSubmissionResult } from '@/types/api';
+import { NextApiResponse } from 'next';
+import { ApiResponse, LessonSubmissionResult, AuthenticatedRequest } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
 
 async function handler(
-  req: NextApiRequest,
+  req: AuthenticatedRequest,
   res: NextApiResponse<ApiResponse<LessonSubmissionResult>>
 ) {
   // Only allow POST for this endpoint
@@ -37,7 +37,7 @@ async function handler(
     }
     
     // Get the user ID from the authenticated user
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({
@@ -65,7 +65,7 @@ async function handler(
     }
 
     // Get lesson sections
-    const { data: sections, error: sectionsError } = await supabase
+    const { error: sectionsError } = await supabase
       .from(TABLES.LESSON_SECTIONS)
       .select('*')
       .eq('lessonId', lessonId);
@@ -81,7 +81,12 @@ async function handler(
 
     // For now, we'll assume exercises are embedded in the sections or handled differently
     // This needs to be updated based on the actual database schema
-    const exercises: any[] = [];
+    interface Exercise {
+      id: string;
+      correctAnswer: string | string[];
+      explanation?: string;
+    }
+    const exercises: Exercise[] = [];
 
     // If exercises are stored as part of section content, we would parse them here
     // For now, we'll create a placeholder that matches the expected structure

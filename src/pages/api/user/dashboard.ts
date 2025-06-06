@@ -138,7 +138,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         type: 'lesson' as const,
         title: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
         description: `Score: ${progress.score || 0}%`,
-        timestamp: progress.completed_at || new Date().toISOString(),
+        timestamp: progress.completedAt || new Date().toISOString(),
         score: progress.score
       })),
       ...(vocabularyProgress || []).slice(0, 3).map((vocab: { id: string; vocabulary?: { french: string }; last_practiced?: string }) => ({
@@ -156,7 +156,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Get completed lesson IDs
     const completedLessonIds = (lessonProgress || [])
       .filter((p: LessonProgress) => p.completed)
-      .map((p: LessonProgress) => p.lesson_id);
+      .map((p: LessonProgress) => p.lessonId);
 
     // Get next lesson recommendation
     let nextLessonQuery = supabase
