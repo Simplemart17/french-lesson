@@ -1,6 +1,6 @@
 import apiClient, { ApiResponse } from './apiClient';
 import { API_ENDPOINTS } from './apiConfig';
-import { setAuthToken as setAuthTokenCookie, setUserData as setUserDataCookie, clearAuthCookies, getAuthToken, getUserData } from '@/utils/authCookies';
+import { setAuthToken as setAuthTokenCookie, setUserData as setUserDataCookie, clearAuthCookies, getAuthToken, getUserData, UserData } from '@/utils/authCookies';
 
 // Define interfaces for auth requests and responses
 export interface LoginRequest {
@@ -18,7 +18,7 @@ export interface RegisterRequest {
 export interface AuthResponse {
   access_token: string;
   user: {
-    id: number;
+    id: string;
     name: string;
     email: string;
     role: string;
@@ -50,8 +50,8 @@ export const authApiService = {
   /**
    * Login user
    */
-  login: async (data: LoginRequest): Promise<ApiResponse<any>> => {
-    const response = await apiClient.post<any>(API_ENDPOINTS.AUTH.LOGIN, data);
+  login: async (data: LoginRequest): Promise<ApiResponse<AuthResponse>> => {
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(API_ENDPOINTS.AUTH.LOGIN, data);
 
     // Store token and user data in localStorage
     if (response.data && response.data.success && response.data.data) {
@@ -64,7 +64,10 @@ export const authApiService = {
       }
     }
 
-    return response.data;
+    return {
+      ...response.data,
+      status: response.status
+    };
   },
   
   /**
@@ -168,7 +171,7 @@ export const authApiService = {
   /**
    * Get user data
    */
-  getUserData: (): any => {
+  getUserData: (): UserData | null => {
     return getUserData();
   },
 
@@ -182,7 +185,7 @@ export const authApiService = {
   /**
    * Set user data
    */
-  setUserData: (userData: any): void => {
+  setUserData: (userData: UserData): void => {
     setUserDataCookie(userData);
   },
 

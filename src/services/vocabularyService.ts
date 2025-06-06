@@ -9,13 +9,18 @@ class VocabularyService {
       const response = await vocabularyApiService.getVocabulary(level, category);
       // The response is already in the right format, just need to fix the TypeScript error
       return response as unknown as VocabularyWord[];
-    } catch (error) {
+    } catch {
       return [];
     }
   }
 
   // Update vocabulary progress in the API
-  async updateVocabularyProgress(data: any): Promise<void> {
+  async updateVocabularyProgress(data: {
+    word: string;
+    learned?: boolean;
+    lastPracticed?: string;
+    nextReview?: string
+  }): Promise<void> {
     try {
       await vocabularyApiService.updateVocabularyProgress(
         data.word,

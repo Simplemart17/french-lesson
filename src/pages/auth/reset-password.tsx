@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { supabaseAuth } from '@/lib/supabaseAuth';
@@ -55,8 +55,8 @@ export default function ResetPasswordPage() {
         router.push('/dashboard');
       }, 1000);
 
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to update password');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update password');
     } finally {
       setIsLoading(false);
     }
