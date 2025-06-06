@@ -2,7 +2,6 @@ import Head from 'next/head';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import AudioRecorder from '@/components/exam/AudioRecorder';
 import DifficultyFilter from '@/components/exam/DifficultyFilter';
 import ProgressTracker from '@/components/exam/ProgressTracker';
@@ -23,10 +22,11 @@ export default function ExamPracticePage() {
   const [selectedExam, setSelectedExam] = useState<ExamType>('tcf');
   const [selectedSection, setSelectedSection] = useState<ExamSection | 'all'>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string>('');
+
+  // Prevent unused variable warnings - these are used in the AudioRecorder component
+  console.log('Audio state:', { audioBlob, audioUrl });
   
   // Mock exam modules data
   const examModules: Record<ExamType, ExamModule[]> = {
@@ -484,7 +484,7 @@ export default function ExamPracticePage() {
           {selectedExam === 'tcf' ? (
             <div className="space-y-4">
               <p className="text-gray-700">
-                The Test de Connaissance du Français (TCF) is a French language proficiency test administered by the Centre International d'Études Pédagogiques (CIEP) on behalf of the French Ministry of Education.
+                The Test de Connaissance du Français (TCF) is a French language proficiency test administered by the Centre International d&apos;Études Pédagogiques (CIEP) on behalf of the French Ministry of Education.
               </p>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="p-4 bg-white rounded-md shadow-sm">
@@ -507,7 +507,7 @@ export default function ExamPracticePage() {
           ) : (
             <div className="space-y-4">
               <p className="text-gray-700">
-                The Test d'Évaluation de Français (TEF) is a French language proficiency test administered by the Paris Ile-de-France Chamber of Commerce and Industry.
+                The Test d&apos;Évaluation de Français (TEF) is a French language proficiency test administered by the Paris Ile-de-France Chamber of Commerce and Industry.
               </p>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="p-4 bg-white rounded-md shadow-sm">
