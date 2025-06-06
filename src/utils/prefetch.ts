@@ -59,13 +59,13 @@ export const prefetchCommonData = async () => {
  * Prefetch data for a specific page
  * This can be called when hovering over a link or when a page is about to be loaded
  */
-export const prefetchPageData = async (page: string, params?: Record<string, any>) => {
+export const prefetchPageData = async (page: string, params?: Record<string, string | number>) => {
   try {
     switch (page) {
       case 'vocabulary':
         await vocabularyService.getVocabulary(
-          params?.level,
-          params?.category
+          params?.level as string,
+          params?.category as string
         ).catch((err: Error) => {
           console.error('Failed to prefetch vocabulary for page:', err);
           return [];
@@ -74,8 +74,8 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
 
       case 'lessons':
         await lessonService.getLessons(
-          params?.level,
-          params?.topic
+          params?.level as string,
+          params?.topic as string
         ).catch((err: Error) => {
           console.error('Failed to prefetch lessons for page:', err);
           return [];
@@ -93,8 +93,8 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
 
       case 'grammar':
         await grammarService.getGrammarExercises(
-          params?.difficulty,
-          params?.category
+          params?.difficulty as string,
+          params?.category as string
         ).catch((err: Error) => {
           console.error('Failed to prefetch grammar exercises for page:', err);
           return [];
@@ -103,7 +103,7 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
 
       case 'pronunciation':
         await pronunciationService.getPronunciationExercises(
-          params?.difficulty
+          params?.difficulty as 'beginner' | 'intermediate' | 'advanced'
         ).catch((err: Error) => {
           console.error('Failed to prefetch pronunciation exercises for page:', err);
           return [];
@@ -112,9 +112,9 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
 
       case 'exam':
         await examService.getExamModules(
-          params?.examType,
-          params?.section,
-          params?.difficulty
+          params?.examType as string,
+          params?.section as string,
+          params?.difficulty as string
         ).catch((err: Error) => {
           console.error('Failed to prefetch exam modules for page:', err);
           return [];
@@ -123,7 +123,7 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
 
       case 'conversation':
         await conversationService.getConversationTopics(
-          params?.level
+          params?.level as string
         ).catch((err: Error) => {
           console.error('Failed to prefetch conversation topics for page:', err);
           return [];
@@ -152,7 +152,9 @@ export const prefetchPageData = async (page: string, params?: Record<string, any
   }
 };
 
-export default {
+const prefetchUtils = {
   prefetchCommonData,
   prefetchPageData
 };
+
+export default prefetchUtils;

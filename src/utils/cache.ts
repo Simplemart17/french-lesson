@@ -19,7 +19,7 @@ interface CacheOptions {
  * Cache class for storing and retrieving data with expiration
  */
 export class Cache {
-  private memoryCache: Map<string, CacheEntry<any>> = new Map();
+  private memoryCache: Map<string, CacheEntry<unknown>> = new Map();
   private storage: 'memory' | 'localStorage' | 'sessionStorage';
   private prefix: string;
   private defaultExpiry: number;
@@ -192,8 +192,10 @@ export const memoryCache = new Cache({ storage: 'memory' });
 export const localStorageCache = new Cache({ storage: 'localStorage' });
 export const sessionStorageCache = new Cache({ storage: 'sessionStorage' });
 
-export default {
+const cacheInstances = {
   memory: memoryCache,
   localStorage: localStorageCache,
   sessionStorage: sessionStorageCache,
 };
+
+export default cacheInstances;
