@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, LessonExercise } from '@/types/api';
+import { ApiResponse, LessonExercise, DatabaseLessonExercise } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
 
@@ -46,10 +46,10 @@ async function handler(
     // NOTE: LessonExercise table is not defined in TABLES constant
     // This suggests exercises might be stored differently in Supabase
     // For now, returning empty array - this needs to be updated based on actual schema
-    const exercises: any[] = [];
+    const exercises: DatabaseLessonExercise[] = [];
 
     // Format the exercises for the response
-    const formattedExercises: LessonExercise[] = exercises.map((exercise: any) => ({
+    const formattedExercises: LessonExercise[] = exercises.map((exercise: DatabaseLessonExercise) => ({
       id: exercise.id,
       sectionId: exercise.sectionId,
       type: exercise.type as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking' | 'translation' | 'true-false',

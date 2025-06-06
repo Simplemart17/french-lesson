@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
-import { ApiResponse, Lesson } from '@/types/api';
+import { ApiResponse, Lesson, DatabaseLesson } from '@/types/api';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Lesson[]>>) {
   // Only allow GET for this endpoint
@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
     }
 
     // Process lessons for client
-    const processedLessons = filteredLessons.map((lesson: any) => {
+    const processedLessons = filteredLessons.map((lesson: DatabaseLesson) => {
       return {
         id: lesson.id,
         title: lesson.title,

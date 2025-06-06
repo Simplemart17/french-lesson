@@ -5,7 +5,7 @@ import { isAuthenticated, getUserId } from '@/utils/auth';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
+  res: NextApiResponse<ApiResponse<unknown>>
 ) {
   // Check authentication
   if (!(await isAuthenticated(req))) {
