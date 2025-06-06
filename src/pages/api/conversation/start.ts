@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { Conversation, Message } from '@/services/api/conversationApiService';
+import { Conversation } from '@/services/api/conversationApiService';
 
 // Mock conversation contexts for new conversations
 const conversationContexts: Record<string, string> = {

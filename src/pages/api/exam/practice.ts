@@ -5,7 +5,13 @@ import { isAuthenticated } from '../../../utils/auth';
 type ExamSection = 'comprehension-ecrite' | 'comprehension-orale' | 'expression-ecrite' | 'expression-orale' | 'grammaire' | 'vocabulaire';
 
 // Mock exam questions
-const examQuestions: Record<ExamSection, Record<string, any[]>> = {
+interface ExamQuestion {
+  id: string;
+  type: string;
+  [key: string]: unknown;
+}
+
+const examQuestions: Record<ExamSection, Record<string, ExamQuestion[]>> = {
   'comprehension-ecrite': {
     A2: [
       {
@@ -228,7 +234,12 @@ const examQuestions: Record<ExamSection, Record<string, any[]>> = {
 };
 
 // User exam progress (would be stored in a database in a real app)
-const userExamProgress: Record<number, Record<string, any>> = {
+interface UserProgress {
+  completed: number;
+  score: number;
+}
+
+const userExamProgress: Record<number, Record<string, Record<string, UserProgress>>> = {
   1: {
     'comprehension-ecrite': {
       A2: {
