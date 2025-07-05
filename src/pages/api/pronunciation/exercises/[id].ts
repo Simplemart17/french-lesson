@@ -1,21 +1,41 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse } from '@/types/api';
-import { PronunciationExercise as ImportedPronunciationExercise } from '@/services/api/pronunciationApiService';
+import { NextApiRequest, NextApiResponse } from "next";
+import { ApiResponse } from "@/types/api";
+import { PronunciationExercise as ImportedPronunciationExercise } from "@/services/api/pronunciationApiService";
+import { supabase, TABLES } from "@/lib/supabase";
 
-// Extended PronunciationPhrase interface for the mock data
+// Extended PronunciationPhrase interface for the database data
 interface PronunciationPhrase {
   id: number;
   text: string;
   translation: string;
   audioUrl: string;
   phonetics: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   focusSounds: string[];
 }
 
-// Extended PronunciationExercise interface for the mock data
+// Extended PronunciationExercise interface for the database data
 interface PronunciationExercise extends ImportedPronunciationExercise {
   phrases: PronunciationPhrase[];
+}
+
+// Helper function to map database difficulty to API format
+function mapDifficultyLevel(
+  dbDifficulty: string
+): "beginner" | "intermediate" | "advanced" {
+  switch (dbDifficulty) {
+    case "A1":
+    case "A2":
+      return "beginner";
+    case "B1":
+    case "B2":
+      return "intermediate";
+    case "C1":
+    case "C2":
+      return "advanced";
+    default:
+      return "beginner";
+  }
 }
 
 // Mock data for pronunciation phrases
@@ -28,7 +48,7 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/bonjour.mp3",
       phonetics: "bɔ̃.ʒuʁ kɔ.mɑ̃ t‿a.le vu",
       difficulty: "beginner",
-      focusSounds: ["ɔ̃", "ʁ"]
+      focusSounds: ["ɔ̃", "ʁ"],
     },
     {
       id: 2,
@@ -37,7 +57,7 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/je-mappelle.mp3",
       phonetics: "ʒə ma.pɛl ma.ʁi",
       difficulty: "beginner",
-      focusSounds: ["ʒ", "ɛ"]
+      focusSounds: ["ʒ", "ɛ"],
     },
     {
       id: 3,
@@ -46,8 +66,8 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/merci-beaucoup.mp3",
       phonetics: "mɛʁ.si bo.ku",
       difficulty: "beginner",
-      focusSounds: ["ɛʁ", "u"]
-    }
+      focusSounds: ["ɛʁ", "u"],
+    },
   ],
   intermediate: [
     {
@@ -57,7 +77,7 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/reserver-table.mp3",
       phonetics: "ʒə vu.dʁɛ ʁe.zɛʁ.ve yn tabl puʁ dø pɛʁ.sɔn",
       difficulty: "intermediate",
-      focusSounds: ["ʁ", "ø", "ɛʁ"]
+      focusSounds: ["ʁ", "ø", "ɛʁ"],
     },
     {
       id: 5,
@@ -66,7 +86,7 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/ou-est-la-gare.mp3",
       phonetics: "pu.ʁje vu mə diʁ u sə tʁuv la gaʁ",
       difficulty: "intermediate",
-      focusSounds: ["u", "ʁ", "tʁ"]
+      focusSounds: ["u", "ʁ", "tʁ"],
     },
     {
       id: 6,
@@ -75,8 +95,8 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/billet-paris.mp3",
       phonetics: "ʒɛ.mə.ʁɛ a.ʃə.te œ̃ bi.jɛ puʁ pa.ʁi",
       difficulty: "intermediate",
-      focusSounds: ["ɛ", "œ̃", "j"]
-    }
+      focusSounds: ["ɛ", "œ̃", "j"],
+    },
   ],
   advanced: [
     {
@@ -86,7 +106,7 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/feuilles-arbres.mp3",
       phonetics: "le fœj de.z‿aʁbʁ bʁɥis dɑ̃ lə vɑ̃ do.tɔn",
       difficulty: "advanced",
-      focusSounds: ["œ", "ɥi", "ʁ", "ɑ̃"]
+      focusSounds: ["œ", "ɥi", "ʁ", "ɑ̃"],
     },
     {
       id: 8,
@@ -95,7 +115,7 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/accent-charmant.mp3",
       phonetics: "sə vjø mə.sjø a œ̃.n‿ak.sɑ̃ paʁ.ti.ky.ljɛʁ.mɑ̃ ʃaʁ.mɑ̃",
       difficulty: "advanced",
-      focusSounds: ["œ̃", "ɑ̃", "ʁ"]
+      focusSounds: ["œ̃", "ɑ̃", "ʁ"],
     },
     {
       id: 9,
@@ -104,9 +124,9 @@ const mockPronunciationPhrases: Record<string, PronunciationPhrase[]> = {
       audioUrl: "/audio/pronunciation/prononciation-francaise.mp3",
       phonetics: "la pʁɔ.nɔ̃.sja.sjɔ̃ fʁɑ̃.sɛz ne.se.sit bo.ku də pʁa.tik",
       difficulty: "advanced",
-      focusSounds: ["ɔ̃", "ɑ̃", "ɛ"]
-    }
-  ]
+      focusSounds: ["ɔ̃", "ɑ̃", "ɛ"],
+    },
+  ],
 };
 
 // Mock pronunciation exercises
@@ -118,7 +138,7 @@ const mockPronunciationExercises: PronunciationExercise[] = [
     difficulty: "beginner",
     phrases: mockPronunciationPhrases.beginner.slice(0, 3),
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   {
     id: 2,
@@ -127,30 +147,31 @@ const mockPronunciationExercises: PronunciationExercise[] = [
     difficulty: "intermediate",
     phrases: mockPronunciationPhrases.intermediate.slice(0, 3),
     createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   {
     id: 3,
     title: "Advanced Expressions",
-    description: "Complex sentences with challenging sounds for advanced learners.",
+    description:
+      "Complex sentences with challenging sounds for advanced learners.",
     difficulty: "advanced",
     phrases: mockPronunciationPhrases.advanced.slice(0, 3),
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString()
-  }
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<PronunciationExercise>>
 ) {
   // Only allow GET requests
-  if (req.method !== 'GET') {
+  if (req.method !== "GET") {
     return res.status(405).json({
       success: false,
       error: {
-        message: 'Method not allowed'
-      }
+        message: "Method not allowed",
+      },
     });
   }
 
@@ -159,31 +180,71 @@ export default function handler(
     const { id } = req.query;
     const exerciseId = parseInt(id as string, 10);
 
-    // Find the exercise by ID
-    const exercise = mockPronunciationExercises.find(ex => ex.id === exerciseId);
-
-    // If exercise not found, return 404
-    if (!exercise) {
-      return res.status(404).json({
+    if (isNaN(exerciseId)) {
+      return res.status(400).json({
         success: false,
         error: {
-          message: `Pronunciation exercise with ID ${exerciseId} not found`
-        }
+          message: "Invalid exercise ID",
+        },
       });
     }
+
+    // Get the pronunciation exercise from database
+    const { data: exercise, error } = await supabase
+      .from(TABLES.PRONUNCIATION_EXERCISES)
+      .select("*")
+      .eq("id", exerciseId)
+      .single();
+
+    if (error || !exercise) {
+      // Find the exercise by ID
+      const exercise = mockPronunciationExercises.find(
+        (ex) => ex.id === exerciseId
+      );
+      // If no exercise found in database, return mock data
+      return res.status(200).json({
+        success: true,
+        data: exercise,
+      });
+    }
+
+    // Transform database data to API format
+    const pronunciationExercise: PronunciationExercise = {
+      id: exercise.id,
+      title: exercise.title || `Pronunciation Exercise ${exercise.id}`,
+      description: exercise.description || "Practice French pronunciation",
+      difficulty: mapDifficultyLevel(exercise.difficulty),
+      phrases: [
+        {
+          id: exercise.id,
+          text: exercise.text,
+          translation: exercise.translation || "",
+          audioUrl:
+            exercise.audio_url ||
+            `/audio/pronunciation/exercise-${exercise.id}.mp3`,
+          phonetics: exercise.phonetics || "",
+          difficulty: mapDifficultyLevel(exercise.difficulty),
+          focusSounds: exercise.focus_sounds
+            ? exercise.focus_sounds.split(",")
+            : [],
+        },
+      ],
+      createdAt: exercise.created_at || new Date().toISOString(),
+      updatedAt: exercise.updated_at || new Date().toISOString(),
+    };
 
     // Return the exercise
     return res.status(200).json({
       success: true,
-      data: exercise
+      data: pronunciationExercise,
     });
   } catch (error) {
-    console.error('Error in pronunciation exercise API:', error);
+    console.error("Error in pronunciation exercise API:", error);
     return res.status(500).json({
       success: false,
       error: {
-        message: 'Internal server error'
-      }
+        message: "Internal server error",
+      },
     });
   }
 }

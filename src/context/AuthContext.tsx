@@ -69,6 +69,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             theme: 'light'
           }
         });
+      } else {
+        setUser(null);
       }
     } catch (error: unknown) {
       console.error('Auth initialization error:', error);
