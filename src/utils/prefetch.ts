@@ -1,11 +1,17 @@
 import { vocabularyService, lessonService, conversationService, grammarService, pronunciationService, examService } from '@/services';
 import { localStorageCache } from '@/utils/cache';
+import { isAuthenticated } from '@/utils/authCookies';
 
 /**
  * Prefetch common data that will be needed across the application
  * This can be called on app initialization or when a user logs in
  */
 export const prefetchCommonData = async () => {
+  // Check if user is authenticated before prefetching
+  if (!isAuthenticated()) {
+    return;
+  }
+
   try {
     // Start all fetches in parallel
     const promises = [
@@ -48,10 +54,8 @@ export const prefetchCommonData = async () => {
 
     // Wait for all prefetches to complete
     await Promise.all(promises);
-
-    console.log('Prefetching completed successfully');
   } catch (error) {
-    console.error('Error during prefetching:', error);
+    console.error('Prefetch: Error during common data prefetching:', error);
   }
 };
 

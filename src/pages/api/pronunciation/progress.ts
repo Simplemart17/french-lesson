@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationProgress } from '@/services/api/pronunciationApiService';
+import { supabase, TABLES } from '@/lib/supabase';
+import { getUserId } from '@/utils/auth';
 
 // Mock pronunciation progress data
 const mockPronunciationProgress: PronunciationProgress[] = [
@@ -30,16 +32,61 @@ const mockPronunciationProgress: PronunciationProgress[] = [
   }
 ];
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<PronunciationProgress[] | PronunciationProgress>>
 ) {
   // Handle GET request to retrieve progress
   if (req.method === 'GET') {
     try {
+      const userId = await getUserId(req);
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'User not authenticated' }
+        });
+      }
+
+      // Get pronunciation progress from database
+      const { data: progressData, error } = await supabase
+        .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
+        .select(`
+          exercise_id,
+          best_accuracy,
+          attempts,
+          last_practiced,
+          pronunciation_exercises!inner(id, text)
+        `)
+        .eq('user_id', userId)
+        .order('last_practiced', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching pronunciation progress:', error);
+        return res.status(500).json({
+          success: false,
+          error: { message: 'Failed to fetch pronunciation progress' }
+        });
+      }
+
+      // Transform database data to API format
+      const pronunciationProgress: PronunciationProgress[] = (progressData || []).map(item => ({
+        phraseId: parseInt(item.exercise_id),
+        bestAccuracy: item.best_accuracy || 0,
+        attempts: item.attempts || 0,
+        lastAttempt: item.last_practiced || new Date().toISOString()
+      }));
+
+      // If no progress data exists, return empty array
+      if (pronunciationProgress.length === 0) {
+        return res.status(200).json({
+          success: true,
+          data: []
+        });
+      }
+
       return res.status(200).json({
         success: true,
-        data: mockPronunciationProgress
+        data: pronunciationProgress ?? mockPronunciationProgress
       });
     } catch (error) {
       console.error('Error in pronunciation progress API:', error);
@@ -51,12 +98,20 @@ export default function handler(
       });
     }
   }
-  
+
   // Handle POST request to update progress
   if (req.method === 'POST') {
     try {
+      const userId = await getUserId(req);
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { message: 'User not authenticated' }
+        });
+      }
+
       const { phraseId, accuracy } = req.body;
-      
+
       // Validate input
       if (!phraseId || isNaN(phraseId) || !accuracy || isNaN(accuracy)) {
         return res.status(400).json({
@@ -66,39 +121,84 @@ export default function handler(
           }
         });
       }
-      
-      // Find existing progress for this phrase
-      const existingProgressIndex = mockPronunciationProgress.findIndex(
-        p => p.phraseId === phraseId
-      );
-      
+
+      // Check if exercise exists
+      const { data: exercise, error: exerciseError } = await supabase
+        .from(TABLES.PRONUNCIATION_EXERCISES)
+        .select('id')
+        .eq('id', phraseId)
+        .single();
+
+      if (exerciseError || !exercise) {
+        return res.status(404).json({
+          success: false,
+          error: { message: 'Pronunciation exercise not found' }
+        });
+      }
+
+      // Check if progress already exists for this user and exercise
+      const { data: existingProgress, error: fetchError } = await supabase
+        .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
+        .select('*')
+        .eq('user_id', userId)
+        .eq('exercise_id', phraseId)
+        .single();
+
       let updatedProgress: PronunciationProgress;
-      
-      if (existingProgressIndex >= 0) {
+
+      if (existingProgress && !fetchError) {
         // Update existing progress
-        const existing = mockPronunciationProgress[existingProgressIndex];
+        const newBestAccuracy = Math.max(existingProgress.best_accuracy || 0, accuracy);
+        const newAttempts = (existingProgress.attempts || 0) + 1;
+
+        const { data: updated, error: updateError } = await supabase
+          .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
+          .update({
+            best_accuracy: newBestAccuracy,
+            attempts: newAttempts,
+            last_practiced: new Date().toISOString()
+          })
+          .eq('user_id', userId)
+          .eq('exercise_id', phraseId)
+          .select()
+          .single();
+
+        if (updateError) {
+          throw new Error(`Failed to update progress: ${updateError.message}`);
+        }
+
         updatedProgress = {
-          ...existing,
-          bestAccuracy: Math.max(existing.bestAccuracy, accuracy),
-          attempts: existing.attempts + 1,
-          lastAttempt: new Date().toISOString()
+          phraseId: parseInt(updated.exercise_id),
+          bestAccuracy: updated.best_accuracy,
+          attempts: updated.attempts,
+          lastAttempt: updated.last_practiced
         };
-        
-        // Update the mock data (in a real app, this would update the database)
-        mockPronunciationProgress[existingProgressIndex] = updatedProgress;
       } else {
         // Create new progress entry
+        const { data: created, error: createError } = await supabase
+          .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
+          .insert({
+            user_id: userId,
+            exercise_id: phraseId,
+            best_accuracy: accuracy,
+            attempts: 1,
+            last_practiced: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          throw new Error(`Failed to create progress: ${createError.message}`);
+        }
+
         updatedProgress = {
-          phraseId,
-          bestAccuracy: accuracy,
-          attempts: 1,
-          lastAttempt: new Date().toISOString()
+          phraseId: parseInt(created.exercise_id),
+          bestAccuracy: created.best_accuracy,
+          attempts: created.attempts,
+          lastAttempt: created.last_practiced
         };
-        
-        // Add to mock data (in a real app, this would insert into the database)
-        mockPronunciationProgress.push(updatedProgress);
       }
-      
+
       // Return the updated progress
       return res.status(200).json({
         success: true,

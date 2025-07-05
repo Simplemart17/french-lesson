@@ -46,7 +46,7 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, isInitialized } = useAuth();
   const [greeting, setGreeting] = useState('');
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +70,10 @@ export default function DashboardPage() {
   // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
-      if (!user) return;
+      // Wait for both user and auth initialization
+      if (!user || !isInitialized) {
+        return;
+      }
 
       setIsLoading(true);
       setError(null);
@@ -81,17 +84,18 @@ export default function DashboardPage() {
 
         if (result.success) {
           setDashboardData(result.data);
+        } else {
+          setError('Failed to load dashboard data');
         }
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        setError('Failed to load dashboard data');
+      } catch {
+        setError('Failed to load dashboard data. Please try refreshing the page.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, [user]);
+  }, [user, isInitialized]);
 
   return (
     <ProtectedRoute>
