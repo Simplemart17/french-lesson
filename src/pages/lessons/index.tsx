@@ -395,7 +395,9 @@ export default function LessonsPage() {
                       <Image
                         src={getImageUrl(lessonCategory)}
                         alt={lesson.title}
+                        sizes='100%'
                         fill
+                        priority
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (

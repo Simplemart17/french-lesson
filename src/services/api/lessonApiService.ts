@@ -153,12 +153,12 @@ const lessonApiService = {
    */
   submitLessonAnswers: async (
     lessonId: string,
-    answers: Record<number, string | string[]>
-  ): Promise<{ score: number; feedback: Record<number, { correct: boolean; explanation?: string }> }> => {
+    answers: Record<string, string | string[]>
+  ): Promise<{ score: number; feedback: Record<string, { correct: boolean; explanation?: string }> }> => {
     try {
       const response = await apiClient.post<ApiResponse<{
         score: number;
-        feedback: Record<number, { correct: boolean; explanation?: string }>;
+        feedback: Record<string, { correct: boolean; explanation?: string }>;
       }>>(
         `${API_ENDPOINTS.LESSONS.ITEM(lessonId)}/submit`,
         { answers }
