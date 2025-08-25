@@ -35,7 +35,7 @@ const lessonApiService = {
    * @param id Lesson ID
    * @returns Complete lesson with sections and exercises, or null if not found
    */
-  getLesson: async (id: number): Promise<Lesson | null> => {
+  getLesson: async (id: string): Promise<Lesson | null> => {
     try {
       const response = await apiClient.get<ApiResponse<Lesson>>(API_ENDPOINTS.LESSONS.ITEM(id));
 
@@ -55,7 +55,7 @@ const lessonApiService = {
    * @param lessonId Lesson ID
    * @returns Array of lesson sections
    */
-  getLessonSections: async (lessonId: number): Promise<LessonSection[]> => {
+  getLessonSections: async (lessonId: string): Promise<LessonSection[]> => {
     try {
       const response = await apiClient.get<ApiResponse<LessonSection[]>>(
         `${API_ENDPOINTS.LESSONS.ITEM(lessonId)}/sections`
@@ -77,7 +77,7 @@ const lessonApiService = {
    * @param sectionId Section ID
    * @returns Array of exercises for the section
    */
-  getSectionExercises: async (sectionId: number): Promise<LessonExercise[]> => {
+  getSectionExercises: async (sectionId: string): Promise<LessonExercise[]> => {
     try {
       const response = await apiClient.get<ApiResponse<LessonExercise[]>>(
         `/lessons/sections/${sectionId}/exercises`
@@ -99,7 +99,7 @@ const lessonApiService = {
    * @param lessonId Optional lesson ID to filter progress
    * @returns Array of lesson progress items
    */
-  getLessonProgress: async (lessonId?: number): Promise<LessonProgress[]> => {
+  getLessonProgress: async (lessonId?: string): Promise<LessonProgress[]> => {
     try {
       const params = lessonId ? { lessonId } : {};
       const response = await apiClient.get<ApiResponse<LessonProgress[]>>(API_ENDPOINTS.LESSONS.PROGRESS, { params });
@@ -123,7 +123,7 @@ const lessonApiService = {
    * @returns Updated lesson progress
    */
   updateLessonProgress: async (
-    lessonId: number,
+    lessonId: string,
     completed: boolean,
     score: number
   ): Promise<LessonProgress> => {
@@ -152,7 +152,7 @@ const lessonApiService = {
    * @returns Score and feedback for the submitted answers
    */
   submitLessonAnswers: async (
-    lessonId: number,
+    lessonId: string,
     answers: Record<number, string | string[]>
   ): Promise<{ score: number; feedback: Record<number, { correct: boolean; explanation?: string }> }> => {
     try {
