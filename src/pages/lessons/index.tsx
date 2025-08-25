@@ -373,7 +373,7 @@ export default function LessonsPage() {
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
           {isLoadingLessons ? (
             // Loading skeletons
-            Array.from({ length: 3 }).map((_, index) => (
+            Array.from({ length: 4 }).map((_, index) => (
               <Card key={index} className="h-full overflow-hidden animate-pulse">
                 <div className="h-48 bg-gray-200"></div>
                 <div className="p-5">
