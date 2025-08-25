@@ -88,9 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Listen to Supabase auth state changes
   useEffect(() => {
-    console.log('Setting up auth state change listener');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
 
       if (event === 'SIGNED_IN' && session?.user) {
         // User signed in, get their profile

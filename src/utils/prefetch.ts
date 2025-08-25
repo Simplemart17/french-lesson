@@ -149,8 +149,6 @@ export const prefetchPageData = async (page: string, params?: Record<string, str
         console.error('Failed to store prefetch timestamp:', err);
       }
     }
-
-    console.log(`Prefetching for page ${page} completed`);
   } catch (error) {
     console.error(`Error during prefetching for page ${page}:`, error);
   }
