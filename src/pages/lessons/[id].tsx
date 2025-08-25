@@ -25,22 +25,15 @@ export default function LessonPage() {
       setIsLoading(true);
       setError(null);
 
-      const lessonId = parseInt(id, 10);
-      if (isNaN(lessonId)) {
-        setError('Invalid lesson ID');
-        setIsLoading(false);
-        return;
-      }
-
       // Fetch lesson data from API
-      lessonService.getLesson(lessonId)
+      lessonService.getLesson(id)
         .then(data => {
           if (data) {
             setLesson(data);
 
             // Fetch progress if authenticated
             if (isAuthenticated) {
-              return lessonService.getLessonProgress(lessonId);
+              return lessonService.getLessonProgress(id);
             }
           } else {
             setError('Lesson not found');
@@ -68,13 +61,10 @@ export default function LessonPage() {
   const handleLessonComplete = async (score: number) => {
     if (!id || !lesson || !isAuthenticated) return;
 
-    const lessonId = parseInt(id as string, 10);
-    if (isNaN(lessonId)) return;
-
     try {
       // Update lesson progress
       const updatedProgress = await lessonService.updateLessonProgress(
-        lessonId,
+        id as string,
         true, // completed
         score
       );
@@ -94,15 +84,12 @@ export default function LessonPage() {
   };
 
   // Handle exercise submission
-  const handleSubmitAnswers = async (answers: Record<number, string | string[]>) => {
+  const handleSubmitAnswers = async (answers: Record<string, string | string[]>) => {
     if (!id || !lesson || !isAuthenticated) return null;
-
-    const lessonId = parseInt(id as string, 10);
-    if (isNaN(lessonId)) return null;
 
     try {
       // Submit answers to API
-      const result = await lessonService.submitLessonAnswers(lessonId, answers);
+      const result = await lessonService.submitLessonAnswers(id as string, answers);
       return result;
     } catch (err) {
       console.error('Error submitting answers:', err);

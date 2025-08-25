@@ -30,7 +30,7 @@ async function handler(
           *,
           sections:${TABLES.LESSON_SECTIONS}(
             *,
-            exercises:Exercise(*)
+            exercises:lesson_exercises(*)
           )
         `)
         .eq('id', lessonId)

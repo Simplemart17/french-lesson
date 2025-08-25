@@ -88,7 +88,7 @@ export const prefetchPageData = async (page: string, params?: Record<string, str
 
       case 'lesson-detail':
         if (params?.id) {
-          await lessonService.getLesson(Number(params.id)).catch((err: Error) => {
+          await lessonService.getLesson(String(params.id)).catch((err: Error) => {
             console.error(`Failed to prefetch lesson ${params.id}:`, err);
             return null;
           });
