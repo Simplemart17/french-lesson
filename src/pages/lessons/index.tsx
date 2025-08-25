@@ -54,8 +54,8 @@ const getCategoryDisplay = (lesson: Lesson): string => {
 };
 
 // Helper function to get image URL
-const getImageUrl = (lesson: Lesson): string => {
-  return lesson.imageUrl || `/images/lessons/${lesson.id}.jpg`;
+const getImageUrl = (lesson: string): string => {
+  return `/images/lessons/${lesson}.jpg`;
 };
 
 // Extended lesson type that includes progress
@@ -384,13 +384,16 @@ export default function LessonsPage() {
               </Card>
             ))
           ) : currentLessons.length > 0 ? (
-            currentLessons.map((lesson) => (
+            currentLessons.map((lesson) => {
+              const lessonCategory = getCategoryDisplay(lesson).charAt(0).toUpperCase() + getCategoryDisplay(lesson).slice(1);
+
+              return(
               <Link key={lesson.id} href={`/lessons/${lesson.id}`} className="block group">
                 <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
                   <div className="relative h-48 overflow-hidden">
-                    {getImageUrl(lesson) ? (
+                    {getImageUrl(lessonCategory) ? (
                       <Image
-                        src={getImageUrl(lesson)}
+                        src={getImageUrl(lessonCategory)}
                         alt={lesson.title}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -419,7 +422,7 @@ export default function LessonsPage() {
                     {/* Category Badge */}
                     <div className="absolute top-3 right-3">
                       <span className="px-2 py-1 text-xs font-medium text-gray-800 rounded-full bg-white/80 backdrop-blur-sm">
-                        {getCategoryDisplay(lesson).charAt(0).toUpperCase() + getCategoryDisplay(lesson).slice(1)}
+                        {lessonCategory}
                       </span>
                     </div>
 
@@ -468,7 +471,7 @@ export default function LessonsPage() {
                   </div>
                 </Card>
               </Link>
-            ))
+            )})
           ) : (
             <div className="py-12 text-center col-span-full">
               <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
