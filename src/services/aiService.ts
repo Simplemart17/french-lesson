@@ -2,23 +2,18 @@ import axios from 'axios';
 import { getAuthToken } from '@/utils/authCookies';
 import { localStorageCache } from '@/utils/cache';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 seconds timeout for AI operations
 });
 
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = getAuthToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+
 
 // Cache configuration
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
@@ -367,6 +362,33 @@ class AIService {
 
     // Remove each key
     aiCacheKeys.forEach(key => this.cache.remove(key));
+  }
+
+  /**
+   * Generate text from a prompt
+   */
+  async generateText(prompt: string, token?: string): Promise<string | null> {
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await api.post('/ai/generate-text', {
+        prompt,
+      }, { headers });
+
+      if (response.data.success && response.data.data) {
+        return response.data.data.text;
+      }
+
+      throw new Error('Failed to generate text');
+    } catch (error) {
+      console.error('Error generating text:', error);
+      return null;
+    }
   }
 }
 

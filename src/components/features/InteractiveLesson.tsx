@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import apiClient from '@/services/api/apiClient';
 
 export interface LessonSection {
   id: string;
@@ -56,7 +58,7 @@ interface SubmissionResult {
 interface InteractiveLessonProps {
   lesson: Lesson;
   onComplete?: (score: number) => void;
-  onSubmitAnswers?: (answers: Record<number, string | string[]>) => Promise<SubmissionResult | null>;
+  onSubmitAnswers?: (answers: Record<string, string | string[]>) => Promise<SubmissionResult | null>;
   initialProgress?: { completed: boolean; score: number } | null;
 }
 
@@ -68,15 +70,31 @@ const InteractiveLesson = ({
 }: InteractiveLessonProps) => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string | string[]>>({});
-  const [apiAnswers, setApiAnswers] = useState<Record<number, string | string[]>>({});
+  const [apiAnswers, setApiAnswers] = useState<Record<string, string | string[]>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(initialProgress?.completed || false);
   const [score, setScore] = useState(initialProgress?.score || 0);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [, setSubmitting] = useState(false);
 
   const currentSection = lesson.sections[currentSectionIndex];
   const totalSections = lesson.sections.length;
   const progress = ((currentSectionIndex + 1) / totalSections) * 100;
+
+  const handleGenerateContent = async () => {
+    setIsGenerating(true);
+    try {
+      await apiClient.post('/lessons/generate-content', {
+        lessonId: lesson.id,
+        sectionId: currentSection.id,
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error('Error generating content:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleNextSection = () => {
     if (currentSectionIndex < totalSections - 1) {
@@ -133,8 +151,8 @@ const InteractiveLesson = ({
     // Also store the answer in the format expected by the API
     if (currentSection.exercise) {
       // Convert section ID to exercise ID for API
-      const exerciseId = parseInt(currentSection.id, 10);
-      if (!isNaN(exerciseId)) {
+      const exerciseId = currentSection.id;
+      if (exerciseId) {
         setApiAnswers({
           ...apiAnswers,
           [exerciseId]: answer,
@@ -148,8 +166,8 @@ const InteractiveLesson = ({
 
     // If we have an API submission handler and this is an exercise, submit the answer
     if (onSubmitAnswers && currentSection.exercise) {
-      const exerciseId = parseInt(currentSection.id, 10);
-      if (!isNaN(exerciseId) && userAnswers[currentSection.id]) {
+      const exerciseId = currentSection.id;
+      if (exerciseId && userAnswers[currentSection.id]) {
         setSubmitting(true);
         try {
           // Submit just this answer
@@ -315,7 +333,7 @@ const InteractiveLesson = ({
       case 'text':
         return (
           <div className="prose prose-primary max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: currentSection.content }} />
+            <ReactMarkdown>{currentSection.content}</ReactMarkdown>
           </div>
         );
 
@@ -323,7 +341,7 @@ const InteractiveLesson = ({
         return (
           <div>
             <div className="mb-4 prose prose-primary max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: currentSection.content }} />
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
             </div>
             {currentSection.imageUrl && (
               <div className="mt-4">
@@ -343,7 +361,7 @@ const InteractiveLesson = ({
         return (
           <div>
             <div className="mb-4 prose prose-primary max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: currentSection.content }} />
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
             </div>
             {currentSection.audioUrl && (
               <div className="mt-4">
@@ -363,7 +381,7 @@ const InteractiveLesson = ({
         return (
           <div>
             <div className="mb-4 prose prose-primary max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: currentSection.content }} />
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
             </div>
             {currentSection.videoUrl && (
               <div className="mt-4 aspect-w-16 aspect-h-9">
@@ -383,7 +401,7 @@ const InteractiveLesson = ({
         return (
           <div>
             <div className="mb-4 prose prose-primary max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: currentSection.content }} />
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
             </div>
             {renderExercise()}
           </div>
@@ -392,7 +410,7 @@ const InteractiveLesson = ({
       default:
         return (
           <div className="prose prose-primary max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: currentSection.content }} />
+            <ReactMarkdown>{currentSection.content}</ReactMarkdown>
           </div>
         );
     }
@@ -446,7 +464,12 @@ const InteractiveLesson = ({
       <Card className="mb-6">
         <div className="p-6">
           {currentSection.title && (
-            <h2 className="mb-4 text-xl font-semibold text-gray-800">{currentSection.title}</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">{currentSection.title}</h2>
+              <Button onClick={handleGenerateContent} disabled={isGenerating} size="sm">
+                {isGenerating ? 'Generating...' : '✨ Generate Content'}
+              </Button>
+            </div>
           )}
 
           {renderSectionContent()}
