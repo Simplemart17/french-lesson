@@ -95,13 +95,82 @@ async function handler(
     }
 
     // 3. Update the section content in the database
-    const { error: updateError } = await supabase
-      .from(TABLES.LESSON_SECTIONS)
-      .update({ content: generatedContent })
-      .eq('id', sectionId);
+    if (section.type === 'practice' || section.type === 'exercise') {
+      // Parse the AI-generated JSON content and store exercises properly
+      try {
+        const exerciseData = JSON.parse(generatedContent);
+        
+        if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
+          // First, delete any existing exercises for this section
+          await supabase
+            .from('lesson_exercises')
+            .delete()
+            .eq('sectionId', sectionId);
 
-    if (updateError) {
-      return res.status(500).json({ success: false, error: { message: 'Failed to update section content' } });
+          // Insert the new exercises
+          const exercisesToInsert = exerciseData.exercises.map((exercise: any, index: number) => ({
+            sectionId,
+            type: exercise.type,
+            question: exercise.question,
+            options: exercise.options || null,
+            correctAnswer: exercise.correctAnswer,
+            explanation: exercise.explanation,
+            order: index
+          }));
+
+          const { error: exerciseError } = await supabase
+            .from('lesson_exercises')
+            .insert(exercisesToInsert);
+
+          if (exerciseError) {
+            console.error('Failed to insert exercises:', exerciseError);
+            return res.status(500).json({ success: false, error: { message: 'Failed to store exercises' } });
+          }
+
+          // Update section content with a summary
+          const { error: updateError } = await supabase
+            .from(TABLES.LESSON_SECTIONS)
+            .update({ 
+              content: `Interactive practice session with ${exerciseData.exercises.length} exercises covering various aspects of French language learning.`
+            })
+            .eq('id', sectionId);
+
+          if (updateError) {
+            return res.status(500).json({ success: false, error: { message: 'Failed to update section content' } });
+          }
+        } else {
+          // If the JSON structure is incorrect, store as regular content
+          const { error: updateError } = await supabase
+            .from(TABLES.LESSON_SECTIONS)
+            .update({ content: generatedContent })
+            .eq('id', sectionId);
+
+          if (updateError) {
+            return res.status(500).json({ success: false, error: { message: 'Failed to update section content' } });
+          }
+        }
+      } catch (parseError) {
+        // If JSON parsing fails, store as regular content
+        console.error('Failed to parse AI-generated exercises:', parseError);
+        const { error: updateError } = await supabase
+          .from(TABLES.LESSON_SECTIONS)
+          .update({ content: generatedContent })
+          .eq('id', sectionId);
+
+        if (updateError) {
+          return res.status(500).json({ success: false, error: { message: 'Failed to update section content' } });
+        }
+      }
+    } else {
+      // For non-practice sections, store content directly
+      const { error: updateError } = await supabase
+        .from(TABLES.LESSON_SECTIONS)
+        .update({ content: generatedContent })
+        .eq('id', sectionId);
+
+      if (updateError) {
+        return res.status(500).json({ success: false, error: { message: 'Failed to update section content' } });
+      }
     }
 
     res.status(200).json({ success: true, data: null });

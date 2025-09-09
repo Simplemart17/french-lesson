@@ -253,37 +253,35 @@ export default function LessonsPage() {
           <div className="mb-8">
             <ErrorMessage
               message="Failed to load lessons. Please try again."
-              retryAction={() => {
+              retryAction={async () => {
                 // Refetch lessons and progress
                 const levelFilter = selectedLevel === 'all' ? undefined : selectedLevel;
                 const topicFilter = selectedCategory === 'all' ? undefined : selectedCategory;
 
                 setIsLoadingLessons(true);
-                lessonService.getLessons(levelFilter, topicFilter)
-                  .then(data => {
-                    setLessons(data);
-                    setIsLoadingLessons(false);
-                    setLessonsError(null);
-                  })
-                  .catch(err => {
-                    console.error('Error fetching lessons:', err);
-                    setLessonsError('Failed to load lessons');
-                    setIsLoadingLessons(false);
-                  });
+                try {
+                  const data = await lessonService.getLessons(levelFilter, topicFilter);
+                  setLessons(data);
+                  setIsLoadingLessons(false);
+                  setLessonsError(null);
+                } catch (err) {
+                  console.error('Error fetching lessons:', err);
+                  setLessonsError('Failed to load lessons');
+                  setIsLoadingLessons(false);
+                }
 
                 if (isAuthenticated) {
                   setIsLoadingProgress(true);
-                  lessonService.getAllLessonProgress()
-                    .then(data => {
-                      setProgressData(data);
-                      setIsLoadingProgress(false);
-                      setProgressError(null);
-                    })
-                    .catch(err => {
-                      console.error('Error fetching progress:', err);
-                      setProgressError('Failed to load progress');
-                      setIsLoadingProgress(false);
-                    });
+                  try {
+                    const data = await lessonService.getAllLessonProgress();
+                    setProgressData(data);
+                    setIsLoadingProgress(false);
+                    setProgressError(null);
+                  } catch (err) {
+                    console.error('Error fetching progress:', err);
+                    setProgressError('Failed to load progress');
+                    setIsLoadingProgress(false);
+                  }
                 }
               }}
             />
@@ -482,7 +480,7 @@ export default function LessonsPage() {
               <h3 className="mt-2 text-lg font-medium text-gray-900">No lessons found</h3>
               <p className="mt-1 text-gray-500">Try adjusting your filters or search query.</p>
               <div className="mt-6">
-                <Button onClick={() => {
+                <Button onClick={async () => {
                   setSelectedCategory('all');
                   setSelectedLevel('all');
                   setSearchQuery('');
@@ -491,17 +489,16 @@ export default function LessonsPage() {
 
                   // Refetch lessons
                   setIsLoadingLessons(true);
-                  lessonService.getLessons()
-                    .then(data => {
-                      setLessons(data);
-                      setIsLoadingLessons(false);
-                      setLessonsError(null);
-                    })
-                    .catch(err => {
-                      console.error('Error fetching lessons:', err);
-                      setLessonsError('Failed to load lessons');
-                      setIsLoadingLessons(false);
-                    });
+                  try {
+                    const data = await lessonService.getLessons();
+                    setLessons(data);
+                    setIsLoadingLessons(false);
+                    setLessonsError(null);
+                  } catch (err) {
+                    console.error('Error fetching lessons:', err);
+                    setLessonsError('Failed to load lessons');
+                    setIsLoadingLessons(false);
+                  }
                 }}>
                   Reset Filters
                 </Button>

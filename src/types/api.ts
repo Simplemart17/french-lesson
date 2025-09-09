@@ -51,7 +51,7 @@ export interface LessonSection {
   id: string;
   lessonId: string;
   title: string;
-  type: 'text' | 'audio' | 'video' | 'image' | 'exercise';
+  type: 'text' | 'audio' | 'video' | 'image' | 'exercise' | 'introduction' | 'practice' | 'summary';
   content?: string;
   audioUrl?: string;
   videoUrl?: string;

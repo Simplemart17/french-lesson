@@ -68,7 +68,30 @@ async function handler(
         duration: lesson.duration,
         topics: lesson.topics,
         sections: (lesson.sections || [])
-          .sort((a: DatabaseLessonSection, b: DatabaseLessonSection) => a.order - b.order)
+          .sort((a: DatabaseLessonSection, b: DatabaseLessonSection) => {
+            // Define the correct order for section types
+            const typeOrder: Record<string, number> = {
+              introduction: 1,
+              text: 2,
+              image: 3,
+              audio: 4,
+              video: 5,
+              practice: 6,
+              exercise: 7,
+              summary: 8
+            };
+            
+            // First sort by type priority, then by order within the same type
+            const typeOrderA = typeOrder[a.type] || 999;
+            const typeOrderB = typeOrder[b.type] || 999;
+            
+            if (typeOrderA !== typeOrderB) {
+              return typeOrderA - typeOrderB;
+            }
+            
+            // If same type, sort by order field
+            return a.order - b.order;
+          })
           .map((section: DatabaseLessonSection) => ({
             id: section.id,
             lessonId: section.lessonId,

@@ -7,7 +7,7 @@ import apiClient from '@/services/api/apiClient';
 
 export interface LessonSection {
   id: string;
-  type: 'text' | 'image' | 'audio' | 'video' | 'exercise';
+  type: 'text' | 'image' | 'audio' | 'video' | 'exercise' | 'introduction' | 'practice' | 'summary';
   title?: string;
   content: string;
   imageUrl?: string;
@@ -330,6 +330,50 @@ const InteractiveLesson = ({
 
   const renderSectionContent = () => {
     switch (currentSection.type) {
+      case 'introduction':
+        return (
+          <div>
+            <div className="p-4 mb-6 border border-green-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
+              <div className="flex items-center mb-2">
+                <div className="flex items-center justify-center w-8 h-8 mr-3 bg-green-600 rounded-full">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-green-800">Introduction</h3>
+              </div>
+              <p className="text-green-700">
+                Let&apos;s begin your French learning journey with this lesson!
+              </p>
+            </div>
+            <div className="prose prose-primary max-w-none">
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
+            </div>
+          </div>
+        );
+
+      case 'summary':
+        return (
+          <div>
+            <div className="p-4 mb-6 border border-purple-200 rounded-lg bg-gradient-to-r from-purple-50 to-violet-50">
+              <div className="flex items-center mb-2">
+                <div className="flex items-center justify-center w-8 h-8 mr-3 bg-purple-600 rounded-full">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-purple-800">Lesson Summary</h3>
+              </div>
+              <p className="text-purple-700">
+                Great work! Let&apos;s review what you&apos;ve learned in this lesson.
+              </p>
+            </div>
+            <div className="prose prose-primary max-w-none">
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
+            </div>
+          </div>
+        );
+
       case 'text':
         return (
           <div className="prose prose-primary max-w-none">
@@ -387,7 +431,7 @@ const InteractiveLesson = ({
               <div className="mt-4 aspect-w-16 aspect-h-9">
                 <iframe
                   src={currentSection.videoUrl}
-                  frameBorder="0"
+                  style={{ border: 0 }}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="w-full h-full rounded-lg"
@@ -400,6 +444,29 @@ const InteractiveLesson = ({
       case 'exercise':
         return (
           <div>
+            <div className="mb-4 prose prose-primary max-w-none">
+              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
+            </div>
+            {renderExercise()}
+          </div>
+        );
+
+      case 'practice':
+        return (
+          <div>
+            <div className="p-4 mb-6 border border-blue-200 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="flex items-center mb-2">
+                <div className="flex items-center justify-center w-8 h-8 mr-3 bg-blue-600 rounded-full">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-blue-800">Practice Session</h3>
+              </div>
+              <p className="text-blue-700">
+                Time to practice what you&apos;ve learned! Complete the exercises below to reinforce your French skills.
+              </p>
+            </div>
             <div className="mb-4 prose prose-primary max-w-none">
               <ReactMarkdown>{currentSection.content}</ReactMarkdown>
             </div>

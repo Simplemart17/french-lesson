@@ -21,40 +21,42 @@ export default function LessonPage() {
 
   // Fetch lesson data
   useEffect(() => {
-    if (id && typeof id === 'string') {
-      setIsLoading(true);
-      setError(null);
+    const fetchLessonData = async () => {
+      if (id && typeof id === 'string') {
+        setIsLoading(true);
+        setError(null);
 
-      // Fetch lesson data from API
-      lessonService.getLesson(id)
-        .then(data => {
+        try {
+          // Fetch lesson data from API
+          const data = await lessonService.getLesson(id);
+          
           if (data) {
             setLesson(data);
 
             // Fetch progress if authenticated
             if (isAuthenticated) {
-              return lessonService.getLessonProgress(id);
+              const progressData = await lessonService.getLessonProgress(id);
+              if (progressData) {
+                setProgress({
+                  completed: progressData.completed,
+                  score: progressData.score
+                });
+              }
             }
           } else {
             setError('Lesson not found');
           }
-          return null;
-        })
-        .then(progressData => {
-          if (progressData) {
-            setProgress({
-              completed: progressData.completed,
-              score: progressData.score
-            });
-          }
+          
           setIsLoading(false);
-        })
-        .catch(err => {
+        } catch (err) {
           console.error('Error fetching lesson:', err);
           setError('Failed to load lesson. Please try again later.');
           setIsLoading(false);
-        });
-    }
+        }
+      }
+    };
+
+    fetchLessonData();
   }, [id, isAuthenticated]);
 
   // Handle lesson completion
@@ -188,7 +190,7 @@ export default function LessonPage() {
                 {lesson.duration} min
               </div>
               {progress?.completed && (
-                <div className="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                <div className="px-3 py-1 text-sm font-medium text-green-800 bg-green-100 rounded-full">
                   Completed ({progress.score}%)
                 </div>
               )}
