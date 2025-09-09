@@ -148,7 +148,7 @@ export default function LessonPage() {
       content: section.content || '',
       audioUrl: section.audioUrl,
       videoUrl: section.videoUrl,
-      exercise: section.exercises && section.exercises.length > 0
+      exercise: section.exercises && section.exercises.length === 1
         ? {
             type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(section.exercises[0].type)
               ? section.exercises[0].type
@@ -158,6 +158,17 @@ export default function LessonPage() {
             correctAnswer: section.exercises[0].correctAnswer,
             explanation: section.exercises[0].explanation
           }
+        : undefined,
+      exercises: section.exercises && section.exercises.length > 1
+        ? section.exercises.map(exercise => ({
+            type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(exercise.type)
+              ? exercise.type
+              : 'multiple-choice') as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'true-false' | 'reorder',
+            question: exercise.question,
+            options: exercise.options || [],
+            correctAnswer: exercise.correctAnswer,
+            explanation: exercise.explanation
+          }))
         : undefined
     })) || []
   };

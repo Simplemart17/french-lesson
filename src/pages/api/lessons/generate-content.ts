@@ -103,23 +103,23 @@ async function handler(
         if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
           // First, delete any existing exercises for this section
           await supabase
-            .from('lesson_exercises')
+            .from(TABLES.LESSON_EXERCISES)
             .delete()
-            .eq('sectionId', sectionId);
+            .eq('section_id', sectionId);
 
           // Insert the new exercises
           const exercisesToInsert = exerciseData.exercises.map((exercise: any, index: number) => ({
-            sectionId,
+            section_id: sectionId,
             type: exercise.type,
             question: exercise.question,
             options: exercise.options || null,
-            correctAnswer: exercise.correctAnswer,
+            correct_answer: exercise.correctAnswer,
             explanation: exercise.explanation,
             order: index
           }));
 
           const { error: exerciseError } = await supabase
-            .from('lesson_exercises')
+            .from(TABLES.LESSON_EXERCISES)
             .insert(exercisesToInsert);
 
           if (exerciseError) {

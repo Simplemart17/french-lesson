@@ -14,6 +14,7 @@ export interface LessonSection {
   audioUrl?: string;
   videoUrl?: string;
   exercise?: Exercise;
+  exercises?: Exercise[];
 }
 
 export interface Exercise {
@@ -69,6 +70,7 @@ const InteractiveLesson = ({
   initialProgress
 }: InteractiveLessonProps) => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string | string[]>>({});
   const [apiAnswers, setApiAnswers] = useState<Record<string, string | string[]>>({});
   const [showExplanation, setShowExplanation] = useState(false);
@@ -80,6 +82,74 @@ const InteractiveLesson = ({
   const currentSection = lesson.sections[currentSectionIndex];
   const totalSections = lesson.sections.length;
   const progress = ((currentSectionIndex + 1) / totalSections) * 100;
+
+  // Get current exercise for practice sections with multiple exercises
+  const getCurrentExercise = (): Exercise | undefined => {
+    if (currentSection.type === 'practice' && currentSection.exercises && currentSection.exercises.length > 0) {
+      return currentSection.exercises[currentExerciseIndex];
+    }
+    
+    // Fallback: Try to parse JSON from content if no exercises are found
+    if ((currentSection.type === 'practice' || currentSection.type === 'exercise') && !currentSection.exercise && !currentSection.exercises) {
+      try {
+        const contentText = currentSection.content;
+        if (contentText && contentText.includes('"exercises"')) {
+          // Extract JSON from markdown code block if present
+          const jsonMatch = contentText.match(/```json\s*(\{[\s\S]*?\})\s*```/) || contentText.match(/(\{[\s\S]*\})/);
+          if (jsonMatch) {
+            const exerciseData = JSON.parse(jsonMatch[1]);
+            if (exerciseData.exercises && Array.isArray(exerciseData.exercises) && exerciseData.exercises.length > 0) {
+              const exercise = exerciseData.exercises[currentExerciseIndex] || exerciseData.exercises[0];
+              return {
+                type: exercise.type as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'reorder' | 'true-false',
+                question: exercise.question,
+                options: exercise.options,
+                correctAnswer: exercise.correctAnswer,
+                explanation: exercise.explanation
+              };
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to parse JSON exercise content:', error);
+      }
+    }
+    
+    return currentSection.exercise;
+  };
+
+  const getCurrentExerciseId = (): string => {
+    if (currentSection.type === 'practice' && currentSection.exercises && currentSection.exercises.length > 0) {
+      return `${currentSection.id}-exercise-${currentExerciseIndex}`;
+    }
+    return currentSection.id;
+  };
+
+  const getTotalExercisesInCurrentSection = (): number => {
+    if (currentSection.type === 'practice' && currentSection.exercises) {
+      return currentSection.exercises.length;
+    }
+    
+    // Fallback: Count JSON exercises from content
+    if ((currentSection.type === 'practice' || currentSection.type === 'exercise') && !currentSection.exercise && !currentSection.exercises) {
+      try {
+        const contentText = currentSection.content;
+        if (contentText && contentText.includes('"exercises"')) {
+          const jsonMatch = contentText.match(/```json\s*(\{[\s\S]*?\})\s*```/) || contentText.match(/(\{[\s\S]*\})/);
+          if (jsonMatch) {
+            const exerciseData = JSON.parse(jsonMatch[1]);
+            if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
+              return exerciseData.exercises.length;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to count JSON exercises:', error);
+      }
+    }
+    
+    return currentSection.exercise ? 1 : 0;
+  };
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
@@ -97,8 +167,20 @@ const InteractiveLesson = ({
   };
 
   const handleNextSection = () => {
+    // If we're in a practice section with multiple exercises, move to next exercise
+    const totalExercises = getTotalExercisesInCurrentSection();
+    if (currentSection.type === 'practice' && totalExercises > 1) {
+      if (currentExerciseIndex < totalExercises - 1) {
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
+        setShowExplanation(false);
+        return;
+      }
+    }
+
+    // Move to next section
     if (currentSectionIndex < totalSections - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
+      setCurrentExerciseIndex(0); // Reset exercise index for new section
       setShowExplanation(false);
     } else {
       // Calculate score based on correct answers
@@ -136,28 +218,64 @@ const InteractiveLesson = ({
   };
 
   const handlePrevSection = () => {
+    // If we're in a practice section with multiple exercises and not at the first exercise
+    const totalExercises = getTotalExercisesInCurrentSection();
+    if (currentSection.type === 'practice' && totalExercises > 1 && currentExerciseIndex > 0) {
+      setCurrentExerciseIndex(currentExerciseIndex - 1);
+      setShowExplanation(false);
+      return;
+    }
+
+    // Move to previous section
     if (currentSectionIndex > 0) {
       setCurrentSectionIndex(currentSectionIndex - 1);
+      // Set to last exercise of the previous section if it's a practice section
+      const prevSection = lesson.sections[currentSectionIndex - 1];
+      if (prevSection.type === 'practice') {
+        // Count exercises in previous section (including JSON fallback)
+        let prevSectionExerciseCount = 0;
+        if (prevSection.exercises) {
+          prevSectionExerciseCount = prevSection.exercises.length;
+        } else if (prevSection.content && prevSection.content.includes('"exercises"')) {
+          try {
+            const jsonMatch = prevSection.content.match(/```json\s*(\{[\s\S]*?\})\s*```/) || prevSection.content.match(/(\{[\s\S]*\})/);
+            if (jsonMatch) {
+              const exerciseData = JSON.parse(jsonMatch[1]);
+              if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
+                prevSectionExerciseCount = exerciseData.exercises.length;
+              }
+            }
+          } catch (error) {
+            console.error('Error counting previous section exercises:', error);
+          }
+        }
+        
+        if (prevSectionExerciseCount > 1) {
+          setCurrentExerciseIndex(prevSectionExerciseCount - 1);
+        } else {
+          setCurrentExerciseIndex(0);
+        }
+      } else {
+        setCurrentExerciseIndex(0);
+      }
       setShowExplanation(false);
     }
   };
 
   const handleAnswerSelect = (answer: string) => {
+    const exerciseId = getCurrentExerciseId();
     setUserAnswers({
       ...userAnswers,
-      [currentSection.id]: answer,
+      [exerciseId]: answer,
     });
 
     // Also store the answer in the format expected by the API
-    if (currentSection.exercise) {
-      // Convert section ID to exercise ID for API
-      const exerciseId = currentSection.id;
-      if (exerciseId) {
-        setApiAnswers({
-          ...apiAnswers,
-          [exerciseId]: answer,
-        });
-      }
+    const currentExercise = getCurrentExercise();
+    if (currentExercise) {
+      setApiAnswers({
+        ...apiAnswers,
+        [exerciseId]: answer,
+      });
     }
   };
 
@@ -165,14 +283,15 @@ const InteractiveLesson = ({
     setShowExplanation(true);
 
     // If we have an API submission handler and this is an exercise, submit the answer
-    if (onSubmitAnswers && currentSection.exercise) {
-      const exerciseId = currentSection.id;
-      if (exerciseId && userAnswers[currentSection.id]) {
+    const currentExercise = getCurrentExercise();
+    if (onSubmitAnswers && currentExercise) {
+      const exerciseId = getCurrentExerciseId();
+      if (exerciseId && userAnswers[exerciseId]) {
         setSubmitting(true);
         try {
           // Submit just this answer
           const result = await onSubmitAnswers({
-            [exerciseId]: userAnswers[currentSection.id]
+            [exerciseId]: userAnswers[exerciseId]
           });
 
           // Update the score if we got a result
@@ -189,10 +308,12 @@ const InteractiveLesson = ({
   };
 
   const isAnswerCorrect = () => {
-    if (!currentSection.exercise) return false;
+    const currentExercise = getCurrentExercise();
+    if (!currentExercise) return false;
 
-    const userAnswer = userAnswers[currentSection.id];
-    const correctAnswer = currentSection.exercise.correctAnswer;
+    const exerciseId = getCurrentExerciseId();
+    const userAnswer = userAnswers[exerciseId];
+    const correctAnswer = currentExercise.correctAnswer;
 
     if (Array.isArray(correctAnswer)) {
       if (!Array.isArray(userAnswer)) return false;
@@ -203,9 +324,13 @@ const InteractiveLesson = ({
   };
 
   const renderExercise = () => {
-    if (!currentSection.exercise) return null;
+    const currentExercise = getCurrentExercise();
+    if (!currentExercise) {
+      return null;
+    }
 
-    const { exercise } = currentSection;
+    const exercise = currentExercise;
+    const exerciseId = getCurrentExerciseId();
 
     switch (exercise.type) {
       case 'multiple-choice':
@@ -218,9 +343,9 @@ const InteractiveLesson = ({
                   <input
                     type="radio"
                     id={`option-${index}`}
-                    name={`exercise-${currentSection.id}`}
+                    name={`exercise-${exerciseId}`}
                     value={option}
-                    checked={userAnswers[currentSection.id] === option}
+                    checked={userAnswers[exerciseId] === option}
                     onChange={() => handleAnswerSelect(option)}
                     className="w-4 h-4 border-gray-300 text-primary-600 focus:ring-primary-500"
                     disabled={showExplanation}
@@ -233,7 +358,7 @@ const InteractiveLesson = ({
             </div>
 
             {!showExplanation ? (
-              <Button onClick={checkAnswer} className="mt-6" disabled={!userAnswers[currentSection.id]}>
+              <Button onClick={checkAnswer} className="mt-6" disabled={!userAnswers[exerciseId]}>
                 Check Answer
               </Button>
             ) : (
@@ -275,7 +400,7 @@ const InteractiveLesson = ({
             <div>
               <input
                 type="text"
-                value={userAnswers[currentSection.id] as string || ''}
+                value={userAnswers[exerciseId] as string || ''}
                 onChange={(e) => handleAnswerSelect(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Type your answer here"
@@ -284,7 +409,7 @@ const InteractiveLesson = ({
             </div>
 
             {!showExplanation ? (
-              <Button onClick={checkAnswer} className="mt-6" disabled={!userAnswers[currentSection.id]}>
+              <Button onClick={checkAnswer} className="mt-6" disabled={!userAnswers[exerciseId]}>
                 Check Answer
               </Button>
             ) : (
@@ -319,10 +444,136 @@ const InteractiveLesson = ({
           </div>
         );
 
+      case 'fill-in-blank':
+        return (
+          <div className="mt-6">
+            <h3 className="mb-4 text-lg font-medium text-gray-800">{exercise.question}</h3>
+            <div>
+              <input
+                type="text"
+                value={userAnswers[exerciseId] as string || ''}
+                onChange={(e) => handleAnswerSelect(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Fill in the blank"
+                disabled={showExplanation}
+              />
+            </div>
+
+            {!showExplanation ? (
+              <Button onClick={checkAnswer} className="mt-6" disabled={!userAnswers[exerciseId]}>
+                Check Answer
+              </Button>
+            ) : (
+              <div className={`mt-6 p-4 rounded-lg ${isAnswerCorrect() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    {isAnswerCorrect() ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <h3 className={`text-sm font-medium ${isAnswerCorrect() ? 'text-green-800' : 'text-red-800'}`}>
+                      {isAnswerCorrect() ? 'Correct!' : 'Incorrect'}
+                    </h3>
+                    <div className={`mt-2 text-sm ${isAnswerCorrect() ? 'text-green-700' : 'text-red-700'}`}>
+                      {exercise.explanation || (
+                        isAnswerCorrect()
+                          ? 'Great job!'
+                          : `The correct answer is: ${Array.isArray(exercise.correctAnswer) ? exercise.correctAnswer.join(' or ') : exercise.correctAnswer}`
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'true-false':
+        return (
+          <div className="mt-6">
+            <h3 className="mb-4 text-lg font-medium text-gray-800">{exercise.question}</h3>
+            <div className="space-y-3">
+              {['True', 'False'].map((option, index) => (
+                <div key={index} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`tf-option-${index}`}
+                    name={`exercise-${exerciseId}`}
+                    value={option}
+                    checked={userAnswers[exerciseId] === option}
+                    onChange={() => handleAnswerSelect(option)}
+                    className="w-4 h-4 border-gray-300 text-primary-600 focus:ring-primary-500"
+                    disabled={showExplanation}
+                  />
+                  <label htmlFor={`tf-option-${index}`} className="block ml-3 text-gray-700">
+                    {option}
+                  </label>
+                </div>
+              ))}
+            </div>
+
+            {!showExplanation ? (
+              <Button onClick={checkAnswer} className="mt-6" disabled={!userAnswers[exerciseId]}>
+                Check Answer
+              </Button>
+            ) : (
+              <div className={`mt-6 p-4 rounded-lg ${isAnswerCorrect() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    {isAnswerCorrect() ? (
+                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <h3 className={`text-sm font-medium ${isAnswerCorrect() ? 'text-green-800' : 'text-red-800'}`}>
+                      {isAnswerCorrect() ? 'Correct!' : 'Incorrect'}
+                    </h3>
+                    <div className={`mt-2 text-sm ${isAnswerCorrect() ? 'text-green-700' : 'text-red-700'}`}>
+                      {exercise.explanation || (
+                        isAnswerCorrect()
+                          ? 'Great job!'
+                          : `The correct answer is: ${exercise.correctAnswer}`
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
       default:
         return (
           <div className="mt-6">
-            <p className="text-gray-600">Exercise type not supported yet.</p>
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800">
+                <strong>Exercise type &quot;{exercise.type}&quot; not supported yet.</strong>
+              </p>
+              <p className="mt-2 text-sm text-yellow-700">
+                Question: {exercise.question}
+              </p>
+              {exercise.options && (
+                <div className="mt-2 text-sm text-yellow-700">
+                  Options: {exercise.options.join(', ')}
+                </div>
+              )}
+              <p className="mt-2 text-sm text-yellow-700">
+                Answer: {Array.isArray(exercise.correctAnswer) ? exercise.correctAnswer.join(' or ') : exercise.correctAnswer}
+              </p>
+            </div>
           </div>
         );
     }
@@ -455,22 +706,43 @@ const InteractiveLesson = ({
         return (
           <div>
             <div className="p-4 mb-6 border border-blue-200 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50">
-              <div className="flex items-center mb-2">
-                <div className="flex items-center justify-center w-8 h-8 mr-3 bg-blue-600 rounded-full">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <div className="flex items-center justify-center w-8 h-8 mr-3 bg-blue-600 rounded-full">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-blue-800">Practice Session</h3>
                 </div>
-                <h3 className="text-lg font-semibold text-blue-800">Practice Session</h3>
+                {getTotalExercisesInCurrentSection() > 1 && (
+                  <div className="text-sm text-blue-600 font-medium">
+                    Exercise {currentExerciseIndex + 1} of {getTotalExercisesInCurrentSection()}
+                  </div>
+                )}
               </div>
               <p className="text-blue-700">
                 Time to practice what you&apos;ve learned! Complete the exercises below to reinforce your French skills.
               </p>
             </div>
-            <div className="mb-4 prose prose-primary max-w-none">
-              <ReactMarkdown>{currentSection.content}</ReactMarkdown>
-            </div>
+            {/* Only show content if it's not JSON and not the default practice message */}
+            {currentSection.content && 
+             !currentSection.content.includes('"exercises"') && 
+             !currentSection.content.includes('Interactive practice session') && (
+              <div className="mb-4 prose prose-primary max-w-none">
+                <ReactMarkdown>{currentSection.content}</ReactMarkdown>
+              </div>
+            )}
             {renderExercise()}
+            
+            {/* Show generate button for practice sections without exercises */}
+            {currentSection.type === 'practice' && !getCurrentExercise() && (
+              <div className="mt-6 text-center">
+                <Button onClick={handleGenerateContent} disabled={isGenerating} size="lg">
+                  {isGenerating ? 'Generating Exercises...' : '✨ Generate Practice Exercises'}
+                </Button>
+              </div>
+            )}
           </div>
         );
 
@@ -555,9 +827,14 @@ const InteractiveLesson = ({
 
         <Button
           onClick={handleNextSection}
-          disabled={currentSection.type === 'exercise' && !showExplanation}
+          disabled={(currentSection.type === 'exercise' || currentSection.type === 'practice') && !showExplanation}
         >
-          {currentSectionIndex === totalSections - 1 ? 'Complete Lesson' : 'Next'}
+          {currentSectionIndex === totalSections - 1 && 
+           !(currentSection.type === 'practice' && getTotalExercisesInCurrentSection() > 1 && currentExerciseIndex < getTotalExercisesInCurrentSection() - 1)
+            ? 'Complete Lesson' 
+            : currentSection.type === 'practice' && getTotalExercisesInCurrentSection() > 1 && currentExerciseIndex < getTotalExercisesInCurrentSection() - 1
+              ? 'Next Exercise'
+              : 'Next'}
         </Button>
       </div>
 
