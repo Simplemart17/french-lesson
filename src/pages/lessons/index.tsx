@@ -143,9 +143,20 @@ export default function LessonsPage() {
   // Combine lessons with progress data
   const lessonsWithProgress: LessonWithProgress[] = lessons.map(lesson => {
     const progress = progressData.find(p => p.lessonId === lesson.id);
+    
+    // Calculate progress - default to 0 if no matching progress found
+    let calculatedProgress = 0;
+    if (progress && progress.lessonId === lesson.id) {
+      if (progress.completed && progress.score != null && progress.score >= 70) {
+        calculatedProgress = 100;
+      } else {
+        calculatedProgress = progress.score || 0;
+      }
+    }
+    
     return {
       ...lesson,
-      progress: progress ? (progress.completed ? 100 : progress.score) : 0
+      progress: calculatedProgress
     };
   });
 

@@ -36,11 +36,14 @@ export default function LessonPage() {
             // Fetch progress if authenticated
             if (isAuthenticated) {
               const progressData = await lessonService.getLessonProgress(id);
-              if (progressData) {
+              
+              if (progressData && progressData.lessonId === id) {
                 setProgress({
                   completed: progressData.completed,
-                  score: progressData.score
+                  score: progressData.score || 0
                 });
+              } else {
+                setProgress(null);
               }
             }
           } else {

@@ -162,9 +162,12 @@ class LessonService {
 
       if (progressList && progressList.length > 0) {
         const progress = progressList[0];
-        // Cache the result
-        this.setCache(cacheKey, progress);
-        return progress;
+        // Verify the lesson ID matches
+        if (progress.lessonId === lessonId) {
+          // Cache the result
+          this.setCache(cacheKey, progress);
+          return progress;
+        }
       }
 
       return null;
