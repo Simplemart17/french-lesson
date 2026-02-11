@@ -65,12 +65,15 @@ npm install
 2. Set up your Supabase database:
 
 - Create a new Supabase project at https://supabase.com
-- Run the SQL schema from `supabase/schema.sql` in your Supabase SQL editor
-- Optionally seed the database:
+- Link this repo to your project and apply migrations:
 
 ```bash
-npm run db:seed
+supabase link --project-ref YOUR_PROJECT_REF
+supabase db push
 ```
+
+- Migration files live in `supabase/migrations`.
+- For detailed database setup, see `supabase/README.md`.
 
 3. Start the development server:
 
@@ -107,7 +110,7 @@ The Supabase database includes tables for:
 - Exam Results
 - Practice Sessions
 
-See `supabase/schema.sql` for the complete schema with Row Level Security (RLS) policies.
+See `supabase/migrations/20250605000000_initial_schema.sql` for the base schema and RLS policies.
 
 ## Contributing
 

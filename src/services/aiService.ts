@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getAuthToken } from '@/utils/authCookies';
 import { localStorageCache } from '@/utils/cache';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';

@@ -36,6 +36,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<PronunciationProgress[] | PronunciationProgress>>
 ) {
+  const toPhraseId = (value: unknown): string | number | null => {
+    if (typeof value === 'string' && value.trim().length > 0) return value;
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    return null;
+  };
+
   // Handle GET request to retrieve progress
   if (req.method === 'GET') {
     try {
@@ -70,7 +76,7 @@ export default async function handler(
 
       // Transform database data to API format
       const pronunciationProgress: PronunciationProgress[] = (progressData || []).map(item => ({
-        phraseId: parseInt(item.exercise_id),
+        phraseId: item.exercise_id,
         bestAccuracy: item.best_accuracy || 0,
         attempts: item.attempts || 0,
         lastAttempt: item.last_practiced || new Date().toISOString()
@@ -110,10 +116,12 @@ export default async function handler(
         });
       }
 
-      const { phraseId, accuracy } = req.body;
+      const { phraseId: rawPhraseId, accuracy } = req.body;
+      const phraseId = toPhraseId(rawPhraseId);
+      const numericAccuracy = Number(accuracy);
 
       // Validate input
-      if (!phraseId || isNaN(phraseId) || !accuracy || isNaN(accuracy)) {
+      if (!phraseId || !Number.isFinite(numericAccuracy)) {
         return res.status(400).json({
           success: false,
           error: {
@@ -148,7 +156,7 @@ export default async function handler(
 
       if (existingProgress && !fetchError) {
         // Update existing progress
-        const newBestAccuracy = Math.max(existingProgress.best_accuracy || 0, accuracy);
+        const newBestAccuracy = Math.max(existingProgress.best_accuracy || 0, numericAccuracy);
         const newAttempts = (existingProgress.attempts || 0) + 1;
 
         const { data: updated, error: updateError } = await supabase
@@ -168,7 +176,7 @@ export default async function handler(
         }
 
         updatedProgress = {
-          phraseId: parseInt(updated.exercise_id),
+          phraseId: updated.exercise_id,
           bestAccuracy: updated.best_accuracy,
           attempts: updated.attempts,
           lastAttempt: updated.last_practiced
@@ -180,7 +188,7 @@ export default async function handler(
           .insert({
             user_id: userId,
             exercise_id: phraseId,
-            best_accuracy: accuracy,
+            best_accuracy: numericAccuracy,
             attempts: 1,
             last_practiced: new Date().toISOString()
           })
@@ -192,7 +200,7 @@ export default async function handler(
         }
 
         updatedProgress = {
-          phraseId: parseInt(created.exercise_id),
+          phraseId: created.exercise_id,
           bestAccuracy: created.best_accuracy,
           attempts: created.attempts,
           lastAttempt: created.last_practiced

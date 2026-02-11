@@ -43,18 +43,18 @@ Or if you want to run migrations individually:
 supabase migration up
 ```
 
-### 4. Seed the database (optional)
+### 4. Local reset (optional)
 
-To populate the database with sample data for development:
+To reset your local Supabase environment and re-apply migrations:
 
 ```bash
-supabase db reset --seed
+supabase db reset
 ```
 
 ## Migration Files
 
-- `migrations/20241220000000_initial_schema.sql` - Initial database schema with all tables, indexes, RLS policies, and functions
-- `seed.sql` - Sample data for development and testing
+- `migrations/20250605000000_initial_schema.sql` - Initial database schema with tables, indexes, RLS policies, and functions
+- `migrations/20250825170000_alter_lesson_sections_content_to_text.sql` - Updates lesson section content type
 - `config.toml` - Supabase project configuration
 
 ## Database Schema Overview

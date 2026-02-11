@@ -4,6 +4,18 @@ import aiService from '@/services/aiService';
 import { ApiResponse } from '@/types/api';
 import { authMiddleware } from '../../../utils/authMiddleware';
 
+interface GeneratedExercise {
+  type: string;
+  question: string;
+  options?: string[] | null;
+  correctAnswer: string;
+  explanation: string;
+}
+
+interface GeneratedExercisePayload {
+  exercises?: GeneratedExercise[];
+}
+
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<null>>
@@ -95,12 +107,12 @@ async function handler(
     }
 
     // 3. Update the section content in the database
-    if (section.type === 'practice' || section.type === 'exercise') {
-      // Parse the AI-generated JSON content and store exercises properly
-      try {
-        const exerciseData = JSON.parse(generatedContent);
-        
-        if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
+	    if (section.type === 'practice' || section.type === 'exercise') {
+	      // Parse the AI-generated JSON content and store exercises properly
+	      try {
+	        const exerciseData = JSON.parse(generatedContent) as GeneratedExercisePayload;
+	        
+	        if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
           // First, delete any existing exercises for this section
           await supabase
             .from(TABLES.LESSON_EXERCISES)
@@ -108,10 +120,10 @@ async function handler(
             .eq('section_id', sectionId);
 
           // Insert the new exercises
-          const exercisesToInsert = exerciseData.exercises.map((exercise: any, index: number) => ({
-            section_id: sectionId,
-            type: exercise.type,
-            question: exercise.question,
+	          const exercisesToInsert = exerciseData.exercises.map((exercise: GeneratedExercise, index: number) => ({
+	            section_id: sectionId,
+	            type: exercise.type,
+	            question: exercise.question,
             options: exercise.options || null,
             correct_answer: exercise.correctAnswer,
             explanation: exercise.explanation,
