@@ -36,10 +36,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
 
     const text = response.choices[0].message.content || '';
+    const payload = { text };
 
     return res.status(200).json({
       success: true,
-      data: { text }
+      data: payload,
+      ...payload
     });
   } catch (error) {
     console.error('Text generation error:', error);

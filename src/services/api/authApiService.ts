@@ -74,15 +74,22 @@ export const authApiService = {
    * Register user
    */
   register: async (data: RegisterRequest): Promise<ApiResponse<AuthResponse>> => {
-    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, data);
-    
-    // Store token in cookies and localStorage for redundancy
-    if (response.data.access_token) {
-      authApiService.setAuthToken(response.data.access_token);
-      authApiService.setUserData(response.data.user);
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(API_ENDPOINTS.AUTH.REGISTER, data);
+
+    if (response.data?.success && response.data?.data) {
+      const { access_token, user } = response.data.data;
+      if (access_token) {
+        authApiService.setAuthToken(access_token);
+      }
+      if (user) {
+        authApiService.setUserData(user);
+      }
     }
-    
-    return response;
+
+    return {
+      ...response.data,
+      status: response.status
+    };
   },
   
   /**
@@ -108,22 +115,28 @@ export const authApiService = {
    * Get session
    */
   getSession: async (): Promise<ApiResponse<AuthResponse>> => {
-    const response = await apiClient.get<AuthResponse>(API_ENDPOINTS.AUTH.SESSION);
-    return response;
+    const response = await apiClient.get<{ success: boolean; data: AuthResponse }>(API_ENDPOINTS.AUTH.SESSION);
+
+    return {
+      ...response.data,
+      status: response.status
+    };
   },
   
   /**
    * Refresh token
    */
   refreshToken: async (): Promise<ApiResponse<AuthResponse>> => {
-    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
-    
-    // Update token in cookies and localStorage
-    if (response.data.access_token) {
-      authApiService.setAuthToken(response.data.access_token);
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
+
+    if (response.data?.success && response.data?.data?.access_token) {
+      authApiService.setAuthToken(response.data.data.access_token);
     }
-    
-    return response;
+
+    return {
+      ...response.data,
+      status: response.status
+    };
   },
   
   /**

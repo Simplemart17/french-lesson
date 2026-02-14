@@ -177,13 +177,16 @@ Keep responses focused and educational.`
       });
     }
 
+    const payload = {
+      response: aiResponse,
+      conversationId: conversation.id,
+      corrections: corrections.length > 0 ? corrections : undefined
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        response: aiResponse,
-        conversationId: conversation.id,
-        corrections: corrections.length > 0 ? corrections : undefined
-      }
+      data: payload,
+      ...payload
     });
   } catch (error) {
     console.error('Tutor chat error:', error);

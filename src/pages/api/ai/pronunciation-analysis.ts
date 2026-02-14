@@ -109,14 +109,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const feedback = JSON.parse(feedbackResponse.choices[0].message.content || '{}');
     
+    const payload = {
+      transcript: actualText,
+      expected: expectedTextNormalized,
+      similarity: similarityScore,
+      feedback
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        transcript: actualText,
-        expected: expectedTextNormalized,
-        similarity: similarityScore,
-        feedback
-      }
+      data: payload,
+      ...payload
     });
   } catch (error) {
     console.error('Pronunciation analysis error:', error);

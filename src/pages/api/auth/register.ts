@@ -1,11 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { RegisterRequest, AuthResponse, ApiResponse } from '@/types/api';
+import { RegisterRequest, ApiResponse, User } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
 import { supabase } from '@/lib/supabase';
 
+interface RegisterAuthPayload {
+  user: User;
+  token: string;
+  access_token: string;
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<AuthResponse>>
+  res: NextApiResponse<ApiResponse<RegisterAuthPayload>>
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -77,8 +83,10 @@ export default async function handler(
       success: true,
       data: {
         user: userProfile,
-        token: authData.session?.access_token || ''
-      }
+        token: authData.session?.access_token || '',
+        access_token: authData.session?.access_token || ''
+      },
+      user: userProfile
     });
   } catch (error) {
     console.error('Registration error:', error);

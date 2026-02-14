@@ -76,7 +76,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: result
+      data: result,
+      result
     });
   } catch (error) {
     console.error('Conversation generation error:', error);
