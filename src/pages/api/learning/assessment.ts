@@ -107,7 +107,7 @@ export default async function handler(
       }
     });
 
-    return res.status(200).json({
+    const payload = {
       score,
       level,
       levelDescription: cefrLevels[level],
@@ -117,6 +117,12 @@ export default async function handler(
         recommendedFocus: weaknesses,
         detailedResults
       }
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: payload,
+      ...payload
     });
   } catch (error) {
     console.error('Assessment error:', error);

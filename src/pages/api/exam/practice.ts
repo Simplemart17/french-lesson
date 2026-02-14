@@ -83,9 +83,14 @@ export default async function handler(
     const { section, level, id } = req.query;
 
     if (!section) {
-      return res.status(200).json({
+      const payload = {
         sections: ['comprehension-ecrite', 'comprehension-orale', 'expression-ecrite', 'expression-orale', 'grammaire', 'vocabulaire'],
         levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+      };
+      return res.status(200).json({
+        success: true,
+        data: payload,
+        ...payload
       });
     }
 
@@ -139,10 +144,18 @@ export default async function handler(
         if (!question) {
           return sendError(404, 'Question not found');
         }
-        return res.status(200).json(question);
+        return res.status(200).json({
+          success: true,
+          data: question,
+          ...question
+        });
       }
 
-      return res.status(200).json(questions);
+      return res.status(200).json({
+        success: true,
+        data: questions,
+        questions
+      });
     } catch (error) {
       console.error('Error fetching exam practice questions:', error);
       return sendError(500, 'Internal server error');
@@ -236,7 +249,7 @@ export default async function handler(
         completed_at: new Date().toISOString()
       });
 
-      return res.status(200).json({
+      const payload = {
         score,
         feedback: {
           strengths,
@@ -246,6 +259,12 @@ export default async function handler(
           completed: 1,
           score
         }
+      };
+
+      return res.status(200).json({
+        success: true,
+        data: payload,
+        ...payload
       });
     } catch (error) {
       console.error('Exam submission error:', error);

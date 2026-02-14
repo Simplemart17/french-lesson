@@ -108,12 +108,18 @@ export default async function handler(
       'Listen once more and imitate native intonation.'
     ];
 
-    return res.status(200).json({
+    const payload = {
       overallScore,
       wordScores,
       problemSounds,
       recommendations,
       recognizedText
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: payload,
+      ...payload
     });
   } catch (error) {
     console.error('Pronunciation analysis error:', error);

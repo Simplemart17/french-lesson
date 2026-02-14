@@ -5,7 +5,11 @@ import path from 'path';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      error: { message: 'Method not allowed' },
+      legacyError: 'Method not allowed'
+    });
   }
 
   try {
@@ -14,12 +18,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Validate input
     if (!apiKey || typeof apiKey !== 'string') {
-      return res.status(400).json({ error: 'API key is required' });
+      return res.status(400).json({
+        success: false,
+        error: { message: 'API key is required' },
+        legacyError: 'API key is required'
+      });
     }
 
     // Validate API key format (basic check for OpenAI key format)
     if (!apiKey.startsWith('sk-') || apiKey.length < 20) {
-      return res.status(400).json({ error: 'Invalid API key format' });
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Invalid API key format' },
+        legacyError: 'Invalid API key format'
+      });
     }
 
     // In a production environment, you would store this securely
@@ -52,9 +64,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     process.env.OPENAI_API_KEY = apiKey;
 
     // Return success
-    res.status(200).json({ success: true });
+    return res.status(200).json({
+      success: true,
+      data: { saved: true },
+      saved: true
+    });
   } catch (error) {
     console.error('Error setting API key:', error);
-    res.status(500).json({ error: 'Failed to set API key' });
+    return res.status(500).json({
+      success: false,
+      error: { message: 'Failed to set API key' },
+      legacyError: 'Failed to set API key'
+    });
   }
 }

@@ -4,7 +4,11 @@ import OpenAI from 'openai';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      error: { message: 'Method not allowed' },
+      legacyError: 'Method not allowed'
+    });
   }
 
   try {
@@ -13,17 +17,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Validate input
     if (!transcript || typeof transcript !== 'string') {
-      return res.status(400).json({ error: 'Transcript is required' });
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Transcript is required' },
+        legacyError: 'Transcript is required'
+      });
     }
 
     if (!referenceText || typeof referenceText !== 'string') {
-      return res.status(400).json({ error: 'Reference text is required' });
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Reference text is required' },
+        legacyError: 'Reference text is required'
+      });
     }
 
     // Get API key from environment variables
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
+      return res.status(500).json({
+        success: false,
+        error: { message: 'OpenAI API key not configured' },
+        legacyError: 'OpenAI API key not configured'
+      });
     }
 
     // Initialize OpenAI client
@@ -76,11 +92,23 @@ User transcript: "${transcript}"`
     // Return appropriate error response
     const errorWithStatus = error as { status?: number };
     if (errorWithStatus.status === 401) {
-      return res.status(401).json({ error: 'Invalid OpenAI API key' });
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Invalid OpenAI API key' },
+        legacyError: 'Invalid OpenAI API key'
+      });
     } else if (errorWithStatus.status === 429) {
-      return res.status(429).json({ error: 'OpenAI API rate limit exceeded' });
+      return res.status(429).json({
+        success: false,
+        error: { message: 'OpenAI API rate limit exceeded' },
+        legacyError: 'OpenAI API rate limit exceeded'
+      });
     } else {
-      return res.status(500).json({ error: 'Failed to analyze pronunciation' });
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to analyze pronunciation' },
+        legacyError: 'Failed to analyze pronunciation'
+      });
     }
   }
 }
