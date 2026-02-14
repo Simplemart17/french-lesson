@@ -103,11 +103,19 @@ class ApiClient {
   }
 
   // GET method
-  public async get<T>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
+  public async get<T>(
+    url: string,
+    paramsOrConfig?: Record<string, unknown> | AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    const config: AxiosRequestConfig =
+      paramsOrConfig && typeof paramsOrConfig === 'object' && 'params' in paramsOrConfig
+        ? (paramsOrConfig as AxiosRequestConfig)
+        : { params: paramsOrConfig as Record<string, unknown> | undefined };
+
     return this.request<T>({
       method: 'GET',
       url,
-      params,
+      ...config,
     });
   }
 
@@ -139,11 +147,19 @@ class ApiClient {
   }
 
   // DELETE method
-  public async delete<T>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
+  public async delete<T>(
+    url: string,
+    paramsOrConfig?: Record<string, unknown> | AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    const config: AxiosRequestConfig =
+      paramsOrConfig && typeof paramsOrConfig === 'object' && 'params' in paramsOrConfig
+        ? (paramsOrConfig as AxiosRequestConfig)
+        : { params: paramsOrConfig as Record<string, unknown> | undefined };
+
     return this.request<T>({
       method: 'DELETE',
       url,
-      params,
+      ...config,
     });
   }
 }

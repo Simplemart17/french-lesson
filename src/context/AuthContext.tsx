@@ -3,6 +3,7 @@ import { authApiService } from '@/services';
 import { User } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
 import { supabase } from '@/lib/supabase';
+import { clearAuthCookies } from '@/utils/authCookies';
 
 // Define the shape of our auth context
 interface AuthContextType {
@@ -48,28 +49,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsLoading(true);
 
-      const token = authApiService.getAuthToken();
-      const storedUser = authApiService.getUserData();
+      const { session } = await supabaseAuth.getSession();
 
-      if (token && storedUser) {
-        setUser({
-          id: storedUser.id,
-          name: storedUser.name,
-          email: storedUser.email,
-          level: 'beginner',
-          points: 0,
-          streakDays: 0,
-          joinedAt: new Date().toISOString(),
-          learningGoals: [],
-          completedLessons: 0,
-          lastActive: new Date().toISOString(),
-          preferences: {
-            dailyGoal: 30,
-            notifications: true,
-            theme: 'light'
-          }
-        });
+      if (session?.access_token) {
+        authApiService.setAuthToken(session.access_token);
+      }
+
+      if (session?.user) {
+        let profile = await supabaseAuth.getUserProfile(session.user.id);
+        if (!profile) {
+          profile = await supabaseAuth.createUserProfile(session.user.id, {
+            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Learner',
+            email: session.user.email || `${session.user.id}@local.invalid`,
+            level: 'A1',
+            points: 0,
+            streakDays: 0,
+            learningGoals: [],
+            completedLessons: 0,
+            preferences: {
+              dailyGoal: 15,
+              notifications: true,
+              theme: 'light'
+            }
+          });
+        }
+
+        setUser(profile);
+        if (profile) {
+          authApiService.setUserData({
+            id: profile.id,
+            name: profile.name,
+            email: profile.email
+          });
+        }
       } else {
+        clearAuthCookies();
         setUser(null);
       }
     } catch (error: unknown) {
@@ -89,31 +103,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Listen to Supabase auth state changes
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-
       if (event === 'SIGNED_IN' && session?.user) {
-        // User signed in, get their profile
+        if (session.access_token) {
+          authApiService.setAuthToken(session.access_token);
+        }
+
         const userProfile = await supabaseAuth.getUserProfile(session.user.id);
         if (userProfile) {
+          authApiService.setUserData({
+            id: userProfile.id,
+            name: userProfile.name,
+            email: userProfile.email
+          });
           setUser(userProfile);
         }
       } else if (event === 'SIGNED_OUT') {
-        // User signed out
         setUser(null);
-        // Clear any stored tokens
-        authApiService.logout();
+        clearAuthCookies();
       } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        // Token refreshed, ensure user is still set
-        if (!user) {
-          const userProfile = await supabaseAuth.getUserProfile(session.user.id);
-          if (userProfile) {
-            setUser(userProfile);
-          }
+        if (session.access_token) {
+          authApiService.setAuthToken(session.access_token);
+        }
+
+        const userProfile = await supabaseAuth.getUserProfile(session.user.id);
+        if (userProfile) {
+          authApiService.setUserData({
+            id: userProfile.id,
+            name: userProfile.name,
+            email: userProfile.email
+          });
+          setUser(userProfile);
         }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [user]);
+  }, []);
 
   // Login function
   const login = async (email: string, password: string) => {

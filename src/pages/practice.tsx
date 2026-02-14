@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import VoiceInput from '@/components/features/VoiceInput';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -34,76 +34,49 @@ export default function PracticePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  const fetchExercises = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await pronunciationApiService.getExercises({
+        difficulty: selectedDifficulty,
+        limit: 20
+      });
+
+      const allPhrases: PracticeExercise[] = [];
+      (response.data?.items || []).forEach((exercise: PronunciationExercise) => {
+        exercise.phrases.forEach((phrase: PronunciationPhrase) => {
+          allPhrases.push({
+            id: phrase.id,
+            text: phrase.text,
+            translation: phrase.translation,
+            difficulty: phrase.difficulty,
+            phonetics: phrase.phonetics,
+            focusSounds: phrase.focusSounds
+          });
+        });
+      });
+
+      setExercises(allPhrases);
+      setCurrentExerciseIndex(0);
+
+      if (allPhrases.length === 0) {
+        setError('No pronunciation exercises available for this level yet.');
+      }
+    } catch (err) {
+      console.error('Error fetching exercises:', err);
+      setError(`Failed to load exercises: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setExercises([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedDifficulty]);
+
   // Fetch exercises from API
   useEffect(() => {
-    const fetchExercises = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const response = await pronunciationApiService.getExercises({
-          difficulty: selectedDifficulty,
-          limit: 20
-        });
-
-        if (response.data && response.data.items) {
-          // Flatten phrases from all exercises
-          const allPhrases: PracticeExercise[] = [];
-          response.data.items.forEach((exercise: PronunciationExercise) => {
-            exercise.phrases.forEach((phrase: PronunciationPhrase) => {
-              allPhrases.push({
-                id: phrase.id,
-                text: phrase.text,
-                translation: phrase.translation,
-                difficulty: phrase.difficulty,
-                phonetics: phrase.phonetics,
-                focusSounds: phrase.focusSounds
-              });
-            });
-          });
-          
-          setExercises(allPhrases);
-          setCurrentExerciseIndex(0);
-        } else {
-          console.error('API response missing data or items:', response);
-          // Fallback to some sample exercises if no data from API
-          const fallbackExercises: PracticeExercise[] = [
-            {
-              id: 1,
-              text: 'Bonjour, comment allez-vous?',
-              translation: 'Hello, how are you?',
-              difficulty: selectedDifficulty,
-              phonetics: 'bon-ZHOOR, ko-mahn-tah-lay VOO'
-            },
-            {
-              id: 2,
-              text: 'Je m\'appelle Marie.',
-              translation: 'My name is Marie.',
-              difficulty: selectedDifficulty,
-              phonetics: 'zhuh mah-PEHL mah-REE'
-            },
-            {
-              id: 3,
-              text: 'Où est la boulangerie?',
-              translation: 'Where is the bakery?',
-              difficulty: selectedDifficulty,
-              phonetics: 'OO eh lah boo-lahn-zhuh-REE'
-            }
-          ];
-          
-          setExercises(fallbackExercises);
-          setCurrentExerciseIndex(0);
-        }
-      } catch (err) {
-        console.error('Error fetching exercises:', err);
-        setError(`Failed to load exercises: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchExercises();
-  }, [selectedDifficulty]);
+    void fetchExercises();
+  }, [fetchExercises]);
   
   const currentExercise = exercises[currentExerciseIndex];
   
@@ -217,9 +190,9 @@ export default function PracticePage() {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="mb-4 text-3xl font-bold text-gray-800">Speaking Practice</h1>
-            <ErrorMessage 
+            <ErrorMessage
               message={error || 'No pronunciation exercises available for this difficulty level.'} 
-              retry={() => window.location.reload()}
+              retry={fetchExercises}
             />
           </div>
         </div>

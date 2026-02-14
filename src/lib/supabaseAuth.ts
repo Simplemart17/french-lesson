@@ -351,8 +351,12 @@ export const supabaseAuth = {
         .eq('id', authUserId)
         .maybeSingle();
 
-      if (error || !user) {
+      if (error) {
         console.error('Error fetching user profile:', error);
+        return null;
+      }
+
+      if (!user) {
         return null;
       }
 
