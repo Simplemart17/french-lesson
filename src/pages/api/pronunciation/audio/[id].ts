@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { supabase, TABLES } from '@/lib/supabase';
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({
       success: false,
@@ -15,24 +15,33 @@ export default function handler(
   }
 
   try {
-    // Get the audio ID from the URL
     const { id } = req.query;
-    const audioId = parseInt(id as string, 10);
-    
-    // In a real application, this would:
-    // 1. Validate the audio ID
-    // 2. Retrieve the audio file from storage
-    // 3. Stream the audio file to the client
-    
-    // For this mock implementation, we'll return a 404 since we don't have actual audio files
-    // In a real app, you would check if the file exists and stream it
-    // Since we don't have actual audio files, return a 404
-    return res.status(404).json({
-      success: false,
-      error: {
-        message: `Audio file with ID ${audioId} not found`
-      }
-    });
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Invalid audio ID'
+        }
+      });
+    }
+
+    const { data: exercise, error } = await supabase
+      .from(TABLES.PRONUNCIATION_EXERCISES)
+      .select('text')
+      .eq('id', id)
+      .single();
+
+    if (error || !exercise?.text) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: `Audio source with ID ${id} not found`
+        }
+      });
+    }
+
+    const ttsUrl = `/api/tts?text=${encodeURIComponent(exercise.text)}&lang=fr`;
+    return res.redirect(307, ttsUrl);
   } catch (error) {
     console.error('Error in pronunciation audio API:', error);
     return res.status(500).json({

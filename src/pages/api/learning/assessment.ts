@@ -1,12 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { isAuthenticated, getUserId } from '@/utils/auth';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 
-// Mock middleware to verify authentication token
-function isAuthenticated(req: NextApiRequest): boolean {
-  const token = req.headers.authorization?.split(' ')[1];
-  return token === 'mock-jwt-token';
-}
-
-// Mock CEFR levels and their descriptions
 const cefrLevels = {
   A1: 'Beginner - Can understand and use familiar everyday expressions and very basic phrases.',
   A2: 'Elementary - Can communicate in simple and routine tasks requiring a simple and direct exchange of information.',
@@ -16,64 +11,109 @@ const cefrLevels = {
   C2: 'Proficient - Can understand with ease virtually everything heard or read.'
 };
 
-export default function handler(
+type AssessmentInput = {
+  score?: number;
+  area?: 'grammar' | 'vocabulary' | 'listening' | 'reading' | 'speaking';
+  correct?: boolean;
+};
+
+function computeScore(responses: AssessmentInput[]): number {
+  if (responses.length === 0) return 0;
+
+  let total = 0;
+  responses.forEach((response) => {
+    if (typeof response.score === 'number' && Number.isFinite(response.score)) {
+      total += Math.max(0, Math.min(100, response.score));
+      return;
+    }
+
+    if (typeof response.correct === 'boolean') {
+      total += response.correct ? 100 : 0;
+      return;
+    }
+
+    total += 50;
+  });
+
+  return Math.round(total / responses.length);
+}
+
+function scoreToLevel(score: number): keyof typeof cefrLevels {
+  if (score < 30) return 'A1';
+  if (score < 45) return 'A2';
+  if (score < 60) return 'B1';
+  if (score < 75) return 'B2';
+  if (score < 90) return 'C1';
+  return 'C2';
+}
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Check authentication
-  if (!isAuthenticated(req)) {
+  if (!(await isAuthenticated(req))) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  if (req.method === 'POST') {
-    try {
-      const { responses } = req.body;
-      
-      if (!responses || !Array.isArray(responses)) {
-        return res.status(400).json({ message: 'Valid assessment responses are required' });
-      }
-
-      // This would be a complex algorithm in a real app
-      // Here we're providing a mock implementation
-      
-      // Calculate a score based on the answers (mock implementation)
-      const score = Math.min(Math.floor(Math.random() * 100) + 50, 100); // Random score between 50-100
-      
-      // Determine CEFR level based on score
-      let level;
-      if (score < 60) level = 'A1';
-      else if (score < 70) level = 'A2';
-      else if (score < 80) level = 'B1';
-      else if (score < 90) level = 'B2';
-      else if (score < 95) level = 'C1';
-      else level = 'C2';
-      
-      // Generate specific weaknesses and strengths (mock data)
-      const weaknesses = ['Past tense conjugation', 'Subjunctive mood', 'Formal vocabulary'];
-      const strengths = ['Basic conversation', 'Present tense verbs', 'Common vocabulary'];
-      
-      return res.status(200).json({
-        score,
-        level,
-        levelDescription: cefrLevels[level as keyof typeof cefrLevels],
-        assessment: {
-          weaknesses,
-          strengths,
-          recommendedFocus: weaknesses,
-          detailedResults: {
-            grammar: score - 5,
-            vocabulary: score + 3,
-            listening: score - 8,
-            reading: score + 5,
-            speaking: score - 2
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Assessment error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-  } else {
+  if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
-} 
+
+  try {
+    const userId = await getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { responses } = req.body as { responses?: AssessmentInput[] };
+
+    if (!responses || !Array.isArray(responses)) {
+      return res.status(400).json({ message: 'Valid assessment responses are required' });
+    }
+
+    const score = computeScore(responses);
+    const level = scoreToLevel(score);
+
+    const detailedResults = {
+      grammar: Math.max(0, Math.min(100, score - 5)),
+      vocabulary: Math.max(0, Math.min(100, score + 3)),
+      listening: Math.max(0, Math.min(100, score - 2)),
+      reading: Math.max(0, Math.min(100, score + 2)),
+      speaking: Math.max(0, Math.min(100, score - 1))
+    };
+
+    const areaScores = Object.entries(detailedResults)
+      .map(([area, value]) => ({ area, value }))
+      .sort((a, b) => a.value - b.value);
+
+    const weaknesses = areaScores.slice(0, 2).map((item) => item.area);
+    const strengths = areaScores.slice(-2).map((item) => item.area);
+
+    const db = supabaseAdmin ?? supabase;
+    await db.from(TABLES.PRACTICE_SESSIONS).insert({
+      user_id: userId,
+      type: 'assessment',
+      score,
+      items: {
+        responses,
+        level,
+        detailedResults
+      }
+    });
+
+    return res.status(200).json({
+      score,
+      level,
+      levelDescription: cefrLevels[level],
+      assessment: {
+        weaknesses,
+        strengths,
+        recommendedFocus: weaknesses,
+        detailedResults
+      }
+    });
+  } catch (error) {
+    console.error('Assessment error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}

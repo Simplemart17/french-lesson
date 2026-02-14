@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { isAuthenticated, getUserId } from '@/utils/auth';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 
 interface LessonExerciseRow {
   id: string;
@@ -68,6 +68,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const db = supabaseAdmin ?? supabase;
+
   if (!(await isAuthenticated(req))) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
@@ -85,7 +87,7 @@ export default async function handler(
     const mappedSection = mapSection(section as ExamSection);
 
     try {
-      let query = supabase
+      let query = db
         .from(TABLES.LESSONS)
         .select(`
           id,
@@ -161,7 +163,7 @@ export default async function handler(
 
       const mappedSection = mapSection(section);
 
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from(TABLES.LESSONS)
         .select(`
           id,
@@ -218,7 +220,7 @@ export default async function handler(
         ? ['Révisez les notions de cette section', 'Travaillez la précision des réponses']
         : [];
 
-      await supabase.from(TABLES.EXAM_RESULTS).insert({
+      await db.from(TABLES.EXAM_RESULTS).insert({
         user_id: userId,
         exam_type: 'practice',
         module: mappedSection,

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { ApiResponse, ExamResult } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 
@@ -51,11 +51,13 @@ export default async function handler(
     });
   }
 
+  const db = supabaseAdmin ?? supabase;
+
   if (req.method === 'GET') {
     try {
       const { examId, level, section } = req.query;
 
-      let query = supabase
+      let query = db
         .from(TABLES.EXAM_RESULTS)
         .select('id,user_id,exam_type,module,score,max_score,percentage,level,completed_at')
         .eq('user_id', userId)
@@ -129,7 +131,7 @@ export default async function handler(
       const numericMaxScore = Number(maxScore || 100);
       const percentage = numericMaxScore > 0 ? (numericScore / numericMaxScore) * 100 : 0;
 
-      const { data: saved, error } = await supabase
+      const { data: saved, error } = await db
         .from(TABLES.EXAM_RESULTS)
         .insert({
           user_id: userId,

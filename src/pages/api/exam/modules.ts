@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 
 interface LessonExerciseRow {
   id: string;
@@ -153,11 +153,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<unknown>>
 ) {
+  const db = supabaseAdmin ?? supabase;
+
   if (req.method === 'GET') {
     try {
       const { id, examType, section, difficulty } = req.query;
 
-      let query = supabase
+      let query = db
         .from(TABLES.LESSONS)
         .select(`
           id,
@@ -286,7 +288,7 @@ export default async function handler(
         });
       }
 
-      const { data: lesson, error } = await supabase
+      const { data: lesson, error } = await db
         .from(TABLES.LESSONS)
         .select(`
           id,
@@ -363,7 +365,7 @@ export default async function handler(
       const totalCount = graded.length;
       const percentage = totalCount > 0 ? (correctCount / totalCount) * 100 : 0;
 
-      const { error: saveError } = await supabase
+      const { error: saveError } = await db
         .from(TABLES.EXAM_RESULTS)
         .insert({
           user_id: userId,

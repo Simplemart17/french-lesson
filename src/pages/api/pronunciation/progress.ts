@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationProgress } from '@/services/api/pronunciationApiService';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 interface PronunciationPracticeRow {
@@ -28,6 +28,7 @@ export default async function handler(
   }
 
   try {
+    const db = supabaseAdmin ?? supabase;
     const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
@@ -37,7 +38,7 @@ export default async function handler(
     }
 
     if (req.method === 'GET') {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
         .select('exercise_id,score,created_at')
         .eq('user_id', userId)
@@ -95,7 +96,7 @@ export default async function handler(
       });
     }
 
-    const { data: exercise, error: exerciseError } = await supabase
+    const { data: exercise, error: exerciseError } = await db
       .from(TABLES.PRONUNCIATION_EXERCISES)
       .select('id')
       .eq('id', phraseId)
@@ -108,7 +109,7 @@ export default async function handler(
       });
     }
 
-    const { error: insertError } = await supabase
+    const { error: insertError } = await db
       .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
       .insert({
         user_id: userId,
@@ -122,7 +123,7 @@ export default async function handler(
       throw new Error(`Failed to update pronunciation progress: ${insertError.message}`);
     }
 
-    const { data: statsRows, error: statsError } = await supabase
+    const { data: statsRows, error: statsError } = await db
       .from(TABLES.PRONUNCIATION_PRACTICE_ITEMS)
       .select('score,created_at')
       .eq('user_id', userId)

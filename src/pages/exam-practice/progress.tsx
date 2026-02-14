@@ -25,39 +25,7 @@ export default function ExamProgressPage() {
       try {
         const examResults = await examService.getExamResults();
 
-        // If we have results, set them
-        if (examResults && examResults.length > 0) {
-          setResults(examResults);
-        } else {
-          // If no results, use some sample data for demonstration
-          const sampleResults: ExamResults[] = [
-            {
-              moduleId: 'tcf-listening-1',
-              score: 8,
-              totalQuestions: 10,
-              answers: [0, 1, 2, 0, 1, 2, 3, 0, 1, 2],
-              timeSpent: 1140, // 19 minutes
-              completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
-            },
-            {
-              moduleId: 'tcf-reading-1',
-              score: 7,
-              totalQuestions: 10,
-              answers: [0, 1, 2, 0, 1, 2, 3, 0, 1, 2],
-              timeSpent: 1320, // 22 minutes
-              completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
-            },
-            {
-              moduleId: 'tef-listening-1',
-              score: 6,
-              totalQuestions: 10,
-              answers: [0, 1, 2, 0, 1, 2, 3, 0, 1, 2],
-              timeSpent: 1200, // 20 minutes
-              completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
-            },
-          ];
-          setResults(sampleResults);
-        }
+        setResults(examResults || []);
       } catch (err) {
         console.error('Error fetching exam results:', err);
         setError('Failed to load your exam results. Please try again later.');
