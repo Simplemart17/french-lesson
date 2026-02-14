@@ -20,6 +20,23 @@ const parseFormData = async (req: NextApiRequest): Promise<{ fields: formidable.
   });
 };
 
+const parseJsonBody = async (req: NextApiRequest): Promise<Record<string, unknown>> => {
+  const chunks: Buffer[] = [];
+
+  for await (const chunk of req) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+
+  const rawBody = Buffer.concat(chunks).toString('utf8').trim();
+  if (!rawBody) return {};
+
+  try {
+    return JSON.parse(rawBody) as Record<string, unknown>;
+  } catch {
+    throw new Error('Invalid JSON body');
+  }
+};
+
 function normalizeText(text: string): string {
   return text
     .toLowerCase()
@@ -140,14 +157,23 @@ export default async function handler(
     let phraseId = '';
     let transcript = '';
 
-    if (req.headers['content-type']?.includes('multipart/form-data')) {
+    const contentType = req.headers['content-type'] || '';
+
+    if (contentType.includes('multipart/form-data')) {
       const { fields } = await parseFormData(req);
       phraseId = Array.isArray(fields.phraseId) ? fields.phraseId[0] || '' : (fields.phraseId || '');
       transcript = Array.isArray(fields.transcript) ? fields.transcript[0] || '' : (fields.transcript || '');
-    } else {
-      const body = req.body as { phraseId?: string | number; transcript?: string };
+    } else if (contentType.includes('application/json')) {
+      const body = await parseJsonBody(req) as { phraseId?: string | number; transcript?: string };
       phraseId = body.phraseId ? String(body.phraseId) : '';
       transcript = body.transcript || '';
+    } else {
+      return res.status(415).json({
+        success: false,
+        error: {
+          message: 'Unsupported content type'
+        }
+      });
     }
 
     if (!phraseId) {
@@ -188,7 +214,8 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      data: response
+      data: response,
+      result: response
     });
   } catch (error) {
     console.error('Error in pronunciation check API:', error);

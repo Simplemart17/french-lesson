@@ -161,7 +161,7 @@ export default async function handler(
             error: { message: 'Exercise not found' }
           });
         }
-        return res.status(200).json({ success: true, data: exercise });
+        return res.status(200).json({ success: true, data: exercise, exercise });
       }
 
       if (verb && typeof verb === 'string') {
@@ -176,7 +176,7 @@ export default async function handler(
         exercises = exercises.filter((item) => String(item.group) === String(group));
       }
 
-      return res.status(200).json({ success: true, data: exercises });
+      return res.status(200).json({ success: true, data: exercises, exercises });
     } catch (error) {
       console.error('Error fetching verb conjugation exercises:', error);
       return res.status(500).json({
@@ -239,14 +239,17 @@ export default async function handler(
       const totalCount = results.length;
       const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
+      const payload = {
+        results,
+        score,
+        totalCorrect: correctCount,
+        totalQuestions: totalCount
+      };
+
       return res.status(200).json({
         success: true,
-        data: {
-          results,
-          score,
-          totalCorrect: correctCount,
-          totalQuestions: totalCount
-        }
+        data: payload,
+        result: payload
       });
     } catch (error) {
       console.error('Error checking conjugation answers:', error);

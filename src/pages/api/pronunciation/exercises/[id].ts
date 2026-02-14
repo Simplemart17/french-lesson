@@ -133,7 +133,8 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      data: exercise
+      data: exercise,
+      exercise
     });
   } catch (error) {
     console.error('Error in pronunciation exercise API:', error);

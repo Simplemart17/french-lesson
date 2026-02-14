@@ -91,7 +91,8 @@ export default async function handler(
 
       return res.status(200).json({
         success: true,
-        data: Array.from(byExercise.values())
+        data: Array.from(byExercise.values()),
+        progress: Array.from(byExercise.values())
       });
     }
 
@@ -138,14 +139,17 @@ export default async function handler(
     const bestScore = (rows || []).reduce((max, row) => Math.max(max, Number(row.score || 0)), 0);
     const lastAttempt = rows?.[0]?.created_at || new Date().toISOString();
 
+    const progress = {
+      exerciseId,
+      bestScore,
+      attempts,
+      lastAttempt
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        exerciseId,
-        bestScore,
-        attempts,
-        lastAttempt
-      }
+      data: progress,
+      progress
     });
   } catch (error) {
     console.error('Error in grammar progress API:', error);

@@ -198,13 +198,15 @@ export default async function handler(
 
       return res.status(200).json({
         success: true,
-        data: exercise
+        data: exercise,
+        exercise
       });
     }
 
     return res.status(200).json({
       success: true,
-      data: allExercises
+      data: allExercises,
+      exercises: allExercises
     });
   } catch (error) {
     console.error('Error fetching listening exercises:', error);

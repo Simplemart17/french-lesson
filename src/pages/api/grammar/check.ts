@@ -172,13 +172,16 @@ export default function handler(
     const corrections = buildCorrections(text);
     const score = calculateScore(corrections);
 
+    const payload = {
+      text,
+      corrections,
+      score
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        text,
-        corrections,
-        score
-      }
+      data: payload,
+      result: payload
     });
   } catch (error) {
     console.error('Error in grammar check API:', error);

@@ -129,15 +129,18 @@ export default async function handler(
     const endIndex = startIndex + safeLimit;
     const items = exercises.slice(startIndex, endIndex);
 
+    const payload = {
+      items,
+      total: exercises.length,
+      page: safePage,
+      limit: safeLimit,
+      totalPages: Math.ceil(exercises.length / safeLimit)
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        items,
-        total: exercises.length,
-        page: safePage,
-        limit: safeLimit,
-        totalPages: Math.ceil(exercises.length / safeLimit)
-      }
+      data: payload,
+      exercises: payload
     });
   } catch (error) {
     console.error('Error in grammar exercises API:', error);

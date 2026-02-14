@@ -169,15 +169,18 @@ async function handler(
     const exerciseObjects = buildExerciseObjects(rows);
     const paginatedExercises = exerciseObjects.slice(from, to);
 
+    const payload = {
+      items: paginatedExercises,
+      total: exerciseObjects.length,
+      page: safePage,
+      limit: safeLimit,
+      totalPages: Math.ceil(exerciseObjects.length / safeLimit)
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        items: paginatedExercises,
-        total: exerciseObjects.length,
-        page: safePage,
-        limit: safeLimit,
-        totalPages: Math.ceil(exerciseObjects.length / safeLimit)
-      }
+      data: payload,
+      exercises: payload
     });
   } catch (error) {
     console.error('Error in pronunciation exercises API:', error);
