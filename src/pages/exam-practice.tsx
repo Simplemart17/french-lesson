@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import AudioRecorder from '@/components/exam/AudioRecorder';
@@ -24,80 +24,29 @@ export default function ExamPracticePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [, setAudioBlob] = useState<Blob | null>(null);
   const [, setAudioUrl] = useState<string>('');
+  const [examModules, setExamModules] = useState<ExamModule[]>([]);
+
+  useEffect(() => {
+    const fetchExamModules = async () => {
+      try {
+        const response = await fetch(`/api/exam/modules?examType=${selectedExam}`);
+        const payload = await response.json();
+
+        if (payload?.success && Array.isArray(payload.data)) {
+          setExamModules(payload.data);
+          return;
+        }
+      } catch {
+        // no-op, handled by empty state fallback
+      }
+
+      setExamModules([]);
+    };
+
+    fetchExamModules();
+  }, [selectedExam]);
   
-  // Mock exam modules data
-  const examModules: Record<ExamType, ExamModule[]> = {
-    tcf: [
-      {
-        id: 'tcf-listening-1',
-        title: 'TCF Listening - Everyday Conversations',
-        description: 'Practice understanding everyday conversations in French.',
-        duration: 20,
-        section: 'listening',
-        difficulty: 'easy',
-      },
-      {
-        id: 'tcf-reading-1',
-        title: 'TCF Reading - Short Texts',
-        description: 'Practice reading and understanding short texts in French.',
-        duration: 25,
-        section: 'reading',
-        difficulty: 'easy',
-      },
-      {
-        id: 'tcf-writing-1',
-        title: 'TCF Writing - Personal Opinion',
-        description: 'Practice writing a short text expressing your opinion on a topic.',
-        duration: 30,
-        section: 'writing',
-        difficulty: 'medium',
-      },
-      {
-        id: 'tcf-speaking-1',
-        title: 'TCF Speaking - Self-Introduction',
-        description: 'Practice introducing yourself and talking about your interests.',
-        duration: 15,
-        section: 'speaking',
-        difficulty: 'easy',
-      },
-    ],
-    tef: [
-      {
-        id: 'tef-listening-1',
-        title: 'TEF Listening - News Reports',
-        description: 'Practice understanding news reports in French.',
-        duration: 25,
-        section: 'listening',
-        difficulty: 'medium',
-      },
-      {
-        id: 'tef-reading-1',
-        title: 'TEF Reading - Articles',
-        description: 'Practice reading and understanding articles in French.',
-        duration: 30,
-        section: 'reading',
-        difficulty: 'medium',
-      },
-      {
-        id: 'tef-writing-1',
-        title: 'TEF Writing - Formal Letter',
-        description: 'Practice writing a formal letter in French.',
-        duration: 35,
-        section: 'writing',
-        difficulty: 'hard',
-      },
-      {
-        id: 'tef-speaking-1',
-        title: 'TEF Speaking - Argument',
-        description: 'Practice presenting an argument on a given topic.',
-        duration: 20,
-        section: 'speaking',
-        difficulty: 'hard',
-      },
-    ],
-  };
-  
-  const filteredModules = examModules[selectedExam].filter(module => {
+  const filteredModules = examModules.filter(module => {
     return (selectedSection === 'all' || module.section === selectedSection) && 
            (selectedDifficulty === 'all' || module.difficulty === selectedDifficulty);
   });

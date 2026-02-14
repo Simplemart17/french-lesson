@@ -2,15 +2,14 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationCheckResponse, PronunciationFeedback } from '@/services/api/pronunciationApiService';
 import formidable from 'formidable';
+import { supabase, TABLES } from '@/lib/supabase';
 
-// Configure Next.js API route to handle file uploads
 export const config = {
   api: {
-    bodyParser: false, // Disable the default body parser for file uploads
+    bodyParser: false,
   },
 };
 
-// Helper function to parse form data
 const parseFormData = async (req: NextApiRequest): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
   return new Promise((resolve, reject) => {
     const form = new formidable.IncomingForm();
@@ -21,11 +20,113 @@ const parseFormData = async (req: NextApiRequest): Promise<{ fields: formidable.
   });
 };
 
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s']/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function levenshtein(a: string, b: string): number {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= b.length; i += 1) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= a.length; j += 1) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i += 1) {
+    for (let j = 1; j <= a.length; j += 1) {
+      const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+function scorePronunciation(transcript: string, expected: string): number {
+  const normalizedTranscript = normalizeText(transcript);
+  const normalizedExpected = normalizeText(expected);
+
+  if (!normalizedExpected) return 0;
+  if (!normalizedTranscript) return 0;
+
+  const distance = levenshtein(normalizedTranscript, normalizedExpected);
+  const maxLen = Math.max(normalizedTranscript.length, normalizedExpected.length) || 1;
+  const similarity = Math.max(0, 1 - distance / maxLen);
+  return Math.round(similarity * 100);
+}
+
+function buildFeedback(accuracy: number, transcript: string, expected: string): PronunciationFeedback[] {
+  const feedback: PronunciationFeedback[] = [];
+
+  if (!transcript.trim()) {
+    feedback.push({
+      type: 'general',
+      severity: 'warning',
+      message: 'No transcript detected. Speak clearly and try recording again.'
+    });
+    return feedback;
+  }
+
+  if (accuracy >= 90) {
+    feedback.push({
+      type: 'general',
+      severity: 'info',
+      message: 'Excellent pronunciation. Your transcript closely matches the expected phrase.'
+    });
+  } else if (accuracy >= 75) {
+    feedback.push({
+      type: 'general',
+      severity: 'info',
+      message: 'Good pronunciation. Focus on smoother rhythm to improve consistency.'
+    });
+  } else if (accuracy >= 50) {
+    feedback.push({
+      type: 'rhythm',
+      severity: 'warning',
+      message: 'Partially correct. Repeat more slowly and focus on each word boundary.'
+    });
+  } else {
+    feedback.push({
+      type: 'sound',
+      severity: 'error',
+      message: 'Significant mismatch detected. Listen to the phrase and repeat in shorter chunks.'
+    });
+  }
+
+  const expectedWords = normalizeText(expected).split(' ').filter(Boolean);
+  const spokenWords = normalizeText(transcript).split(' ').filter(Boolean);
+
+  if (expectedWords.length && spokenWords.length && spokenWords[0] !== expectedWords[0]) {
+    feedback.push({
+      type: 'intonation',
+      severity: 'warning',
+      message: `Opening word differs: expected "${expectedWords[0]}" but heard "${spokenWords[0]}".`
+    });
+  }
+
+  return feedback;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<PronunciationCheckResponse>>
 ) {
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
       success: false,
@@ -36,27 +137,20 @@ export default async function handler(
   }
 
   try {
-    let phraseId: number;
-    let transcript: string | undefined;
+    let phraseId = '';
+    let transcript = '';
 
-    // Handle form data if there's an audio file
     if (req.headers['content-type']?.includes('multipart/form-data')) {
       const { fields } = await parseFormData(req);
-      // Get the first value from the array or undefined
-      const phraseIdValue = fields.phraseId?.[0];
-      const transcriptValue = fields.transcript?.[0];
-
-      phraseId = phraseIdValue ? parseInt(phraseIdValue, 10) : NaN;
-      transcript = transcriptValue;
+      phraseId = Array.isArray(fields.phraseId) ? fields.phraseId[0] || '' : (fields.phraseId || '');
+      transcript = Array.isArray(fields.transcript) ? fields.transcript[0] || '' : (fields.transcript || '');
     } else {
-      // Handle JSON data
-      const body = req.body;
-      phraseId = body.phraseId;
-      transcript = body.transcript;
+      const body = req.body as { phraseId?: string | number; transcript?: string };
+      phraseId = body.phraseId ? String(body.phraseId) : '';
+      transcript = body.transcript || '';
     }
 
-    // Validate phraseId
-    if (!phraseId || isNaN(phraseId)) {
+    if (!phraseId) {
       return res.status(400).json({
         success: false,
         error: {
@@ -65,64 +159,33 @@ export default async function handler(
       });
     }
 
-    // In a real application, this would:
-    // 1. Process the audio file using a speech recognition service
-    // 2. Compare the recognized text with the expected phrase
-    // 3. Generate detailed feedback on pronunciation
+    const { data: exercise, error } = await supabase
+      .from(TABLES.PRONUNCIATION_EXERCISES)
+      .select('id,text')
+      .eq('id', phraseId)
+      .single();
 
-    // For this mock implementation, we'll generate random feedback
-    const accuracy = Math.floor(Math.random() * 40) + 60; // 60-100
-    const isCorrect = accuracy >= 80;
-
-    // Generate mock feedback
-    const feedbackTypes: Array<'sound' | 'intonation' | 'rhythm' | 'general'> = ['sound', 'intonation', 'rhythm', 'general'];
-    const severityTypes: Array<'error' | 'warning' | 'info'> = ['error', 'warning', 'info'];
-
-    const feedback: PronunciationFeedback[] = [];
-
-    // Add 1-3 feedback items
-    const feedbackCount = Math.floor(Math.random() * 3) + 1;
-    for (let i = 0; i < feedbackCount; i++) {
-      const type = feedbackTypes[Math.floor(Math.random() * feedbackTypes.length)];
-      const severity = severityTypes[Math.floor(Math.random() * severityTypes.length)];
-
-      let message = '';
-      switch (type) {
-        case 'sound':
-          message = 'Try to pronounce the "r" sound from the back of your throat.';
-          break;
-        case 'intonation':
-          message = 'Your intonation rises at the end of the sentence, but it should fall.';
-          break;
-        case 'rhythm':
-          message = 'Try to maintain a more even rhythm throughout the sentence.';
-          break;
-        case 'general':
-          message = 'Overall good attempt, but try to speak more slowly and clearly.';
-          break;
-      }
-
-      feedback.push({
-        type,
-        message,
-        severity,
-        position: type === 'sound' ? {
-          start: Math.floor(Math.random() * 5),
-          end: Math.floor(Math.random() * 5) + 5
-        } : undefined
+    if (error || !exercise) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'Pronunciation exercise not found'
+        }
       });
     }
 
-    // Create response
+    const expectedText = exercise.text;
+    const accuracy = scorePronunciation(transcript, expectedText);
+    const feedback = buildFeedback(accuracy, transcript, expectedText);
+
     const response: PronunciationCheckResponse = {
       phraseId,
       accuracy,
       feedback,
-      transcript: transcript || 'Bonjour, comment allez-vous?', // Default transcript if none provided
-      isCorrect
+      transcript,
+      isCorrect: accuracy >= 80
     };
 
-    // Return success response
     return res.status(200).json({
       success: true,
       data: response

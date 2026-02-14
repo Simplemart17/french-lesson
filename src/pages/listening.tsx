@@ -171,6 +171,9 @@ const comprehensionExercises = [
   }
 ];
 
+void dictationExercises;
+void comprehensionExercises;
+
 export default function ListeningPage() {
   const { isAuthenticated } = useAuth();
   const [exerciseType, setExerciseType] = useState<'dictation' | 'comprehension' | null>(null);
@@ -221,9 +224,7 @@ export default function ListeningPage() {
       } catch (err) {
         console.error('Error fetching listening exercises:', err);
         setError('Failed to load listening exercises. Please try again later.');
-
-        // Use mock data as fallback
-        setListeningExercises([...dictationExercises, ...comprehensionExercises]);
+        setListeningExercises([]);
       } finally {
         setIsLoading(false);
       }

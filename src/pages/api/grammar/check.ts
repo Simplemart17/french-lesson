@@ -1,14 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 
-// Define the grammar check response type
 interface GrammarCheckResponse {
   text: string;
   corrections: GrammarCorrection[];
   score: number;
 }
 
-// Define the grammar correction type
 interface GrammarCorrection {
   original: string;
   corrected: string;
@@ -21,11 +19,135 @@ interface GrammarCorrection {
   severity: 'error' | 'warning' | 'suggestion';
 }
 
+interface MistakeRule {
+  pattern: RegExp;
+  corrected: string;
+  explanation: string;
+  type: GrammarCorrection['type'];
+  severity: GrammarCorrection['severity'];
+}
+
+const RULES: MistakeRule[] = [
+  {
+    pattern: /\bje suis alle\b/gi,
+    corrected: 'je suis alle',
+    explanation: 'Use the past participle with accent: "alle" should be "allé".',
+    type: 'spelling',
+    severity: 'error'
+  },
+  {
+    pattern: /\bje suis allee\b/gi,
+    corrected: 'je suis allee',
+    explanation: 'Use the accented feminine past participle: "allée".',
+    type: 'spelling',
+    severity: 'error'
+  },
+  {
+    pattern: /\bje suis (\d{1,3}) ans\b/gi,
+    corrected: 'j\'ai $1 ans',
+    explanation: 'In French, age uses "avoir": "j\'ai ... ans".',
+    type: 'grammar',
+    severity: 'error'
+  },
+  {
+    pattern: /\bje suis faim\b/gi,
+    corrected: 'j\'ai faim',
+    explanation: 'Use "avoir faim", not "être faim".',
+    type: 'grammar',
+    severity: 'error'
+  },
+  {
+    pattern: /\bje suis froid\b/gi,
+    corrected: 'j\'ai froid',
+    explanation: 'Use "avoir froid", not "être froid".',
+    type: 'grammar',
+    severity: 'error'
+  },
+  {
+    pattern: /\bje suis chaud\b/gi,
+    corrected: 'j\'ai chaud',
+    explanation: 'Use "avoir chaud", not "être chaud".',
+    type: 'grammar',
+    severity: 'error'
+  },
+  {
+    pattern: /\bla personne sont\b/gi,
+    corrected: 'la personne est',
+    explanation: 'Singular subject requires singular verb.',
+    type: 'grammar',
+    severity: 'error'
+  },
+  {
+    pattern: /\bbeaucoup de personnes est\b/gi,
+    corrected: 'beaucoup de personnes sont',
+    explanation: 'Plural subject requires plural verb.',
+    type: 'grammar',
+    severity: 'error'
+  }
+];
+
+function buildCorrections(text: string): GrammarCorrection[] {
+  const corrections: GrammarCorrection[] = [];
+
+  RULES.forEach((rule) => {
+    const regex = new RegExp(rule.pattern.source, rule.pattern.flags);
+    let match: RegExpExecArray | null = regex.exec(text);
+
+    while (match) {
+      const original = match[0];
+      const corrected = original.replace(rule.pattern, rule.corrected);
+      const start = match.index;
+      const end = start + original.length;
+
+      corrections.push({
+        original,
+        corrected,
+        explanation: rule.explanation,
+        position: { start, end },
+        type: rule.type,
+        severity: rule.severity
+      });
+
+      match = regex.exec(text);
+    }
+  });
+
+  const doubleSpacePattern = /\s{2,}/g;
+  let spaceMatch: RegExpExecArray | null = doubleSpacePattern.exec(text);
+  while (spaceMatch) {
+    corrections.push({
+      original: spaceMatch[0],
+      corrected: ' ',
+      explanation: 'Replace multiple spaces with a single space.',
+      position: {
+        start: spaceMatch.index,
+        end: spaceMatch.index + spaceMatch[0].length
+      },
+      type: 'punctuation',
+      severity: 'warning'
+    });
+    spaceMatch = doubleSpacePattern.exec(text);
+  }
+
+  return corrections.sort((a, b) => a.position.start - b.position.start);
+}
+
+function calculateScore(corrections: GrammarCorrection[]): number {
+  let score = 100;
+
+  corrections.forEach((correction) => {
+    if (correction.severity === 'error') score -= 10;
+    else if (correction.severity === 'warning') score -= 5;
+    else score -= 2;
+  });
+
+  return Math.max(0, Math.min(100, score));
+}
+
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<GrammarCheckResponse>>
 ) {
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
       success: false,
@@ -36,10 +158,8 @@ export default function handler(
   }
 
   try {
-    // Get the text from the request body
-    const { text } = req.body;
-    
-    // Validate input
+    const { text } = req.body as { text?: string };
+
     if (!text || typeof text !== 'string') {
       return res.status(400).json({
         success: false,
@@ -48,162 +168,17 @@ export default function handler(
         }
       });
     }
-    
-    // In a real application, this would:
-    // 1. Process the text using a grammar checking service
-    // 2. Identify grammar, spelling, and punctuation errors
-    // 3. Generate corrections and explanations
-    
-    // For this mock implementation, we'll generate some random corrections
-    const corrections: GrammarCorrection[] = [];
-    
-    // Common French grammar mistakes to check for
-    const commonMistakes = [
-      {
-        pattern: /je suis alle/i,
-        original: 'je suis alle',
-        corrected: 'je suis allé',
-        explanation: 'The past participle of "aller" for masculine subjects should have an accent: "allé".',
-        type: 'spelling' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /je suis allee/i,
-        original: 'je suis allee',
-        corrected: 'je suis allée',
-        explanation: 'The past participle of "aller" for feminine subjects should have two accents: "allée".',
-        type: 'spelling' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /je suis \w+ ans/i,
-        original: 'je suis',
-        corrected: 'j\'ai',
-        explanation: 'Use "avoir" (j\'ai) instead of "être" (je suis) when stating age.',
-        type: 'grammar' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /je suis faim/i,
-        original: 'je suis faim',
-        corrected: 'j\'ai faim',
-        explanation: 'Use "avoir faim" (j\'ai faim) instead of "être faim" (je suis faim).',
-        type: 'grammar' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /je suis chaud/i,
-        original: 'je suis chaud',
-        corrected: 'j\'ai chaud',
-        explanation: 'Use "avoir chaud" (j\'ai chaud) instead of "être chaud" (je suis chaud).',
-        type: 'grammar' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /je suis froid/i,
-        original: 'je suis froid',
-        corrected: 'j\'ai froid',
-        explanation: 'Use "avoir froid" (j\'ai froid) instead of "être froid" (je suis froid).',
-        type: 'grammar' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /beaucoup de personnes est/i,
-        original: 'beaucoup de personnes est',
-        corrected: 'beaucoup de personnes sont',
-        explanation: '"Beaucoup de personnes" requires the plural form of the verb.',
-        type: 'grammar' as const,
-        severity: 'error' as const
-      },
-      {
-        pattern: /la personne sont/i,
-        original: 'la personne sont',
-        corrected: 'la personne est',
-        explanation: '"La personne" is singular and requires the singular form of the verb.',
-        type: 'grammar' as const,
-        severity: 'error' as const
-      }
-    ];
-    
-    // Check for common mistakes
-    commonMistakes.forEach(mistake => {
-      const match = text.match(mistake.pattern);
-      if (match) {
-        const start = match.index || 0;
-        const end = start + match[0].length;
-        
-        corrections.push({
-          original: mistake.original,
-          corrected: mistake.corrected,
-          explanation: mistake.explanation,
-          position: {
-            start,
-            end
-          },
-          type: mistake.type,
-          severity: mistake.severity
-        });
-      }
-    });
-    
-    // If no specific errors were found, add some random style suggestions
-    if (corrections.length === 0 && text.length > 20) {
-      // Add a random style suggestion
-      const randomSuggestions = [
-        {
-          original: text.substring(0, 10),
-          corrected: text.substring(0, 10),
-          explanation: 'Consider using more varied vocabulary for a richer expression.',
-          position: {
-            start: 0,
-            end: 10
-          },
-          type: 'style' as const,
-          severity: 'suggestion' as const
-        },
-        {
-          original: text.substring(text.length - 10),
-          corrected: text.substring(text.length - 10),
-          explanation: 'This sentence could be more concise.',
-          position: {
-            start: text.length - 10,
-            end: text.length
-          },
-          type: 'style' as const,
-          severity: 'suggestion' as const
-        }
-      ];
-      
-      // Add a random suggestion
-      corrections.push(randomSuggestions[Math.floor(Math.random() * randomSuggestions.length)]);
-    }
-    
-    // Calculate a score based on the number and severity of corrections
-    let score = 100;
-    corrections.forEach(correction => {
-      if (correction.severity === 'error') {
-        score -= 10;
-      } else if (correction.severity === 'warning') {
-        score -= 5;
-      } else {
-        score -= 2;
-      }
-    });
-    
-    // Ensure score is between 0 and 100
-    score = Math.max(0, Math.min(100, score));
-    
-    // Create response
-    const response: GrammarCheckResponse = {
-      text,
-      corrections,
-      score
-    };
-    
-    // Return success response
+
+    const corrections = buildCorrections(text);
+    const score = calculateScore(corrections);
+
     return res.status(200).json({
       success: true,
-      data: response
+      data: {
+        text,
+        corrections,
+        score
+      }
     });
   } catch (error) {
     console.error('Error in grammar check API:', error);

@@ -1,13 +1,37 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase, TABLES } from'@/lib/supabase';
+import { supabase, TABLES } from '@/lib/supabase';
 import { ApiResponse, ExamResult } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
+
+interface ExamResultRow {
+  id: string;
+  user_id: string;
+  exam_type: string;
+  module: string;
+  score: number;
+  max_score: number;
+  percentage: number;
+  level: string | null;
+  completed_at: string;
+}
+
+function mapRowToResult(row: ExamResultRow): ExamResult {
+  return {
+    userId: row.user_id,
+    examId: row.exam_type,
+    section: row.module,
+    level: row.level || 'A1',
+    score: Number(row.percentage || 0),
+    details: [],
+    completedAt: row.completed_at,
+    timeSpent: 0
+  };
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<unknown>>
 ) {
-  // Check authentication
   if (!(await isAuthenticated(req))) {
     return res.status(401).json({
       success: false,
@@ -18,57 +42,45 @@ export default async function handler(
   }
 
   const userId = await getUserId(req);
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      error: {
+        message: 'Unauthorized'
+      }
+    });
+  }
 
   if (req.method === 'GET') {
     try {
-      // Get the user's exam results (mock data)
       const { examId, level, section } = req.query;
 
-      let results: ExamResult[] = [
-        {
-          examId: 'french-a1-basics',
-          userId: userId || 'test-user-id',
-          level: 'A1',
-          section: 'grammar',
-          score: 85,
-          details: [
-            { questionIndex: 0, correct: true, userAnswer: 'le' },
-            { questionIndex: 1, correct: false, userAnswer: 'la' },
-            { questionIndex: 2, correct: true, userAnswer: 'les' }
-          ],
-          completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          timeSpent: 1200 // 20 minutes
-        },
-        {
-          examId: 'french-a1-vocabulary',
-          userId: userId || 'test-user-id',
-          level: 'A1',
-          section: 'vocabulary',
-          score: 92,
-          details: [
-            { questionIndex: 0, correct: true, userAnswer: 'bonjour' },
-            { questionIndex: 1, correct: true, userAnswer: 'merci' },
-            { questionIndex: 2, correct: false, userAnswer: 'au revoir' }
-          ],
-          completedAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-          timeSpent: 900 // 15 minutes
-        }
-      ];
+      let query = supabase
+        .from(TABLES.EXAM_RESULTS)
+        .select('id,user_id,exam_type,module,score,max_score,percentage,level,completed_at')
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false });
 
-      // Filter results if query parameters are provided
       if (examId && typeof examId === 'string') {
-        results = results.filter(r => r.examId === examId);
+        query = query.eq('exam_type', examId);
       }
 
       if (level && typeof level === 'string') {
-        results = results.filter(r => r.level === level);
+        query = query.eq('level', level);
       }
 
       if (section && typeof section === 'string') {
-        results = results.filter(r => r.section === section);
+        query = query.eq('module', section);
       }
 
-      // Return filtered results
+      const { data, error } = await query;
+
+      if (error) {
+        throw new Error(`Failed to fetch exam results: ${error.message}`);
+      }
+
+      const results = ((data || []) as ExamResultRow[]).map(mapRowToResult);
+
       return res.status(200).json({
         success: true,
         data: results
@@ -82,61 +94,83 @@ export default async function handler(
         }
       });
     }
-  } else if (req.method === 'POST') {
-    // Save a new exam result
+  }
+
+  if (req.method === 'POST') {
     try {
-      const { examId, section, level, score, details } = req.body;
-      
-      // Validate required fields
-      if (!examId || !section || !level || score === undefined || !details) {
-        return res.status(400).json({ 
-          success: false, 
+      const {
+        examId,
+        section,
+        level,
+        score,
+        details,
+        maxScore,
+        timeSpent
+      } = req.body as {
+        examId?: string;
+        section?: string;
+        level?: string;
+        score?: number;
+        details?: Array<{ questionIndex: number; correct: boolean; userAnswer: string | string[] }>;
+        maxScore?: number;
+        timeSpent?: number;
+      };
+
+      if (!examId || !section || !level || score === undefined) {
+        return res.status(400).json({
+          success: false,
           error: {
-            message: 'Missing required fields: examId, section, level, score, and details are required'
+            message: 'Missing required fields: examId, section, level, and score are required'
           }
         });
       }
-      
-      // Create the exam result object and save to database
 
-      const { data: savedResult, error: createError } = await supabase
+      const numericScore = Number(score);
+      const numericMaxScore = Number(maxScore || 100);
+      const percentage = numericMaxScore > 0 ? (numericScore / numericMaxScore) * 100 : 0;
+
+      const { data: saved, error } = await supabase
         .from(TABLES.EXAM_RESULTS)
         .insert({
-          userId,
-          examType: examId, // Map examId to examType
-          score,
-          totalQuestions: 10, // Default value
-          correctAnswers: Math.round((score / 100) * 10), // Calculate from score
-          timeSpent: req.body.timeSpent || 0,
-          completedAt: new Date().toISOString(),
-          answers: details
+          user_id: userId,
+          exam_type: examId,
+          module: section,
+          score: numericScore,
+          max_score: numericMaxScore,
+          percentage,
+          level,
+          completed_at: new Date().toISOString()
         })
-        .select()
+        .select('id,user_id,exam_type,module,score,max_score,percentage,level,completed_at')
         .single();
 
-      if (createError || !savedResult) {
-        throw new Error(`Failed to save exam result: ${createError?.message}`);
+      if (error || !saved) {
+        throw new Error(`Failed to save exam result: ${error?.message || 'Unknown error'}`);
       }
-      
+
       return res.status(201).json({
         success: true,
-        data: savedResult
+        data: {
+          ...mapRowToResult(saved as ExamResultRow),
+          details: details || [],
+          timeSpent: Number(timeSpent || 0)
+        }
       });
     } catch (error) {
       console.error('Exam result error:', error);
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         error: {
           message: 'Internal server error'
         }
       });
     }
-  } else {
-    return res.status(405).json({ 
-      success: false, 
-      error: {
-        message: 'Method not allowed'
-      }
-    });
   }
-} 
+
+  return res.status(405).json({
+    success: false,
+    error: {
+      message: 'Method not allowed'
+    }
+  });
+}

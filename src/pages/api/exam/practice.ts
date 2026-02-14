@@ -1,361 +1,250 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { isAuthenticated } from '../../../utils/auth';
+import { isAuthenticated, getUserId } from '@/utils/auth';
+import { supabase, TABLES } from '@/lib/supabase';
 
-// Mock exam sections
-type ExamSection = 'comprehension-ecrite' | 'comprehension-orale' | 'expression-ecrite' | 'expression-orale' | 'grammaire' | 'vocabulaire';
-
-// Mock exam questions
-interface ExamQuestion {
+interface LessonExerciseRow {
   id: string;
   type: string;
-  [key: string]: unknown;
+  question: string;
+  options: string[] | null;
+  correct_answer: string | null;
 }
 
-const examQuestions: Record<ExamSection, Record<string, ExamQuestion[]>> = {
-  'comprehension-ecrite': {
-    A2: [
-      {
-        id: 'ce_a2_1',
-        type: 'multiple-choice',
-        text: `Lisez ce message et répondez à la question:
-        
-        "Chère Marie, je ne peux pas venir à ton anniversaire samedi parce que je dois travailler. Je suis vraiment désolée. Peut-être nous pouvons déjeuner ensemble la semaine prochaine? Bises, Sophie"
-        
-        Pourquoi Sophie écrit-elle à Marie?`,
-        options: [
-          "Pour inviter Marie à son anniversaire",
-          "Pour annuler un rendez-vous",
-          "Pour proposer un dîner",
-          "Pour souhaiter un bon anniversaire"
-        ],
-        correctAnswer: 1
-      },
-      {
-        id: 'ce_a2_2',
-        type: 'true-false',
-        text: `Lisez ce texte:
-        
-        "Le musée est ouvert tous les jours sauf le lundi, de 9h à 18h. L'entrée est gratuite pour les étudiants et les enfants de moins de 12 ans."
-        
-        Le musée est fermé le dimanche.`,
-        correctAnswer: false
-      }
-    ],
-    B1: [
-      {
-        id: 'ce_b1_1',
-        type: 'multiple-choice',
-        text: `Lisez cet article et répondez à la question:
-        
-        "Selon une nouvelle étude publiée cette semaine, faire du sport régulièrement améliore non seulement la santé physique mais aussi les capacités mentales. Les chercheurs ont observé que les personnes qui font au moins 30 minutes d'activité physique par jour ont une meilleure mémoire et concentration."
-        
-        Quel est le sujet principal de cet article?`,
-        options: [
-          "Comment améliorer sa mémoire",
-          "Une nouvelle méthode d'entraînement sportif",
-          "Les bienfaits du sport sur le corps et l'esprit",
-          "La durée idéale d'exercice physique"
-        ],
-        correctAnswer: 2
-      }
-    ]
-  },
-  'comprehension-orale': {
-    A2: [
-      {
-        id: 'co_a2_1',
-        type: 'multiple-choice',
-        audioUrl: '/audio/exam/comprehension_a2_1.mp3',
-        transcript: "Bonjour, je voudrais réserver une table pour ce soir à 20h pour deux personnes. C'est possible?",
-        question: "Que fait cette personne?",
-        options: [
-          "Elle commande un repas",
-          "Elle réserve une table au restaurant",
-          "Elle cherche un restaurant",
-          "Elle annule une réservation"
-        ],
-        correctAnswer: 1
-      }
-    ],
-    B1: [
-      {
-        id: 'co_b1_1',
-        type: 'multiple-choice',
-        audioUrl: '/audio/exam/comprehension_b1_1.mp3',
-        transcript: "Bienvenue sur Radio France Info. Il est 7h et voici les titres de l'actualité: La grève des transports continue aujourd'hui dans plusieurs villes. Les usagers doivent s'attendre à des perturbations importantes sur les lignes de métro et de bus. La météo annonce de la pluie pour tout le weekend sur la moitié nord du pays.",
-        question: "De quel type d'émission s'agit-il?",
-        options: [
-          "Une publicité",
-          "Un bulletin météo",
-          "Un journal d'information",
-          "Une émission culturelle"
-        ],
-        correctAnswer: 2
-      }
-    ]
-  },
-  'expression-ecrite': {
-    A2: [
-      {
-        id: 'ee_a2_1',
-        type: 'writing',
-        instructions: "Vous écrivez un email à un ami pour l'inviter à votre anniversaire. Précisez la date, l'heure, le lieu et demandez une réponse. (60-80 mots)",
-        minWords: 60,
-        maxWords: 80,
-        evaluationCriteria: [
-          "Respect de la consigne",
-          "Capacité à inviter et à décrire un événement",
-          "Correction grammaticale",
-          "Vocabulaire approprié"
-        ]
-      }
-    ],
-    B1: [
-      {
-        id: 'ee_b1_1',
-        type: 'writing',
-        instructions: "Vous avez récemment visité une ville française. Écrivez un message sur un forum de voyage pour décrire votre expérience, les lieux que vous avez visités et donnez votre opinion. (120-150 mots)",
-        minWords: 120,
-        maxWords: 150,
-        evaluationCriteria: [
-          "Respect de la consigne",
-          "Capacité à raconter et à décrire",
-          "Expression d'opinions et de sentiments",
-          "Cohérence et cohésion",
-          "Correction grammaticale et richesse du vocabulaire"
-        ]
-      }
-    ]
-  },
-  'expression-orale': {
-    A2: [
-      {
-        id: 'eo_a2_1',
-        type: 'speaking',
-        instructions: "Présentez-vous et parlez de vos loisirs. (1-2 minutes)",
-        duration: 120, // seconds
-        evaluationCriteria: [
-          "Capacité à se présenter",
-          "Fluidité",
-          "Prononciation",
-          "Vocabulaire approprié",
-          "Correction grammaticale"
-        ]
-      }
-    ],
-    B1: [
-      {
-        id: 'eo_b1_1',
-        type: 'speaking',
-        instructions: "Choisissez un des sujets suivants et exprimez votre opinion: 1) Les avantages et inconvénients des réseaux sociaux, 2) L'importance d'apprendre des langues étrangères, 3) Vivre en ville ou à la campagne. (3 minutes)",
-        duration: 180, // seconds
-        evaluationCriteria: [
-          "Capacité à présenter et défendre un point de vue",
-          "Organisation du discours",
-          "Fluidité et prononciation",
-          "Richesse grammaticale et lexicale"
-        ]
-      }
-    ]
-  },
-  'grammaire': {
-    A2: [
-      {
-        id: 'gr_a2_1',
-        type: 'fill-in-blank',
-        text: "Je _____ au cinéma hier soir.",
-        options: ["vais", "allais", "suis allé", "aller"],
-        correctAnswer: 2
-      },
-      {
-        id: 'gr_a2_2',
-        type: 'multiple-choice',
-        text: "Choisissez la phrase correcte:",
-        options: [
-          "J'ai mangé rien.",
-          "Je n'ai mangé rien.",
-          "Je n'ai rien mangé.",
-          "J'ai rien mangé."
-        ],
-        correctAnswer: 2
-      }
-    ],
-    B1: [
-      {
-        id: 'gr_b1_1',
-        type: 'fill-in-blank',
-        text: "Si j'_____ plus d'argent, je _____ en vacances.",
-        options: [
-          ["avais", "partirais"],
-          ["aurais", "partirais"],
-          ["avais", "partirai"],
-          ["ai", "partirais"]
-        ],
-        correctAnswer: 0
-      }
-    ]
-  },
-  'vocabulaire': {
-    A2: [
-      {
-        id: 'voc_a2_1',
-        type: 'matching',
-        instructions: "Associez chaque mot à sa définition:",
-        items: [
-          { id: 1, text: "cuisine" },
-          { id: 2, text: "salon" },
-          { id: 3, text: "chambre" },
-          { id: 4, text: "salle de bain" }
-        ],
-        matches: [
-          { id: "a", text: "pièce où l'on dort" },
-          { id: "b", text: "pièce où l'on prépare les repas" },
-          { id: "c", text: "pièce où l'on se lave" },
-          { id: "d", text: "pièce où l'on reçoit des invités" }
-        ],
-        correctAnswers: [
-          { item: 1, match: "b" },
-          { item: 2, match: "d" },
-          { item: 3, match: "a" },
-          { item: 4, match: "c" }
-        ]
-      }
-    ],
-    B1: [
-      {
-        id: 'voc_b1_1',
-        type: 'multiple-choice',
-        text: "Quel est le synonyme de 'se dépêcher'?",
-        options: ["se promener", "se reposer", "se précipiter", "se détendre"],
-        correctAnswer: 2
-      }
-    ]
-  }
-};
-
-// User exam progress (would be stored in a database in a real app)
-interface UserProgress {
-  completed: number;
-  score: number;
+interface LessonSectionRow {
+  type: string;
+  exercises?: LessonExerciseRow[];
 }
 
-const userExamProgress: Record<number, Record<string, Record<string, UserProgress>>> = {
-  1: {
-    'comprehension-ecrite': {
-      A2: {
-        completed: 1,
-        score: 80
-      }
-    }
-  }
-};
+interface LessonRow {
+  id: string;
+  level: string;
+  sections?: LessonSectionRow[];
+}
 
-export default function handler(
+type ExamSection = 'comprehension-ecrite' | 'comprehension-orale' | 'expression-ecrite' | 'expression-orale' | 'grammaire' | 'vocabulaire';
+
+function mapSection(section: ExamSection): 'reading' | 'listening' | 'writing' | 'speaking' | 'grammar' | 'vocabulary' {
+  switch (section) {
+    case 'comprehension-ecrite':
+      return 'reading';
+    case 'comprehension-orale':
+      return 'listening';
+    case 'expression-ecrite':
+      return 'writing';
+    case 'expression-orale':
+      return 'speaking';
+    case 'grammaire':
+      return 'grammar';
+    case 'vocabulaire':
+      return 'vocabulary';
+    default:
+      return 'reading';
+  }
+}
+
+function isQuestionInSection(questionType: string, mappedSection: ReturnType<typeof mapSection>): boolean {
+  const type = questionType.toLowerCase();
+
+  if (mappedSection === 'listening') return type.includes('audio') || type.includes('listening');
+  if (mappedSection === 'speaking') return type.includes('speaking');
+  if (mappedSection === 'writing') return type.includes('writing');
+  if (mappedSection === 'grammar') return type.includes('grammar') || type.includes('fill') || type.includes('multiple');
+  if (mappedSection === 'vocabulary') return type.includes('vocab') || type.includes('matching');
+  return true;
+}
+
+function normalizeText(value: string): string {
+  return value.toLowerCase().trim();
+}
+
+function parseCorrectAnswer(value: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed;
+}
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Check authentication
-  if (!isAuthenticated(req)) {
+  if (!(await isAuthenticated(req))) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   if (req.method === 'GET') {
-    // Get exam questions
     const { section, level, id } = req.query;
-    
-    // Validate section
-    if (section && !examQuestions[section as ExamSection]) {
-      return res.status(400).json({ message: 'Invalid exam section' });
-    }
-    
-    // Return all available sections if no section specified
+
     if (!section) {
       return res.status(200).json({
-        sections: Object.keys(examQuestions),
+        sections: ['comprehension-ecrite', 'comprehension-orale', 'expression-ecrite', 'expression-orale', 'grammaire', 'vocabulaire'],
         levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
       });
     }
-    
-    // Get specific section
-    const sectionData = examQuestions[section as ExamSection];
-    
-    // Validate level for the section
-    if (level && !sectionData[level as string]) {
-      return res.status(400).json({ message: 'Invalid level for this section' });
-    }
-    
-    // Get questions for specific level
-    if (level) {
-      const levelQuestions = sectionData[level as string];
-      
-      // Get specific question by ID
-      if (id) {
-        const question = levelQuestions.find(q => q.id === id);
+
+    const mappedSection = mapSection(section as ExamSection);
+
+    try {
+      let query = supabase
+        .from(TABLES.LESSONS)
+        .select(`
+          id,
+          level,
+          sections:${TABLES.LESSON_SECTIONS}(
+            type,
+            exercises:${TABLES.LESSON_EXERCISES}(
+              id,
+              type,
+              question,
+              options,
+              correct_answer
+            )
+          )
+        `)
+        .order('created_at', { ascending: true });
+
+      if (level && typeof level === 'string') {
+        query = query.eq('level', level);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new Error(`Failed to fetch exam practice questions: ${error.message}`);
+      }
+
+      const questions = ((data || []) as LessonRow[]).flatMap((lesson) =>
+        (lesson.sections || []).flatMap((lessonSection) =>
+          (lessonSection.exercises || [])
+            .filter((exercise) => isQuestionInSection(exercise.type, mappedSection))
+            .map((exercise) => ({
+              id: exercise.id,
+              type: exercise.type,
+              question: exercise.question,
+              options: exercise.options || [],
+              correctAnswer: parseCorrectAnswer(exercise.correct_answer)
+            }))
+        )
+      );
+
+      if (id && typeof id === 'string') {
+        const question = questions.find((item) => item.id === id);
         if (!question) {
           return res.status(404).json({ message: 'Question not found' });
         }
         return res.status(200).json(question);
       }
-      
-      // Return all questions for the level
-      return res.status(200).json(levelQuestions);
+
+      return res.status(200).json(questions);
+    } catch (error) {
+      console.error('Error fetching exam practice questions:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-    
-    // Return all levels available for the section
-    return res.status(200).json({
-      section,
-      levels: Object.keys(sectionData)
-    });
-  } else if (req.method === 'POST') {
-    // Submit exam answers
+  }
+
+  if (req.method === 'POST') {
     try {
-      const userId = 1; // In a real app, get this from the authenticated user
-      const { section, level, answers } = req.body;
-      
-      if (!section || !level || !answers) {
+      const userId = await getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const { section, level, answers } = req.body as {
+        section?: ExamSection;
+        level?: string;
+        answers?: Array<{ questionId: string; answer: string }>;
+      };
+
+      if (!section || !level || !Array.isArray(answers)) {
         return res.status(400).json({ message: 'Section, level, and answers are required' });
       }
-      
-      // Validate section and level
-      if (!examQuestions[section as ExamSection] || !examQuestions[section as ExamSection][level]) {
-        return res.status(400).json({ message: 'Invalid section or level' });
+
+      const mappedSection = mapSection(section);
+
+      const { data, error } = await supabase
+        .from(TABLES.LESSONS)
+        .select(`
+          id,
+          level,
+          sections:${TABLES.LESSON_SECTIONS}(
+            type,
+            exercises:${TABLES.LESSON_EXERCISES}(
+              id,
+              type,
+              question,
+              options,
+              correct_answer
+            )
+          )
+        `)
+        .eq('level', level);
+
+      if (error) {
+        throw new Error(`Failed to load questions for submission: ${error.message}`);
       }
-      
-      // In a real app, evaluate answers and calculate score
-      // This is a mock implementation
-      const score = Math.floor(Math.random() * 40) + 60; // 60-100
-      
-      // Update user progress
-      if (!userExamProgress[userId]) {
-        userExamProgress[userId] = {};
-      }
-      
-      if (!userExamProgress[userId][section]) {
-        userExamProgress[userId][section] = {};
-      }
-      
-      userExamProgress[userId][section][level] = {
-        completed: (userExamProgress[userId][section][level]?.completed || 0) + 1,
-        score
-      };
-      
-      // Generate feedback (mock implementation)
-      const strengths = ['Bonne compréhension générale', 'Vocabulaire varié'];
-      const weaknesses = ['Attention aux temps verbaux', 'Développer les réponses'];
-      
+
+      const questionMap = new Map<string, string>();
+      ((data || []) as LessonRow[]).forEach((lesson) => {
+        (lesson.sections || []).forEach((lessonSection) => {
+          (lessonSection.exercises || []).forEach((exercise) => {
+            if (isQuestionInSection(exercise.type, mappedSection)) {
+              const correct = parseCorrectAnswer(exercise.correct_answer);
+              if (correct) {
+                questionMap.set(exercise.id, correct);
+              }
+            }
+          });
+        });
+      });
+
+      let totalEvaluated = 0;
+      let totalCorrect = 0;
+
+      answers.forEach((entry) => {
+        const correct = questionMap.get(entry.questionId);
+        if (!correct) return;
+        totalEvaluated += 1;
+        if (normalizeText(entry.answer) === normalizeText(correct)) {
+          totalCorrect += 1;
+        }
+      });
+
+      const score = totalEvaluated > 0 ? Math.round((totalCorrect / totalEvaluated) * 100) : 0;
+
+      const strengths = score >= 75
+        ? ['Bonne compréhension générale', 'Réponses globalement précises']
+        : ['Participation complète'];
+      const weaknesses = score < 75
+        ? ['Révisez les notions de cette section', 'Travaillez la précision des réponses']
+        : [];
+
+      await supabase.from(TABLES.EXAM_RESULTS).insert({
+        user_id: userId,
+        exam_type: 'practice',
+        module: mappedSection,
+        score: totalCorrect,
+        max_score: totalEvaluated,
+        percentage: score,
+        level,
+        completed_at: new Date().toISOString()
+      });
+
       return res.status(200).json({
         score,
         feedback: {
-          strengths: strengths.filter(() => Math.random() > 0.3),
-          weaknesses: weaknesses.filter(() => Math.random() > 0.3)
+          strengths,
+          weaknesses
         },
-        progress: userExamProgress[userId][section][level]
+        progress: {
+          completed: 1,
+          score
+        }
       });
     } catch (error) {
       console.error('Exam submission error:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
-  } else {
-    return res.status(405).json({ message: 'Method not allowed' });
   }
-} 
+
+  return res.status(405).json({ message: 'Method not allowed' });
+}
