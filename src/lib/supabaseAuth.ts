@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, supabaseAdmin } from './supabase';
 import { User } from '@/types/api';
 import { TABLES } from './supabase';
 
@@ -70,7 +70,7 @@ export const supabaseAuth = {
       }
 
       // Create user profile in our User table (without password field)
-      const userProfile = await supabaseAuth.createUserProfile(authData.user.id, {
+      let userProfile = await supabaseAuth.createUserProfile(authData.user.id, {
         name,
         email,
         level: 'A1',
@@ -85,11 +85,29 @@ export const supabaseAuth = {
         }
       });
 
+      // If profile creation raced or failed, try one fetch.
       if (!userProfile) {
-        return {
-          user: null,
-          error: "Account created, but failed to initialize profile. Please sign in to continue.",
-          session: authData.session
+        userProfile = await supabaseAuth.getUserProfile(authData.user.id);
+      }
+
+      // Do not block successful signup on profile creation timing.
+      if (!userProfile) {
+        userProfile = {
+          id: authData.user.id,
+          name,
+          email,
+          level: 'A1',
+          points: 0,
+          streakDays: 0,
+          joinedAt: new Date().toISOString(),
+          learningGoals: [],
+          completedLessons: 0,
+          lastActive: new Date().toISOString(),
+          preferences: {
+            dailyGoal: 15,
+            notifications: true,
+            theme: 'light'
+          }
         };
       }
 
@@ -288,7 +306,8 @@ export const supabaseAuth = {
    */
   createUserProfile: async (authUserId: string, profileData: Partial<User>): Promise<User | null> => {
     try {
-      const { data: user, error } = await supabase
+      const dbClient = supabaseAdmin || supabase;
+      const { data: user, error } = await dbClient
         .from(TABLES.USERS)
         .insert({
           id: authUserId, // Use Supabase Auth user ID
@@ -325,7 +344,8 @@ export const supabaseAuth = {
    */
   getUserProfile: async (authUserId: string): Promise<User | null> => {
     try {
-      const { data: user, error } = await supabase
+      const dbClient = supabaseAdmin || supabase;
+      const { data: user, error } = await dbClient
         .from(TABLES.USERS)
         .select('*')
         .eq('id', authUserId)

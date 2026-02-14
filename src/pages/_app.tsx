@@ -1,6 +1,5 @@
-import '@/styles/globals.css';
+import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import { Inter } from 'next/font/google';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/layout/Layout';
@@ -8,8 +7,6 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { Toaster } from 'sonner';
 import { prefetchCommonData, prefetchPageData } from '@/utils/prefetch';
 
-// Initialize Inter font
-const inter = Inter({ subsets: ['latin'] });
 
 // AppContent component to use hooks inside the AuthProvider
 function AppContent({ Component, pageProps }: AppProps) {
@@ -62,7 +59,7 @@ function AppContent({ Component, pageProps }: AppProps) {
   }, [router]);
 
   return (
-    <main className={inter.className}>
+    <main>
       <Layout>
         <Component {...pageProps} />
       </Layout>
