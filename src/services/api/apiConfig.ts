@@ -89,7 +89,7 @@ export const API_ENDPOINTS = {
     LIST: '/speaking/exercises',
     ITEM: (id: number | string) => `/speaking/exercises/${id}`,
     PHRASE: (id: number | string) => `/speaking/phrases/${id}`,
-    CHECK: '/speaking/check',
+    CHECK: '/speaking/exercises',
     PROGRESS: '/speaking/progress',
   },
 };

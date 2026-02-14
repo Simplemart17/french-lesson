@@ -66,8 +66,17 @@ class ApiClient {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      const data = error.response.data as { message?: string; errors?: Record<string, string[]> };
-      apiError.message = data.message || `Error: ${error.response.status}`;
+      const data = error.response.data as {
+        message?: string;
+        error?: { message?: string };
+        data?: { error?: string };
+        errors?: Record<string, string[]>;
+      };
+      apiError.message =
+        data.message ||
+        data.error?.message ||
+        data.data?.error ||
+        `Error: ${error.response.status}`;
       apiError.errors = data.errors;
 
       // Handle authentication errors
