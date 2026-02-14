@@ -51,24 +51,30 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const sendError = (status: number, message: string) =>
+    res.status(status).json({
+      success: false,
+      error: { message }
+    });
+
   if (!(await isAuthenticated(req))) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return sendError(401, 'Unauthorized');
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return sendError(405, 'Method not allowed');
   }
 
   try {
     const userId = await getUserId(req);
     if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return sendError(401, 'Unauthorized');
     }
 
     const { responses } = req.body as { responses?: AssessmentInput[] };
 
     if (!responses || !Array.isArray(responses)) {
-      return res.status(400).json({ message: 'Valid assessment responses are required' });
+      return sendError(400, 'Valid assessment responses are required');
     }
 
     const score = computeScore(responses);
@@ -114,6 +120,6 @@ export default async function handler(
     });
   } catch (error) {
     console.error('Assessment error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return sendError(500, 'Internal server error');
   }
 }

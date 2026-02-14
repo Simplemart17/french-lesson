@@ -69,9 +69,14 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const db = supabaseAdmin ?? supabase;
+  const sendError = (status: number, message: string) =>
+    res.status(status).json({
+      success: false,
+      error: { message }
+    });
 
   if (!(await isAuthenticated(req))) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return sendError(401, 'Unauthorized');
   }
 
   if (req.method === 'GET') {
@@ -132,7 +137,7 @@ export default async function handler(
       if (id && typeof id === 'string') {
         const question = questions.find((item) => item.id === id);
         if (!question) {
-          return res.status(404).json({ message: 'Question not found' });
+          return sendError(404, 'Question not found');
         }
         return res.status(200).json(question);
       }
@@ -140,7 +145,7 @@ export default async function handler(
       return res.status(200).json(questions);
     } catch (error) {
       console.error('Error fetching exam practice questions:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      return sendError(500, 'Internal server error');
     }
   }
 
@@ -148,7 +153,7 @@ export default async function handler(
     try {
       const userId = await getUserId(req);
       if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return sendError(401, 'Unauthorized');
       }
 
       const { section, level, answers } = req.body as {
@@ -158,7 +163,7 @@ export default async function handler(
       };
 
       if (!section || !level || !Array.isArray(answers)) {
-        return res.status(400).json({ message: 'Section, level, and answers are required' });
+        return sendError(400, 'Section, level, and answers are required');
       }
 
       const mappedSection = mapSection(section);
@@ -244,9 +249,9 @@ export default async function handler(
       });
     } catch (error) {
       console.error('Exam submission error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      return sendError(500, 'Internal server error');
     }
   }
 
-  return res.status(405).json({ message: 'Method not allowed' });
+  return sendError(405, 'Method not allowed');
 }
