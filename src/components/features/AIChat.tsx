@@ -30,9 +30,7 @@ const AIChat = ({
   enableCorrections = true,
   enableVocabSuggestions = true
 }: AIChatProps) => {
-  // Note: language parameter is available but not currently used in this implementation
-  // It could be used to switch between different language assistants in the future
-  console.log('AIChat language setting:', language); // Temporary usage to avoid lint error
+  void language;
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);

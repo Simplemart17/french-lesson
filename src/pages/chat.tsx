@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import AIChat from '@/components/features/AIChat';
-import { useAuth } from '@/context/AuthContext';
 
 // Sample conversation topics
 const conversationTopics = [
@@ -48,9 +47,6 @@ const conversationStarters = [
 ];
 
 export default function ChatPage() {
-  const { isAuthenticated } = useAuth();
-  // Note: isAuthenticated available for future authentication checks
-  console.log('User authenticated:', isAuthenticated);
   const [selectedTopic, setSelectedTopic] = useState<typeof conversationTopics[0] | null>(null);
   const [enableCorrections, setEnableCorrections] = useState(true);
   const [enableVocabSuggestions, setEnableVocabSuggestions] = useState(true);

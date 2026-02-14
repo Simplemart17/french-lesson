@@ -111,14 +111,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     // Get the AI's response
     const aiResponse = response.choices[0].message.content || '';
 
-    // Mock saving AI's response (for development)
-    console.log('Mock: Saving AI response:', {
-      conversationId: conversation.id,
-      role: 'assistant',
-      content: aiResponse,
-      timestamp: new Date()
-    });
-
     // Extract any corrections if present (for future enhancement, currently simplified)
     const corrections = [];
     const correctionRegex = /\[([^\]]+)\]/g;

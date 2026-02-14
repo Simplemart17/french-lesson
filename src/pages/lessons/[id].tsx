@@ -79,9 +79,7 @@ export default function LessonPage() {
           completed: updatedProgress.completed,
           score: updatedProgress.score
         });
-
-        // Show success message
-        console.log('Progress saved successfully:', updatedProgress);
+        void updatedProgress;
       }
     } catch (err) {
       console.error('Error updating lesson progress:', err);

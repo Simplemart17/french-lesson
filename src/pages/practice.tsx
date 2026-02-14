@@ -41,16 +41,12 @@ export default function PracticePage() {
         setIsLoading(true);
         setError(null);
         
-        console.log('Fetching pronunciation exercises with difficulty:', selectedDifficulty);
         const response = await pronunciationApiService.getExercises({
           difficulty: selectedDifficulty,
           limit: 20
         });
-        
-        console.log('API response:', response);
-        
+
         if (response.data && response.data.items) {
-          console.log('Exercises data:', response.data);
           // Flatten phrases from all exercises
           const allPhrases: PracticeExercise[] = [];
           response.data.items.forEach((exercise: PronunciationExercise) => {
@@ -66,7 +62,6 @@ export default function PracticePage() {
             });
           });
           
-          console.log('Processed phrases:', allPhrases);
           setExercises(allPhrases);
           setCurrentExerciseIndex(0);
         } else {
@@ -98,7 +93,6 @@ export default function PracticePage() {
           
           setExercises(fallbackExercises);
           setCurrentExerciseIndex(0);
-          console.log('Using fallback exercises:', fallbackExercises);
         }
       } catch (err) {
         console.error('Error fetching exercises:', err);

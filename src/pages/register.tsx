@@ -31,8 +31,6 @@ export default function RegisterPage() {
   // If already authenticated, redirect to dashboard or the redirect URL
   useEffect(() => {
     if (isAuthenticated && isInitialized && !isLoading) {
-      console.log('Already authenticated, redirecting to dashboard');
-      // Use router.push for navigation
       router.push('/dashboard');
     }
   }, [isAuthenticated, isInitialized, isLoading, router]);
@@ -70,7 +68,6 @@ export default function RegisterPage() {
 
       // Small delay to allow the toast to be seen before redirecting
       setTimeout(() => {
-        console.log('Registration successful, redirecting to success page');
         // Redirect to registration success page with email
         router.push(`/auth/registration-success?email=${encodeURIComponent(email)}`);
       }, 1000);

@@ -226,7 +226,6 @@ class PronunciationService {
         });
       } else {
         // Server-side - can't play audio
-        console.log('Server-side rendering detected, skipping audio playback');
       }
 
       return true;
@@ -241,7 +240,6 @@ class PronunciationService {
    */
   speakWithBrowser(text: string, options: { lang?: string; rate?: number; pitch?: number; volume?: number } = {}): void {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      console.log('Speech synthesis not supported');
       return;
     }
 

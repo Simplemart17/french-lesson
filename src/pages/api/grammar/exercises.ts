@@ -142,9 +142,8 @@ export default function handler(
     
     // Filter by category (not implemented in mock data, but included for API compatibility)
     if (category) {
-      // In a real implementation, this would filter by category
-      // For now, we'll just log that this filter was requested
-      console.log(`Category filter requested: ${category}`);
+      // Placeholder for future category filtering implementation
+      void category;
     }
     
     // Calculate pagination

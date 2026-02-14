@@ -242,23 +242,14 @@ export default function ListeningPage() {
     .filter(ex => selectedDifficulty === 'all' || ex.difficulty === selectedDifficulty);
 
   const handleExerciseComplete = async (score: number, answersOrText?: Record<string, string> | string) => {
-    console.log('Exercise completed with score:', score);
-
     if (selectedExercise && isAuthenticated) {
       try {
-        // In a real implementation, this would submit the results to the API
-        // For now, we'll just log the results
-        console.log('Submitting exercise results:', {
-          exerciseId: selectedExercise.id,
-          score,
-          answersOrText
-        });
-
-        // Show a success message or update UI
-        // This could be enhanced with a toast notification
+        // In a real implementation, this would submit the results to the API.
+        void score;
+        void answersOrText;
+        void selectedExercise.id;
       } catch (err) {
         console.error('Error submitting exercise results:', err);
-        // Show an error message
       }
     }
   };

@@ -145,13 +145,8 @@ export default function ConversationPage() {
     : conversationScenarios.filter(scenario => scenario.difficulty === selectedDifficulty);
   
   const handleScenarioComplete = (messages: Array<{ role: string; content: string; timestamp: Date }>) => {
-    // Convert timestamps to strings for API compatibility
-    const messagesWithStringTimestamps = messages.map(msg => ({
-      ...msg,
-      timestamp: msg.timestamp.toISOString()
-    }));
-    console.log('Conversation completed with messages:', messagesWithStringTimestamps);
-    // In a real app, this would save the conversation history and update user progress
+    // In a real app, this would save the conversation history and update user progress.
+    void messages;
   };
   
   return (

@@ -73,9 +73,6 @@ export default async function handler(
       });
     }
 
-    // Log successful registration
-    console.log('User registered successfully:', userProfile.email);
-
     return res.status(201).json({
       success: true,
       data: {

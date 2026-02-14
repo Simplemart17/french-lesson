@@ -9,10 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Get transcript and reference text from request body
-    const { transcript, referenceText, audioBlob } = req.body;
-
-    // Log audio blob presence for debugging
-    console.log('Audio blob provided:', audioBlob ? 'Yes' : 'No');
+    const { transcript, referenceText } = req.body;
 
     // Validate input
     if (!transcript || typeof transcript !== 'string') {

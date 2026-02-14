@@ -22,11 +22,8 @@ export default function ExamPracticePage() {
   const [selectedExam, setSelectedExam] = useState<ExamType>('tcf');
   const [selectedSection, setSelectedSection] = useState<ExamSection | 'all'>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string>('');
-
-  // Prevent unused variable warnings - these are used in the AudioRecorder component
-  console.log('Audio state:', { audioBlob, audioUrl });
+  const [, setAudioBlob] = useState<Blob | null>(null);
+  const [, setAudioUrl] = useState<string>('');
   
   // Mock exam modules data
   const examModules: Record<ExamType, ExamModule[]> = {

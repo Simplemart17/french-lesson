@@ -301,20 +301,14 @@ const examTypes = [
 export default function ExamPage() {
   const { isAuthenticated } = useAuth();
   const [selectedExamType, setSelectedExamType] = useState<string | null>(null);
-  const [examResults, setExamResults] = useState<ExamResult | null>(null);
+  const [, setExamResults] = useState<ExamResult | null>(null);
 
   // Get selected exam
   const selectedExam = examTypes.find(exam => exam.id === selectedExamType);
 
-  // Log exam results for debugging
-  console.log('Current exam results:', examResults ? 'Available' : 'None');
-  
   // Handle exam completion
   const handleExamComplete = (results: ExamResult) => {
     setExamResults(results);
-    
-    // In a real app, this would save the results to the user's profile
-    console.log('Exam completed with results:', results);
   };
   
   return (

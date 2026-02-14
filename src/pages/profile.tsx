@@ -130,9 +130,6 @@ export default function ProfilePage() {
 
         if (response.data && response.data.success && response.data.data && response.data.data.resources) {
           setResources(response.data.data.resources);
-        } else {
-          // No fallback needed as we'll handle empty state in the UI
-          console.log('No recommended resources available');
         }
       } catch (err) {
         console.error('Error fetching recommended resources:', err);

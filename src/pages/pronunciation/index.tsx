@@ -45,8 +45,8 @@ export default function PronunciationPage() {
   }, []);
 
   const handleResultUpdate = (result: PronunciationResult) => {
-    // We can log the result or implement result tracking in the future
-    console.log('Pronunciation result:', result);
+    // Placeholder for result tracking integration.
+    void result;
   };
 
   return (

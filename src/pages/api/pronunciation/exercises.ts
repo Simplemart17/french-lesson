@@ -37,8 +37,6 @@ async function handler(
   }
 
   try {
-    console.log('Pronunciation exercises API called with query:', req.query);
-    
     // Get query parameters
     const { difficulty, search, page = '1', limit = '10' } = req.query;
 
@@ -50,8 +48,6 @@ async function handler(
     const from = (safePage - 1) * safeLimit;
     const to = from + safeLimit;
 
-    console.log('Querying PRONUNCIATION_EXERCISES table with params:', { difficulty, search, pageNum, limitNum });
-
     // Build query
     let query = supabase
       .from(TABLES.PRONUNCIATION_EXERCISES)
@@ -60,17 +56,14 @@ async function handler(
 
     // Apply filters
     if (difficulty) {
-      console.log('Applying difficulty filter:', difficulty);
       const levels = mapDifficultyToDbLevels(difficulty as string);
       query = query.in('level', levels);
     }
 
     if (search && typeof search === 'string') {
-      console.log('Applying search filter:', search);
       query = query.or(`text.ilike.%${search}%,translation.ilike.%${search}%`);
     }
 
-    console.log('Executing database query...');
     const { data: exercises, error } = await query;
 
     if (error) {
@@ -78,13 +71,8 @@ async function handler(
       throw new Error(`Database error: ${error.message}`);
     }
     
-    console.log('Database query successful. Found exercises:', exercises?.length || 0);
-
-    // const total = count || 0; // Unused for now
-
     // If no exercises found in database, return mock data
     if (!exercises || exercises.length === 0) {
-      console.log('No exercises found in database, returning mock data');
       const mockExercises = createMockExercises(difficulty as string);
       
       const response: CustomPronunciationExerciseListResponse = {

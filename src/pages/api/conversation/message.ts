@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { Message } from '@/services/api/conversationApiService';
-import formidable, { File } from 'formidable';
+import formidable from 'formidable';
 
 // Configure Next.js API route to handle file uploads
 export const config = {
@@ -72,15 +72,12 @@ export default async function handler(
   try {
     let conversationId: string;
     let content: string;
-    let audioFile: File | null = null;
     
     // Handle form data if there's an audio file
     if (req.headers['content-type']?.includes('multipart/form-data')) {
-      const { fields, files } = await parseFormData(req);
+      const { fields } = await parseFormData(req);
       conversationId = Array.isArray(fields.conversationId) ? fields.conversationId[0] : (fields.conversationId || '');
       content = Array.isArray(fields.content) ? fields.content[0] : (fields.content || '');
-      audioFile = Array.isArray(files.audio) ? files.audio[0] : files.audio || null;
-      console.log('Audio file received:', audioFile ? 'Yes' : 'No'); // Log for debugging
     } else {
       // Handle JSON data
       const body = req.body;
@@ -97,17 +94,6 @@ export default async function handler(
         }
       });
     }
-    
-    // Create a user message
-    const userMessage: Message = {
-      id: `msg-user-${Date.now()}`,
-      conversationId,
-      role: 'user',
-      content,
-      createdAt: new Date().toISOString()
-    };
-
-    console.log('User message created:', userMessage.id); // Log for debugging
     
     // Generate a response based on the content
     let responseContent = '';

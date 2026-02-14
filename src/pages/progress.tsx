@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-// import { Button } from '@/components/ui/Button'; // Available for future use
 import ProgressChart from '@/components/progress/ProgressChart';
 import SkillRadarChart from '@/components/progress/SkillRadarChart';
 import LoadingState from '@/components/ui/LoadingState';
