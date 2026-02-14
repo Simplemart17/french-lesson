@@ -3,6 +3,7 @@ import { authMiddleware } from '../../../utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 import { LessonProgress } from '@/types/api';
+import { getOrCreateUserProfile } from '@/utils/userProfile';
 
 interface DashboardData {
   user: {
@@ -56,17 +57,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
     
-    // Get user data
-    const { data: user, error: userError } = await supabase
-    .from('users')
-    .select('name, level, points, streak_days, daily_goal, completed_lessons, last_active')
-    .eq('id', userId)
-    .single();
-
+    const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
-      return res.status(404).json({
+      return res.status(500).json({
         success: false,
-        error: { message: 'User not found' }
+        error: { message: 'Failed to fetch user profile' }
       });
     }
 

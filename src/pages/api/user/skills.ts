@@ -3,6 +3,7 @@ import { supabase, TABLES } from "@/lib/supabase";
 import { getUserId } from "@/utils/auth";
 import { LessonProgress } from "@/types/api";
 import { authMiddleware } from "@/utils/authMiddleware";
+import { getOrCreateUserProfile } from "@/utils/userProfile";
 
 interface SkillResponse {
   skill: string;
@@ -28,21 +29,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    // Get user from database
-    const { data: user, error: userError } = await supabase
-      .from(TABLES.USERS)
-      .select("*")
-      .eq("id", userId)
-      .single();
-
+    const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
-      // If user doesn't exist
-      if (userError?.code === "PGRST116") {
-        return res.status(404).json({
-          success: false,
-          error: { message: "User not found" },
-        });
-      }
+      return res.status(500).json({
+        success: false,
+        error: { message: "Failed to fetch user profile" },
+      });
     }
 
     // Get lesson progress to calculate skills based on real data

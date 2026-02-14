@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware } from "@/utils/authMiddleware";
 import { getUserId } from "@/utils/auth";
 import { supabase, TABLES } from "@/lib/supabase";
+import { getOrCreateUserProfile } from "@/utils/userProfile";
 
 interface ResourceItem {
   id: string;
@@ -31,18 +32,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    // Get user's current level and progress
-    const { data: user, error: userError } = await supabase
-      .from(TABLES.USERS)
-      .select("level")
-      .eq("id", userId)
-      .single();
-
+    const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
-      console.error("Error fetching user profile:", userError);
-      return res.status(404).json({
+      console.error("Error fetching/creating user profile:", userError);
+      return res.status(500).json({
         success: false,
-        error: { message: "User not found" },
+        error: { message: "Failed to fetch user profile" },
       });
     }
 

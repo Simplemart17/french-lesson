@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { getUserId } from '@/utils/auth';
 import { supabase, TABLES } from '../../../lib/supabase';
+import { getOrCreateUserProfile } from '@/utils/userProfile';
 
 interface SkillProgress {
   name: string;
@@ -74,20 +75,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    // Get user data
-    const { data: user, error: userError } = await supabase
-      .from(TABLES.USERS)
-      .select('points, streak_days, level')
-      .eq('id', userId)
-      .single();
-
+    const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
-      if (userError?.code === 'PGRST116') {
-        return res.status(404).json({
-          success: false,
-          error: { message: 'User not found' }
-        });
-      }
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch user profile' }
+      });
     }
 
     // Get lesson progress for activity log
@@ -219,9 +212,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     );
 
     // Calculate totals
-    const totalXP = user?.points;
+    const totalXP = user?.points || 0;
     const totalStudyTime = activityLog.reduce((sum, activity) => sum + activity.duration, 0);
-    const currentStreak = user?.streak_days;
+    const currentStreak = user?.streak_days || 0;
 
     // Calculate level based on XP
     const userLevel = Math.floor(totalXP / 500) + 1;

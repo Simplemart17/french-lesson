@@ -3,6 +3,7 @@ import { ApiResponse, User } from "@/types/api";
 import { supabase, TABLES } from "@/lib/supabase";
 import { authMiddleware } from "@/utils/authMiddleware";
 import { getUserId } from "@/utils/auth";
+import { getOrCreateUserProfile } from "@/utils/userProfile";
 
 async function handler(
   req: NextApiRequest,
@@ -22,28 +23,13 @@ async function handler(
     }
 
     if (req.method === "GET") {
-      // Get user profile from User table
-      const { data: userProfile, error } = await supabase
-        .from(TABLES.USERS)
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Error fetching user profile:", error);
+      const { data: userProfile, error } = await getOrCreateUserProfile(userId);
+      if (error || !userProfile) {
+        console.error("Error fetching/creating user profile:", error);
         return res.status(500).json({
           success: false,
           error: {
             message: "Failed to fetch user profile",
-          },
-        });
-      }
-      
-      if (!userProfile) {
-        return res.status(404).json({
-          success: false,
-          error: {
-            message: "User profile not found",
           },
         });
       }
@@ -98,7 +84,7 @@ async function handler(
         .update(updates)
         .eq("id", userId)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error || !updatedProfile) {
         return res.status(500).json({
