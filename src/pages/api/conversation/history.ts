@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, DatabaseConversation, DatabaseMessage } from '@/types/api';
+import { ApiResponse } from '@/types/api';
 import { Conversation } from '@/services/api/conversationApiService';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(
@@ -20,7 +20,7 @@ async function handler(
   }
 
   try {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -29,11 +29,22 @@ async function handler(
     }
 
     // Get conversations from database
-    const { data: conversations, error } = await supabase
+    const db = supabaseAdmin ?? supabase;
+    const { data: conversations, error } = await db
       .from(TABLES.CONVERSATIONS)
       .select(`
-        *,
-        messages:${TABLES.MESSAGES}(*)
+        id,
+        title,
+        scenario,
+        created_at,
+        updated_at,
+        messages:${TABLES.MESSAGES}(
+          id,
+          conversation_id,
+          role,
+          content,
+          created_at
+        )
       `)
       .eq('user_id', userId)
       .order('updated_at', { ascending: false });
@@ -42,23 +53,38 @@ async function handler(
       throw new Error(`Failed to fetch conversations: ${error.message}`);
     }
 
+    interface ConversationRow {
+      id: string;
+      title: string | null;
+      scenario: string | null;
+      created_at: string;
+      updated_at: string;
+      messages?: Array<{
+        id: string;
+        conversation_id: string;
+        role: 'user' | 'assistant';
+        content: string;
+        created_at: string;
+      }>;
+    }
+
     // Transform to API format
-    const conversationHistory: Conversation[] = (conversations || []).map((conv: DatabaseConversation) => ({
+    const conversationHistory: Conversation[] = ((conversations || []) as ConversationRow[]).map((conv) => ({
       id: conv.id,
-      topic: conv.title,
+      topic: conv.scenario || conv.title || 'General Conversation',
       level: 'beginner', // Default level since it's not in the schema
       messages: (conv.messages || [])
-        .sort((a: DatabaseMessage, b: DatabaseMessage) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 1) // Get only the last message for preview
-        .map((msg: DatabaseMessage) => ({
-          id: msg.id.toString(),
-          conversationId: msg.conversationId,
-          role: msg.role as 'user' | 'assistant',
+        .map((msg) => ({
+          id: msg.id,
+          conversationId: msg.conversation_id,
+          role: msg.role,
           content: msg.content,
-          createdAt: msg.timestamp
+          createdAt: msg.created_at
         })),
-      createdAt: conv.startedAt,
-      updatedAt: conv.lastMessageAt
+      createdAt: conv.created_at,
+      updatedAt: conv.updated_at
     }));
 
     // If no conversations exist, return empty array
