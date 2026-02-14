@@ -11,6 +11,7 @@ import { GetServerSideProps } from 'next';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{email?: string; password?: string; general?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isLoading, isAuthenticated, error, clearError, isInitialized, user } = useAuth();
@@ -164,22 +165,32 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password || errors.general) {
-                    clearErrors('password');
-                    clearErrors('general');
-                  }
-                }}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                }`}
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password || errors.general) {
+                      clearErrors('password');
+                      clearErrors('general');
+                    }
+                  }}
+                  className={`w-full px-4 py-2 pr-16 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
+                    errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute text-sm font-medium -translate-y-1/2 right-3 top-1/2 text-primary-600 hover:text-primary-700"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 

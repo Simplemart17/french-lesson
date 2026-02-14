@@ -13,6 +13,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{general?: string; password?: string}>({});
   const { register, isLoading, isAuthenticated, isInitialized, error, clearError } = useAuth();
   const router = useRouter();
@@ -133,16 +135,26 @@ export default function RegisterPage() {
               <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-700">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                placeholder="••••••••"
-                required
-                minLength={8}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="••••••••"
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute text-sm font-medium -translate-y-1/2 right-3 top-1/2 text-primary-600 hover:text-primary-700"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               <p className="mt-1 text-xs text-gray-500">
                 Password must be at least 8 characters long
               </p>
@@ -152,15 +164,25 @@ export default function RegisterPage() {
               <label htmlFor="confirm-password" className="block mb-1 text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
-              <input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                placeholder="••••••••"
-                required
-              />
+              <div className="relative">
+                <input
+                  id="confirm-password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute text-sm font-medium -translate-y-1/2 right-3 top-1/2 text-primary-600 hover:text-primary-700"
+                  aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                >
+                  {showConfirmPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center">
