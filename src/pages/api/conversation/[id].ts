@@ -105,7 +105,8 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      data: conversation
+      data: conversation,
+      conversation
     });
   } catch (error) {
     console.error('Error in conversation API:', error);

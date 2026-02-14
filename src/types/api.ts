@@ -164,6 +164,7 @@ export interface ApiResponse<T> {
     message: string;
     code?: string;
   };
+  [key: string]: unknown;
 }
 
 // Generic API error response

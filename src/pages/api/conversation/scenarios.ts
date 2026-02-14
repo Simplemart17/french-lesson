@@ -112,13 +112,15 @@ export default async function handler(
 
       return res.status(200).json({
         success: true,
-        data: scenario
+        data: scenario,
+        scenario
       });
     }
 
     return res.status(200).json({
       success: true,
-      data: scenarios
+      data: scenarios,
+      scenarios
     });
   } catch (error) {
     console.error('Error fetching conversation scenarios:', error);

@@ -81,7 +81,8 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      data: topics
+      data: topics,
+      topics
     });
   } catch (error) {
     console.error('Error in conversation topics API:', error);

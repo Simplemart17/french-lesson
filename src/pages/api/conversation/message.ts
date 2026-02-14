@@ -22,6 +22,25 @@ const parseFormData = async (req: NextApiRequest): Promise<{ fields: formidable.
   });
 };
 
+const parseJsonBody = async (req: NextApiRequest): Promise<Record<string, unknown>> => {
+  const chunks: Buffer[] = [];
+
+  for await (const chunk of req) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+
+  const rawBody = Buffer.concat(chunks).toString('utf8').trim();
+  if (!rawBody) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawBody) as Record<string, unknown>;
+  } catch {
+    throw new Error('Invalid JSON body');
+  }
+};
+
 interface ConversationRow {
   id: string;
   title: string | null;
@@ -83,14 +102,22 @@ export default async function handler(
     let conversationId = '';
     let content = '';
 
-    if (req.headers['content-type']?.includes('multipart/form-data')) {
+    const contentType = req.headers['content-type'] || '';
+    if (contentType.includes('multipart/form-data')) {
       const { fields } = await parseFormData(req);
       conversationId = Array.isArray(fields.conversationId) ? fields.conversationId[0] || '' : (fields.conversationId || '');
       content = Array.isArray(fields.content) ? fields.content[0] || '' : (fields.content || '');
-    } else {
-      const body = req.body as { conversationId?: string; content?: string };
+    } else if (contentType.includes('application/json')) {
+      const body = await parseJsonBody(req) as { conversationId?: string; content?: string };
       conversationId = body.conversationId || '';
       content = body.content || '';
+    } else {
+      return res.status(415).json({
+        success: false,
+        error: {
+          message: 'Unsupported content type'
+        }
+      });
     }
 
     if (!conversationId || !content) {
@@ -157,15 +184,18 @@ export default async function handler(
       throw new Error(`Failed to update conversation timestamp: ${updateConversationError.message}`);
     }
 
+    const response = {
+      id: assistantMessage.id,
+      conversationId: assistantMessage.conversation_id,
+      role: assistantMessage.role,
+      content: assistantMessage.content,
+      createdAt: assistantMessage.created_at
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        id: assistantMessage.id,
-        conversationId: assistantMessage.conversation_id,
-        role: assistantMessage.role,
-        content: assistantMessage.content,
-        createdAt: assistantMessage.created_at
-      }
+      data: response,
+      message: response
     });
   } catch (error) {
     console.error('Error sending message:', error);

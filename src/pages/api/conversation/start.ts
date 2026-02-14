@@ -144,7 +144,8 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      data: response
+      data: response,
+      conversation: response
     });
   } catch (error) {
     console.error('Error starting conversation:', error);

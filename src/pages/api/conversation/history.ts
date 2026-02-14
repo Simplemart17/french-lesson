@@ -91,13 +91,15 @@ async function handler(
     if (conversationHistory.length === 0) {
       return res.status(200).json({
         success: true,
-        data: []
+        data: [],
+        conversations: []
       });
     }
 
     return res.status(200).json({
       success: true,
-      data: conversationHistory
+      data: conversationHistory,
+      conversations: conversationHistory
     });
 
   } catch (error) {

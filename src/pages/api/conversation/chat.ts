@@ -3,15 +3,16 @@ import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 import { getOpenAIClient } from '@/utils/openaiClient';
+import { Conversation } from '@/services/api/conversationApiService';
 
 interface ConversationData {
   conversationId: string;
   message: string;
   context: string;
-  history: Message[];
+  history: ChatMessage[];
 }
 
-interface Message {
+interface ChatMessage {
   id?: string;
   role: string;
   content: string;
@@ -27,13 +28,37 @@ interface ConversationRow {
   updated_at: string;
   messages?: Array<{
     id: string;
+    conversation_id?: string;
     role: 'user' | 'assistant' | 'system';
     content: string;
     created_at: string;
   }>;
 }
 
-async function generateAssistantReply(message: string, context: string, history: Message[]): Promise<string> {
+function mapConversation(row: ConversationRow, previewOnly: boolean): Conversation {
+  const sortedMessages = (row.messages || [])
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .filter((message) => message.role === 'user' || message.role === 'assistant');
+
+  const selectedMessages = previewOnly ? sortedMessages.slice(-1) : sortedMessages;
+
+  return {
+    id: row.id,
+    topic: row.scenario || row.title || 'General Conversation',
+    level: 'beginner',
+    messages: selectedMessages.map((message) => ({
+      id: message.id,
+      conversationId: message.conversation_id || row.id,
+      role: message.role as 'user' | 'assistant',
+      content: message.content,
+      createdAt: message.created_at
+    })),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+async function generateAssistantReply(message: string, context: string, history: ChatMessage[]): Promise<string> {
   try {
     const openai = getOpenAIClient();
     const messages = [
@@ -65,7 +90,7 @@ async function generateAssistantReply(message: string, context: string, history:
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<ConversationData | ConversationRow | ConversationRow[]>>
+  res: NextApiResponse<ApiResponse<ConversationData | Conversation | Conversation[]>>
 ) {
   if (!(await isAuthenticated(req))) {
     return res.status(401).json({
@@ -171,7 +196,7 @@ export default async function handler(
         throw new Error(`Failed to fetch conversation history: ${historyError.message}`);
       }
 
-      const history: Message[] = (historyRows || []).map((item) => ({
+      const history: ChatMessage[] = (historyRows || []).map((item) => ({
         id: item.id,
         role: item.role,
         content: item.content,
@@ -200,7 +225,7 @@ export default async function handler(
         .update({ updated_at: new Date().toISOString() })
         .eq('id', finalConversationId);
 
-      const fullHistory: Message[] = [
+      const fullHistory: ChatMessage[] = [
         ...history,
         {
           id: assistantMessage.id,
@@ -210,14 +235,17 @@ export default async function handler(
         }
       ];
 
+      const payload = {
+        conversationId: finalConversationId,
+        message: assistantContent,
+        context: conversationContext,
+        history: fullHistory
+      };
+
       return res.status(200).json({
         success: true,
-        data: {
-          conversationId: finalConversationId,
-          message: assistantContent,
-          context: conversationContext,
-          history: fullHistory
-        }
+        data: payload,
+        chat: payload
       });
     } catch (error) {
       console.error('Conversation error:', error);
@@ -244,7 +272,7 @@ export default async function handler(
             scenario,
             created_at,
             updated_at,
-            messages:${TABLES.MESSAGES}(id,role,content,created_at)
+            messages:${TABLES.MESSAGES}(id,conversation_id,role,content,created_at)
           `)
           .eq('id', id)
           .eq('user_id', userId)
@@ -259,9 +287,12 @@ export default async function handler(
           });
         }
 
+        const conversation = mapConversation(data as ConversationRow, false);
+
         return res.status(200).json({
           success: true,
-          data
+          data: conversation,
+          conversation
         });
       }
 
@@ -274,7 +305,7 @@ export default async function handler(
           scenario,
           created_at,
           updated_at,
-          messages:${TABLES.MESSAGES}(id,role,content,created_at)
+          messages:${TABLES.MESSAGES}(id,conversation_id,role,content,created_at)
         `)
         .eq('user_id', userId)
         .order('updated_at', { ascending: false });
@@ -283,16 +314,12 @@ export default async function handler(
         throw new Error(`Failed to fetch conversations: ${error.message}`);
       }
 
-      const conversations = (data || []).map((conv) => ({
-        ...conv,
-        messages: (conv.messages || [])
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 1)
-      }));
+      const conversations = ((data || []) as ConversationRow[]).map((row) => mapConversation(row, true));
 
       return res.status(200).json({
         success: true,
-        data: conversations
+        data: conversations,
+        conversations
       });
     } catch (error) {
       console.error('Error fetching conversations:', error);
