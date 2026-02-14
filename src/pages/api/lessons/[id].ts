@@ -126,6 +126,7 @@ async function handler(
       return res.status(200).json({
         success: true,
         data: formattedLesson,
+        lesson: formattedLesson
       });
     } catch (error) {
       console.error("Error fetching lesson:", error);

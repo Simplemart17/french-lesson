@@ -68,7 +68,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
 
       return res.status(200).json({
         success: true,
-        data: formattedProgress
+        data: formattedProgress,
+        progress: formattedProgress
       });
     } catch (error) {
       console.error('Error fetching lesson progress:', error);
@@ -173,7 +174,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
 
       return res.status(200).json({
         success: true,
-        data: formattedProgress
+        data: formattedProgress,
+        progress: formattedProgress
       });
     } catch (error) {
       console.error('Error updating lesson progress:', error);

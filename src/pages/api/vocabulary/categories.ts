@@ -38,7 +38,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: sortedCategories
+      data: sortedCategories,
+      categories: sortedCategories
     });
   } catch (error) {
     console.error('Error fetching vocabulary categories:', error);

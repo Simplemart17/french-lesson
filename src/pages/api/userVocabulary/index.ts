@@ -5,7 +5,7 @@ import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Get user ID from authenticated user
-  const userId = getUserId(req);
+  const userId = await getUserId(req);
   if (!userId) {
     return res.status(401).json({
       success: false,
@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         .from(TABLES.USER_VOCABULARY)
         .select(`
           *,
-          vocabulary:${TABLES.VOCABULARY}(*)
+          vocabulary:vocabulary_id(*)
         `)
         .eq('user_id', userId)
         .order('last_practiced', { ascending: false });
@@ -31,7 +31,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
-        data: vocabularyItems || []
+        data: vocabularyItems || [],
+        vocabulary: vocabularyItems || []
       });
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
@@ -72,9 +73,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { data: existingUserVocab } = await supabase
         .from(TABLES.USER_VOCABULARY)
         .select('*')
-        .eq('userId', userId)
-        .eq('vocabularyId', vocabularyId)
-        .single();
+        .eq('user_id', userId)
+        .eq('vocabulary_id', vocabularyId)
+        .maybeSingle();
 
       let userVocabulary;
       const now = new Date().toISOString();
@@ -85,10 +86,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .from(TABLES.USER_VOCABULARY)
           .update({
             learned: learned !== undefined ? learned : existingUserVocab.learned,
-            lastPracticed: now
+            last_practiced: now
           })
-          .eq('userId', userId)
-          .eq('vocabularyId', vocabularyId)
+          .eq('user_id', userId)
+          .eq('vocabulary_id', vocabularyId)
           .select()
           .single();
 
@@ -101,12 +102,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const { data, error } = await supabase
           .from(TABLES.USER_VOCABULARY)
           .insert({
-            userId,
-            vocabularyId,
+            user_id: userId,
+            vocabulary_id: vocabularyId,
             learned: learned || false,
-            lastPracticed: now,
-            correctCount: 0,
-            incorrectCount: 0
+            last_practiced: now,
+            repetition_stage: 0
           })
           .select()
           .single();
@@ -119,7 +119,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(201).json({
         success: true,
-        data: userVocabulary
+        data: userVocabulary,
+        vocabulary: userVocabulary
       });
     } catch (error) {
       console.error('Error managing vocabulary:', error);
@@ -155,6 +156,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
+        data: { message: 'Vocabulary removed successfully' },
         message: 'Vocabulary removed successfully'
       });
     } catch (error) {
