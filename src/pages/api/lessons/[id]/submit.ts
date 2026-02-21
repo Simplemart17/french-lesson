@@ -5,7 +5,20 @@ import {
   AuthenticatedRequest,
 } from "@/types/api";
 import { authMiddleware } from "@/utils/authMiddleware";
-import { supabase, TABLES } from "@/lib/supabase";
+import { supabase, supabaseAdmin, TABLES } from "@/lib/supabase";
+
+interface LessonExerciseRow {
+  id: string;
+  correct_answer: string | string[] | null;
+  explanation: string | null;
+}
+
+function normalizeAnswer(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).toLowerCase().trim()).sort().join("|");
+  }
+  return String(value ?? "").toLowerCase().trim();
+}
 
 async function handler(
   req: AuthenticatedRequest,
@@ -19,6 +32,7 @@ async function handler(
   }
 
   try {
+    const db = supabaseAdmin ?? supabase;
     const { id } = req.query;
     const { answers } = req.body;
 
@@ -55,7 +69,7 @@ async function handler(
     }
 
     // Check if the lesson exists and get its data
-    const { data: lesson, error: lessonError } = await supabase
+    const { data: lesson, error: lessonError } = await db
       .from(TABLES.LESSONS)
       .select("*")
       .eq("id", lessonId)
@@ -71,9 +85,9 @@ async function handler(
     }
 
     // Get lesson sections
-    const { data: sections, error: sectionsError } = await supabase
+    const { data: sections, error: sectionsError } = await db
       .from(TABLES.LESSON_SECTIONS)
-      .select("*")
+      .select("id")
       .eq("lesson_id", lessonId);
 
     if (sectionsError) {
@@ -94,40 +108,43 @@ async function handler(
       });
     }
 
-    // Get exercises from lesson_exercises table based on session_id from sections
+    // Get exercises from lesson_exercises table linked to lesson sections.
     interface Exercise {
       id: string;
       correctAnswer: string | string[];
       explanation?: string;
     }
-    const exercises: Exercise[] = [];
-
-    // Try to get exercises from the lesson_exercises table
-    // Since the schema uses session_id, we'll look for exercises that might be linked to sections
-    for (const section of sections) {
-      // Check if section content contains exercises (JSON format)
-      if (section.content) {
-        try {
-          const sectionData =
-            typeof section.content === "string"
-              ? JSON.parse(section.content)
-              : section.content;
-
-          if (sectionData.exercises && Array.isArray(sectionData.exercises)) {
-            const sectionExercises = sectionData.exercises.map(
-              (ex: Exercise) => ({
-                id: ex.id,
-                correctAnswer: ex.correctAnswer,
-                explanation: ex.explanation,
-              })
-            );
-            exercises.push(...sectionExercises);
-          }
-        } catch (parseError) {
-          console.warn("Failed to parse section content as JSON:", parseError);
-        }
-      }
+    const sectionIds = sections.map((section: { id: string }) => section.id);
+    if (sectionIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: "No lesson sections found for this lesson",
+        },
+      });
     }
+
+    const { data: exerciseRows, error: exercisesError } = await db
+      .from(TABLES.LESSON_EXERCISES)
+      .select("id,correct_answer,explanation")
+      .in("section_id", sectionIds);
+
+    if (exercisesError) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          message: "Failed to fetch lesson exercises",
+        },
+      });
+    }
+
+    const exercises: Exercise[] = ((exerciseRows || []) as LessonExerciseRow[])
+      .filter((row) => row.correct_answer !== null)
+      .map((row) => ({
+        id: row.id,
+        correctAnswer: row.correct_answer as string | string[],
+        explanation: row.explanation || undefined,
+      }));
 
     // If no exercises found, return early with appropriate message
     if (exercises.length === 0) {
@@ -162,16 +179,10 @@ async function handler(
 
       if (Array.isArray(exercise.correctAnswer)) {
         // For multiple correct answers (e.g., matching exercises)
-        if (Array.isArray(userAnswer)) {
-          isCorrect =
-            exercise.correctAnswer.length === userAnswer.length &&
-            exercise.correctAnswer.every((answer: string) =>
-              userAnswer.includes(answer)
-            );
-        }
+        isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(exercise.correctAnswer);
       } else {
         // For single correct answer
-        isCorrect = exercise.correctAnswer === userAnswer;
+        isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(exercise.correctAnswer);
       }
 
       if (isCorrect) {
@@ -205,7 +216,7 @@ async function handler(
       answers: answers,
     };
 
-    const { error: upsertError } = await supabase
+    const { error: upsertError } = await db
       .from(TABLES.LESSON_PROGRESS)
       .upsert(progressData, {
         onConflict: "user_id,lesson_id",
@@ -221,13 +232,16 @@ async function handler(
       });
     }
 
+    const submission = {
+      score,
+      feedback,
+      completed,
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        score,
-        feedback,
-        completed,
-      },
+      data: submission,
+      submission,
     });
   } catch (error) {
     console.error("Error submitting lesson answers:", error);

@@ -17,7 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       .from(TABLES.LESSONS)
       .select(`
         *,
-        sections:${TABLES.LESSON_SECTIONS}(count)
+        sections:${TABLES.LESSON_SECTIONS}(id)
       `)
       .order('id', { ascending: true });
 

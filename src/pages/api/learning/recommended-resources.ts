@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware } from "@/utils/authMiddleware";
 import { getUserId } from "@/utils/auth";
-import { supabase, TABLES } from "@/lib/supabase";
+import { supabase, supabaseAdmin, TABLES } from "@/lib/supabase";
 import { getOrCreateUserProfile } from "@/utils/userProfile";
 
 interface ResourceItem {
@@ -24,6 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
+    const db = supabaseAdmin ?? supabase;
     const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
@@ -42,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get user's completed lessons
-    const { data: completedLessons, error: progressError } = await supabase
+    const { data: completedLessons, error: progressError } = await db
       .from(TABLES.LESSON_PROGRESS)
       .select("lesson_id")
       .eq("user_id", userId)
@@ -57,7 +58,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     );
 
     // Get recommended lessons based on user's level
-    let lessonsQuery = supabase
+    let lessonsQuery = db
       .from(TABLES.LESSONS)
       .select("*")
       .eq("level", user.level);
@@ -77,7 +78,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get recommended grammar rules
-    const { data: grammarRules, error: grammarError } = await supabase
+    const { data: grammarRules, error: grammarError } = await db
       .from(TABLES.GRAMMAR_RULES)
       .select("*")
       .eq("level", user.level)
@@ -136,6 +137,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({
       success: true,
       data: resources,
+      resources
     });
   } catch (error) {
     console.error("Error fetching recommended resources:", error);

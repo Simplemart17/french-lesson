@@ -1,12 +1,27 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  ApiResponse,
-  Lesson,
-  DatabaseLessonSection,
-  DatabaseLessonExercise,
-} from "@/types/api";
+import { ApiResponse, Lesson } from "@/types/api";
 import { authMiddleware } from "@/utils/authMiddleware";
 import { supabase, TABLES } from "@/lib/supabase";
+
+interface LessonExerciseRow {
+  id: string;
+  section_id: string;
+  type: string;
+  question: string;
+  options: string[] | null;
+  correct_answer: string | string[];
+  explanation: string | null;
+}
+
+interface LessonSectionRow {
+  id: string;
+  lesson_id: string;
+  title: string;
+  type: string;
+  content: string | null;
+  order_index: number;
+  exercises?: LessonExerciseRow[];
+}
 
 async function handler(
   req: NextApiRequest,
@@ -76,7 +91,7 @@ async function handler(
         duration: lesson.duration,
         topics: lesson.topics,
         sections: (lesson.sections || [])
-          .sort((a: DatabaseLessonSection, b: DatabaseLessonSection) => {
+          .sort((a: LessonSectionRow, b: LessonSectionRow) => {
             // Define the correct order for section types
             const typeOrder: Record<string, number> = {
               introduction: 1,
@@ -98,25 +113,23 @@ async function handler(
             }
 
             // If same type, sort by order field
-            return a.order - b.order;
+            return a.order_index - b.order_index;
           })
-          .map((section: DatabaseLessonSection) => ({
+          .map((section: LessonSectionRow) => ({
             id: section.id,
-            lessonId: section.lessonId,
+            lessonId: section.lesson_id,
             title: section.title,
             type: section.type,
             content: section.content || undefined,
-            audioUrl: section.audioUrl || undefined,
-            videoUrl: section.videoUrl || undefined,
-            order: section.order,
+            order: section.order_index,
             exercises: (section.exercises || []).map(
-              (exercise: DatabaseLessonExercise) => ({
+              (exercise: LessonExerciseRow) => ({
                 id: exercise.id,
-                sectionId: exercise.sectionId,
+                sectionId: exercise.section_id,
                 type: exercise.type,
                 question: exercise.question,
-                options: exercise.options,
-                correctAnswer: exercise.correctAnswer,
+                options: exercise.options || undefined,
+                correctAnswer: exercise.correct_answer,
                 explanation: exercise.explanation || undefined,
               })
             ),
