@@ -85,7 +85,8 @@ export default async function handler(
 
       return res.status(200).json({
         success: true,
-        data: results
+        data: results,
+        results
       });
     } catch (error) {
       console.error('Error fetching exam results:', error);
@@ -150,13 +151,16 @@ export default async function handler(
         throw new Error(`Failed to save exam result: ${error?.message || 'Unknown error'}`);
       }
 
+      const payload = {
+        ...mapRowToResult(saved as ExamResultRow),
+        details: details || [],
+        timeSpent: Number(timeSpent || 0)
+      };
+
       return res.status(201).json({
         success: true,
-        data: {
-          ...mapRowToResult(saved as ExamResultRow),
-          details: details || [],
-          timeSpent: Number(timeSpent || 0)
-        }
+        data: payload,
+        result: payload
       });
     } catch (error) {
       console.error('Exam result error:', error);

@@ -5,8 +5,8 @@ import OpenAI from 'openai';
 const ALLOWED_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
+  // Allow GET (query params) and POST (JSON body) for compatibility with existing audio URLs.
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({
       success: false,
       error: { message: 'Method not allowed' },
@@ -15,8 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Get text and voice from request body
-    const { text, voice = 'alloy' } = req.body;
+    const input = req.method === 'GET' ? req.query : req.body;
+    const text = typeof input.text === 'string' ? input.text : '';
+    const voice = typeof input.voice === 'string' ? input.voice : 'alloy';
 
     // Validate input
     if (!text || typeof text !== 'string') {

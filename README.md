@@ -85,18 +85,44 @@ The application will be available at http://localhost:3000.
 
 ## API Endpoints
 
+### Response Contract
+
+Most API routes use a normalized response envelope:
+
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
+
+Error responses follow:
+
+```json
+{
+  "success": false,
+  "error": { "message": "..." }
+}
+```
+
+For backward compatibility, several routes also include top-level aliases alongside `data`
+(for example `lesson`, `lessons`, `exercise`, `exercises`, `progress`, `results`, `resources`, `dashboard`).
+New client code should read from `data` first.
+
 ### Lessons
 
 - `GET /api/lessons` - Get all lessons with optional filtering
+- `GET /api/lessons/:id` - Get lesson details with sections/exercises
 - `GET /api/lessons/progress` - Get user's lesson progress
+- `POST /api/lessons/:id/submit` - Submit lesson answers and update progress
 
 ### AI Features
 
 - `POST /api/ai/grammar-correction` - Correct French grammar and provide feedback
 - `POST /api/ai/generate-conversation` - Generate conversation practice with vocabulary
 - `POST /api/ai/tutor-chat` - Chat with the AI French tutor
-- `POST /api/ai/personalized-lesson-plan` - Get personalized lesson recommendations
 - `POST /api/tts` - Generate high-quality French text-to-speech audio
+- `GET /api/tts?text=...&voice=...` - Generate audio from query params (compatibility mode for audio URLs)
 
 ## Database Schema
 

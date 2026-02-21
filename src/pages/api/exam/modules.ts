@@ -222,7 +222,8 @@ export default async function handler(
 
         return res.status(200).json({
           success: true,
-          data: examModule
+          data: examModule,
+          module: examModule
         });
       }
 
@@ -239,7 +240,8 @@ export default async function handler(
 
       return res.status(200).json({
         success: true,
-        data: moduleSummaries
+        data: moduleSummaries,
+        modules: moduleSummaries
       });
     } catch (error) {
       console.error('Error fetching exam modules:', error);
@@ -382,17 +384,20 @@ export default async function handler(
         throw new Error(`Failed to save exam submission: ${saveError.message}`);
       }
 
+      const payload = {
+        moduleId,
+        results,
+        score: Math.round(percentage),
+        totalCorrect: correctCount,
+        totalGraded: totalCount,
+        totalQuestions: examModule.questions?.length || 0,
+        submittedAt: new Date().toISOString()
+      };
+
       return res.status(200).json({
         success: true,
-        data: {
-          moduleId,
-          results,
-          score: Math.round(percentage),
-          totalCorrect: correctCount,
-          totalGraded: totalCount,
-          totalQuestions: examModule.questions?.length || 0,
-          submittedAt: new Date().toISOString()
-        }
+        data: payload,
+        submission: payload
       });
     } catch (error) {
       console.error('Error submitting exam answers:', error);
