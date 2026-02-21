@@ -64,12 +64,14 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     }
 
     if (!userVocabulary || userVocabulary.length === 0) {
+      const payload = {
+        exercises: [],
+        message: 'No vocabulary items available for practice'
+      };
       return res.status(200).json({
         success: true,
-        data: {
-          exercises: [],
-          message: 'No vocabulary items available for practice'
-        }
+        data: payload,
+        ...payload
       });
     }
 
@@ -103,12 +105,15 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
     await Promise.all(updatePromises);
     
+    const payload = {
+      exercises,
+      vocabularyItems
+    };
+
     return res.status(200).json({
       success: true,
-      data: {
-        exercises,
-        vocabularyItems
-      }
+      data: payload,
+      ...payload
     });
   } catch (error) {
     console.error('Error generating practice exercises:', error);

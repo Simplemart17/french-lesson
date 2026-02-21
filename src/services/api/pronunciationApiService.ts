@@ -1,5 +1,6 @@
 import apiClient, { ApiResponse } from './apiClient';
 import { API_ENDPOINTS } from './apiConfig';
+import { getAuthToken } from '@/utils/authCookies';
 
 // Define interfaces for pronunciation data
 export interface PronunciationExercise {
@@ -150,16 +151,41 @@ export const pronunciationApiService = {
    */
   analyzePronunciation: async (audioBlob: Blob, text: string): Promise<PronunciationResponse> => {
     try {
+      const token = getAuthToken();
+
+      if (!token) {
+        return {
+          success: false,
+          error: {
+            message: 'You must be logged in to analyze pronunciation.',
+          },
+        };
+      }
+
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
       formData.append('text', text);
 
       const response = await fetch('/api/ai/pronunciation-analysis', {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
-      return await response.json();
+      const result = (await response.json()) as PronunciationResponse;
+
+      if (!response.ok && !result.error?.message) {
+        return {
+          success: false,
+          error: {
+            message: 'Failed to analyze pronunciation',
+          },
+        };
+      }
+
+      return result;
     } catch (error) {
       console.error('Error in pronunciation analysis:', error);
       return {

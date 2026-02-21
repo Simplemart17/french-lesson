@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { localStorageCache } from '@/utils/cache';
+import { getAuthToken } from '@/utils/authCookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -10,6 +11,14 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 seconds timeout for AI operations
+});
+
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 
@@ -216,23 +225,26 @@ class AIService {
     recommendations: string[];
   }> {
     try {
-      // Convert blob to base64
-      const base64Audio = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-          resolve(base64.split(',')[1]); // Remove data URL prefix
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+      formData.append('text', text);
+
+      const response = await api.post('/ai/pronunciation-analysis', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const payload = response.data?.data;
+      const feedback = payload?.feedback;
+
+      if (response.data.success && feedback) {
+        return {
+          overallScore: feedback.overallScore ?? 0,
+          wordScores: Array.isArray(feedback.wordScores) ? feedback.wordScores : [],
+          problemSounds: Array.isArray(feedback.problemSounds) ? feedback.problemSounds : [],
+          recommendations: Array.isArray(feedback.recommendations) ? feedback.recommendations : [],
         };
-        reader.readAsDataURL(audioBlob);
-      });
-
-      const response = await api.post('/ai/pronunciation-analysis', {
-        audio: base64Audio,
-        text
-      });
-
-      if (response.data.success && response.data.data) {
-        return response.data.data;
       }
 
       throw new Error('Failed to analyze pronunciation');
