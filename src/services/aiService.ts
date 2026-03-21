@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { localStorageCache } from '@/utils/cache';
 import { supabase } from '@/lib/supabase';
+import { getApiUrl } from '@/utils/apiUtils';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const API_BASE_URL = getApiUrl() as string;
 
 // Create axios instance with default config
 const api = axios.create({

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { supabase } from '@/lib/supabase';
 import { clearAuthCookies } from '@/utils/authCookies';
+import { getApiUrl } from '@/utils/apiUtils';
 
 // Define API response interface
 export interface ApiResponse<T = unknown> {
@@ -190,7 +191,7 @@ class ApiClient {
 }
 
 // Create API client instance
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
-const apiClient = new ApiClient(API_BASE_URL);
+const API_BASE_URL = getApiUrl();
+const apiClient = new ApiClient(API_BASE_URL as string);
 
 export default apiClient;

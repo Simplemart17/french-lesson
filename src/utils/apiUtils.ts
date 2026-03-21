@@ -66,4 +66,12 @@ export const validateBody = <T extends Record<string, unknown>>(
   }
 
   return data as T;
-}; 
+};
+
+export const getApiUrl = () => {
+  if (process.env.NODE_ENV === "development") {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  // VERCEL_URL is available automatically on Vercel deployments
+  return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`; 
+};
