@@ -191,7 +191,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 15);
 
-    // Generate daily progress from activity log
+    // Generate daily progress from activity log, ensuring at least the last 7 days are present
     const dailyProgressMap = activityLog.reduce((acc: Record<string, DailyProgress>, activity) => {
       if (!acc[activity.date]) {
         acc[activity.date] = {
@@ -206,6 +206,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return acc;
     }, {});
+
+    // Ensure the last 7 days are always present (fill gaps with 0 values)
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      if (!dailyProgressMap[dateStr]) {
+        dailyProgressMap[dateStr] = {
+          date: dateStr,
+          xp: 0,
+          minutes: 0
+        };
+      }
+    }
 
     const dailyProgress = Object.values(dailyProgressMap).sort((a, b) =>
       new Date(a.date).getTime() - new Date(b.date).getTime()

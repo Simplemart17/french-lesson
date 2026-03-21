@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -19,48 +20,55 @@ export default function LessonPage() {
   const [progress, setProgress] = useState<{ completed: boolean; score: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch lesson data - extracted as useCallback so it can be called after content generation
+  const fetchLessonData = useCallback(async () => {
+    if (id && typeof id === 'string') {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const data = await lessonService.getLesson(id);
+
+        if (data) {
+          setLesson(data);
+
+          if (isAuthenticated) {
+            const progressData = await lessonService.getLessonProgress(id);
+
+            if (progressData && progressData.lessonId === id) {
+              setProgress({
+                completed: progressData.completed,
+                score: progressData.score || 0
+              });
+            } else {
+              setProgress(null);
+            }
+          }
+        } else {
+          setError('Lesson not found');
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error fetching lesson:', err);
+        setError('Failed to load lesson. Please try again later.');
+        setIsLoading(false);
+      }
+    }
+  }, [id, isAuthenticated]);
+
   // Fetch lesson data
   useEffect(() => {
-    const fetchLessonData = async () => {
-      if (id && typeof id === 'string') {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-          // Fetch lesson data from API
-          const data = await lessonService.getLesson(id);
-          
-          if (data) {
-            setLesson(data);
-
-            // Fetch progress if authenticated
-            if (isAuthenticated) {
-              const progressData = await lessonService.getLessonProgress(id);
-              
-              if (progressData && progressData.lessonId === id) {
-                setProgress({
-                  completed: progressData.completed,
-                  score: progressData.score || 0
-                });
-              } else {
-                setProgress(null);
-              }
-            }
-          } else {
-            setError('Lesson not found');
-          }
-          
-          setIsLoading(false);
-        } catch (err) {
-          console.error('Error fetching lesson:', err);
-          setError('Failed to load lesson. Please try again later.');
-          setIsLoading(false);
-        }
-      }
-    };
-
     fetchLessonData();
-  }, [id, isAuthenticated]);
+  }, [fetchLessonData]);
+
+  // Called when InteractiveLesson generates content
+  const handleContentGenerated = useCallback(() => {
+    if (id && typeof id === 'string') {
+      lessonService.invalidateLesson(id);
+      fetchLessonData();
+    }
+  }, [id, fetchLessonData]);
 
   // Handle lesson completion
   const handleLessonComplete = async (score: number) => {
@@ -103,30 +111,34 @@ export default function LessonPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
-      </div>
+      <ProtectedRoute>
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
+        </div>
+      </ProtectedRoute>
     );
   }
 
   // Error state
   if (error || !lesson) {
     return (
-      <div className="max-w-4xl px-4 py-8 mx-auto">
-        <Card className="p-8 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-gray-800">
-            {error || 'Lesson Not Found'}
-          </h1>
-          <p className="mb-6 text-gray-600">
-            Sorry, the lesson you&apos;re looking for doesn&apos;t exist or has been removed.
-          </p>
-          <Link href="/lessons">
-            <Button>
-              Back to Lessons
-            </Button>
-          </Link>
-        </Card>
-      </div>
+      <ProtectedRoute>
+        <div className="max-w-4xl px-4 py-8 mx-auto">
+          <Card className="p-8 text-center">
+            <h1 className="mb-4 text-2xl font-bold text-gray-800">
+              {error || 'Lesson Not Found'}
+            </h1>
+            <p className="mb-6 text-gray-600">
+              Sorry, the lesson you&apos;re looking for doesn&apos;t exist or has been removed.
+            </p>
+            <Link href="/lessons">
+              <Button>
+                Back to Lessons
+              </Button>
+            </Link>
+          </Card>
+        </div>
+      </ProtectedRoute>
     );
   }
 
@@ -151,6 +163,7 @@ export default function LessonPage() {
       videoUrl: section.videoUrl,
       exercise: section.exercises && section.exercises.length === 1
         ? {
+            id: section.exercises[0].id,
             type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(section.exercises[0].type)
               ? section.exercises[0].type
               : 'multiple-choice') as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'true-false' | 'reorder',
@@ -162,6 +175,7 @@ export default function LessonPage() {
         : undefined,
       exercises: section.exercises && section.exercises.length > 1
         ? section.exercises.map(exercise => ({
+            id: exercise.id,
             type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(exercise.type)
               ? exercise.type
               : 'multiple-choice') as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'true-false' | 'reorder',
@@ -175,7 +189,7 @@ export default function LessonPage() {
   };
 
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>{lesson.title} | French Tutor AI</title>
         <meta name="description" content={lesson.description} />
@@ -255,8 +269,9 @@ export default function LessonPage() {
           onComplete={handleLessonComplete}
           onSubmitAnswers={handleSubmitAnswers}
           initialProgress={progress}
+          onContentGenerated={handleContentGenerated}
         />
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

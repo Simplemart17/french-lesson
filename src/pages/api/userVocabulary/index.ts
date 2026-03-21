@@ -1,9 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const db = supabaseAdmin ?? supabase;
+
   // Get user ID from authenticated user
   const userId = await getUserId(req);
   if (!userId) {
@@ -16,7 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // GET request to retrieve user's vocabulary
   if (req.method === 'GET') {
     try {
-      const { data: vocabularyItems, error } = await supabase
+      const { data: vocabularyItems, error } = await db
         .from(TABLES.USER_VOCABULARY)
         .select(`
           *,
@@ -56,7 +58,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Check if vocabulary exists
-      const { data: vocabularyExists, error: vocabError } = await supabase
+      const { data: vocabularyExists, error: vocabError } = await db
         .from(TABLES.VOCABULARY)
         .select('id')
         .eq('id', vocabularyId)
@@ -70,7 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Check if user vocabulary already exists
-      const { data: existingUserVocab } = await supabase
+      const { data: existingUserVocab } = await db
         .from(TABLES.USER_VOCABULARY)
         .select('*')
         .eq('user_id', userId)
@@ -82,7 +84,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       if (existingUserVocab) {
         // Update existing record
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from(TABLES.USER_VOCABULARY)
           .update({
             learned: learned !== undefined ? learned : existingUserVocab.learned,
@@ -99,7 +101,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         userVocabulary = data;
       } else {
         // Create new record
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from(TABLES.USER_VOCABULARY)
           .insert({
             user_id: userId,
@@ -144,7 +146,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Delete the user vocabulary entry
-      const { error } = await supabase
+      const { error } = await db
         .from(TABLES.USER_VOCABULARY)
         .delete()
         .eq('user_id', userId)

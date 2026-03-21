@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ApiResponse, User } from "@/types/api";
-import { supabase, TABLES } from "@/lib/supabase";
+import { supabase, supabaseAdmin, TABLES } from "@/lib/supabase";
 import { authMiddleware } from "@/utils/authMiddleware";
 import { getUserId } from "@/utils/auth";
 import { getOrCreateUserProfile } from "@/utils/userProfile";
@@ -9,6 +9,8 @@ async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<User>>
 ) {
+  const db = supabaseAdmin ?? supabase;
+
   try {
     // Get user ID from the authenticated request
     const userId = await getUserId(req);
@@ -79,7 +81,7 @@ async function handler(
       }
 
       // Update user profile
-      const { data: updatedProfile, error } = await supabase
+      const { data: updatedProfile, error } = await db
         .from(TABLES.USERS)
         .update(updates)
         .eq("id", userId)
