@@ -72,6 +72,8 @@ export const getApiUrl = () => {
   if (process.env.NODE_ENV === "development") {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  // VERCEL_URL is available automatically on Vercel deployments
-  return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`; 
+  // In production, use relative URLs since frontend and API are on the same origin.
+  // Using NEXT_PUBLIC_VERCEL_URL causes CORS issues when the access domain differs
+  // from the deployment URL (e.g., custom domains or preview URLs).
+  return '';
 };
