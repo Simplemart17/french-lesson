@@ -1,5 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
+import { getOpenAIClient, safeJSONParse } from '@/utils/openaiClient';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { getUserId } from '@/utils/auth';
+import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
+import { authMiddleware } from '@/utils/authMiddleware';
 
 interface GrammarCheckResponse {
   text: string;
@@ -144,7 +149,7 @@ function calculateScore(corrections: GrammarCorrection[]): number {
   return Math.max(0, Math.min(100, score));
 }
 
-export default function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<GrammarCheckResponse>>
 ) {
@@ -169,6 +174,77 @@ export default function handler(
       });
     }
 
+    // Try AI-powered grammar check first
+    try {
+      const openai = getOpenAIClient();
+
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a French grammar checker. Analyze the provided French text for grammar, spelling, punctuation, and style issues.
+
+Return a JSON object with this exact structure:
+{
+  "corrections": [
+    {
+      "original": "the incorrect phrase",
+      "corrected": "the corrected phrase",
+      "explanation": "Brief explanation",
+      "position": { "start": 0, "end": 10 },
+      "type": "grammar",
+      "severity": "error"
+    }
+  ],
+  "score": 85
+}
+
+Types: "grammar", "spelling", "punctuation", "style"
+Severity: "error", "warning", "suggestion"
+Score: 0-100 based on overall quality.
+If the text is perfect, return empty corrections array with score 100.
+Only respond with the JSON object.`
+          },
+          { role: 'user', content: text }
+        ],
+        temperature: 0.3,
+        max_tokens: 1500
+      });
+
+      const aiResult = safeJSONParse(response.choices[0].message.content || '{}');
+
+      if (aiResult && aiResult.corrections) {
+        const aiScore = (aiResult.score as number) ?? 100;
+        const payload = {
+          text,
+          corrections: aiResult.corrections as GrammarCorrection[],
+          score: aiScore
+        };
+
+        // Track activity (non-blocking, best-effort)
+        try {
+          const userId = await getUserId(req);
+          if (userId) {
+            const db = supabaseAdmin ?? supabase;
+            await recordActivity(db as never, userId, 'grammar', aiScore);
+            await updateUserXpAndStreak(db as never, userId, 3);
+          }
+        } catch {
+          // Non-fatal
+        }
+
+        return res.status(200).json({
+          success: true,
+          data: payload,
+          result: payload
+        });
+      }
+    } catch (aiError) {
+      console.warn('AI grammar check failed, falling back to regex:', aiError);
+    }
+
+    // Fallback: regex-based grammar check
     const corrections = buildCorrections(text);
     const score = calculateScore(corrections);
 
@@ -177,6 +253,18 @@ export default function handler(
       corrections,
       score
     };
+
+    // Track activity (non-blocking, best-effort)
+    try {
+      const userId = await getUserId(req);
+      if (userId) {
+        const db = supabaseAdmin ?? supabase;
+        await recordActivity(db as never, userId, 'grammar', score);
+        await updateUserXpAndStreak(db as never, userId, 3);
+      }
+    } catch {
+      // Non-fatal
+    }
 
     return res.status(200).json({
       success: true,
@@ -193,3 +281,5 @@ export default function handler(
     });
   }
 }
+
+export default authMiddleware(handler);

@@ -107,7 +107,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       response_format: { type: "json_object" }
     });
 
-    const feedback = JSON.parse(feedbackResponse.choices[0].message.content || '{}');
+    let feedback;
+    try {
+      feedback = JSON.parse(feedbackResponse.choices[0].message.content || '{}');
+    } catch {
+      feedback = { overall: 'Could not parse detailed feedback', suggestions: [], score: similarityScore };
+    }
     
     const payload = {
       transcript: actualText,

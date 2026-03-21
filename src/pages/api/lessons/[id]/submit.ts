@@ -91,6 +91,7 @@ async function handler(
       .eq("lesson_id", lessonId);
 
     if (sectionsError) {
+      console.error("Error fetching lesson sections:", sectionsError);
       return res.status(500).json({
         success: false,
         error: {
@@ -127,9 +128,10 @@ async function handler(
     const { data: exerciseRows, error: exercisesError } = await db
       .from(TABLES.LESSON_EXERCISES)
       .select("id,correct_answer,explanation")
-      .in("section_id", sectionIds);
+      .in("session_id", sectionIds);
 
     if (exercisesError) {
+      console.error("Error fetching lesson exercises:", exercisesError);
       return res.status(500).json({
         success: false,
         error: {
@@ -205,14 +207,22 @@ async function handler(
     // Determine if the lesson is completed (typically 70% or higher is passing)
     const completed = score >= 70;
 
-    // Update the user's progress
+    // Check for existing progress to preserve started_at
+    const { data: existingProgress } = await db
+      .from(TABLES.LESSON_PROGRESS)
+      .select("started_at")
+      .eq("user_id", userId)
+      .eq("lesson_id", lessonId)
+      .single();
+
+    const now = new Date().toISOString();
     const progressData = {
       user_id: userId,
       lesson_id: lessonId,
       score: score,
       completed: completed,
-      started_at: new Date().toISOString(),
-      completed_at: completed ? new Date().toISOString() : null,
+      started_at: existingProgress?.started_at || now,
+      completed_at: completed ? now : null,
       answers: answers,
     };
 
@@ -230,6 +240,54 @@ async function handler(
           message: "Failed to update lesson progress",
         },
       });
+    }
+
+    // Update XP and streak when lesson is completed
+    if (completed) {
+      try {
+        const { data: userData } = await db
+          .from(TABLES.USERS)
+          .select("points, streak_days, last_active")
+          .eq("id", userId)
+          .single();
+
+        if (userData) {
+          // Award XP: base 10 + bonus for high scores
+          const xpEarned = 10 + Math.round(score / 10);
+          const newPoints = (userData.points || 0) + xpEarned;
+
+          // Calculate streak
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const lastActive = userData.last_active ? new Date(userData.last_active) : null;
+          if (lastActive) lastActive.setHours(0, 0, 0, 0);
+
+          let newStreak = userData.streak_days || 0;
+          if (!lastActive) {
+            newStreak = 1;
+          } else {
+            const diffDays = Math.floor((today.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) {
+              newStreak += 1;
+            } else if (diffDays > 1) {
+              newStreak = 1;
+            }
+            // diffDays === 0: same day, keep current streak
+          }
+
+          await db
+            .from(TABLES.USERS)
+            .update({
+              points: newPoints,
+              streak_days: newStreak,
+              last_active: now,
+            })
+            .eq("id", userId);
+        }
+      } catch (xpError) {
+        console.error("Error updating XP/streak:", xpError);
+        // Non-fatal: don't fail the submission
+      }
     }
 
     const submission = {

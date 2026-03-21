@@ -3,6 +3,7 @@ import { getOpenAIClient } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { AuthenticatedRequest, ChatMessage } from '@/types/api';
 import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
 
 interface ConversationRow {
   id: string;
@@ -133,7 +134,11 @@ ${levelInstructions(level)}
 For grammar or vocabulary mistakes in the user's French, provide gentle corrections.
 If the user writes in English, respond in both French and English.
 If the user writes in French, respond primarily in French with occasional English explanations.
-Keep responses focused and educational.`
+Keep responses focused and educational.
+
+If you find any corrections to make in the user's French, include them at the very end of your response in the following format (after your normal response text):
+<!-- CORRECTIONS_JSON: [{"original": "what the user wrote", "correction": "the correct form", "explanation": "brief explanation"}] -->
+Only include this delimiter if there are actual corrections. Do not mention this format to the user.`
       },
       ...messageHistory.slice(-10).map((item) => ({
         role: (item.role === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
@@ -150,12 +155,31 @@ Keep responses focused and educational.`
 
     const aiResponse = response.choices[0].message.content || '';
 
+    // Extract structured corrections from the AI response delimiter before saving
+    let corrections: Array<{ original: string; correction: string; explanation: string }> = [];
+    let cleanResponse = aiResponse;
+    const correctionsDelimiterRegex = /<!-- CORRECTIONS_JSON:\s*([\s\S]*?)\s*-->/;
+    const delimiterMatch = correctionsDelimiterRegex.exec(aiResponse);
+
+    if (delimiterMatch) {
+      // Remove the delimiter from the visible response
+      cleanResponse = aiResponse.replace(correctionsDelimiterRegex, '').trim();
+      try {
+        const parsed = JSON.parse(delimiterMatch[1]);
+        if (Array.isArray(parsed)) {
+          corrections = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse corrections JSON from AI response:', e);
+      }
+    }
+
     const { error: saveAssistantMessageError } = await db
       .from(TABLES.MESSAGES)
       .insert({
         conversation_id: conversation.id,
         role: 'assistant',
-        content: aiResponse
+        content: cleanResponse
       });
 
     if (saveAssistantMessageError) {
@@ -167,18 +191,16 @@ Keep responses focused and educational.`
       .update({ updated_at: new Date().toISOString() })
       .eq('id', conversation.id);
 
-    const corrections = [] as Array<{ correction: string; context: string }>;
-    const correctionRegex = /\[([^\]]+)\]/g;
-    let match;
-    while ((match = correctionRegex.exec(aiResponse)) !== null) {
-      corrections.push({
-        correction: match[1],
-        context: match.input.substring(Math.max(0, match.index - 20), match.index + match[0].length + 20),
-      });
+    // Track activity and award XP (non-blocking)
+    try {
+      await recordActivity(db as never, userId, 'chat', undefined, { conversationId: conversation.id });
+      await updateUserXpAndStreak(db as never, userId, 5);
+    } catch {
+      // Non-fatal
     }
 
     const payload = {
-      response: aiResponse,
+      response: cleanResponse,
       conversationId: conversation.id,
       corrections: corrections.length > 0 ? corrections : undefined
     };

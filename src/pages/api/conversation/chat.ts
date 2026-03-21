@@ -4,6 +4,7 @@ import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 import { getOpenAIClient } from '@/utils/openaiClient';
 import { Conversation } from '@/services/api/conversationApiService';
+import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
 
 interface ConversationData {
   conversationId: string;
@@ -224,6 +225,14 @@ export default async function handler(
         .from(TABLES.CONVERSATIONS)
         .update({ updated_at: new Date().toISOString() })
         .eq('id', finalConversationId);
+
+      // Track activity and award XP (non-blocking)
+      try {
+        await recordActivity(db as never, userId, 'conversation', undefined, { conversationId: finalConversationId });
+        await updateUserXpAndStreak(db as never, userId, 5);
+      } catch {
+        // Non-fatal
+      }
 
       const fullHistory: ChatMessage[] = [
         ...history,
