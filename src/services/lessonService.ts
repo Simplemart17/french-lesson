@@ -348,6 +348,14 @@ class LessonService {
   }
 
   /**
+   * Invalidate cache for a specific lesson (used after content generation)
+   */
+  invalidateLesson(id: string): void {
+    this.invalidateCache(`lesson-${id}`);
+    this.invalidateCache(`lesson-sections-${id}`);
+  }
+
+  /**
    * Clear all cache
    */
   clearCache(): void {

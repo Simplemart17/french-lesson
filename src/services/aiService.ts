@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { localStorageCache } from '@/utils/cache';
-import { getAuthToken } from '@/utils/authCookies';
+import { supabase } from '@/lib/supabase';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -13,10 +13,14 @@ const api = axios.create({
   timeout: 30000, // 30 seconds timeout for AI operations
 });
 
-api.interceptors.request.use((config) => {
-  const token = getAuthToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(async (config) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      config.headers.Authorization = `Bearer ${session.access_token}`;
+    }
+  } catch {
+    // proceed without token
   }
   return config;
 });

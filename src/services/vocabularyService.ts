@@ -1,5 +1,36 @@
 import { VocabularyWord } from '@/components/features/SpacedRepetition';
 import vocabularyApiService from './api/vocabularyApiService';
+import { VocabularyItem } from '@/types/api';
+
+/**
+ * Maps a VocabularyItem from the API to the VocabularyWord format used by components.
+ */
+function mapItemToWord(item: VocabularyItem): VocabularyWord {
+  const levelMap: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
+    'A1': 'beginner',
+    'A2': 'beginner',
+    'B1': 'intermediate',
+    'B2': 'intermediate',
+    'C1': 'advanced',
+    'C2': 'advanced',
+    'beginner': 'beginner',
+    'intermediate': 'intermediate',
+    'advanced': 'advanced',
+  };
+
+  return {
+    id: item.id || Date.now().toString(),
+    word: item.word,
+    translation: item.translation,
+    example: item.example || '',
+    category: item.category || 'general',
+    pronunciation: item.pronunciation || '',
+    level: levelMap[item.level] || 'beginner',
+    lastReviewed: item.lastPracticed,
+    nextReview: item.nextReview,
+    repetitionStage: item.repetitionStage,
+  };
+}
 
 // This is a wrapper service that provides compatibility between the API service and the local components
 class VocabularyService {
@@ -7,8 +38,7 @@ class VocabularyService {
   async getVocabulary(level?: string, category?: string): Promise<VocabularyWord[]> {
     try {
       const response = await vocabularyApiService.getVocabulary(level, category);
-      // The response is already in the right format, just need to fix the TypeScript error
-      return response as unknown as VocabularyWord[];
+      return response.map(mapItemToWord);
     } catch {
       return [];
     }

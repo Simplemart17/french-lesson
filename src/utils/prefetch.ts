@@ -1,6 +1,6 @@
 import { vocabularyService, lessonService, conversationService, grammarService, pronunciationService, examService } from '@/services';
 import { localStorageCache } from '@/utils/cache';
-import { isAuthenticated } from '@/utils/authCookies';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Prefetch common data that will be needed across the application
@@ -8,7 +8,8 @@ import { isAuthenticated } from '@/utils/authCookies';
  */
 export const prefetchCommonData = async () => {
   // Check if user is authenticated before prefetching
-  if (!isAuthenticated()) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
     return;
   }
 

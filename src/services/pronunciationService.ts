@@ -14,6 +14,17 @@ class PronunciationService {
   private cache: Map<string, unknown> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
   private cacheDuration = 30 * 60 * 1000; // 30 minutes
+  private activeObjectUrls: Set<string> = new Set();
+
+  /**
+   * Get the user's preferred TTS voice from localStorage, defaulting to 'alloy'
+   */
+  private getPreferredVoice(): string {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('tts-voice') || 'alloy';
+    }
+    return 'alloy';
+  }
 
   /**
    * Get pronunciation exercises with optional filtering
@@ -184,8 +195,8 @@ class PronunciationService {
         throw new Error(`Failed to get text for phrase ${id}`);
       }
 
-      // Use the speak method to play the audio
-      return await this.speak(text, { voice: 'alloy' });
+      // Use the speak method to play the audio with the user's preferred voice
+      return await this.speak(text, { voice: this.getPreferredVoice() });
     } catch (error) {
       console.error(`Error speaking phrase ${id}:`, error);
       return false;
@@ -207,7 +218,7 @@ class PronunciationService {
           },
           body: JSON.stringify({
             text,
-            voice: options.voice || 'alloy'
+            voice: options.voice || this.getPreferredVoice()
           }),
         });
 
@@ -216,13 +227,28 @@ class PronunciationService {
         }
 
         const audioBlob = await response.blob();
+        // Revoke any previously created object URLs to prevent memory leaks
+        this.revokeAllObjectUrls();
         const audioUrl = URL.createObjectURL(audioBlob);
+        this.activeObjectUrls.add(audioUrl);
 
         audio.src = audioUrl;
         await new Promise((resolve, reject) => {
-          audio.onended = () => resolve(true);
-          audio.onerror = (e) => reject(e);
-          audio.play().catch(reject);
+          audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+            this.activeObjectUrls.delete(audioUrl);
+            resolve(true);
+          };
+          audio.onerror = (e) => {
+            URL.revokeObjectURL(audioUrl);
+            this.activeObjectUrls.delete(audioUrl);
+            reject(e);
+          };
+          audio.play().catch((err) => {
+            URL.revokeObjectURL(audioUrl);
+            this.activeObjectUrls.delete(audioUrl);
+            reject(err);
+          });
         });
       } else {
         // Server-side - can't play audio
@@ -288,11 +314,22 @@ class PronunciationService {
   }
 
   /**
-   * Clear cache
+   * Revoke all active object URLs to free memory
+   */
+  private revokeAllObjectUrls(): void {
+    this.activeObjectUrls.forEach((url) => {
+      URL.revokeObjectURL(url);
+    });
+    this.activeObjectUrls.clear();
+  }
+
+  /**
+   * Clear cache and revoke all object URLs
    */
   clearCache(): void {
     this.cache.clear();
     this.cacheExpiry.clear();
+    this.revokeAllObjectUrls();
   }
 }
 
