@@ -5,6 +5,7 @@ import {
   PronunciationPhrase as ImportedPronunciationPhrase
 } from '@/services/api/pronunciationApiService';
 import { supabase, TABLES } from '@/lib/supabase';
+import { authMiddleware } from '@/utils/authMiddleware';
 
 interface PronunciationPhrase extends ImportedPronunciationPhrase {
   audioUrl: string;
@@ -110,10 +111,20 @@ function buildExerciseObjects(rows: DatabasePronunciationExercise[]): Pronunciat
       const exercisePhrases = phrases.slice(i, i + 4);
       if (exercisePhrases.length === 0) continue;
 
+      // Create a unique title using the category/focus sounds or phrase content
+      const groupIndex = Math.floor(i / 4) + 1;
+      const focusTopics = exercisePhrases
+        .flatMap(p => p.focusSounds)
+        .filter((v, idx, arr) => v && arr.indexOf(v) === idx)
+        .slice(0, 2);
+      const topicSuffix = focusTopics.length > 0
+        ? ` - ${focusTopics.join(' & ')}`
+        : ` #${groupIndex}`;
+
       exerciseObjects.push({
         id: exerciseId++,
-        title: `${difficulty.charAt(0).toUpperCase()}${difficulty.slice(1)} Pronunciation Practice`,
-        description: `Practice French pronunciation with ${difficulty} level phrases.`,
+        title: `${difficulty.charAt(0).toUpperCase()}${difficulty.slice(1)} Pronunciation${topicSuffix}`,
+        description: `Practice French pronunciation with ${difficulty} level phrases: "${exercisePhrases[0].text.slice(0, 40)}${exercisePhrases[0].text.length > 40 ? '...' : ''}"`,
         difficulty,
         phrases: exercisePhrases,
         createdAt: new Date().toISOString(),
@@ -191,4 +202,4 @@ async function handler(
   }
 }
 
-export default handler;
+export default authMiddleware(handler);

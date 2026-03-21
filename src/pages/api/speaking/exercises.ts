@@ -8,7 +8,7 @@ interface SpeakingExercise {
   id: string;
   prompt: string;
   translation: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  level: string;
   category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping';
 }
 
@@ -51,7 +51,7 @@ async function handler(
           id: dbExercise.id,
           prompt: dbExercise.text,
           translation: dbExercise.translation || '',
-          difficulty: mapDifficultyLevel(dbExercise.difficulty),
+          level: dbExercise.level || dbExercise.difficulty || 'A1',
           category: mapCategory(dbExercise.category)
         };
 
@@ -71,9 +71,9 @@ async function handler(
 
       // Apply filters
       if (difficulty) {
-        const dbDifficulty = mapDifficultyToDb(difficulty as string);
-        if (dbDifficulty) {
-          query = query.eq('difficulty', dbDifficulty);
+        const levels = mapDifficultyToDbLevels(difficulty as string);
+        if (levels) {
+          query = query.in('level', levels);
         }
       }
 
@@ -92,14 +92,14 @@ async function handler(
         id: string;
         text: string;
         translation?: string;
-        difficulty: string;
+        level: string;
         category?: string;
       }
       const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: DatabaseSpeakingExercise) => ({
         id: exercise.id,
         prompt: exercise.text,
         translation: exercise.translation || '',
-        difficulty: mapDifficultyLevel(exercise.difficulty),
+        level: exercise.level || 'A1',
         category: mapCategory(exercise.category || null)
       }));
 
@@ -166,30 +166,14 @@ async function handler(
 }
 
 // Helper functions
-function mapDifficultyLevel(dbDifficulty: string): 'beginner' | 'intermediate' | 'advanced' {
-  switch (dbDifficulty) {
-    case 'A1':
-    case 'A2':
-      return 'beginner';
-    case 'B1':
-    case 'B2':
-      return 'intermediate';
-    case 'C1':
-    case 'C2':
-      return 'advanced';
-    default:
-      return 'beginner';
-  }
-}
-
-function mapDifficultyToDb(difficulty: string): string | null {
+function mapDifficultyToDbLevels(difficulty: string): string[] | null {
   switch (difficulty) {
     case 'beginner':
-      return 'A1';
+      return ['A1', 'A2'];
     case 'intermediate':
-      return 'B1';
+      return ['B1', 'B2'];
     case 'advanced':
-      return 'C1';
+      return ['C1', 'C2'];
     default:
       return null;
   }

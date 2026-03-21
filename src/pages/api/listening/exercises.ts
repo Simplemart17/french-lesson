@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { supabase, TABLES } from '@/lib/supabase';
+import { authMiddleware } from '@/utils/authMiddleware';
 
 interface DictationExercise {
   id: string;
@@ -118,7 +119,7 @@ function buildComprehensionExercises(rows: LessonRow[]): ComprehensionExercise[]
   return exercises;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<ListeningExercise[] | ListeningExercise>>
 ) {
@@ -218,3 +219,5 @@ export default async function handler(
     });
   }
 }
+
+export default authMiddleware(handler);

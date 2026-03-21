@@ -5,7 +5,7 @@ import { supabase, TABLES } from '@/lib/supabase';
 
 interface LessonExerciseRow {
   id: string;
-  section_id: string;
+  session_id: string;
   type: string;
   question: string;
   options: string[] | null;
@@ -55,8 +55,8 @@ async function handler(
 
     const { data: exercises, error: exercisesError } = await supabase
       .from(TABLES.LESSON_EXERCISES)
-      .select('id,section_id,type,question,options,correct_answer,explanation')
-      .eq('section_id', sectionId)
+      .select('id,session_id,type,question,options,correct_answer,explanation')
+      .eq('session_id', sectionId)
       .order('created_at', { ascending: true });
 
     if (exercisesError) {
@@ -66,7 +66,7 @@ async function handler(
     // Format the exercises for the response
     const formattedExercises: LessonExercise[] = ((exercises || []) as LessonExerciseRow[]).map((exercise) => ({
       id: exercise.id,
-      sectionId: exercise.section_id,
+      sectionId: exercise.session_id,
       type: exercise.type as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking' | 'translation' | 'true-false',
       question: exercise.question,
       options: exercise.options || undefined,

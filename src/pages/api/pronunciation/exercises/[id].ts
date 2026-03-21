@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationExercise as ImportedPronunciationExercise } from '@/services/api/pronunciationApiService';
 import { supabase, TABLES } from '@/lib/supabase';
+import { authMiddleware } from '@/utils/authMiddleware';
 
 interface PronunciationPhrase {
   id: string;
@@ -90,7 +91,7 @@ function buildExerciseObjects(rows: DatabasePronunciationExercise[]): Pronunciat
   return exercises;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<PronunciationExercise>>
 ) {
@@ -144,3 +145,5 @@ export default async function handler(
     });
   }
 }
+
+export default authMiddleware(handler);

@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { PronunciationCheckResponse, PronunciationFeedback } from '@/services/api/pronunciationApiService';
 import formidable from 'formidable';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { getUserId } from '@/utils/auth';
+import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
 
 export const config = {
   api: {
@@ -211,6 +213,18 @@ export default async function handler(
       transcript,
       isCorrect: accuracy >= 80
     };
+
+    // Track activity and award XP (non-blocking)
+    try {
+      const userId = await getUserId(req);
+      if (userId) {
+        const db = supabaseAdmin ?? supabase;
+        await recordActivity(db as never, userId, 'pronunciation', accuracy, { phraseId });
+        await updateUserXpAndStreak(db as never, userId, 5);
+      }
+    } catch {
+      // Non-fatal
+    }
 
     return res.status(200).json({
       success: true,

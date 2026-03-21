@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, TABLES } from '@/lib/supabase';
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -41,7 +41,8 @@ export default async function handler(
     }
 
     const ttsUrl = `/api/tts?text=${encodeURIComponent(exercise.text)}&lang=fr`;
-    return res.redirect(307, ttsUrl);
+    res.redirect(307, ttsUrl);
+    return;
   } catch (error) {
     console.error('Error in pronunciation audio API:', error);
     return res.status(500).json({
@@ -52,3 +53,5 @@ export default async function handler(
     });
   }
 }
+
+export default handler;
