@@ -1,9 +1,6 @@
 -- French Tutor AI Database Schema for Supabase
 -- Initial migration: Creates all necessary tables for the French learning application
 
--- Enable necessary extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Users table (extends Supabase auth.users)
 CREATE TABLE public.users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -29,7 +26,7 @@ CREATE TABLE public.users (
 
 -- Lessons table
 CREATE TABLE public.lessons (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT,
   level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
@@ -41,7 +38,7 @@ CREATE TABLE public.lessons (
 
 -- Lesson sections table
 CREATE TABLE public.lesson_sections (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   lesson_id UUID NOT NULL REFERENCES public.lessons(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   type TEXT NOT NULL,
@@ -53,7 +50,7 @@ CREATE TABLE public.lesson_sections (
 
 -- Lesson progress table
 CREATE TABLE public.lesson_progress (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   lesson_id UUID NOT NULL REFERENCES public.lessons(id) ON DELETE CASCADE,
   completed BOOLEAN DEFAULT false,
@@ -69,7 +66,7 @@ CREATE TABLE public.lesson_progress (
 
 -- Vocabulary table
 CREATE TABLE public.vocabulary (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   french TEXT NOT NULL,
   english TEXT NOT NULL,
   example TEXT,
@@ -83,7 +80,7 @@ CREATE TABLE public.vocabulary (
 
 -- User vocabulary progress table
 CREATE TABLE public.user_vocabulary (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   vocabulary_id UUID NOT NULL REFERENCES public.vocabulary(id) ON DELETE CASCADE,
   learned BOOLEAN DEFAULT false,
@@ -97,7 +94,7 @@ CREATE TABLE public.user_vocabulary (
 
 -- Conversations table
 CREATE TABLE public.conversations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   title TEXT,
   scenario TEXT,
@@ -108,7 +105,7 @@ CREATE TABLE public.conversations (
 
 -- Messages table
 CREATE TABLE public.messages (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
   role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
   content TEXT NOT NULL,
@@ -119,7 +116,7 @@ CREATE TABLE public.messages (
 
 -- Conversation templates table
 CREATE TABLE public.conversation_templates (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT,
   system_prompt TEXT NOT NULL,
@@ -132,7 +129,7 @@ CREATE TABLE public.conversation_templates (
 
 -- Pronunciation exercises table
 CREATE TABLE public.pronunciation_exercises (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   text TEXT NOT NULL,
   translation TEXT,
   level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
@@ -144,7 +141,7 @@ CREATE TABLE public.pronunciation_exercises (
 
 -- Grammar rules table
 CREATE TABLE public.grammar_rules (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   examples TEXT[],
@@ -156,7 +153,7 @@ CREATE TABLE public.grammar_rules (
 
 -- Exam results table
 CREATE TABLE public.exam_results (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   exam_type TEXT NOT NULL, -- TCF, TEF, etc.
   module TEXT NOT NULL, -- listening, reading, writing, speaking
@@ -170,7 +167,7 @@ CREATE TABLE public.exam_results (
 
 -- Lesson exercises table
 CREATE TABLE public.lesson_exercises (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id UUID NOT NULL REFERENCES public.lesson_sections(id) ON DELETE CASCADE,
   type TEXT NOT NULL,
   question TEXT NOT NULL,
@@ -183,7 +180,7 @@ CREATE TABLE public.lesson_exercises (
 
 -- Practice items table
 CREATE TABLE public.practice_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL, -- vocabulary, grammar, pronunciation, etc.
   content JSONB NOT NULL,
@@ -195,7 +192,7 @@ CREATE TABLE public.practice_items (
 
 -- Practice sessions table
 CREATE TABLE public.practice_sessions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL, -- daily_practice, exam_prep, etc.
   duration INTEGER, -- in minutes
@@ -206,7 +203,7 @@ CREATE TABLE public.practice_sessions (
 
 -- Pronunciation practice items table
 CREATE TABLE public.pronunciation_practice_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exercise_id UUID NOT NULL REFERENCES public.pronunciation_exercises(id) ON DELETE CASCADE,
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   transcript TEXT,

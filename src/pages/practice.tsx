@@ -1,125 +1,160 @@
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import VoiceInput from '@/components/features/VoiceInput';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/context/AuthContext';
+import {
+  pronunciationApiService,
+  PronunciationExercise,
+  PronunciationPhrase,
+  PronunciationResponse
+} from '@/services/api/pronunciationApiService';
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorMessage from '@/components/ui/ErrorMessage';
 
 interface PracticeExercise {
-  id: number;
-  prompt: string;
+  id: string | number;
+  text: string;
   translation: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business';
+  phonetics?: string;
+  focusSounds?: string[];
 }
 
 export default function PracticePage() {
+  const { isAuthenticated } = useAuth();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [transcript, setTranscript] = useState('');
   const [showTranslation, setShowTranslation] = useState(false);
-  const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'warning' | 'error' } | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [feedback, setFeedback] = useState<PronunciationResponse | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [exercises, setExercises] = useState<PracticeExercise[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Mock exercises data
-  const practiceExercises: Record<string, PracticeExercise[]> = {
-    beginner: [
-      {
-        id: 1,
-        prompt: 'Comment allez-vous aujourd\'hui?',
-        translation: 'How are you today?',
-        difficulty: 'beginner',
-        category: 'greetings'
-      },
-      {
-        id: 2,
-        prompt: 'Je m\'appelle Marie. Et vous?',
-        translation: 'My name is Marie. And you?',
-        difficulty: 'beginner',
-        category: 'greetings'
-      },
-      {
-        id: 3,
-        prompt: 'Où est la boulangerie?',
-        translation: 'Where is the bakery?',
-        difficulty: 'beginner',
-        category: 'travel'
-      },
-    ],
-    intermediate: [
-      {
-        id: 4,
-        prompt: 'Qu\'est-ce que vous avez fait le weekend dernier?',
-        translation: 'What did you do last weekend?',
-        difficulty: 'intermediate',
-        category: 'everyday'
-      },
-      {
-        id: 5,
-        prompt: 'Je voudrais réserver une table pour deux personnes.',
-        translation: 'I would like to book a table for two people.',
-        difficulty: 'intermediate',
-        category: 'dining'
-      },
-    ],
-    advanced: [
-      {
-        id: 6,
-        prompt: 'Les changements climatiques représentent un défi majeur pour notre génération.',
-        translation: 'Climate change represents a major challenge for our generation.',
-        difficulty: 'advanced',
-        category: 'business'
-      },
-      {
-        id: 7,
-        prompt: 'Pourriez-vous m\'expliquer les termes du contrat avant que je le signe?',
-        translation: 'Could you explain the terms of the contract before I sign it?',
-        difficulty: 'advanced',
-        category: 'business'
-      },
-    ],
+  const fetchExercises = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await pronunciationApiService.getExercises({
+        difficulty: selectedDifficulty,
+        limit: 20
+      });
+
+      const allPhrases: PracticeExercise[] = [];
+      // apiClient wraps response as { data: responseBody }, and API returns { data: { items } }
+      // So items may be at response.data.items (typed) or response.data.data.items (runtime)
+      const responseData = response.data as unknown as Record<string, unknown>;
+      const exerciseList = (
+        (responseData?.data as Record<string, unknown>)?.items ||
+        (responseData as Record<string, unknown>)?.items ||
+        []
+      ) as PronunciationExercise[];
+      exerciseList.forEach((exercise: PronunciationExercise) => {
+        exercise.phrases.forEach((phrase: PronunciationPhrase) => {
+          allPhrases.push({
+            id: phrase.id,
+            text: phrase.text,
+            translation: phrase.translation,
+            difficulty: phrase.difficulty,
+            phonetics: phrase.phonetics,
+            focusSounds: phrase.focusSounds
+          });
+        });
+      });
+
+      setExercises(allPhrases);
+      setCurrentExerciseIndex(0);
+
+      if (allPhrases.length === 0) {
+        setError('No pronunciation exercises available for this level yet.');
+      }
+    } catch (err) {
+      console.error('Error fetching exercises:', err);
+      setError(`Failed to load exercises: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setExercises([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedDifficulty]);
+
+  // Fetch exercises from API
+  useEffect(() => {
+    void fetchExercises();
+  }, [fetchExercises]);
+  
+  const currentExercise = exercises[currentExerciseIndex];
+  
+  const handleTranscriptReady = async (text: string, blob?: Blob) => {
+    if (!currentExercise) return;
+    
+    setTranscript(text);
+    
+    // Analyze pronunciation with AI if we have audio
+    if (blob && isAuthenticated) {
+      try {
+        setIsAnalyzing(true);
+        const response = await pronunciationApiService.analyzePronunciation(blob, currentExercise.text);
+        
+        if (response.success && response.data) {
+          setFeedback(response);
+          
+          // Update progress if we have a good score
+          if (response.data.feedback.overallScore >= 70) {
+            await pronunciationApiService.updateProgress(currentExercise.id, response.data.feedback.overallScore);
+          }
+        } else {
+          setFeedback({
+            success: false,
+            error: { message: 'Failed to analyze pronunciation. Please try again.' }
+          });
+        }
+      } catch (err) {
+        console.error('Error analyzing pronunciation:', err);
+        setFeedback({
+          success: false,
+          error: { message: 'Failed to analyze pronunciation. Please try again.' }
+        });
+      } finally {
+        setIsAnalyzing(false);
+      }
+    } else {
+      // Provide basic feedback without AI analysis
+      setFeedback({
+        success: true,
+        data: {
+          transcript: text,
+          expected: currentExercise.text,
+          similarity: calculateTextSimilarity(text, currentExercise.text),
+          feedback: {
+            overallScore: calculateTextSimilarity(text, currentExercise.text),
+            wordScores: [],
+            problemSounds: [],
+            recommendations: ['Try recording your pronunciation for detailed AI feedback']
+          }
+        }
+      });
+    }
   };
   
-  const currentExercises = practiceExercises[selectedDifficulty];
-  const currentExercise = currentExercises[currentExerciseIndex];
-  
-  // Animation effect when starting to speak
-  useEffect(() => {
-    if (isAnimating) {
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating]);
-
-  const handleTranscriptReady = (text: string) => {
-    setTranscript(text);
-    setIsAnimating(true);
+  // Simple text similarity calculation
+  const calculateTextSimilarity = (text1: string, text2: string): number => {
+    const words1 = text1.toLowerCase().split(/\s+/);
+    const words2 = text2.toLowerCase().split(/\s+/);
     
-    // Simulate AI feedback (in a real app, this would compare the transcript to the expected phrase)
-    setTimeout(() => {
-      const randomFeedback = Math.random();
-      if (randomFeedback > 0.7) {
-        setFeedback({
-          message: 'Excellent pronunciation! Your accent is very natural.',
-          type: 'success'
-        });
-      } else if (randomFeedback > 0.3) {
-        setFeedback({
-          message: 'Good attempt! Try to focus on the "r" sound in French.',
-          type: 'warning'
-        });
-      } else {
-        setFeedback({
-          message: 'Try again. Pay attention to the pronunciation of vowels.',
-          type: 'error'
-        });
-      }
-    }, 1000);
+    const commonWords = words1.filter(word => words2.includes(word)).length;
+    const totalWords = Math.max(words1.length, words2.length);
+    
+    return Math.round((commonWords / totalWords) * 100);
   };
   
   const handleNextExercise = () => {
-    const nextIndex = (currentExerciseIndex + 1) % currentExercises.length;
+    if (exercises.length === 0) return;
+    const nextIndex = (currentExerciseIndex + 1) % exercises.length;
     setCurrentExerciseIndex(nextIndex);
     setTranscript('');
     setShowTranslation(false);
@@ -134,8 +169,48 @@ export default function PracticePage() {
     setFeedback(null);
   };
   
+  // Loading state
+  if (isLoading) {
+    return (
+      <ProtectedRoute>
+        <Head>
+          <title>Speaking Practice | French Tutor AI</title>
+          <meta name="description" content="Practice your French speaking skills with AI-powered feedback" />
+        </Head>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="mb-4 text-3xl font-bold text-gray-800">Speaking Practice</h1>
+            <p className="text-lg text-gray-600">Loading pronunciation exercises...</p>
+          </div>
+          <LoadingState />
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
+  // Error state
+  if (error || exercises.length === 0) {
+    return (
+      <ProtectedRoute>
+        <Head>
+          <title>Speaking Practice | French Tutor AI</title>
+          <meta name="description" content="Practice your French speaking skills with AI-powered feedback" />
+        </Head>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="mb-4 text-3xl font-bold text-gray-800">Speaking Practice</h1>
+            <ErrorMessage
+              message={error || 'No pronunciation exercises available for this difficulty level.'}
+              retry={fetchExercises}
+            />
+          </div>
+        </div>
+      </ProtectedRoute>
+    );
+  }
+  
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Speaking Practice | French Tutor AI</title>
         <meta name="description" content="Practice your French speaking skills with AI-powered feedback" />
@@ -197,14 +272,23 @@ export default function PracticePage() {
           <div className="mb-6">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <span className="block mb-1 text-sm text-gray-500">Exercise {currentExerciseIndex + 1} of {currentExercises.length}</span>
-                <div className="text-xl font-medium text-gray-700">{currentExercise.prompt}</div>
+                <span className="block mb-1 text-sm text-gray-500">Exercise {currentExerciseIndex + 1} of {exercises.length}</span>
+                <div className="text-xl font-medium text-gray-700">{currentExercise.text}</div>
+                {currentExercise.phonetics && (
+                  <div className="mt-1 text-sm text-gray-500">
+                    <span className="font-mono">[{currentExercise.phonetics}]</span>
+                  </div>
+                )}
               </div>
               
-              {currentExercise.category && (
-                <span className="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
-                  {currentExercise.category.charAt(0).toUpperCase() + currentExercise.category.slice(1)}
-                </span>
+              {currentExercise.focusSounds && currentExercise.focusSounds.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {currentExercise.focusSounds.map((sound, index) => (
+                    <span key={index} className="px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
+                      {sound}
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
             
@@ -233,42 +317,115 @@ export default function PracticePage() {
             </div>
           )}
           
-          {feedback && (
-            <div className={`mb-6 p-4 rounded-lg ${feedback.type === 'success' ? 'bg-green-50 border border-green-200' : 
-              feedback.type === 'warning' ? 'bg-yellow-50 border border-yellow-200' : 
-              'bg-red-50 border border-red-200'}`}>
-              <div className="flex items-start">
-                <div className={`mr-3 ${feedback.type === 'success' ? 'text-green-500' : 
-                  feedback.type === 'warning' ? 'text-yellow-500' : 
-                  'text-red-500'}`}>
-                  {feedback.type === 'success' ? (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+          {isAnalyzing && (
+            <div className="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+                <p className="text-blue-700">Analyzing your pronunciation...</p>
+              </div>
+            </div>
+          )}
+
+          {feedback && !isAnalyzing && (
+            <div className={`mb-6 p-4 rounded-lg ${
+              feedback.success && feedback.data
+                ? (feedback.data.feedback?.overallScore ?? 0) >= 80 
+                  ? 'bg-green-50 border border-green-200' 
+                  : (feedback.data.feedback?.overallScore ?? 0) >= 60 
+                    ? 'bg-yellow-50 border border-yellow-200' 
+                    : 'bg-red-50 border border-red-200'
+                : 'bg-red-50 border border-red-200'
+            }`}>
+              {feedback.success && feedback.data ? (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className={`font-medium ${
+                      (feedback.data.feedback?.overallScore ?? 0) >= 80 ? 'text-green-800' :
+                      (feedback.data.feedback?.overallScore ?? 0) >= 60 ? 'text-yellow-800' :
+                      'text-red-800'
+                    }`}>
+                      Score: {feedback.data.feedback?.overallScore ?? 0}%
+                    </h4>
+                    <div className={`w-16 h-2 rounded-full ${
+                      (feedback.data.feedback?.overallScore ?? 0) >= 80 ? 'bg-green-200' :
+                      (feedback.data.feedback?.overallScore ?? 0) >= 60 ? 'bg-yellow-200' :
+                      'bg-red-200'
+                    }`}>
+                      <div 
+                        className={`h-2 rounded-full ${
+                          (feedback.data.feedback?.overallScore ?? 0) >= 80 ? 'bg-green-500' :
+                          (feedback.data.feedback?.overallScore ?? 0) >= 60 ? 'bg-yellow-500' :
+                          'bg-red-500'
+                        }`}
+                        style={{ width: `${feedback.data.feedback?.overallScore ?? 0}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {(feedback.data.feedback?.recommendations?.length ?? 0) > 0 && (
+                    <div className="mb-3">
+                      <h5 className="font-medium text-gray-800 mb-2">Recommendations:</h5>
+                      <ul className="space-y-1">
+                        {feedback.data.feedback.recommendations.map((rec, index) => (
+                          <li key={index} className="text-sm text-gray-700 flex items-start">
+                            <span className="mr-2">•</span>
+                            {rec}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {(feedback.data.feedback?.problemSounds?.length ?? 0) > 0 && (
+                    <div className="mb-3">
+                      <h5 className="font-medium text-gray-800 mb-2">Focus Areas:</h5>
+                      <div className="flex flex-wrap gap-2">
+                        {feedback.data.feedback.problemSounds.map((sound, index) => (
+                          <div key={index} className="bg-white rounded-lg px-3 py-2 border">
+                            <span className="font-mono font-medium">{sound.sound}</span>
+                            <p className="text-xs text-gray-600 mt-1">{sound.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
-                <div>
-                  <h4 className={`font-medium ${feedback.type === 'success' ? 'text-green-800' : 
-                    feedback.type === 'warning' ? 'text-yellow-800' : 
-                    'text-red-800'}`}>
-                    {feedback.type === 'success' ? 'Excellent!' : 
-                     feedback.type === 'warning' ? 'Good attempt!' : 
-                     'Try again'}
-                  </h4>
-                  <p className={feedback.type === 'success' ? 'text-green-700' : 
-                    feedback.type === 'warning' ? 'text-yellow-700' : 
-                    'text-red-700'}>
-                    {feedback.message}
-                  </p>
+              ) : (
+                <div className="flex items-start">
+                  <svg className="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <h4 className="font-medium text-red-800">Error</h4>
+                    <p className="text-red-700">{feedback.error?.message}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {!isAuthenticated && (
+            <div className="mb-6 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Sign in for AI-Powered Analysis
+                  </h3>
+                  <div className="mt-2 text-sm text-yellow-700">
+                    <p>
+                      Create an account to get detailed pronunciation analysis with AI feedback, progress tracking, and personalized recommendations.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div className="flex justify-between">
             <Button variant="outline" onClick={() => {
               setTranscript('');
@@ -276,12 +433,12 @@ export default function PracticePage() {
             }}>
               Try Again
             </Button>
-            <Button onClick={handleNextExercise}>
+            <Button onClick={handleNextExercise} disabled={isAnalyzing}>
               Next Exercise
             </Button>
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

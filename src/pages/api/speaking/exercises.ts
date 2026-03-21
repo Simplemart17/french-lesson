@@ -8,7 +8,7 @@ interface SpeakingExercise {
   id: string;
   prompt: string;
   translation: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  level: string;
   category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping';
 }
 
@@ -51,7 +51,7 @@ async function handler(
           id: dbExercise.id,
           prompt: dbExercise.text,
           translation: dbExercise.translation || '',
-          difficulty: mapDifficultyLevel(dbExercise.difficulty),
+          level: dbExercise.level || dbExercise.difficulty || 'A1',
           category: mapCategory(dbExercise.category)
         };
 
@@ -71,9 +71,9 @@ async function handler(
 
       // Apply filters
       if (difficulty) {
-        const dbDifficulty = mapDifficultyToDb(difficulty as string);
-        if (dbDifficulty) {
-          query = query.eq('difficulty', dbDifficulty);
+        const levels = mapDifficultyToDbLevels(difficulty as string);
+        if (levels) {
+          query = query.in('level', levels);
         }
       }
 
@@ -92,14 +92,14 @@ async function handler(
         id: string;
         text: string;
         translation?: string;
-        difficulty: string;
+        level: string;
         category?: string;
       }
       const exercises: SpeakingExercise[] = (dbExercises || []).map((exercise: DatabaseSpeakingExercise) => ({
         id: exercise.id,
         prompt: exercise.text,
         translation: exercise.translation || '',
-        difficulty: mapDifficultyLevel(exercise.difficulty),
+        level: exercise.level || 'A1',
         category: mapCategory(exercise.category || null)
       }));
 
@@ -143,9 +143,6 @@ async function handler(
         });
       }
 
-      // In a real app, this would use a speech recognition API to evaluate the pronunciation
-      // For now, we'll simulate feedback based on the transcript and expected pronunciation
-
       const feedback: SpeakingFeedback = generateSpeakingFeedback(transcript, dbExercise);
 
       return res.status(200).json({
@@ -169,30 +166,14 @@ async function handler(
 }
 
 // Helper functions
-function mapDifficultyLevel(dbDifficulty: string): 'beginner' | 'intermediate' | 'advanced' {
-  switch (dbDifficulty) {
-    case 'A1':
-    case 'A2':
-      return 'beginner';
-    case 'B1':
-    case 'B2':
-      return 'intermediate';
-    case 'C1':
-    case 'C2':
-      return 'advanced';
-    default:
-      return 'beginner';
-  }
-}
-
-function mapDifficultyToDb(difficulty: string): string | null {
+function mapDifficultyToDbLevels(difficulty: string): string[] | null {
   switch (difficulty) {
     case 'beginner':
-      return 'A1';
+      return ['A1', 'A2'];
     case 'intermediate':
-      return 'B1';
+      return ['B1', 'B2'];
     case 'advanced':
-      return 'C1';
+      return ['C1', 'C2'];
     default:
       return null;
   }
@@ -206,14 +187,22 @@ function mapCategory(dbCategory: string | null): 'greetings' | 'travel' | 'dinin
 }
 
 function generateSpeakingFeedback(transcript: string, exercise: { text: string }): SpeakingFeedback {
-  // Simple feedback generation based on transcript quality
-  const transcriptLength = transcript.length;
-  const expectedLength = exercise.text.length;
-  const lengthRatio = transcriptLength / expectedLength;
+  const normalizedTranscript = normalizeText(transcript);
+  const normalizedExpected = normalizeText(exercise.text);
 
-  const accuracy = Math.min(100, Math.max(0, lengthRatio * 80 + Math.random() * 20));
-  const pronunciation = Math.min(100, Math.max(0, 70 + Math.random() * 30));
-  const fluency = Math.min(100, Math.max(0, 60 + Math.random() * 40));
+  const editDistance = levenshteinDistance(normalizedTranscript, normalizedExpected);
+  const maxLength = Math.max(normalizedTranscript.length, normalizedExpected.length, 1);
+  const stringSimilarity = 1 - editDistance / maxLength;
+
+  const transcriptWords = normalizedTranscript.split(' ').filter(Boolean);
+  const expectedWords = normalizedExpected.split(' ').filter(Boolean);
+  const expectedSet = new Set(expectedWords);
+  const matchedWords = transcriptWords.filter((word) => expectedSet.has(word)).length;
+  const wordCoverage = expectedWords.length > 0 ? matchedWords / expectedWords.length : 0;
+
+  const accuracy = Math.round(Math.min(100, Math.max(0, (stringSimilarity * 0.6 + wordCoverage * 0.4) * 100)));
+  const pronunciation = Math.round(Math.min(100, Math.max(0, accuracy - 5)));
+  const fluency = Math.round(Math.min(100, Math.max(0, accuracy - Math.abs(transcriptWords.length - expectedWords.length) * 2)));
 
   let feedback = '';
   let type: 'success' | 'warning' | 'error' = 'error';
@@ -230,12 +219,42 @@ function generateSpeakingFeedback(transcript: string, exercise: { text: string }
   }
 
   return {
-    accuracy: Math.round(accuracy),
-    pronunciation: Math.round(pronunciation),
-    fluency: Math.round(fluency),
+    accuracy,
+    pronunciation,
+    fluency,
     feedback,
     type
   };
+}
+
+function normalizeText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9À-ÿ\s']/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  const rows = a.length + 1;
+  const cols = b.length + 1;
+  const matrix: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+  for (let i = 0; i < rows; i += 1) matrix[i][0] = i;
+  for (let j = 0; j < cols; j += 1) matrix[0][j] = j;
+
+  for (let i = 1; i < rows; i += 1) {
+    for (let j = 1; j < cols; j += 1) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return matrix[a.length][b.length];
 }
 
 export default authMiddleware(handler);

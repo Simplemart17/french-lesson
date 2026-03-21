@@ -10,6 +10,9 @@ export interface User {
   streakDays: number;
   joinedAt: string;
   learningGoals: string[];
+  interests: string[];
+  studyTime: string;
+  targetExam: string;
   completedLessons: number;
   lastActive: string;
   preferences: {
@@ -51,7 +54,7 @@ export interface LessonSection {
   id: string;
   lessonId: string;
   title: string;
-  type: 'text' | 'audio' | 'video' | 'image' | 'exercise';
+  type: 'text' | 'audio' | 'video' | 'image' | 'exercise' | 'introduction' | 'practice' | 'summary';
   content?: string;
   audioUrl?: string;
   videoUrl?: string;
@@ -164,6 +167,7 @@ export interface ApiResponse<T> {
     message: string;
     code?: string;
   };
+  [key: string]: unknown;
 }
 
 // Generic API error response

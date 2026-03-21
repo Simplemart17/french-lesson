@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, supabaseAdmin } from './supabase';
 import { User } from '@/types/api';
 import { TABLES } from './supabase';
 
@@ -24,20 +24,23 @@ export interface AuthSession {
 }
 
 export interface MapUser {
-    id: string;
-    name: string;
-    email: string;
-    level: string;
-    points: number;
-    streakDays: number;
-    joinedAt: string;
-    learningGoals: string[];
-    completedLessons: number;
-    lastActive: string;
-    dailyGoal: number;
-    notifications: boolean;
-    theme: 'light' | 'dark';
-  }
+  id: string;
+  name: string;
+  email: string;
+  level: string;
+  points: number;
+  streak_days: number;
+  joined_at: string;
+  learning_goals: string[];
+  interests: string[];
+  study_time: string;
+  target_exam: string;
+  completed_lessons: number;
+  last_active: string;
+  daily_goal: number;
+  notifications: boolean;
+  theme: 'light' | 'dark';
+}
 
 /**
  * Enhanced Supabase Authentication Service
@@ -70,7 +73,7 @@ export const supabaseAuth = {
       }
 
       // Create user profile in our User table (without password field)
-      const userProfile = await supabaseAuth.createUserProfile(authData.user.id, {
+      let userProfile = await supabaseAuth.createUserProfile(authData.user.id, {
         name,
         email,
         level: 'A1',
@@ -84,6 +87,35 @@ export const supabaseAuth = {
           theme: 'light'
         }
       });
+
+      // If profile creation raced or failed, try one fetch.
+      if (!userProfile) {
+        userProfile = await supabaseAuth.getUserProfile(authData.user.id);
+      }
+
+      // Do not block successful signup on profile creation timing.
+      if (!userProfile) {
+        userProfile = {
+          id: authData.user.id,
+          name,
+          email,
+          level: 'A1',
+          points: 0,
+          streakDays: 0,
+          joinedAt: new Date().toISOString(),
+          learningGoals: [],
+          interests: [],
+          studyTime: 'less-than-30min',
+          targetExam: 'none',
+          completedLessons: 0,
+          lastActive: new Date().toISOString(),
+          preferences: {
+            dailyGoal: 15,
+            notifications: true,
+            theme: 'light'
+          }
+        };
+      }
 
       return {
         user: userProfile,
@@ -116,7 +148,25 @@ export const supabaseAuth = {
       }
 
       // Get user profile from our User table
-      const userProfile = await supabaseAuth.getUserProfile(authData.user.id);
+      let userProfile = await supabaseAuth.getUserProfile(authData.user.id);
+
+      // Backfill profile for users created outside the normal registration path.
+      if (!userProfile) {
+        userProfile = await supabaseAuth.createUserProfile(authData.user.id, {
+          name: authData.user.user_metadata?.name || authData.user.email?.split('@')[0] || 'Learner',
+          email: authData.user.email || `${authData.user.id}@local.invalid`,
+          level: 'A1',
+          points: 0,
+          streakDays: 0,
+          learningGoals: [],
+          completedLessons: 0,
+          preferences: {
+            dailyGoal: 15,
+            notifications: true,
+            theme: 'light'
+          }
+        });
+      }
 
       if (!userProfile) {
         return { user: null, error: 'User profile not found' };
@@ -262,7 +312,8 @@ export const supabaseAuth = {
    */
   createUserProfile: async (authUserId: string, profileData: Partial<User>): Promise<User | null> => {
     try {
-      const { data: user, error } = await supabase
+      const dbClient = supabaseAdmin || supabase;
+      const { data: user, error } = await dbClient
         .from(TABLES.USERS)
         .insert({
           id: authUserId, // Use Supabase Auth user ID
@@ -270,14 +321,14 @@ export const supabaseAuth = {
           email: profileData.email,
           level: profileData.level || 'A1',
           points: profileData.points || 0,
-          streakDays: profileData.streakDays || 0,
-          learningGoals: profileData.learningGoals || [],
-          completedLessons: profileData.completedLessons || 0,
-          lastActive: new Date().toISOString(),
-          dailyGoal: profileData.preferences?.dailyGoal || 15,
+          streak_days: profileData.streakDays || 0,
+          learning_goals: profileData.learningGoals || [],
+          completed_lessons: profileData.completedLessons || 0,
+          last_active: new Date().toISOString(),
+          daily_goal: profileData.preferences?.dailyGoal || 15,
           notifications: profileData.preferences?.notifications ?? true,
           theme: profileData.preferences?.theme || 'light',
-          joinedAt: new Date().toISOString(),
+          joined_at: new Date().toISOString(),
         })
         .select()
         .single();
@@ -299,14 +350,19 @@ export const supabaseAuth = {
    */
   getUserProfile: async (authUserId: string): Promise<User | null> => {
     try {
-      const { data: user, error } = await supabase
+      const dbClient = supabaseAdmin || supabase;
+      const { data: user, error } = await dbClient
         .from(TABLES.USERS)
         .select('*')
         .eq('id', authUserId)
-        .single();
+        .maybeSingle();
 
-      if (error || !user) {
+      if (error) {
         console.error('Error fetching user profile:', error);
+        return null;
+      }
+
+      if (!user) {
         return null;
       }
 
@@ -327,13 +383,16 @@ export const supabaseAuth = {
       email: dbUser.email,
       level: dbUser.level,
       points: dbUser.points,
-      streakDays: dbUser.streakDays,
-      joinedAt: dbUser.joinedAt,
-      learningGoals: dbUser.learningGoals,
-      completedLessons: dbUser.completedLessons,
-      lastActive: dbUser.lastActive,
+      streakDays: dbUser.streak_days,
+      joinedAt: dbUser.joined_at,
+      learningGoals: dbUser.learning_goals,
+      interests: dbUser.interests || [],
+      studyTime: dbUser.study_time || 'less-than-30min',
+      targetExam: dbUser.target_exam || 'none',
+      completedLessons: dbUser.completed_lessons,
+      lastActive: dbUser.last_active,
       preferences: {
-        dailyGoal: dbUser.dailyGoal,
+        dailyGoal: dbUser.daily_goal,
         notifications: dbUser.notifications,
         theme: dbUser.theme as 'light' | 'dark',
       }

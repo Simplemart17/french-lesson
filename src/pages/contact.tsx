@@ -29,8 +29,7 @@ export default function ContactPage() {
     
     // Simulate API call
     setTimeout(() => {
-      // In a real app, you would send the form data to your API
-      console.log('Form submitted:', formData);
+      // In a real app, you would send the form data to your API.
       setIsSubmitting(false);
       setSubmitSuccess(true);
       setFormData({

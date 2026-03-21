@@ -70,6 +70,9 @@ export type Database = {
           completed_lessons: number;
           last_active: string;
           daily_goal: number;
+          interests: string[];
+          study_time: string;
+          target_exam: string;
           notifications: boolean;
           theme: string;
           ai_correction_enabled: boolean;
@@ -102,7 +105,7 @@ export type Database = {
           lesson_id: string;
           title: string;
           type: string;
-          content: Record<string, unknown> | null;
+          content: string | null;
           order_index: number;
           created_at: string;
           updated_at: string;

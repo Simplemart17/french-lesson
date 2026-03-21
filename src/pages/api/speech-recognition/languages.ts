@@ -11,7 +11,11 @@ const SUPPORTED_LANGUAGES = [
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow GET requests
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      error: { message: 'Method not allowed' },
+      legacyError: 'Method not allowed'
+    });
   }
 
   try {
@@ -22,6 +26,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error: unknown) {
     console.error('Error getting supported languages:', error);
-    return res.status(500).json({ error: 'Failed to get supported languages' });
+    return res.status(500).json({
+      success: false,
+      error: { message: 'Failed to get supported languages' },
+      legacyError: 'Failed to get supported languages'
+    });
   }
 }

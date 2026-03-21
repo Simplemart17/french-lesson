@@ -144,11 +144,6 @@ const SpeechRecognition: React.FC<SpeechRecognitionProps> = ({
       // Create audio element and set source
       const audio = new Audio(URL.createObjectURL(audioBlob));
       
-      // Start recognition when audio plays
-      recognition.onstart = () => {
-        console.log('Speech recognition started');
-      };
-      
       // Handle recognition results
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -167,11 +162,6 @@ const SpeechRecognition: React.FC<SpeechRecognitionProps> = ({
         // If we couldn't recognize speech, still try to analyze with empty transcript
         // This allows the OpenAI model to provide feedback even without transcript
         analyzePronunciation('', audioBlob);
-      };
-      
-      // Handle recognition end
-      recognition.onend = () => {
-        console.log('Speech recognition ended');
       };
       
       // Start recognition

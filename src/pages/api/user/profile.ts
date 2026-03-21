@@ -1,13 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ApiResponse, User } from "@/types/api";
-import { supabase, TABLES } from "@/lib/supabase";
+import { supabase, supabaseAdmin, TABLES } from "@/lib/supabase";
 import { authMiddleware } from "@/utils/authMiddleware";
 import { getUserId } from "@/utils/auth";
+import { getOrCreateUserProfile } from "@/utils/userProfile";
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<User>>
 ) {
+  const db = supabaseAdmin ?? supabase;
+
   try {
     // Get user ID from the authenticated request
     const userId = await getUserId(req);
@@ -22,28 +25,13 @@ async function handler(
     }
 
     if (req.method === "GET") {
-      // Get user profile from User table
-      const { data: userProfile, error } = await supabase
-        .from(TABLES.USERS)
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Error fetching user profile:", error);
+      const { data: userProfile, error } = await getOrCreateUserProfile(userId);
+      if (error || !userProfile) {
+        console.error("Error fetching/creating user profile:", error);
         return res.status(500).json({
           success: false,
           error: {
             message: "Failed to fetch user profile",
-          },
-        });
-      }
-      
-      if (!userProfile) {
-        return res.status(404).json({
-          success: false,
-          error: {
-            message: "User profile not found",
           },
         });
       }
@@ -58,6 +46,9 @@ async function handler(
         streakDays: userProfile.streak_days,
         joinedAt: userProfile.joined_at,
         learningGoals: userProfile.learning_goals,
+        interests: userProfile.interests || [],
+        studyTime: userProfile.study_time || 'less-than-30min',
+        targetExam: userProfile.target_exam || 'none',
         completedLessons: userProfile.completed_lessons,
         lastActive: userProfile.last_active,
         preferences: {
@@ -73,7 +64,7 @@ async function handler(
       });
     } else if (req.method === "PUT" || req.method === "PATCH") {
       // Update user profile
-      const { name, level, learningGoals, preferences } = req.body;
+      const { name, level, learningGoals, interests, studyTime, targetExam, preferences } = req.body;
 
       // Prepare updates (using database field names)
       const updates: Record<string, unknown> = {
@@ -83,6 +74,9 @@ async function handler(
       if (name) updates.name = name;
       if (level) updates.level = level;
       if (learningGoals) updates.learning_goals = learningGoals;
+      if (interests) updates.interests = interests;
+      if (studyTime) updates.study_time = studyTime;
+      if (targetExam) updates.target_exam = targetExam;
 
       if (preferences) {
         if (preferences.dailyGoal !== undefined)
@@ -93,14 +87,32 @@ async function handler(
       }
 
       // Update user profile
-      const { data: updatedProfile, error } = await supabase
+      let { data: updatedProfile, error } = await db
         .from(TABLES.USERS)
         .update(updates)
         .eq("id", userId)
         .select()
-        .single();
+        .maybeSingle();
+
+      // If the update failed, retry without columns that require migration
+      // (interests, study_time, target_exam) in case they haven't been applied yet.
+      if (error && (updates.interests !== undefined || updates.study_time !== undefined || updates.target_exam !== undefined)) {
+        console.warn("Profile update failed, retrying without migration-dependent columns:", error.message);
+        delete updates.interests;
+        delete updates.study_time;
+        delete updates.target_exam;
+        const retry = await db
+          .from(TABLES.USERS)
+          .update(updates)
+          .eq("id", userId)
+          .select()
+          .maybeSingle();
+        updatedProfile = retry.data;
+        error = retry.error;
+      }
 
       if (error || !updatedProfile) {
+        console.error("Profile update error:", error);
         return res.status(500).json({
           success: false,
           error: {
@@ -119,6 +131,9 @@ async function handler(
         streakDays: updatedProfile.streak_days,
         joinedAt: updatedProfile.joined_at,
         learningGoals: updatedProfile.learning_goals,
+        interests: updatedProfile.interests || [],
+        studyTime: updatedProfile.study_time || 'less-than-30min',
+        targetExam: updatedProfile.target_exam || 'none',
         completedLessons: updatedProfile.completed_lessons,
         lastActive: updatedProfile.last_active,
         preferences: {

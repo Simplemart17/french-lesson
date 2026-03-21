@@ -6,11 +6,11 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { GetServerSideProps } from 'next';
-// import { authApiService } from '@/services';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{email?: string; password?: string; general?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isLoading, isAuthenticated, error, clearError, isInitialized, user } = useAuth();
@@ -38,8 +38,6 @@ export default function LoginPage() {
         ? redirect
         : '/dashboard';
 
-      console.log('🔄 Redirecting to:', redirectPath);
-      // Use router.push for navigation
       router.push(redirectPath);
     }
   }, [isAuthenticated, isLoading, isInitialized, user, router, redirect]);
@@ -111,6 +109,24 @@ export default function LoginPage() {
     }
   };
 
+  // Guard: show loading/redirect message instead of flashing the form
+  if (isAuthenticated && isInitialized && !isLoading) {
+    return (
+      <>
+        <Head>
+          <title>Login | French Tutor AI</title>
+          <meta name="description" content="Log in to your French Tutor AI account" />
+        </Head>
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-4 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
+            <p className="text-gray-600">You are already logged in. Redirecting...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -164,22 +180,32 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password || errors.general) {
-                    clearErrors('password');
-                    clearErrors('general');
-                  }
-                }}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                }`}
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password || errors.general) {
+                      clearErrors('password');
+                      clearErrors('general');
+                    }
+                  }}
+                  className={`w-full px-4 py-2 pr-16 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
+                    errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute text-sm font-medium -translate-y-1/2 right-3 top-1/2 text-primary-600 hover:text-primary-700"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
@@ -198,8 +224,8 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full"
-              isLoading={isLoading || isSubmitting}
-              disabled={isLoading || isSubmitting}
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Logging in...' : 'Log In'}
             </Button>

@@ -3,7 +3,7 @@ import aiService from './aiService';
 import speakingApiService from './api/speakingApiService';
 
 interface SpeakingExercise {
-  id: number;
+  id: string;
   title: string;
   prompt: string;
   translation: string;
@@ -12,7 +12,7 @@ interface SpeakingExercise {
 }
 
 interface SpeakingPhrase {
-  id: number;
+  id: string;
   text: string;
   translation: string;
   difficulty: string;
@@ -75,7 +75,7 @@ class SpeakingService {
   /**
    * Get a specific speaking exercise by ID
    */
-  async getSpeakingExercise(id: number): Promise<SpeakingExercise | null> {
+  async getSpeakingExercise(id: number | string): Promise<SpeakingExercise | null> {
     const cacheKey = `speaking-exercise-${id}`;
 
     // Check cache first
@@ -115,7 +115,7 @@ class SpeakingService {
   /**
    * Get a specific phrase by ID
    */
-  async getPhrase(id: number): Promise<SpeakingPhrase | null> {
+  async getPhrase(id: number | string): Promise<SpeakingPhrase | null> {
     const cacheKey = `phrase-${id}`;
 
     // Check cache first
@@ -155,7 +155,7 @@ class SpeakingService {
    * Check pronunciation of a phrase
    */
   async checkPronunciation(
-    phraseId: number,
+    phraseId: number | string,
     audioBlob: Blob
   ): Promise<{
     accuracy: number;

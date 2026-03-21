@@ -1,6 +1,6 @@
 import { vocabularyService, lessonService, conversationService, grammarService, pronunciationService, examService } from '@/services';
 import { localStorageCache } from '@/utils/cache';
-import { isAuthenticated } from '@/utils/authCookies';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Prefetch common data that will be needed across the application
@@ -8,7 +8,8 @@ import { isAuthenticated } from '@/utils/authCookies';
  */
 export const prefetchCommonData = async () => {
   // Check if user is authenticated before prefetching
-  if (!isAuthenticated()) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
     return;
   }
 
@@ -88,7 +89,7 @@ export const prefetchPageData = async (page: string, params?: Record<string, str
 
       case 'lesson-detail':
         if (params?.id) {
-          await lessonService.getLesson(Number(params.id)).catch((err: Error) => {
+          await lessonService.getLesson(String(params.id)).catch((err: Error) => {
             console.error(`Failed to prefetch lesson ${params.id}:`, err);
             return null;
           });
@@ -149,8 +150,6 @@ export const prefetchPageData = async (page: string, params?: Record<string, str
         console.error('Failed to store prefetch timestamp:', err);
       }
     }
-
-    console.log(`Prefetching for page ${page} completed`);
   } catch (error) {
     console.error(`Error during prefetching for page ${page}:`, error);
   }

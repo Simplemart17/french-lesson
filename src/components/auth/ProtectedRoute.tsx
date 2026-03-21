@@ -32,11 +32,6 @@ const ProtectedRoute = ({ children, fallback }: ProtectedRouteProps) => {
         // Set redirected flag to prevent multiple redirects
         setRedirected(true);
 
-        // Clear any existing auth cookies to prevent loops
-        document.cookie = "sb-access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie = "sb-refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie = "user_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
         // Store the current URL to redirect back after login
         const currentPath = router.asPath;
         // Redirect to login page with redirect parameter

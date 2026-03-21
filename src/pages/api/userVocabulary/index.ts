@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const db = supabaseAdmin ?? supabase;
+
   // Get user ID from authenticated user
-  const userId = getUserId(req);
+  const userId = await getUserId(req);
   if (!userId) {
     return res.status(401).json({
       success: false,
@@ -16,11 +18,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // GET request to retrieve user's vocabulary
   if (req.method === 'GET') {
     try {
-      const { data: vocabularyItems, error } = await supabase
+      const { data: vocabularyItems, error } = await db
         .from(TABLES.USER_VOCABULARY)
         .select(`
           *,
-          vocabulary:${TABLES.VOCABULARY}(*)
+          vocabulary:vocabulary_id(*)
         `)
         .eq('user_id', userId)
         .order('last_practiced', { ascending: false });
@@ -31,7 +33,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
-        data: vocabularyItems || []
+        data: vocabularyItems || [],
+        vocabulary: vocabularyItems || []
       });
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
@@ -55,7 +58,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Check if vocabulary exists
-      const { data: vocabularyExists, error: vocabError } = await supabase
+      const { data: vocabularyExists, error: vocabError } = await db
         .from(TABLES.VOCABULARY)
         .select('id')
         .eq('id', vocabularyId)
@@ -69,26 +72,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Check if user vocabulary already exists
-      const { data: existingUserVocab } = await supabase
+      const { data: existingUserVocab } = await db
         .from(TABLES.USER_VOCABULARY)
         .select('*')
-        .eq('userId', userId)
-        .eq('vocabularyId', vocabularyId)
-        .single();
+        .eq('user_id', userId)
+        .eq('vocabulary_id', vocabularyId)
+        .maybeSingle();
 
       let userVocabulary;
       const now = new Date().toISOString();
 
       if (existingUserVocab) {
         // Update existing record
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from(TABLES.USER_VOCABULARY)
           .update({
             learned: learned !== undefined ? learned : existingUserVocab.learned,
-            lastPracticed: now
+            last_practiced: now
           })
-          .eq('userId', userId)
-          .eq('vocabularyId', vocabularyId)
+          .eq('user_id', userId)
+          .eq('vocabulary_id', vocabularyId)
           .select()
           .single();
 
@@ -98,15 +101,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         userVocabulary = data;
       } else {
         // Create new record
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from(TABLES.USER_VOCABULARY)
           .insert({
-            userId,
-            vocabularyId,
+            user_id: userId,
+            vocabulary_id: vocabularyId,
             learned: learned || false,
-            lastPracticed: now,
-            correctCount: 0,
-            incorrectCount: 0
+            last_practiced: now,
+            repetition_stage: 0
           })
           .select()
           .single();
@@ -119,7 +121,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(201).json({
         success: true,
-        data: userVocabulary
+        data: userVocabulary,
+        vocabulary: userVocabulary
       });
     } catch (error) {
       console.error('Error managing vocabulary:', error);
@@ -143,7 +146,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Delete the user vocabulary entry
-      const { error } = await supabase
+      const { error } = await db
         .from(TABLES.USER_VOCABULARY)
         .delete()
         .eq('user_id', userId)
@@ -155,6 +158,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
+        data: { message: 'Vocabulary removed successfully' },
         message: 'Vocabulary removed successfully'
       });
     } catch (error) {

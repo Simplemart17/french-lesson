@@ -1,9 +1,10 @@
 import apiClient, { ApiResponse } from './apiClient';
 import { API_ENDPOINTS } from './apiConfig';
+import { supabase } from '@/lib/supabase';
 
 // Define interfaces for pronunciation data
 export interface PronunciationExercise {
-  id: number;
+  id: string | number;
   title: string;
   description: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -13,7 +14,7 @@ export interface PronunciationExercise {
 }
 
 export interface PronunciationPhrase {
-  id: number;
+  id: string | number;
   text: string;
   translation: string;
   phonetics?: string;
@@ -22,13 +23,13 @@ export interface PronunciationPhrase {
 }
 
 export interface PronunciationCheckRequest {
-  phraseId: number;
+  phraseId: string | number;
   audioBlob?: Blob;
   transcript?: string;
 }
 
 export interface PronunciationCheckResponse {
-  phraseId: number;
+  phraseId: string | number;
   accuracy: number; // 0-100
   feedback: PronunciationFeedback[];
   transcript: string;
@@ -46,7 +47,7 @@ export interface PronunciationFeedback {
 }
 
 export interface PronunciationProgress {
-  phraseId: number;
+  phraseId: string | number;
   bestAccuracy: number;
   attempts: number;
   lastAttempt: string;
@@ -114,7 +115,7 @@ export const pronunciationApiService = {
   /**
    * Get pronunciation exercise by ID
    */
-  getExercise: async (id: number): Promise<ApiResponse<PronunciationExercise>> => {
+  getExercise: async (id: string | number): Promise<ApiResponse<PronunciationExercise>> => {
     return apiClient.get<PronunciationExercise>(`${API_ENDPOINTS.PRONUNCIATION.EXERCISES}/${id}`);
   },
 
@@ -150,16 +151,41 @@ export const pronunciationApiService = {
    */
   analyzePronunciation: async (audioBlob: Blob, text: string): Promise<PronunciationResponse> => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        return {
+          success: false,
+          error: {
+            message: 'You must be logged in to analyze pronunciation.',
+          },
+        };
+      }
+
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
       formData.append('text', text);
 
       const response = await fetch('/api/ai/pronunciation-analysis', {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: formData,
       });
 
-      return await response.json();
+      const result = (await response.json()) as PronunciationResponse;
+
+      if (!response.ok && !result.error?.message) {
+        return {
+          success: false,
+          error: {
+            message: 'Failed to analyze pronunciation',
+          },
+        };
+      }
+
+      return result;
     } catch (error) {
       console.error('Error in pronunciation analysis:', error);
       return {
@@ -177,7 +203,7 @@ export const pronunciationApiService = {
    * Note: We no longer use audio URLs since we're using AI TTS
    * This method is kept for backward compatibility
    */
-  getPhraseText: async (id: number): Promise<string> => {
+  getPhraseText: async (id: string | number): Promise<string> => {
     try {
       const response = await apiClient.get<PronunciationPhrase>(`${API_ENDPOINTS.PRONUNCIATION.PHRASES}/${id}`);
       if (response.data && response.data.text) {
@@ -200,7 +226,7 @@ export const pronunciationApiService = {
   /**
    * Update pronunciation progress
    */
-  updateProgress: async (phraseId: number, accuracy: number): Promise<ApiResponse<PronunciationProgress>> => {
+  updateProgress: async (phraseId: string | number, accuracy: number): Promise<ApiResponse<PronunciationProgress>> => {
     return apiClient.post<PronunciationProgress>(API_ENDPOINTS.PRONUNCIATION.PROGRESS, {
       phraseId,
       accuracy,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
@@ -9,10 +10,20 @@ import ListeningComprehension from '@/components/exercises/ListeningComprehensio
 import { useAuth } from '@/context/AuthContext';
 import { listeningService } from '@/services';
 
+/** Returns true when the value is a usable, non-empty key (not null/undefined/NaN/""). */
+function isValidId(id: unknown): id is string | number {
+  if (id == null) return false;
+  if (typeof id === 'number') return !Number.isNaN(id);
+  if (typeof id === 'string') return id !== '';
+  return false;
+}
+
+// NOTE: exerciseType initial state is set to 'dictation' below so exercises show immediately
+
 // Sample dictation exercises
 const dictationExercises = [
   {
-    id: '1',
+    id: 'dictation-1',
     title: 'Basic Greetings',
     description: 'Practice listening to common French greetings',
     difficulty: 'beginner' as const,
@@ -20,7 +31,7 @@ const dictationExercises = [
     text: 'Bonjour, comment allez-vous aujourd\'hui?'
   },
   {
-    id: '2',
+    id: 'dictation-2',
     title: 'Daily Activities',
     description: 'Practice listening to sentences about daily routines',
     difficulty: 'beginner' as const,
@@ -28,7 +39,7 @@ const dictationExercises = [
     text: 'Je me lève à sept heures et je prends mon petit déjeuner.'
   },
   {
-    id: '3',
+    id: 'dictation-3',
     title: 'Restaurant Dialogue',
     description: 'Practice listening to a conversation in a restaurant',
     difficulty: 'intermediate' as const,
@@ -36,7 +47,7 @@ const dictationExercises = [
     text: 'Je voudrais réserver une table pour deux personnes ce soir à vingt heures.'
   },
   {
-    id: '4',
+    id: 'dictation-4',
     title: 'Travel Plans',
     description: 'Practice listening to sentences about travel',
     difficulty: 'intermediate' as const,
@@ -44,7 +55,7 @@ const dictationExercises = [
     text: 'Nous allons prendre le train pour Paris demain matin à neuf heures trente.'
   },
   {
-    id: '5',
+    id: 'dictation-5',
     title: 'Academic Discussion',
     description: 'Practice listening to an academic discussion',
     difficulty: 'advanced' as const,
@@ -56,7 +67,7 @@ const dictationExercises = [
 // Sample listening comprehension exercises
 const comprehensionExercises = [
   {
-    id: '1',
+    id: 'comprehension-1',
     title: 'At the Café',
     description: 'Listen to a conversation at a café and answer questions',
     difficulty: 'beginner' as const,
@@ -87,7 +98,7 @@ const comprehensionExercises = [
     ]
   },
   {
-    id: '2',
+    id: 'comprehension-2',
     title: 'Weather Forecast',
     description: 'Listen to a weather forecast and answer questions',
     difficulty: 'intermediate' as const,
@@ -125,7 +136,7 @@ const comprehensionExercises = [
     ]
   },
   {
-    id: '3',
+    id: 'comprehension-3',
     title: 'Job Interview',
     description: 'Listen to a job interview and answer questions',
     difficulty: 'advanced' as const,
@@ -173,7 +184,7 @@ const comprehensionExercises = [
 
 export default function ListeningPage() {
   const { isAuthenticated } = useAuth();
-  const [exerciseType, setExerciseType] = useState<'dictation' | 'comprehension' | null>(null);
+  const [exerciseType, setExerciseType] = useState<'dictation' | 'comprehension' | null>('dictation');
   interface ListeningExercise {
     id: string | number;
     title: string;
@@ -188,6 +199,8 @@ export default function ListeningPage() {
 
   const [selectedExercise, setSelectedExercise] = useState<ListeningExercise | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const exercisesPerPage = 9;
 
   // State for API data
   const [listeningExercises, setListeningExercises] = useState<ListeningExercise[]>([]);
@@ -205,25 +218,48 @@ export default function ListeningPage() {
           selectedDifficulty !== 'all' ? selectedDifficulty : undefined
         );
 
-        // Convert the exercises to match the expected interface
-        const convertedExercises = exercises.map(exercise => ({
-          ...exercise,
-          id: exercise.id.toString(), // Convert number to string
-          questions: exercise.questions?.map(q => ({
-            id: q.id,
-            text: (q as { question?: string }).question || q.text || '',
-            options: q.options,
-            correctAnswer: q.correctAnswer?.toString() || '',
-            explanation: q.explanation || ''
-          }))
-        }));
-        setListeningExercises(convertedExercises);
+        if (!exercises || exercises.length === 0) {
+          // No exercises from API — use fallback hardcoded data with TTS audio
+          const fallbackDictation = dictationExercises.map(ex => ({
+            ...ex,
+            audioUrl: `/api/tts?text=${encodeURIComponent(ex.text)}&lang=fr`,
+            type: 'dictation' as const
+          }));
+          const fallbackComprehension = comprehensionExercises.map(ex => ({
+            ...ex,
+            audioUrl: `/api/tts?text=${encodeURIComponent(ex.transcript)}&lang=fr`,
+            type: 'comprehension' as const
+          }));
+          setListeningExercises([...fallbackDictation, ...fallbackComprehension]);
+        } else {
+          // Convert the exercises to match the expected interface
+          const convertedExercises = exercises.map((exercise, idx) => ({
+            ...exercise,
+            id: isValidId(exercise.id) ? String(exercise.id) : `api-exercise-${idx}`,
+            questions: exercise.questions?.map(q => ({
+              id: q.id,
+              text: q.text || '',
+              options: q.options || [],
+              correctAnswer: String(q.correctAnswer || ''),
+              explanation: q.explanation || ''
+            }))
+          }));
+          setListeningExercises(convertedExercises);
+        }
       } catch (err) {
         console.error('Error fetching listening exercises:', err);
-        setError('Failed to load listening exercises. Please try again later.');
-
-        // Use mock data as fallback
-        setListeningExercises([...dictationExercises, ...comprehensionExercises]);
+        // Fallback to hardcoded exercises with TTS audio URLs
+        const fallbackDictation = dictationExercises.map(ex => ({
+          ...ex,
+          audioUrl: `/api/tts?text=${encodeURIComponent(ex.text)}&lang=fr`,
+          type: 'dictation' as const
+        }));
+        const fallbackComprehension = comprehensionExercises.map(ex => ({
+          ...ex,
+          audioUrl: `/api/tts?text=${encodeURIComponent(ex.transcript)}&lang=fr`,
+          type: 'comprehension' as const
+        }));
+        setListeningExercises([...fallbackDictation, ...fallbackComprehension]);
       } finally {
         setIsLoading(false);
       }
@@ -241,24 +277,32 @@ export default function ListeningPage() {
     .filter(ex => ex.type === 'comprehension' || (ex.questions && ex.questions.length > 0)) // Include exercises with questions
     .filter(ex => selectedDifficulty === 'all' || ex.difficulty === selectedDifficulty);
 
-  const handleExerciseComplete = async (score: number, answersOrText?: Record<string, string> | string) => {
-    console.log('Exercise completed with score:', score);
+  // Paginate the current exercise list
+  const currentExercises = exerciseType === 'dictation' ? filteredDictationExercises : filteredComprehensionExercises;
+  const totalPages = Math.ceil(currentExercises.length / exercisesPerPage);
+  const indexOfLastExercise = currentPage * exercisesPerPage;
+  const indexOfFirstExercise = indexOfLastExercise - exercisesPerPage;
+  const paginatedExercises = currentExercises.slice(indexOfFirstExercise, indexOfLastExercise);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [exerciseType, selectedDifficulty]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleExerciseComplete = async (score: number, answersOrText?: Record<string, string> | string) => {
     if (selectedExercise && isAuthenticated) {
       try {
-        // In a real implementation, this would submit the results to the API
-        // For now, we'll just log the results
-        console.log('Submitting exercise results:', {
-          exerciseId: selectedExercise.id,
-          score,
-          answersOrText
-        });
-
-        // Show a success message or update UI
-        // This could be enhanced with a toast notification
+        // In a real implementation, this would submit the results to the API.
+        void score;
+        void answersOrText;
+        void selectedExercise.id;
       } catch (err) {
         console.error('Error submitting exercise results:', err);
-        // Show an error message
       }
     }
   };
@@ -369,80 +413,97 @@ export default function ListeningPage() {
             {exerciseType === 'dictation' ? 'Dictation Exercises' : 'Comprehension Exercises'}
           </h2>
 
-          <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-2 lg:grid-cols-3">
-            {exerciseType === 'dictation' ? (
-              filteredDictationExercises.map(exercise => (
-                <Card key={exercise.id} className="h-full transition-shadow hover:shadow-lg">
-                  <div className="flex flex-col h-full p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'beginner'
-                          ? 'bg-green-100 text-green-800'
-                          : exercise.difficulty === 'intermediate'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                      }`}>
-                        {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
-                      </span>
-                    </div>
-
-                    <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
-
-                    <div className="mt-auto">
-                      <Button
-                        onClick={() => {
-                          setSelectedExercise(exercise);
-                        }}
-                        className="w-full"
-                      >
-                        Start Exercise
-                      </Button>
-                    </div>
+          <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
+            {paginatedExercises.map((exercise, index) => (
+              <Card key={isValidId(exercise.id) ? exercise.id : `exercise-${indexOfFirstExercise + index}`} className="h-full transition-shadow hover:shadow-lg">
+                <div className="flex flex-col h-full p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      exercise.difficulty === 'beginner'
+                        ? 'bg-green-100 text-green-800'
+                        : exercise.difficulty === 'intermediate'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                    }`}>
+                      {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
+                    </span>
                   </div>
-                </Card>
-              ))
-            ) : (
-              filteredComprehensionExercises.map(exercise => (
-                <Card key={exercise.id} className="h-full transition-shadow hover:shadow-lg">
-                  <div className="flex flex-col h-full p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'beginner'
-                          ? 'bg-green-100 text-green-800'
-                          : exercise.difficulty === 'intermediate'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                      }`}>
-                        {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
-                      </span>
-                    </div>
 
-                    <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
+                  <p className="flex-grow mb-6 text-gray-600">{exercise.description}</p>
 
-                    <div className="mt-auto">
-                      <Button
-                        onClick={() => {
-                          setSelectedExercise(exercise);
-                        }}
-                        className="w-full"
-                      >
-                        Start Exercise
-                      </Button>
-                    </div>
+                  <div className="mt-auto">
+                    <Button
+                      onClick={() => {
+                        setSelectedExercise(exercise);
+                      }}
+                      className="w-full"
+                    >
+                      Start Exercise
+                    </Button>
                   </div>
-                </Card>
-              ))
-            )}
+                </div>
+              </Card>
+            ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mb-12">
+              <nav className="inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === 1
+                      ? 'text-gray-300 cursor-not-allowed'
+                      : 'text-gray-500 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="sr-only">Previous</span>
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                      currentPage === index + 1
+                        ? 'z-10 bg-primary-50 border-primary-500 text-primary-600'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === totalPages
+                      ? 'text-gray-300 cursor-not-allowed'
+                      : 'text-gray-500 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="sr-only">Next</span>
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </nav>
+            </div>
+          )}
         </>
       )}
     </>
   );
 
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Listening Practice | French Tutor AI</title>
         <meta name="description" content="Practice your French listening skills with dictation and comprehension exercises" />
@@ -586,6 +647,6 @@ export default function ListeningPage() {
           </>
         )}
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

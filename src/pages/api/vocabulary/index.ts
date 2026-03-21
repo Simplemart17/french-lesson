@@ -1,9 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const db = supabaseAdmin ?? supabase;
+
   // Get user ID from authenticated user
   const userId = await getUserId(req);
   if (!userId) {
@@ -19,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { level, category } = req.query;
 
       // Build query for vocabulary items
-      let vocabularyQuery = supabase
+      let vocabularyQuery = db
         .from(TABLES.VOCABULARY)
         .select('*')
         .order('french', { ascending: true });
@@ -48,7 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Get user vocabulary progress for these items
-      const { data: userVocabularyItems, error: userVocabError } = await supabase
+      const { data: userVocabularyItems, error: userVocabError } = await db
         .from(TABLES.USER_VOCABULARY)
         .select('*')
         .eq('user_id', userId)
@@ -90,7 +92,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
-        data: result
+        data: result,
+        vocabulary: result
       });
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
@@ -122,13 +125,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Check if vocabulary already exists
-      const { data: existingVocabulary, error: checkError } = await supabase
+      const { data: existingVocabulary, error: checkError } = await db
         .from(TABLES.VOCABULARY)
         .select('id')
         .eq('french', word)
-        .single();
+        .maybeSingle();
 
-      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
+      if (checkError) {
         throw new Error(`Error checking existing vocabulary: ${checkError.message}`);
       }
 
@@ -140,7 +143,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // Create new vocabulary item
-      const { data: newVocabulary, error: createError } = await supabase
+      const { data: newVocabulary, error: createError } = await db
         .from(TABLES.VOCABULARY)
         .insert({
           french: word,
@@ -160,6 +163,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(201).json({
         success: true,
         data: {
+          id: newVocabulary.id,
+          word: newVocabulary.french,
+          translation: newVocabulary.english,
+          example: newVocabulary.example,
+          level: newVocabulary.level,
+          category: newVocabulary.category,
+          pronunciation: newVocabulary.pronunciation
+        },
+        vocabulary: {
           id: newVocabulary.id,
           word: newVocabulary.french,
           translation: newVocabulary.english,

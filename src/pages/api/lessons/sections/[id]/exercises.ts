@@ -1,7 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiResponse, LessonExercise, DatabaseLessonExercise } from '@/types/api';
+import { ApiResponse, LessonExercise } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { supabase, TABLES } from '@/lib/supabase';
+
+interface LessonExerciseRow {
+  id: string;
+  session_id: string;
+  type: string;
+  question: string;
+  options: string[] | null;
+  correct_answer: string | string[];
+  explanation: string | null;
+}
 
 async function handler(
   req: NextApiRequest,
@@ -43,25 +53,31 @@ async function handler(
       });
     }
 
-    // NOTE: LessonExercise table is not defined in TABLES constant
-    // This suggests exercises might be stored differently in Supabase
-    // For now, returning empty array - this needs to be updated based on actual schema
-    const exercises: DatabaseLessonExercise[] = [];
+    const { data: exercises, error: exercisesError } = await supabase
+      .from(TABLES.LESSON_EXERCISES)
+      .select('id,session_id,type,question,options,correct_answer,explanation')
+      .eq('session_id', sectionId)
+      .order('created_at', { ascending: true });
+
+    if (exercisesError) {
+      throw new Error(`Failed to fetch section exercises: ${exercisesError.message}`);
+    }
 
     // Format the exercises for the response
-    const formattedExercises: LessonExercise[] = exercises.map((exercise: DatabaseLessonExercise) => ({
+    const formattedExercises: LessonExercise[] = ((exercises || []) as LessonExerciseRow[]).map((exercise) => ({
       id: exercise.id,
-      sectionId: exercise.sectionId,
+      sectionId: exercise.session_id,
       type: exercise.type as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'writing' | 'speaking' | 'translation' | 'true-false',
       question: exercise.question,
-      options: exercise.options,
-      correctAnswer: exercise.correctAnswer,
+      options: exercise.options || undefined,
+      correctAnswer: exercise.correct_answer,
       explanation: exercise.explanation || undefined // Convert null to undefined
     }));
 
     return res.status(200).json({
       success: true,
-      data: formattedExercises
+      data: formattedExercises,
+      exercises: formattedExercises
     });
   } catch (error) {
     console.error('Error fetching section exercises:', error);

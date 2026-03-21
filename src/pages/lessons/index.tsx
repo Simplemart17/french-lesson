@@ -54,8 +54,8 @@ const getCategoryDisplay = (lesson: Lesson): string => {
 };
 
 // Helper function to get image URL
-const getImageUrl = (lesson: Lesson): string => {
-  return lesson.imageUrl || `/images/lessons/${lesson.id}.jpg`;
+const getImageUrl = (lesson: string): string => {
+  return `/images/lessons/${lesson}.jpg`;
 };
 
 // Extended lesson type that includes progress
@@ -143,9 +143,20 @@ export default function LessonsPage() {
   // Combine lessons with progress data
   const lessonsWithProgress: LessonWithProgress[] = lessons.map(lesson => {
     const progress = progressData.find(p => p.lessonId === lesson.id);
+    
+    // Calculate progress - default to 0 if no matching progress found
+    let calculatedProgress = 0;
+    if (progress && progress.lessonId === lesson.id) {
+      if (progress.completed && progress.score != null && progress.score >= 70) {
+        calculatedProgress = 100;
+      } else {
+        calculatedProgress = progress.score || 0;
+      }
+    }
+    
     return {
       ...lesson,
-      progress: progress ? (progress.completed ? 100 : progress.score) : 0
+      progress: calculatedProgress
     };
   });
 
@@ -253,37 +264,35 @@ export default function LessonsPage() {
           <div className="mb-8">
             <ErrorMessage
               message="Failed to load lessons. Please try again."
-              retryAction={() => {
+              retryAction={async () => {
                 // Refetch lessons and progress
                 const levelFilter = selectedLevel === 'all' ? undefined : selectedLevel;
                 const topicFilter = selectedCategory === 'all' ? undefined : selectedCategory;
 
                 setIsLoadingLessons(true);
-                lessonService.getLessons(levelFilter, topicFilter)
-                  .then(data => {
-                    setLessons(data);
-                    setIsLoadingLessons(false);
-                    setLessonsError(null);
-                  })
-                  .catch(err => {
-                    console.error('Error fetching lessons:', err);
-                    setLessonsError('Failed to load lessons');
-                    setIsLoadingLessons(false);
-                  });
+                try {
+                  const data = await lessonService.getLessons(levelFilter, topicFilter);
+                  setLessons(data);
+                  setIsLoadingLessons(false);
+                  setLessonsError(null);
+                } catch (err) {
+                  console.error('Error fetching lessons:', err);
+                  setLessonsError('Failed to load lessons');
+                  setIsLoadingLessons(false);
+                }
 
                 if (isAuthenticated) {
                   setIsLoadingProgress(true);
-                  lessonService.getAllLessonProgress()
-                    .then(data => {
-                      setProgressData(data);
-                      setIsLoadingProgress(false);
-                      setProgressError(null);
-                    })
-                    .catch(err => {
-                      console.error('Error fetching progress:', err);
-                      setProgressError('Failed to load progress');
-                      setIsLoadingProgress(false);
-                    });
+                  try {
+                    const data = await lessonService.getAllLessonProgress();
+                    setProgressData(data);
+                    setIsLoadingProgress(false);
+                    setProgressError(null);
+                  } catch (err) {
+                    console.error('Error fetching progress:', err);
+                    setProgressError('Failed to load progress');
+                    setIsLoadingProgress(false);
+                  }
                 }
               }}
             />
@@ -373,7 +382,7 @@ export default function LessonsPage() {
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
           {isLoadingLessons ? (
             // Loading skeletons
-            Array.from({ length: 3 }).map((_, index) => (
+            Array.from({ length: 4 }).map((_, index) => (
               <Card key={index} className="h-full overflow-hidden animate-pulse">
                 <div className="h-48 bg-gray-200"></div>
                 <div className="p-5">
@@ -384,15 +393,20 @@ export default function LessonsPage() {
               </Card>
             ))
           ) : currentLessons.length > 0 ? (
-            currentLessons.map((lesson) => (
+            currentLessons.map((lesson) => {
+              const lessonCategory = getCategoryDisplay(lesson).charAt(0).toUpperCase() + getCategoryDisplay(lesson).slice(1);
+
+              return(
               <Link key={lesson.id} href={`/lessons/${lesson.id}`} className="block group">
                 <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
                   <div className="relative h-48 overflow-hidden">
-                    {getImageUrl(lesson) ? (
+                    {getImageUrl(lessonCategory) ? (
                       <Image
-                        src={getImageUrl(lesson)}
+                        src={getImageUrl(lessonCategory)}
                         alt={lesson.title}
+                        sizes='100%'
                         fill
+                        priority
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
@@ -419,7 +433,7 @@ export default function LessonsPage() {
                     {/* Category Badge */}
                     <div className="absolute top-3 right-3">
                       <span className="px-2 py-1 text-xs font-medium text-gray-800 rounded-full bg-white/80 backdrop-blur-sm">
-                        {getCategoryDisplay(lesson).charAt(0).toUpperCase() + getCategoryDisplay(lesson).slice(1)}
+                        {lessonCategory}
                       </span>
                     </div>
 
@@ -468,7 +482,7 @@ export default function LessonsPage() {
                   </div>
                 </Card>
               </Link>
-            ))
+            )})
           ) : (
             <div className="py-12 text-center col-span-full">
               <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -477,7 +491,7 @@ export default function LessonsPage() {
               <h3 className="mt-2 text-lg font-medium text-gray-900">No lessons found</h3>
               <p className="mt-1 text-gray-500">Try adjusting your filters or search query.</p>
               <div className="mt-6">
-                <Button onClick={() => {
+                <Button onClick={async () => {
                   setSelectedCategory('all');
                   setSelectedLevel('all');
                   setSearchQuery('');
@@ -486,17 +500,16 @@ export default function LessonsPage() {
 
                   // Refetch lessons
                   setIsLoadingLessons(true);
-                  lessonService.getLessons()
-                    .then(data => {
-                      setLessons(data);
-                      setIsLoadingLessons(false);
-                      setLessonsError(null);
-                    })
-                    .catch(err => {
-                      console.error('Error fetching lessons:', err);
-                      setLessonsError('Failed to load lessons');
-                      setIsLoadingLessons(false);
-                    });
+                  try {
+                    const data = await lessonService.getLessons();
+                    setLessons(data);
+                    setIsLoadingLessons(false);
+                    setLessonsError(null);
+                  } catch (err) {
+                    console.error('Error fetching lessons:', err);
+                    setLessonsError('Failed to load lessons');
+                    setIsLoadingLessons(false);
+                  }
                 }}>
                   Reset Filters
                 </Button>

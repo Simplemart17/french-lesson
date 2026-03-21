@@ -1,10 +1,24 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AuthResponse, ApiResponse } from '@/types/api';
+import { ApiResponse } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
+
+interface SessionUserPayload {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface SessionPayload {
+  access_token: string;
+  refresh_token: string;
+  expires_at?: number;
+  user: SessionUserPayload;
+}
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<AuthResponse>>
+  res: NextApiResponse<ApiResponse<SessionPayload>>
 ) {
   // Only allow GET requests
   if (req.method !== 'GET') {
@@ -17,8 +31,6 @@ export default async function handler(
   }
 
   try {
-
-
     const { session, error: sessionError } = await supabaseAuth.getSession();
 
     if (sessionError || !session) {
@@ -30,10 +42,23 @@ export default async function handler(
       });
     }
 
+    const payload = {
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      expires_at: session.expires_at,
+      user: {
+        id: session.user.id,
+        name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Learner',
+        email: session.user.email || `${session.user.id}@local.invalid`,
+        role: 'user'
+      }
+    };
+
     // Return user session
     return res.status(200).json({
       success: true,
-      ...session,
+      data: payload,
+      ...payload
     });
   } catch (error: unknown) {
     console.error('Login error:', error);

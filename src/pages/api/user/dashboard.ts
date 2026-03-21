@@ -1,8 +1,30 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getUserId } from '@/utils/auth';
-import { LessonProgress } from '@/types/api';
+import { getOrCreateUserProfile } from '@/utils/userProfile';
+
+interface LessonProgressRow {
+  id: string;
+  lesson_id: string;
+  completed: boolean;
+  score: number | null;
+  completed_at: string | null;
+  lesson?: { title?: string; duration?: number };
+}
+
+interface UserVocabularyRow {
+  id: string;
+  last_practiced?: string | null;
+  vocabulary?: { french?: string };
+}
+
+interface PracticeSessionRow {
+  id: string;
+  type: string;
+  score: number | null;
+  created_at: string;
+}
 
 interface DashboardData {
   user: {
@@ -20,7 +42,7 @@ interface DashboardData {
   };
   recentActivities: Array<{
     id: string;
-    type: 'lesson' | 'vocabulary' | 'pronunciation' | 'conversation';
+    type: 'lesson' | 'vocabulary' | 'pronunciation' | 'conversation' | 'chat' | 'grammar' | 'listening';
     title: string;
     description: string;
     timestamp: string;
@@ -40,6 +62,7 @@ interface DashboardData {
     currentStreak: number;
     totalPoints: number;
   };
+  warnings?: string[];
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -48,6 +71,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
+    const db = supabaseAdmin ?? supabase;
+    const warnings: string[] = [];
     const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
@@ -55,23 +80,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         error: { message: 'User not authenticated' }
       });
     }
-    
-    // Get user data
-    const { data: user, error: userError } = await supabase
-    .from('users')
-    .select('name, level, points, streak_days, daily_goal, completed_lessons, last_active')
-    .eq('id', userId)
-    .single();
 
+    const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
-      return res.status(404).json({
+      return res.status(500).json({
         success: false,
-        error: { message: 'User not found' }
+        error: { message: 'Failed to fetch user profile' }
       });
     }
 
     // Get lesson progress
-    const { data: lessonProgress, error: progressError } = await supabase
+    const { data: lessonProgress, error: progressError } = await db
       .from(TABLES.LESSON_PROGRESS)
       .select(`
         *,
@@ -83,10 +102,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (progressError) {
       console.error('Error fetching lesson progress:', progressError);
+      warnings.push('Lesson progress data may be incomplete');
     }
 
     // Get vocabulary progress
-    const { data: vocabularyProgress, error: vocabError } = await supabase
+    const { data: vocabularyProgress, error: vocabError } = await db
       .from(TABLES.USER_VOCABULARY)
       .select(`
         *,
@@ -99,13 +119,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (vocabError) {
       console.error('Error fetching vocabulary progress:', vocabError);
+      warnings.push('Vocabulary progress data may be incomplete');
     }
 
     // Calculate daily progress (simplified - you might want to track actual study time)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    const { data: todayProgress, error: todayError } = await supabase
+    const { data: todayProgress, error: todayError } = await db
       .from(TABLES.LESSON_PROGRESS)
       .select(`
         *,
@@ -116,37 +137,69 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (todayError) {
       console.error('Error fetching today progress:', todayError);
+      warnings.push('Daily progress data may be incomplete');
     }
 
-    const minutesStudiedToday = (todayProgress || []).reduce((total, progress: LessonProgress & { lesson?: { duration: number } }) => {
+    const minutesStudiedToday = ((todayProgress || []) as LessonProgressRow[]).reduce((total, progress) => {
       return total + (progress.lesson?.duration || 0);
     }, 0);
 
     // Get total lesson count
-    const { count: totalLessons, error: countError } = await supabase
+    const { count: totalLessons, error: countError } = await db
       .from(TABLES.LESSONS)
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
       console.error('Error fetching lesson count:', countError);
+      warnings.push('Total lesson count may be inaccurate');
     }
 
-    // Build recent activities
+    // Fetch practice sessions for recent activities
+    const { data: practiceSessions, error: practiceError } = await db
+      .from(TABLES.PRACTICE_SESSIONS)
+      .select('id, type, score, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (practiceError) {
+      console.error('Error fetching practice sessions:', practiceError);
+      warnings.push('Practice session data may be incomplete');
+    }
+
+    const activityTypeLabels: Record<string, string> = {
+      chat: 'AI Tutor Chat',
+      conversation: 'Conversation Practice',
+      grammar: 'Grammar Check',
+      pronunciation: 'Pronunciation Practice',
+      listening: 'Listening Exercise',
+      vocabulary: 'Vocabulary Practice'
+    };
+
+    // Build recent activities from all sources
     const recentActivities = [
-      ...(lessonProgress || []).slice(0, 5).map((progress: LessonProgress & { lesson?: { title: string } }) => ({
+      ...((lessonProgress || []) as LessonProgressRow[]).slice(0, 5).map((progress) => ({
         id: `lesson-${progress.id}`,
         type: 'lesson' as const,
         title: `Completed Lesson: ${progress.lesson?.title || 'Unknown Lesson'}`,
         description: `Score: ${progress.score || 0}%`,
-        timestamp: progress.completedAt || new Date().toISOString(),
-        score: progress.score
+        timestamp: progress.completed_at || new Date().toISOString(),
+        score: progress.score || undefined
       })),
-      ...(vocabularyProgress || []).slice(0, 3).map((vocab: { id: string; vocabulary?: { french: string }; last_practiced?: string }) => ({
+      ...((vocabularyProgress || []) as UserVocabularyRow[]).slice(0, 3).map((vocab) => ({
         id: `vocab-${vocab.id}`,
         type: 'vocabulary' as const,
         title: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
         description: 'Added to vocabulary',
         timestamp: vocab.last_practiced || new Date().toISOString()
+      })),
+      ...((practiceSessions || []) as PracticeSessionRow[]).map((session) => ({
+        id: `practice-${session.id}`,
+        type: (session.type || 'conversation') as 'conversation' | 'chat' | 'grammar' | 'pronunciation' | 'listening',
+        title: activityTypeLabels[session.type] || 'Practice Session',
+        description: session.score != null ? `Score: ${session.score}%` : 'Completed',
+        timestamp: session.created_at,
+        score: session.score || undefined
       }))
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
@@ -155,11 +208,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     
     // Get completed lesson IDs
     const completedLessonIds = (lessonProgress || [])
-      .filter((p: LessonProgress) => p.completed)
-      .map((p: LessonProgress) => p.lessonId);
+      .filter((p: LessonProgressRow) => p.completed)
+      .map((p: LessonProgressRow) => p.lesson_id);
 
     // Get next lesson recommendation
-    let nextLessonQuery = supabase
+    let nextLessonQuery = db
       .from(TABLES.LESSONS)
       .select('id, title, description, duration')
       .eq('level', user.level)
@@ -174,6 +227,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (nextLessonError) {
       console.error('Error fetching next lesson:', nextLessonError);
+      warnings.push('Lesson recommendations may be incomplete');
     }
 
     const nextLesson = nextLessons?.[0];
@@ -189,7 +243,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Add vocabulary review recommendation
-    const { count: vocabularyToReview, error: vocabReviewError } = await supabase
+    const { count: vocabularyToReview, error: vocabReviewError } = await db
       .from(TABLES.USER_VOCABULARY)
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
@@ -197,6 +251,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (vocabReviewError) {
       console.error('Error fetching vocabulary to review:', vocabReviewError);
+      warnings.push('Vocabulary review recommendations may be incomplete');
     }
 
     if ((vocabularyToReview || 0) > 0) {
@@ -236,16 +291,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       recommendations: recommendations.slice(0, 3),
       stats: {
         totalLessons: totalLessons || 0,
-        completedLessons: (lessonProgress || []).filter((p: LessonProgress) => p.completed).length,
+        completedLessons: ((lessonProgress || []) as LessonProgressRow[]).filter((p) => p.completed).length,
         vocabularyLearned: (vocabularyProgress || []).length,
         currentStreak: user.streak_days,
         totalPoints: user.points
-      }
+      },
+      ...(warnings.length > 0 ? { warnings } : {})
     };
 
     return res.status(200).json({
       success: true,
-      data: dashboardData
+      data: dashboardData,
+      dashboard: dashboardData,
+      ...(warnings.length > 0 ? { warnings } : {})
     });
 
   } catch (error) {

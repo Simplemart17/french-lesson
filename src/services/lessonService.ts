@@ -52,7 +52,7 @@ class LessonService {
    * @param id Lesson ID
    * @returns Complete lesson with sections and exercises, or null if not found
    */
-  async getLesson(id: number): Promise<Lesson | null> {
+  async getLesson(id: string): Promise<Lesson | null> {
     const cacheKey = `lesson-${id}`;
 
     // Check cache first
@@ -87,7 +87,7 @@ class LessonService {
    * @param lessonId Lesson ID
    * @returns Array of lesson sections
    */
-  async getLessonSections(lessonId: number): Promise<LessonSection[]> {
+  async getLessonSections(lessonId: string): Promise<LessonSection[]> {
     const cacheKey = `lesson-sections-${lessonId}`;
 
     // Check cache first
@@ -118,7 +118,7 @@ class LessonService {
    * @param sectionId Section ID
    * @returns Array of exercises for the section
    */
-  async getSectionExercises(sectionId: number): Promise<LessonExercise[]> {
+  async getSectionExercises(sectionId: string): Promise<LessonExercise[]> {
     const cacheKey = `section-exercises-${sectionId}`;
 
     // Check cache first
@@ -149,7 +149,7 @@ class LessonService {
    * @param lessonId Lesson ID
    * @returns Lesson progress or null if not found
    */
-  async getLessonProgress(lessonId: number): Promise<LessonProgress | null> {
+  async getLessonProgress(lessonId: string): Promise<LessonProgress | null> {
     const cacheKey = `lesson-progress-${lessonId}`;
 
     // Check cache first
@@ -162,9 +162,12 @@ class LessonService {
 
       if (progressList && progressList.length > 0) {
         const progress = progressList[0];
-        // Cache the result
-        this.setCache(cacheKey, progress);
-        return progress;
+        // Verify the lesson ID matches
+        if (progress.lessonId === lessonId) {
+          // Cache the result
+          this.setCache(cacheKey, progress);
+          return progress;
+        }
       }
 
       return null;
@@ -188,7 +191,7 @@ class LessonService {
    * @returns Updated lesson progress or null if failed
    */
   async updateLessonProgress(
-    lessonId: number,
+    lessonId: string,
     completed: boolean,
     score: number = 0
   ): Promise<LessonProgress | null> {
@@ -220,8 +223,8 @@ class LessonService {
    * @returns Submission result with score and feedback
    */
   async submitLessonAnswers(
-    lessonId: number,
-    answers: Record<number, string | string[]>
+    lessonId: string,
+    answers: Record<string, string | string[]>
   ): Promise<LessonSubmissionResult | null> {
     try {
       const result = await lessonApiService.submitLessonAnswers(lessonId, answers);
@@ -342,6 +345,14 @@ class LessonService {
   private invalidateCache(key: string): void {
     this.cache.delete(key);
     this.cacheExpiry.delete(key);
+  }
+
+  /**
+   * Invalidate cache for a specific lesson (used after content generation)
+   */
+  invalidateLesson(id: string): void {
+    this.invalidateCache(`lesson-${id}`);
+    this.invalidateCache(`lesson-sections-${id}`);
   }
 
   /**

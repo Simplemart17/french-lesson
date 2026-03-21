@@ -1,24 +1,31 @@
 import axios from 'axios';
-import { getAuthToken } from '@/utils/authCookies';
 import { localStorageCache } from '@/utils/cache';
+import { supabase } from '@/lib/supabase';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 seconds timeout for AI operations
 });
 
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  const token = getAuthToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(async (config) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      config.headers.Authorization = `Bearer ${session.access_token}`;
+    }
+  } catch {
+    // proceed without token
   }
   return config;
 });
+
+
 
 // Cache configuration
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
@@ -222,23 +229,26 @@ class AIService {
     recommendations: string[];
   }> {
     try {
-      // Convert blob to base64
-      const base64Audio = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-          resolve(base64.split(',')[1]); // Remove data URL prefix
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+      formData.append('text', text);
+
+      const response = await api.post('/ai/pronunciation-analysis', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const payload = response.data?.data;
+      const feedback = payload?.feedback;
+
+      if (response.data.success && feedback) {
+        return {
+          overallScore: feedback.overallScore ?? 0,
+          wordScores: Array.isArray(feedback.wordScores) ? feedback.wordScores : [],
+          problemSounds: Array.isArray(feedback.problemSounds) ? feedback.problemSounds : [],
+          recommendations: Array.isArray(feedback.recommendations) ? feedback.recommendations : [],
         };
-        reader.readAsDataURL(audioBlob);
-      });
-
-      const response = await api.post('/ai/pronunciation-analysis', {
-        audio: base64Audio,
-        text
-      });
-
-      if (response.data.success && response.data.data) {
-        return response.data.data;
       }
 
       throw new Error('Failed to analyze pronunciation');
@@ -367,6 +377,33 @@ class AIService {
 
     // Remove each key
     aiCacheKeys.forEach(key => this.cache.remove(key));
+  }
+
+  /**
+   * Generate text from a prompt
+   */
+  async generateText(prompt: string, token?: string): Promise<string | null> {
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await api.post('/ai/generate-text', {
+        prompt,
+      }, { headers });
+
+      if (response.data.success && response.data.data) {
+        return response.data.data.text;
+      }
+
+      throw new Error('Failed to generate text');
+    } catch (error) {
+      console.error('Error generating text:', error);
+      return null;
+    }
   }
 }
 

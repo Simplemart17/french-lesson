@@ -1,11 +1,11 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/Card';
-// import { Button } from '@/components/ui/Button'; // Available for future use
 import ProgressChart from '@/components/progress/ProgressChart';
 import SkillRadarChart from '@/components/progress/SkillRadarChart';
-import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import { ProgressSkeleton } from '@/components/ui/Skeleton';
 import { useAuth } from '@/context/AuthContext';
 import apiClient from '@/services/api/apiClient';
 import { ApiResponse } from '@/types/api';
@@ -83,21 +83,25 @@ export default function ProgressPage() {
   // Loading and error states
   if (isLoading) {
     return (
-      <>
+      <ProtectedRoute>
         <Head>
           <title>My Progress | French Tutor AI</title>
           <meta name="description" content="Track your French learning progress and statistics" />
         </Head>
-        <div className="flex justify-center py-12">
-          <LoadingState message="Loading your progress..." size="large" />
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-6">
+            <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2" />
+            <div className="h-5 w-80 bg-gray-200 rounded animate-pulse" />
+          </div>
+          <ProgressSkeleton />
         </div>
-      </>
+      </ProtectedRoute>
     );
   }
 
   if (error || !progressData) {
     return (
-      <>
+      <ProtectedRoute>
         <Head>
           <title>My Progress | French Tutor AI</title>
           <meta name="description" content="Track your French learning progress and statistics" />
@@ -108,7 +112,7 @@ export default function ProgressPage() {
             retryAction={() => window.location.reload()}
           />
         </div>
-      </>
+      </ProtectedRoute>
     );
   }
 
@@ -186,7 +190,7 @@ export default function ProgressPage() {
   // All calculations are now done in the API and provided via progressData
 
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>My Progress | French Tutor AI</title>
         <meta name="description" content="Track your French learning progress and statistics" />
@@ -447,6 +451,6 @@ export default function ProgressPage() {
           </>
         )}
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

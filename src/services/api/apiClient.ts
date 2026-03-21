@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { getAuthToken, clearAuthCookies } from '@/utils/authCookies';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { supabase } from '@/lib/supabase';
+import { clearAuthCookies } from '@/utils/authCookies';
 
 // Define API response interface
 export interface ApiResponse<T = unknown> {
@@ -20,6 +21,7 @@ export interface ApiError {
 class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
+  private isRefreshing = false;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -30,30 +32,49 @@ class ApiClient {
       },
     });
 
-    // Add request interceptor for authentication
+    // Add async request interceptor — reads token from live Supabase session
     this.client.interceptors.request.use(
-      (config) => {
-        const token = this.getAuthToken();
-
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+      async (config: InternalAxiosRequestConfig) => {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            config.headers.Authorization = `Bearer ${session.access_token}`;
+          }
+        } catch {
+          // If getSession fails, proceed without token — the API will return 401
         }
         return config;
       },
       (error) => Promise.reject(error)
     );
 
-    // Add response interceptor for error handling
+    // Add response interceptor for error handling with 401 retry
     this.client.interceptors.response.use(
       (response) => response,
-      (error: AxiosError) => this.handleApiError(error)
-    );
-  }
+      async (error: AxiosError) => {
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-  // Get auth token from localStorage
-  private getAuthToken(): string | null {
-    const token = getAuthToken();
-    return token;
+        // On 401, attempt a session refresh before giving up
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !this.isRefreshing) {
+          originalRequest._retry = true;
+          this.isRefreshing = true;
+
+          try {
+            const { data: { session }, error: refreshError } = await supabase.auth.refreshSession();
+            this.isRefreshing = false;
+
+            if (session?.access_token && !refreshError) {
+              originalRequest.headers.Authorization = `Bearer ${session.access_token}`;
+              return this.client(originalRequest);
+            }
+          } catch {
+            this.isRefreshing = false;
+          }
+        }
+
+        return this.handleApiError(error);
+      }
+    );
   }
 
   // Handle API errors
@@ -64,24 +85,28 @@ class ApiClient {
     };
 
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      const data = error.response.data as { message?: string; errors?: Record<string, string[]> };
-      apiError.message = data.message || `Error: ${error.response.status}`;
+      const data = error.response.data as {
+        message?: string;
+        error?: { message?: string };
+        data?: { error?: string };
+        errors?: Record<string, string[]>;
+      };
+      apiError.message =
+        data.message ||
+        data.error?.message ||
+        data.data?.error ||
+        `Error: ${error.response.status}`;
       apiError.errors = data.errors;
 
       // Handle authentication errors
       if (error.response.status === 401) {
-        // Clear auth tokens
         clearAuthCookies();
 
-        // Redirect to login page if not already there
         if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
           window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
         }
       }
     } else if (error.request) {
-      // The request was made but no response was received
       apiError.message = 'No response received from server. Please check your internet connection.';
     }
 
@@ -92,7 +117,7 @@ class ApiClient {
   public async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
       const response: AxiosResponse = await this.client.request(config);
-      
+
       return {
         data: response.data as T,
         status: response.status
@@ -103,11 +128,19 @@ class ApiClient {
   }
 
   // GET method
-  public async get<T>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
+  public async get<T>(
+    url: string,
+    paramsOrConfig?: Record<string, unknown> | AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    const config: AxiosRequestConfig =
+      paramsOrConfig && typeof paramsOrConfig === 'object' && 'params' in paramsOrConfig
+        ? (paramsOrConfig as AxiosRequestConfig)
+        : { params: paramsOrConfig as Record<string, unknown> | undefined };
+
     return this.request<T>({
       method: 'GET',
       url,
-      params,
+      ...config,
     });
   }
 
@@ -139,17 +172,25 @@ class ApiClient {
   }
 
   // DELETE method
-  public async delete<T>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
+  public async delete<T>(
+    url: string,
+    paramsOrConfig?: Record<string, unknown> | AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    const config: AxiosRequestConfig =
+      paramsOrConfig && typeof paramsOrConfig === 'object' && 'params' in paramsOrConfig
+        ? (paramsOrConfig as AxiosRequestConfig)
+        : { params: paramsOrConfig as Record<string, unknown> | undefined };
+
     return this.request<T>({
       method: 'DELETE',
       url,
-      params,
+      ...config,
     });
   }
 }
 
 // Create API client instance
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 const apiClient = new ApiClient(API_BASE_URL);
 
 export default apiClient;

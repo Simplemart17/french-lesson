@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback } from 'react';
 import { authApiService } from '@/services';
 import { User } from '@/types/api';
 import { supabaseAuth } from '@/lib/supabaseAuth';
 import { supabase } from '@/lib/supabase';
+import { clearAuthCookies, getUserData } from '@/utils/authCookies';
 
 // Define the shape of our auth context
 interface AuthContextType {
@@ -15,6 +16,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 // Create the context with default values
@@ -27,7 +29,8 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => { },
   register: async () => { },
   logout: async () => { },
-  clearError: () => { }
+  clearError: () => { },
+  refreshUser: async () => { }
 });
 
 // Custom hook to use the auth context
@@ -42,34 +45,61 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const userLoadedRef = useRef(false);
 
   // Initialize auth state from Supabase session or localStorage
   const initialize = useCallback(async () => {
     try {
       setIsLoading(true);
 
-      const token = authApiService.getAuthToken();
-      const storedUser = authApiService.getUserData();
+      // Immediately hydrate from cached localStorage data for fast UI
+      const cachedUser = getUserData();
+      if (cachedUser && cachedUser.id) {
+        setUser(cachedUser as unknown as User);
+      }
 
-      if (token && storedUser) {
-        setUser({
-          id: storedUser.id,
-          name: storedUser.name,
-          email: storedUser.email,
-          level: 'beginner',
-          points: 0,
-          streakDays: 0,
-          joinedAt: new Date().toISOString(),
-          learningGoals: [],
-          completedLessons: 0,
-          lastActive: new Date().toISOString(),
-          preferences: {
-            dailyGoal: 30,
-            notifications: true,
-            theme: 'light'
+      const { session } = await supabaseAuth.getSession();
+
+      if (session?.user) {
+        // Set initialized immediately so UI is unblocked
+        setIsInitialized(true);
+        setIsLoading(false);
+        userLoadedRef.current = true;
+
+        // Fetch full profile in background (non-blocking)
+        supabaseAuth.getUserProfile(session.user.id).then(async (profile) => {
+          if (!profile) {
+            profile = await supabaseAuth.createUserProfile(session.user.id, {
+              name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Learner',
+              email: session.user.email || `${session.user.id}@local.invalid`,
+              level: 'A1',
+              points: 0,
+              streakDays: 0,
+              learningGoals: [],
+              completedLessons: 0,
+              preferences: {
+                dailyGoal: 15,
+                notifications: true,
+                theme: 'light'
+              }
+            });
           }
+
+          if (profile) {
+            setUser(profile);
+            authApiService.setUserData({
+              id: profile.id,
+              name: profile.name,
+              email: profile.email,
+              level: profile.level
+            });
+          }
+        }).catch((err) => {
+          console.error('Background profile fetch error:', err);
         });
+        return; // Already set initialized above
       } else {
+        clearAuthCookies();
         setUser(null);
       }
     } catch (error: unknown) {
@@ -88,34 +118,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Listen to Supabase auth state changes
   useEffect(() => {
-    console.log('Setting up auth state change listener');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-
       if (event === 'SIGNED_IN' && session?.user) {
-        // User signed in, get their profile
+        // Skip duplicate profile fetch if user is already loaded
+        if (userLoadedRef.current) return;
+        userLoadedRef.current = true;
+
         const userProfile = await supabaseAuth.getUserProfile(session.user.id);
         if (userProfile) {
+          authApiService.setUserData({
+            id: userProfile.id,
+            name: userProfile.name,
+            email: userProfile.email,
+            level: userProfile.level
+          });
           setUser(userProfile);
         }
       } else if (event === 'SIGNED_OUT') {
-        // User signed out
         setUser(null);
-        // Clear any stored tokens
-        authApiService.logout();
+        clearAuthCookies();
       } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        // Token refreshed, ensure user is still set
-        if (!user) {
-          const userProfile = await supabaseAuth.getUserProfile(session.user.id);
-          if (userProfile) {
-            setUser(userProfile);
-          }
+        // Token refresh is handled automatically by Supabase + apiClient reads from session
+        // Just update user profile data if needed
+        const userProfile = await supabaseAuth.getUserProfile(session.user.id);
+        if (userProfile) {
+          authApiService.setUserData({
+            id: userProfile.id,
+            name: userProfile.name,
+            email: userProfile.email,
+            level: userProfile.level
+          });
+          setUser(userProfile);
         }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [user]);
+  }, []);
 
   // Login function
   const login = async (email: string, password: string) => {
@@ -123,31 +162,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
 
     try {
-      const authResult = await authApiService.login({ email, password });
+      const authResult = await supabaseAuth.signIn(email, password);
 
-      if (authResult.data && authResult.data.user) {
-        // Map the auth user to our User type
-        const user: User = {
-          id: authResult.data.user.id,
-          name: authResult.data.user.name,
-          email: authResult.data.user.email,
-          level: 'beginner',
-          points: 0,
-          streakDays: 0,
-          joinedAt: new Date().toISOString(),
-          learningGoals: [],
-          completedLessons: 0,
-          lastActive: new Date().toISOString(),
-          preferences: {
-            dailyGoal: 30,
-            notifications: true,
-            theme: 'light'
-          }
-        };
-        setUser(user);
+      if (authResult.error) {
+        throw new Error(authResult.error);
       }
-      // Force initialize to refresh auth state
-      await initialize();
+
+      if (authResult.user) {
+        setUser(authResult.user);
+        authApiService.setUserData({
+          id: authResult.user.id,
+          name: authResult.user.name,
+          email: authResult.user.email,
+          level: authResult.user.level
+        });
+      }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login. Please try again.';
       setError(errorMessage);
@@ -188,14 +217,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Logout function
   const logout = async () => {
     try {
-      await authApiService.logout();
-      setUser(null);
+      await supabase.auth.signOut();
     } catch (error) {
-      console.error('Logout error:', error);
-      // Even if the API call fails, we still want to clear local state
-      setUser(null);
-    } finally {
-      setIsLoading(false);
+      console.error('Supabase signOut error:', error);
+    }
+
+    try {
+      await authApiService.logout();
+    } catch (error) {
+      console.error('API logout error:', error);
+    }
+
+    // Always clear local state and cookies regardless of errors
+    setUser(null);
+    userLoadedRef.current = false;
+    clearAuthCookies();
+    setIsLoading(false);
+  };
+
+  // Refresh user profile from the database
+  const refreshUser = async () => {
+    try {
+      const { session } = await supabaseAuth.getSession();
+      if (session?.user) {
+        const profile = await supabaseAuth.getUserProfile(session.user.id);
+        if (profile) {
+          setUser(profile);
+          authApiService.setUserData({
+            id: profile.id,
+            name: profile.name,
+            email: profile.email,
+            level: profile.level
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error refreshing user:', err);
     }
   };
 
@@ -214,7 +271,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     login,
     register,
     logout,
-    clearError
+    clearError,
+    refreshUser
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

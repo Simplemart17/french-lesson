@@ -41,8 +41,6 @@ export default function AudioRecorder({ maxDuration = 120, onRecordingComplete }
       });
     }, 1000);
     
-    // Simulate starting the actual recording
-    console.log('Recording started...');
   };
   
   const stopRecording = () => {

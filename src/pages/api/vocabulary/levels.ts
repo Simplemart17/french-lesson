@@ -15,7 +15,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Get all vocabulary items
     const { data: vocabulary, error } = await supabase
       .from(TABLES.VOCABULARY)
-      .select('difficulty'); // Note: using 'difficulty' instead of 'level' based on the schema
+      .select('level');
 
     if (error) {
       console.error('Error fetching vocabulary:', error);
@@ -27,9 +27,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Extract unique levels
     const levels = new Set<string>();
-    (vocabulary || []).forEach((item: { difficulty?: string }) => {
-      if (item.difficulty) {
-        levels.add(item.difficulty);
+    (vocabulary || []).forEach((item: { level?: string }) => {
+      if (item.level) {
+        levels.add(item.level);
       }
     });
 
@@ -45,7 +45,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: sortedLevels
+      data: sortedLevels,
+      levels: sortedLevels
     });
   } catch (error) {
     console.error('Error fetching vocabulary levels:', error);

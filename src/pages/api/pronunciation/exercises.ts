@@ -1,21 +1,23 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
-import { PronunciationExercise as ImportedPronunciationExercise, PronunciationPhrase as ImportedPronunciationPhrase } from '@/services/api/pronunciationApiService';
+import {
+  PronunciationExercise as ImportedPronunciationExercise,
+  PronunciationPhrase as ImportedPronunciationPhrase
+} from '@/services/api/pronunciationApiService';
 import { supabase, TABLES } from '@/lib/supabase';
+import { authMiddleware } from '@/utils/authMiddleware';
 
-// Extended PronunciationPhrase interface for the mock data
 interface PronunciationPhrase extends ImportedPronunciationPhrase {
   audioUrl: string;
   phonetics: string;
   focusSounds: string[];
 }
 
-// Extended PronunciationExercise interface for the mock data
 interface PronunciationExercise extends ImportedPronunciationExercise {
+  id: number;
   phrases: PronunciationPhrase[];
 }
 
-// Define a custom response type that uses our local PronunciationExercise type
 interface CustomPronunciationExerciseListResponse {
   items: PronunciationExercise[];
   total: number;
@@ -24,130 +26,19 @@ interface CustomPronunciationExerciseListResponse {
   totalPages: number;
 }
 
-async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<CustomPronunciationExerciseListResponse>>
-) {
-  // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({
-      success: false,
-      error: { message: 'Method not allowed' }
-    });
-  }
-
-  try {
-    // Get query parameters
-    const { difficulty, search, page = '1', limit = '10' } = req.query;
-
-    // Calculate pagination
-    const pageNum = parseInt(page as string, 10);
-    const limitNum = parseInt(limit as string, 10);
-    const from = (pageNum - 1) * limitNum;
-    const to = from + limitNum - 1;
-
-    // Build query
-    let query = supabase
-      .from(TABLES.PRONUNCIATION_EXERCISES)
-      .select('*', { count: 'exact' })
-      .order('id', { ascending: true })
-      .range(from, to);
-
-    // Apply filters
-    if (difficulty) {
-      query = query.eq('difficulty', difficulty as string);
-    }
-
-    if (search && typeof search === 'string') {
-      query = query.or(`text.ilike.%${search}%,translation.ilike.%${search}%`);
-    }
-
-    const { data: exercises, error } = await query;
-
-    if (error) {
-      throw new Error(`Database error: ${error.message}`);
-    }
-
-    // const total = count || 0; // Unused for now
-
-    // Group exercises by difficulty and create exercise objects
-    interface DatabasePronunciationExercise {
-      id: string;
-      text: string;
-      difficulty: string;
-      translation?: string;
-      expectedPronunciation?: string;
-      phonetic?: string;
-      audio_url?: string;
-    }
-    const exerciseGroups: { [key: string]: PronunciationPhrase[] } = {};
-
-    (exercises || []).forEach((exercise: DatabasePronunciationExercise) => {
-      const difficulty = mapDifficultyLevel(exercise.difficulty);
-      if (!exerciseGroups[difficulty]) {
-        exerciseGroups[difficulty] = [];
-      }
-      exerciseGroups[difficulty].push({
-        id: parseInt(exercise.id),
-        text: exercise.text,
-        translation: exercise.translation || '',
-        difficulty: difficulty as 'beginner' | 'intermediate' | 'advanced',
-        audioUrl: `/api/tts?text=${encodeURIComponent(exercise.text)}&lang=fr`,
-        phonetics: exercise.expectedPronunciation || '',
-        focusSounds: []
-      });
-    });
-
-    // Create exercise objects
-    const exerciseObjects: PronunciationExercise[] = [];
-    let exerciseId = 1;
-
-    Object.entries(exerciseGroups).forEach(([difficulty, phrases]) => {
-      if (phrases.length > 0) {
-        // Group phrases into exercises of 3-5 phrases each
-        for (let i = 0; i < phrases.length; i += 4) {
-          const exercisePhrases = phrases.slice(i, i + 4);
-          exerciseObjects.push({
-            id: exerciseId++,
-            title: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Pronunciation Practice`,
-            description: `Practice French pronunciation with ${difficulty} level phrases.`,
-            difficulty: difficulty as 'beginner' | 'intermediate' | 'advanced',
-            phrases: exercisePhrases,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-        }
-      }
-    });
-
-    // Apply pagination to exercise objects
-    const paginatedExercises = exerciseObjects.slice(0, limitNum);
-
-    // Prepare response
-    const response: CustomPronunciationExerciseListResponse = {
-      items: paginatedExercises,
-      total: exerciseObjects.length,
-      page: pageNum,
-      limit: limitNum,
-      totalPages: Math.ceil(exerciseObjects.length / limitNum)
-    };
-
-    return res.status(200).json({
-      success: true,
-      data: response
-    });
-  } catch (error) {
-    console.error('Error in pronunciation exercises API:', error);
-    return res.status(500).json({
-      success: false,
-      error: { message: 'Internal server error' }
-    });
-  }
+interface DatabasePronunciationExercise {
+  id: string;
+  text: string;
+  translation: string | null;
+  level: string;
+  category: string | null;
+  expected_pronunciation: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-// Helper function to map database difficulty to API difficulty
-function mapDifficultyLevel(dbDifficulty: string): 'beginner' | 'intermediate' | 'advanced' {
-  switch (dbDifficulty) {
+function mapDifficultyLevel(level: string): 'beginner' | 'intermediate' | 'advanced' {
+  switch (level) {
     case 'A1':
     case 'A2':
       return 'beginner';
@@ -162,4 +53,153 @@ function mapDifficultyLevel(dbDifficulty: string): 'beginner' | 'intermediate' |
   }
 }
 
-export default handler;
+function mapDifficultyToDbLevels(
+  difficulty: string
+): Array<'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'> {
+  switch (difficulty) {
+    case 'beginner':
+      return ['A1', 'A2'];
+    case 'intermediate':
+      return ['B1', 'B2'];
+    case 'advanced':
+      return ['C1', 'C2'];
+    case 'A1':
+    case 'A2':
+    case 'B1':
+    case 'B2':
+    case 'C1':
+    case 'C2':
+      return [difficulty];
+    default:
+      return ['A1', 'A2'];
+  }
+}
+
+function buildExerciseObjects(rows: DatabasePronunciationExercise[]): PronunciationExercise[] {
+  const exerciseGroups: Record<string, PronunciationPhrase[]> = {};
+
+  rows.forEach((exercise) => {
+    const difficulty = mapDifficultyLevel(exercise.level);
+
+    if (!exerciseGroups[difficulty]) {
+      exerciseGroups[difficulty] = [];
+    }
+
+    const focusSounds = exercise.category
+      ? exercise.category.split(',').map((item) => item.trim()).filter(Boolean)
+      : [];
+
+    exerciseGroups[difficulty].push({
+      id: exercise.id,
+      text: exercise.text,
+      translation: exercise.translation || '',
+      difficulty,
+      phonetics: exercise.expected_pronunciation || '',
+      focusSounds,
+      audioUrl: `/api/tts?text=${encodeURIComponent(exercise.text)}&lang=fr`
+    });
+  });
+
+  const order: Array<'beginner' | 'intermediate' | 'advanced'> = ['beginner', 'intermediate', 'advanced'];
+  const exerciseObjects: PronunciationExercise[] = [];
+  let exerciseId = 1;
+
+  order.forEach((difficulty) => {
+    const phrases = exerciseGroups[difficulty] || [];
+
+    for (let i = 0; i < phrases.length; i += 4) {
+      const exercisePhrases = phrases.slice(i, i + 4);
+      if (exercisePhrases.length === 0) continue;
+
+      // Create a unique title using the category/focus sounds or phrase content
+      const groupIndex = Math.floor(i / 4) + 1;
+      const focusTopics = exercisePhrases
+        .flatMap(p => p.focusSounds)
+        .filter((v, idx, arr) => v && arr.indexOf(v) === idx)
+        .slice(0, 2);
+      const topicSuffix = focusTopics.length > 0
+        ? ` - ${focusTopics.join(' & ')}`
+        : ` #${groupIndex}`;
+
+      exerciseObjects.push({
+        id: exerciseId++,
+        title: `${difficulty.charAt(0).toUpperCase()}${difficulty.slice(1)} Pronunciation${topicSuffix}`,
+        description: `Practice French pronunciation with ${difficulty} level phrases: "${exercisePhrases[0].text.slice(0, 40)}${exercisePhrases[0].text.length > 40 ? '...' : ''}"`,
+        difficulty,
+        phrases: exercisePhrases,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+  });
+
+  return exerciseObjects;
+}
+
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ApiResponse<CustomPronunciationExerciseListResponse>>
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      success: false,
+      error: { message: 'Method not allowed' }
+    });
+  }
+
+  try {
+    const { difficulty, search, page = '1', limit = '10' } = req.query;
+
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
+    const safePage = Number.isFinite(pageNum) && pageNum > 0 ? pageNum : 1;
+    const safeLimit = Number.isFinite(limitNum) && limitNum > 0 ? limitNum : 10;
+    const from = (safePage - 1) * safeLimit;
+    const to = from + safeLimit;
+
+    let query = supabase
+      .from(TABLES.PRONUNCIATION_EXERCISES)
+      .select('id,text,translation,level,category,expected_pronunciation,created_at,updated_at')
+      .order('created_at', { ascending: true });
+
+    if (difficulty && typeof difficulty === 'string') {
+      query = query.in('level', mapDifficultyToDbLevels(difficulty));
+    }
+
+    if (search && typeof search === 'string') {
+      query = query.or(`text.ilike.%${search}%,translation.ilike.%${search}%,category.ilike.%${search}%`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    const rows = (data || []) as DatabasePronunciationExercise[];
+    const exerciseObjects = buildExerciseObjects(rows);
+    const paginatedExercises = exerciseObjects.slice(from, to);
+
+    const payload = {
+      items: paginatedExercises,
+      total: exerciseObjects.length,
+      page: safePage,
+      limit: safeLimit,
+      totalPages: Math.ceil(exerciseObjects.length / safeLimit)
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: payload,
+      exercises: payload
+    });
+  } catch (error) {
+    console.error('Error in pronunciation exercises API:', error);
+    return res.status(500).json({
+      success: false,
+      error: { message: 'Internal server error' }
+    });
+  }
+}
+
+export default authMiddleware(handler);

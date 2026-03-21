@@ -1,13 +1,24 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import AudioRecorder from '@/components/exam/AudioRecorder';
 import DifficultyFilter from '@/components/exam/DifficultyFilter';
 import ProgressTracker from '@/components/exam/ProgressTracker';
+import { examService } from '@/services';
 
 type ExamType = 'tcf' | 'tef';
 type ExamSection = 'listening' | 'reading' | 'writing' | 'speaking';
+
+interface ExamQuestion {
+  id: string;
+  text: string;
+  options?: string[];
+  correctAnswer?: number;
+  type: 'multiple-choice' | 'written' | 'speaking';
+  prompt?: string;
+}
 
 interface ExamModule {
   id: string;
@@ -16,91 +27,303 @@ interface ExamModule {
   duration: number; // in minutes
   section: ExamSection;
   difficulty: 'easy' | 'medium' | 'hard';
+  questions?: ExamQuestion[];
 }
+
+// Fallback exam modules when API returns empty
+const fallbackExamModules: Record<ExamType, ExamModule[]> = {
+  tcf: [
+    // TCF Listening
+    {
+      id: 'tcf-listening-1',
+      title: 'TCF Listening - Everyday Conversations',
+      description: 'Understand short everyday conversations and announcements',
+      duration: 15,
+      section: 'listening',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tcf-l1-q1', text: "Ecoutez le dialogue. Que propose la femme?", options: ["De prendre un cafe", "D'aller au cinema", "De visiter un musee", "De faire les courses"], correctAnswer: 0, type: 'multiple-choice' },
+        { id: 'tcf-l1-q2', text: "Ecoutez l'annonce. A quelle heure part le train pour Lyon?", options: ["14h30", "14h45", "15h00", "15h30"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tcf-l1-q3', text: "Ecoutez la conversation. Ou se passe cette scene?", options: ["Dans un restaurant", "Dans une pharmacie", "A la poste", "Au supermarche"], correctAnswer: 0, type: 'multiple-choice' },
+        { id: 'tcf-l1-q4', text: "Quel est le probleme de l'homme?", options: ["Il a perdu ses cles", "Il est en retard", "Il a mal a la tete", "Il a faim"], correctAnswer: 1, type: 'multiple-choice' },
+      ]
+    },
+    {
+      id: 'tcf-listening-2',
+      title: 'TCF Listening - News & Reports',
+      description: 'Comprehend news broadcasts and longer audio segments',
+      duration: 20,
+      section: 'listening',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tcf-l2-q1', text: "D'apres le reportage, quel est le sujet principal?", options: ["L'economie francaise", "Le changement climatique", "Les elections municipales", "La reforme de l'education"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tcf-l2-q2', text: "Selon l'intervenant, quelle solution est proposee?", options: ["Augmenter les impots", "Reduire les depenses", "Investir dans la recherche", "Changer la loi"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tcf-l2-q3', text: "Quel est le ton general de ce reportage?", options: ["Optimiste", "Pessimiste", "Neutre", "Ironique"], correctAnswer: 0, type: 'multiple-choice' },
+      ]
+    },
+    // TCF Reading
+    {
+      id: 'tcf-reading-1',
+      title: 'TCF Reading - Signs & Notices',
+      description: 'Understand common signs, menus, and short notices',
+      duration: 15,
+      section: 'reading',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tcf-r1-q1', text: "\"Service continu de 11h a 23h.\" Cela signifie que:", options: ["Le restaurant est ouvert seulement pour le dejeuner", "Le restaurant est ferme entre 11h et 23h", "Le restaurant sert des repas toute la journee sans interruption", "Le restaurant propose un service de 11 a 23 euros"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tcf-r1-q2', text: "\"Interdit de stationner sauf riverains.\" Qui peut se garer ici?", options: ["Tout le monde", "Personne", "Les habitants du quartier", "Les livraisons uniquement"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tcf-r1-q3', text: "\"Soldes: jusqu'a -50% sur une selection d'articles.\" Que signifie ce panneau?", options: ["Tous les articles sont a moitie prix", "Certains articles ont des reductions", "Le magasin ferme bientot", "Les prix ont augmente"], correctAnswer: 1, type: 'multiple-choice' },
+      ]
+    },
+    {
+      id: 'tcf-reading-2',
+      title: 'TCF Reading - Articles & Essays',
+      description: 'Analyze complex texts, arguments, and literary excerpts',
+      duration: 25,
+      section: 'reading',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tcf-r2-q1', text: "\"La democratisation de l'enseignement superieur n'a pas tenu toutes ses promesses.\" L'auteur veut dire que:", options: ["L'enseignement superieur est trop democratique", "Les resultats sont en dessous des attentes", "Tout le monde a acces a l'universite", "Les promesses ont ete tenues"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tcf-r2-q2', text: "Quel est l'argument principal de cet extrait?", options: ["L'education doit etre gratuite", "La qualite prime sur la quantite", "Les reformes sont inutiles", "Le systeme est parfait"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tcf-r2-q3', text: "Le mot \"neanmoins\" dans ce contexte introduit:", options: ["Une cause", "Une consequence", "Une opposition", "Une comparaison"], correctAnswer: 2, type: 'multiple-choice' },
+      ]
+    },
+    // TCF Writing
+    {
+      id: 'tcf-writing-1',
+      title: 'TCF Writing - Short Messages',
+      description: 'Write short messages, emails, and notes in French',
+      duration: 20,
+      section: 'writing',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tcf-w1-q1', text: "Ecrivez un email a un ami pour l'inviter a votre anniversaire. Incluez la date, l'heure et le lieu. (60-80 mots)", type: 'written', prompt: "Cher/Chere ami(e)..." },
+        { id: 'tcf-w1-q2', text: "Vous avez trouve un objet perdu dans le parc. Ecrivez une annonce pour le rendre a son proprietaire. (40-60 mots)", type: 'written', prompt: "Objet trouve..." },
+      ]
+    },
+    {
+      id: 'tcf-writing-2',
+      title: 'TCF Writing - Argumentative Essay',
+      description: 'Write structured argumentative essays on social topics',
+      duration: 45,
+      section: 'writing',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tcf-w2-q1', text: "\"Les reseaux sociaux ont un impact negatif sur les relations humaines.\" Discutez cette affirmation en presentant des arguments pour et contre. (200-250 mots)", type: 'written', prompt: "Introduction..." },
+        { id: 'tcf-w2-q2', text: "Pensez-vous que le teletravail devrait devenir la norme? Argumentez votre position. (180-220 mots)", type: 'written', prompt: "De nos jours..." },
+      ]
+    },
+    // TCF Speaking
+    {
+      id: 'tcf-speaking-1',
+      title: 'TCF Speaking - Self Introduction',
+      description: 'Practice introducing yourself and describing daily life',
+      duration: 10,
+      section: 'speaking',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tcf-s1-q1', text: "Presentez-vous: votre nom, votre age, votre nationalite, et vos loisirs. (1-2 minutes)", type: 'speaking' },
+        { id: 'tcf-s1-q2', text: "Decrivez votre journee typique du matin au soir. (1-2 minutes)", type: 'speaking' },
+      ]
+    },
+    {
+      id: 'tcf-speaking-2',
+      title: 'TCF Speaking - Opinion & Debate',
+      description: 'Express and defend opinions on complex topics',
+      duration: 15,
+      section: 'speaking',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tcf-s2-q1', text: "Choisissez un sujet d'actualite et presentez votre opinion de maniere structuree. (2-3 minutes)", type: 'speaking' },
+        { id: 'tcf-s2-q2', text: "\"L'intelligence artificielle va remplacer de nombreux emplois.\" Etes-vous d'accord? Argumentez. (2-3 minutes)", type: 'speaking' },
+      ]
+    },
+  ],
+  tef: [
+    // TEF Listening
+    {
+      id: 'tef-listening-1',
+      title: 'TEF Listening - Daily Situations',
+      description: 'Understand conversations in everyday French situations',
+      duration: 15,
+      section: 'listening',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tef-l1-q1', text: "Ecoutez l'annonce. A quelle heure ferme le magasin?", options: ["18h00", "19h00", "19h30", "20h00"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tef-l1-q2', text: "Que demande le client au serveur?", options: ["L'addition", "Le menu", "Un verre d'eau", "Une table pour deux"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tef-l1-q3', text: "Ou va la femme apres le travail?", options: ["Chez elle", "Au gymnase", "Au supermarche", "Chez le medecin"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tef-l1-q4', text: "Pourquoi l'homme telephone-t-il?", options: ["Pour prendre rendez-vous", "Pour annuler une reservation", "Pour se plaindre", "Pour commander un produit"], correctAnswer: 0, type: 'multiple-choice' },
+      ]
+    },
+    {
+      id: 'tef-listening-2',
+      title: 'TEF Listening - Interviews & Debates',
+      description: 'Follow complex discussions and radio interviews',
+      duration: 25,
+      section: 'listening',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tef-l2-q1', text: "Quel est le theme principal de cette interview?", options: ["La politique internationale", "L'environnement", "L'education numerique", "La sante publique"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tef-l2-q2', text: "Quelle est la position de l'intervenant?", options: ["Favorable sans reserve", "Critique mais constructif", "Totalement oppose", "Indifferent"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tef-l2-q3', text: "Quel exemple l'intervenant utilise-t-il pour illustrer son propos?", options: ["Une etude scientifique", "Une experience personnelle", "Un cas historique", "Une comparaison internationale"], correctAnswer: 3, type: 'multiple-choice' },
+      ]
+    },
+    // TEF Reading
+    {
+      id: 'tef-reading-1',
+      title: 'TEF Reading - Practical Documents',
+      description: 'Read and understand practical French documents and instructions',
+      duration: 15,
+      section: 'reading',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tef-r1-q1', text: "\"La mediatheque municipale sera exceptionnellement fermee ce samedi 20 juin pour cause d'inventaire annuel.\" Quand la mediatheque sera-t-elle fermee?", options: ["Tous les samedis", "Uniquement le samedi 20 juin", "Pendant tout le mois de juin", "Chaque annee au mois de juin"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tef-r1-q2', text: "\"Priere de ne pas deranger entre 12h et 14h.\" Que doit-on faire?", options: ["Ne pas entrer dans le batiment", "Eviter de faire du bruit pendant ces heures", "Quitter les lieux avant midi", "Revenir apres 14h"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tef-r1-q3', text: "\"Tarif reduit pour les etudiants sur presentation de la carte.\" Que faut-il montrer?", options: ["Une carte d'identite", "Une carte etudiant", "Un passeport", "Une carte bancaire"], correctAnswer: 1, type: 'multiple-choice' },
+      ]
+    },
+    {
+      id: 'tef-reading-2',
+      title: 'TEF Reading - Academic Texts',
+      description: 'Analyze academic and professional French texts',
+      duration: 30,
+      section: 'reading',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tef-r2-q1', text: "Dans ce texte, l'expression \"force est de constater\" signifie:", options: ["Il faut admettre", "On peut ignorer", "C'est surprenant", "Il est faux de dire"], correctAnswer: 0, type: 'multiple-choice' },
+        { id: 'tef-r2-q2', text: "L'auteur utilise le conditionnel pour exprimer:", options: ["Une certitude", "Une hypothese", "Un ordre", "Un regret"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tef-r2-q3', text: "Quelle est la these defendue dans cet extrait?", options: ["Le progres technique est toujours benefique", "La modernisation a des consequences imprevues", "La tradition doit etre preservee a tout prix", "L'innovation est impossible"], correctAnswer: 1, type: 'multiple-choice' },
+      ]
+    },
+    // TEF Writing
+    {
+      id: 'tef-writing-1',
+      title: 'TEF Writing - Formal Letters',
+      description: 'Write formal letters and professional correspondence',
+      duration: 20,
+      section: 'writing',
+      difficulty: 'medium',
+      questions: [
+        { id: 'tef-w1-q1', text: "Ecrivez une lettre de motivation pour un poste de stagiaire dans une entreprise francaise. (100-120 mots)", type: 'written', prompt: "Madame, Monsieur..." },
+        { id: 'tef-w1-q2', text: "Vous souhaitez vous inscrire a un cours de francais. Ecrivez au directeur de l'ecole pour demander des informations. (80-100 mots)", type: 'written', prompt: "Monsieur le Directeur..." },
+      ]
+    },
+    {
+      id: 'tef-writing-2',
+      title: 'TEF Writing - Summary & Analysis',
+      description: 'Summarize texts and write analytical responses',
+      duration: 40,
+      section: 'writing',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tef-w2-q1', text: "Resumez le texte suivant en identifiant les idees principales et la structure argumentative. (150-200 mots)", type: 'written', prompt: "Ce texte traite de..." },
+        { id: 'tef-w2-q2', text: "Redigez un essai structure sur le theme: \"La culture est-elle un luxe ou une necessite?\" (200-250 mots)", type: 'written', prompt: "La question de la culture..." },
+      ]
+    },
+    // TEF Speaking
+    {
+      id: 'tef-speaking-1',
+      title: 'TEF Speaking - Information Exchange',
+      description: 'Ask and answer questions about familiar topics',
+      duration: 10,
+      section: 'speaking',
+      difficulty: 'easy',
+      questions: [
+        { id: 'tef-s1-q1', text: "Decrivez votre ville ou votre quartier. Qu'est-ce que vous aimez et qu'est-ce que vous changeriez? (1-2 minutes)", type: 'speaking' },
+        { id: 'tef-s1-q2', text: "Parlez de votre dernier voyage ou vacances. Ou etes-vous alle(e) et qu'avez-vous fait? (1-2 minutes)", type: 'speaking' },
+      ]
+    },
+    {
+      id: 'tef-speaking-2',
+      title: 'TEF Speaking - Persuasive Argument',
+      description: 'Convince and persuade through structured argumentation',
+      duration: 15,
+      section: 'speaking',
+      difficulty: 'hard',
+      questions: [
+        { id: 'tef-s2-q1', text: "Vous voulez convaincre votre employeur d'adopter le teletravail. Presentez vos arguments. (2-3 minutes)", type: 'speaking' },
+        { id: 'tef-s2-q2', text: "Debattez du sujet suivant: \"Faut-il interdire les telephones portables dans les ecoles?\" (2-3 minutes)", type: 'speaking' },
+      ]
+    },
+  ]
+};
 
 export default function ExamPracticePage() {
   const [selectedExam, setSelectedExam] = useState<ExamType>('tcf');
   const [selectedSection, setSelectedSection] = useState<ExamSection | 'all'>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string>('');
+  const [, setAudioBlob] = useState<Blob | null>(null);
+  const [, setAudioUrl] = useState<string>('');
+  const [examModules, setExamModules] = useState<ExamModule[]>([]);
+  const [selectedModule, setSelectedModule] = useState<ExamModule | null>(null);
+  const [moduleAnswers, setModuleAnswers] = useState<Record<string, number | string>>({});
+  const [showModuleResults, setShowModuleResults] = useState(false);
+  const [examProgress, setExamProgress] = useState({
+    overall: 0,
+    listening: 0,
+    reading: 0,
+    writingSpeaking: 0
+  });
 
-  // Prevent unused variable warnings - these are used in the AudioRecorder component
-  console.log('Audio state:', { audioBlob, audioUrl });
+  useEffect(() => {
+    const fetchExamModules = async () => {
+      try {
+        const response = await fetch(`/api/exam/modules?examType=${selectedExam}`);
+        const payload = await response.json();
+
+        if (payload?.success && Array.isArray(payload.data) && payload.data.length > 0) {
+          setExamModules(payload.data);
+          return;
+        }
+      } catch {
+        // Fall through to fallback data
+      }
+
+      // Use fallback hardcoded modules when API returns empty or fails
+      setExamModules(fallbackExamModules[selectedExam]);
+    };
+
+    fetchExamModules();
+  }, [selectedExam]);
+
+  // Fetch actual exam results for progress computation
+  useEffect(() => {
+    const fetchExamResults = async () => {
+      try {
+        const results = await examService.getExamResults();
+        if (results && results.length > 0) {
+          const totalModules = examModules.length || 1;
+          const completedModuleIds = new Set(results.map(r => r.moduleId));
+          const completedCount = completedModuleIds.size;
+
+          const listeningModules = examModules.filter(m => m.section === 'listening');
+          const readingModules = examModules.filter(m => m.section === 'reading');
+          const wsModules = examModules.filter(m => m.section === 'writing' || m.section === 'speaking');
+
+          const calcPct = (sectionModules: ExamModule[]) => {
+            if (sectionModules.length === 0) return 0;
+            const completed = sectionModules.filter(m => completedModuleIds.has(m.id)).length;
+            return Math.round((completed / sectionModules.length) * 100);
+          };
+
+          setExamProgress({
+            overall: Math.round((completedCount / totalModules) * 100),
+            listening: calcPct(listeningModules),
+            reading: calcPct(readingModules),
+            writingSpeaking: calcPct(wsModules)
+          });
+        }
+      } catch {
+        // Keep default 0% if results can't be fetched
+      }
+    };
+
+    if (examModules.length > 0) {
+      fetchExamResults();
+    }
+  }, [examModules]);
   
-  // Mock exam modules data
-  const examModules: Record<ExamType, ExamModule[]> = {
-    tcf: [
-      {
-        id: 'tcf-listening-1',
-        title: 'TCF Listening - Everyday Conversations',
-        description: 'Practice understanding everyday conversations in French.',
-        duration: 20,
-        section: 'listening',
-        difficulty: 'easy',
-      },
-      {
-        id: 'tcf-reading-1',
-        title: 'TCF Reading - Short Texts',
-        description: 'Practice reading and understanding short texts in French.',
-        duration: 25,
-        section: 'reading',
-        difficulty: 'easy',
-      },
-      {
-        id: 'tcf-writing-1',
-        title: 'TCF Writing - Personal Opinion',
-        description: 'Practice writing a short text expressing your opinion on a topic.',
-        duration: 30,
-        section: 'writing',
-        difficulty: 'medium',
-      },
-      {
-        id: 'tcf-speaking-1',
-        title: 'TCF Speaking - Self-Introduction',
-        description: 'Practice introducing yourself and talking about your interests.',
-        duration: 15,
-        section: 'speaking',
-        difficulty: 'easy',
-      },
-    ],
-    tef: [
-      {
-        id: 'tef-listening-1',
-        title: 'TEF Listening - News Reports',
-        description: 'Practice understanding news reports in French.',
-        duration: 25,
-        section: 'listening',
-        difficulty: 'medium',
-      },
-      {
-        id: 'tef-reading-1',
-        title: 'TEF Reading - Articles',
-        description: 'Practice reading and understanding articles in French.',
-        duration: 30,
-        section: 'reading',
-        difficulty: 'medium',
-      },
-      {
-        id: 'tef-writing-1',
-        title: 'TEF Writing - Formal Letter',
-        description: 'Practice writing a formal letter in French.',
-        duration: 35,
-        section: 'writing',
-        difficulty: 'hard',
-      },
-      {
-        id: 'tef-speaking-1',
-        title: 'TEF Speaking - Argument',
-        description: 'Practice presenting an argument on a given topic.',
-        duration: 20,
-        section: 'speaking',
-        difficulty: 'hard',
-      },
-    ],
-  };
-  
-  const filteredModules = examModules[selectedExam].filter(module => {
+  const filteredModules = examModules.filter(module => {
     return (selectedSection === 'all' || module.section === selectedSection) && 
            (selectedDifficulty === 'all' || module.difficulty === selectedDifficulty);
   });
@@ -115,6 +338,27 @@ export default function ExamPracticePage() {
     }
   };
   
+  const handleSelectModule = (mod: ExamModule) => {
+    setSelectedModule(mod);
+    setModuleAnswers({});
+    setShowModuleResults(false);
+  };
+
+  const handleModuleAnswer = (questionId: string, answer: number | string) => {
+    setModuleAnswers(prev => ({ ...prev, [questionId]: answer }));
+  };
+
+  const handleSubmitModule = () => {
+    setShowModuleResults(true);
+  };
+
+  const getModuleScore = () => {
+    if (!selectedModule?.questions) return { correct: 0, total: 0 };
+    const mcQuestions = selectedModule.questions.filter(q => q.type === 'multiple-choice');
+    const correct = mcQuestions.filter(q => moduleAnswers[q.id] === q.correctAnswer).length;
+    return { correct, total: mcQuestions.length };
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy': return 'bg-green-100 text-green-800';
@@ -125,13 +369,153 @@ export default function ExamPracticePage() {
   };
   
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Exam Practice | French Tutor AI</title>
         <meta name="description" content="Practice for TCF and TEF exams with AI-powered tools" />
       </Head>
 
       <div className="max-w-6xl px-4 mx-auto">
+        {/* Module Detail View */}
+        {selectedModule && selectedModule.questions && selectedModule.questions.length > 0 ? (
+          <div>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedModule(null)}
+              className="flex items-center mb-6"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Modules
+            </Button>
+
+            <div className="mb-6">
+              <h1 className="mb-2 text-2xl font-bold text-gray-800">{selectedModule.title}</h1>
+              <p className="text-gray-600">{selectedModule.description}</p>
+              <div className="flex gap-2 mt-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getSectionColor(selectedModule.section)}`}>
+                  {selectedModule.section.charAt(0).toUpperCase() + selectedModule.section.slice(1)}
+                </span>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(selectedModule.difficulty)}`}>
+                  {selectedModule.difficulty.charAt(0).toUpperCase() + selectedModule.difficulty.slice(1)}
+                </span>
+                <span className="px-3 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full">
+                  {selectedModule.duration} min
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {selectedModule.questions.map((question, qIndex) => (
+                <div key={question.id} className="p-6 bg-white rounded-lg shadow-md">
+                  <div className="flex items-center mb-3">
+                    <span className="flex items-center justify-center w-8 h-8 mr-3 text-sm font-bold text-white rounded-full bg-indigo-600">
+                      {qIndex + 1}
+                    </span>
+                    <h3 className="text-lg font-medium text-gray-800">{question.text}</h3>
+                  </div>
+
+                  {question.type === 'multiple-choice' && question.options && (
+                    <div className="ml-11 space-y-2">
+                      {question.options.map((option, oIndex) => {
+                        const isSelected = moduleAnswers[question.id] === oIndex;
+                        const isCorrect = showModuleResults && oIndex === question.correctAnswer;
+                        const isWrong = showModuleResults && isSelected && oIndex !== question.correctAnswer;
+
+                        return (
+                          <button
+                            key={oIndex}
+                            onClick={() => !showModuleResults && handleModuleAnswer(question.id, oIndex)}
+                            disabled={showModuleResults}
+                            className={`w-full p-3 text-left rounded-lg border transition-colors ${
+                              isCorrect
+                                ? 'border-green-500 bg-green-50 text-green-800'
+                                : isWrong
+                                ? 'border-red-500 bg-red-50 text-red-800'
+                                : isSelected
+                                ? 'border-indigo-500 bg-indigo-50 text-indigo-800'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                            }`}
+                          >
+                            <span className="inline-block w-6 h-6 mr-3 text-sm font-medium text-center rounded-full bg-gray-100">
+                              {String.fromCharCode(65 + oIndex)}
+                            </span>
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {question.type === 'written' && (
+                    <div className="ml-11">
+                      <textarea
+                        className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder={question.prompt || "Ecrivez votre reponse ici..."}
+                        value={(moduleAnswers[question.id] as string) || ''}
+                        onChange={(e) => handleModuleAnswer(question.id, e.target.value)}
+                        disabled={showModuleResults}
+                      />
+                      <div className="mt-1 text-sm text-gray-500">
+                        {((moduleAnswers[question.id] as string) || '').split(/\s+/).filter(Boolean).length} words
+                      </div>
+                    </div>
+                  )}
+
+                  {question.type === 'speaking' && (
+                    <div className="ml-11">
+                      <AudioRecorder
+                        maxDuration={180}
+                        onRecordingComplete={(blob, url) => {
+                          setAudioBlob(blob);
+                          setAudioUrl(url);
+                          handleModuleAnswer(question.id, url);
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {!showModuleResults ? (
+              <div className="flex justify-center mt-8">
+                <Button size="lg" onClick={handleSubmitModule}>
+                  Submit Answers
+                </Button>
+              </div>
+            ) : (
+              <div className="p-6 mt-8 text-center bg-white rounded-lg shadow-md">
+                <h2 className="mb-2 text-xl font-bold text-gray-800">Results</h2>
+                {(() => {
+                  const { correct, total } = getModuleScore();
+                  return total > 0 ? (
+                    <>
+                      <p className="text-lg text-gray-700">
+                        You scored <span className="font-bold text-indigo-600">{correct}</span> out of <span className="font-bold">{total}</span> on multiple choice questions.
+                      </p>
+                      <p className="mt-2 text-gray-600">
+                        {correct / total >= 0.8 ? 'Excellent work!' : correct / total >= 0.5 ? 'Good effort! Keep practicing.' : 'Keep studying and try again.'}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-lg text-gray-700">Your written and speaking responses have been recorded.</p>
+                  );
+                })()}
+                <div className="flex justify-center gap-4 mt-6">
+                  <Button variant="outline" onClick={() => setSelectedModule(null)}>
+                    Back to Modules
+                  </Button>
+                  <Button onClick={() => { setModuleAnswers({}); setShowModuleResults(false); }}>
+                    Retry
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+        <>
         <div className="mb-8">
           <h1 className="mb-4 text-3xl font-bold text-gray-800">Exam Practice</h1>
           <p className="text-lg text-gray-600">
@@ -197,12 +581,12 @@ export default function ExamPracticePage() {
           </div>
           
           {/* Progress Overview using ProgressTracker component */}
-          <ProgressTracker 
-            overallCompletion={25}
+          <ProgressTracker
+            overallCompletion={examProgress.overall}
             progressData={[
-              { section: 'Listening', percentage: 40, color: 'bg-blue-50' },
-              { section: 'Reading', percentage: 30, color: 'bg-green-50' },
-              { section: 'Writing & Speaking', percentage: 10, color: 'bg-purple-50' }
+              { section: 'Listening', percentage: examProgress.listening, color: 'bg-blue-50' },
+              { section: 'Reading', percentage: examProgress.reading, color: 'bg-green-50' },
+              { section: 'Writing & Speaking', percentage: examProgress.writingSpeaking, color: 'bg-purple-50' }
             ]}
           />
         </div>
@@ -214,26 +598,38 @@ export default function ExamPracticePage() {
               <div className="p-6">
                 <h3 className="mb-3 text-xl font-semibold text-gray-800">{module.title}</h3>
                 <p className="mb-4 text-gray-600">{module.description}</p>
-                
+
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getSectionColor(module.section)}`}>
                     {module.section.charAt(0).toUpperCase() + module.section.slice(1)}
                   </span>
-                  
+
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(module.difficulty)}`}>
                     {module.difficulty.charAt(0).toUpperCase() + module.difficulty.slice(1)}
                   </span>
-                  
+
                   <span className="px-3 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full">
                     {module.duration} min
                   </span>
+
+                  {module.questions && (
+                    <span className="px-3 py-1 text-xs font-medium text-indigo-800 bg-indigo-100 rounded-full">
+                      {module.questions.length} questions
+                    </span>
+                  )}
                 </div>
-                
-                <Link href={`/exam-practice/${module.id}`}>
-                  <Button className="w-full">
+
+                {module.questions && module.questions.length > 0 ? (
+                  <Button className="w-full" onClick={() => handleSelectModule(module)}>
                     Start Practice
                   </Button>
-                </Link>
+                ) : (
+                  <Link href={`/exam-practice/${module.id}`}>
+                    <Button className="w-full">
+                      Start Practice
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           ))}
@@ -418,11 +814,17 @@ export default function ExamPracticePage() {
           </div>
 
           <div className="flex flex-col justify-center gap-4 mt-8 sm:flex-row">
-            <Link href={`/exam-practice/${selectedExam}-${selectedSection === 'all' ? 'reading' : selectedSection}-1`}>
-              <Button size="lg">
-                Take Full Practice Test
+            {filteredModules.length > 0 ? (
+              <Link href={`/exam-practice/${filteredModules[0].id}`}>
+                <Button size="lg">
+                  Take Full Practice Test
+                </Button>
+              </Link>
+            ) : (
+              <Button size="lg" disabled>
+                No Practice Tests Available
               </Button>
-            </Link>
+            )}
             <Link href="/exam-practice/progress">
               <Button size="lg" variant="secondary">
                 View Your Progress
@@ -542,7 +944,9 @@ export default function ExamPracticePage() {
             </Link>
           </div>
         </div>
+        </>
+        )}
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { getUserId } from '@/utils/auth';
 
-// Define the grammar progress type
 interface GrammarProgress {
   exerciseId: number;
   bestScore: number;
@@ -9,118 +10,154 @@ interface GrammarProgress {
   lastAttempt: string;
 }
 
-// Mock grammar progress data
-const mockGrammarProgress: GrammarProgress[] = [
-  {
-    exerciseId: 1,
-    bestScore: 90,
-    attempts: 3,
-    lastAttempt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    exerciseId: 2,
-    bestScore: 85,
-    attempts: 2,
-    lastAttempt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    exerciseId: 3,
-    bestScore: 70,
-    attempts: 4,
-    lastAttempt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-  }
-];
+interface PracticeItemRow {
+  content: {
+    exerciseId?: number | string;
+  } | null;
+  score: number | null;
+  created_at: string;
+}
 
-export default function handler(
+function normalizeExerciseId(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = parseInt(value, 10);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<GrammarProgress[] | GrammarProgress>>
 ) {
-  // Handle GET request to retrieve progress
-  if (req.method === 'GET') {
-    try {
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    return res.status(405).json({
+      success: false,
+      error: {
+        message: 'Method not allowed'
+      }
+    });
+  }
+
+  try {
+    const db = supabaseAdmin ?? supabase;
+    const userId = await getUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'User not authenticated' }
+      });
+    }
+
+    if (req.method === 'GET') {
+      const { data, error } = await db
+        .from(TABLES.PRACTICE_ITEMS)
+        .select('content,score,created_at')
+        .eq('user_id', userId)
+        .eq('type', 'grammar')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw new Error(`Failed to fetch grammar progress: ${error.message}`);
+      }
+
+      const rows = (data || []) as PracticeItemRow[];
+      const byExercise = new Map<number, GrammarProgress>();
+
+      rows.forEach((row) => {
+        const exerciseId = normalizeExerciseId(row.content?.exerciseId);
+        if (!exerciseId) return;
+
+        const rowScore = Number(row.score || 0);
+
+        if (!byExercise.has(exerciseId)) {
+          byExercise.set(exerciseId, {
+            exerciseId,
+            bestScore: rowScore,
+            attempts: 1,
+            lastAttempt: row.created_at
+          });
+          return;
+        }
+
+        const existing = byExercise.get(exerciseId)!;
+        existing.bestScore = Math.max(existing.bestScore, rowScore);
+        existing.attempts += 1;
+        if (new Date(row.created_at).getTime() > new Date(existing.lastAttempt).getTime()) {
+          existing.lastAttempt = row.created_at;
+        }
+      });
+
       return res.status(200).json({
         success: true,
-        data: mockGrammarProgress
+        data: Array.from(byExercise.values()),
+        progress: Array.from(byExercise.values())
       });
-    } catch (error) {
-      console.error('Error in grammar progress API:', error);
-      return res.status(500).json({
+    }
+
+    const { exerciseId: rawExerciseId, score } = req.body as { exerciseId?: number | string; score?: number };
+    const exerciseId = normalizeExerciseId(rawExerciseId);
+    const numericScore = Number(score);
+
+    if (!exerciseId || !Number.isFinite(numericScore)) {
+      return res.status(400).json({
         success: false,
         error: {
-          message: 'Internal server error'
+          message: 'Invalid exerciseId or score'
         }
       });
     }
-  }
-  
-  // Handle POST request to update progress
-  if (req.method === 'POST') {
-    try {
-      const { exerciseId, score } = req.body;
-      
-      // Validate input
-      if (!exerciseId || isNaN(exerciseId) || !score || isNaN(score)) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            message: 'Invalid exerciseId or score'
-          }
-        });
-      }
-      
-      // Find existing progress for this exercise
-      const existingProgressIndex = mockGrammarProgress.findIndex(
-        p => p.exerciseId === exerciseId
-      );
-      
-      let updatedProgress: GrammarProgress;
-      
-      if (existingProgressIndex >= 0) {
-        // Update existing progress
-        const existing = mockGrammarProgress[existingProgressIndex];
-        updatedProgress = {
-          ...existing,
-          bestScore: Math.max(existing.bestScore, score),
-          attempts: existing.attempts + 1,
-          lastAttempt: new Date().toISOString()
-        };
-        
-        // Update the mock data (in a real app, this would update the database)
-        mockGrammarProgress[existingProgressIndex] = updatedProgress;
-      } else {
-        // Create new progress entry
-        updatedProgress = {
-          exerciseId,
-          bestScore: score,
-          attempts: 1,
-          lastAttempt: new Date().toISOString()
-        };
-        
-        // Add to mock data (in a real app, this would insert into the database)
-        mockGrammarProgress.push(updatedProgress);
-      }
-      
-      // Return the updated progress
-      return res.status(200).json({
-        success: true,
-        data: updatedProgress
+
+    const { error: insertError } = await db
+      .from(TABLES.PRACTICE_ITEMS)
+      .insert({
+        user_id: userId,
+        type: 'grammar',
+        content: { exerciseId },
+        score: numericScore,
+        completed: true
       });
-    } catch (error) {
-      console.error('Error updating grammar progress:', error);
-      return res.status(500).json({
-        success: false,
-        error: {
-          message: 'Internal server error'
-        }
-      });
+
+    if (insertError) {
+      throw new Error(`Failed to update grammar progress: ${insertError.message}`);
     }
+
+    const { data: rows, error: rowsError } = await db
+      .from(TABLES.PRACTICE_ITEMS)
+      .select('score,created_at')
+      .eq('user_id', userId)
+      .eq('type', 'grammar')
+      .contains('content', { exerciseId })
+      .order('created_at', { ascending: false });
+
+    if (rowsError) {
+      throw new Error(`Failed to fetch updated grammar progress: ${rowsError.message}`);
+    }
+
+    const attempts = rows?.length || 0;
+    const bestScore = (rows || []).reduce((max, row) => Math.max(max, Number(row.score || 0)), 0);
+    const lastAttempt = rows?.[0]?.created_at || new Date().toISOString();
+
+    const progress = {
+      exerciseId,
+      bestScore,
+      attempts,
+      lastAttempt
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: progress,
+      progress
+    });
+  } catch (error) {
+    console.error('Error in grammar progress API:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        message: 'Internal server error'
+      }
+    });
   }
-  
-  // Handle other HTTP methods
-  return res.status(405).json({
-    success: false,
-    error: {
-      message: 'Method not allowed'
-    }
-  });
 }

@@ -1,15 +1,14 @@
-import '@/styles/globals.css';
+import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import { Inter } from 'next/font/google';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import Layout from '@/components/layout/Layout';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { Toaster } from 'sonner';
 import { prefetchCommonData, prefetchPageData } from '@/utils/prefetch';
 
-// Initialize Inter font
-const inter = Inter({ subsets: ['latin'] });
 
 // AppContent component to use hooks inside the AuthProvider
 function AppContent({ Component, pageProps }: AppProps) {
@@ -41,7 +40,7 @@ function AppContent({ Component, pageProps }: AppProps) {
       let pageName = '';
       if (path === '/vocabulary') pageName = 'vocabulary';
       else if (path === '/lessons') pageName = 'lessons';
-      else if (path.startsWith('/lessons/') && !isNaN(Number(path.split('/').pop()))) {
+      else if (path.startsWith('/lessons/') && path.split('/').length === 3) {
         pageName = 'lesson-detail';
         params.id = path.split('/').pop() as string;
       }
@@ -62,7 +61,10 @@ function AppContent({ Component, pageProps }: AppProps) {
   }, [router]);
 
   return (
-    <main className={inter.className}>
+    <main>
+      <Head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      </Head>
       <Layout>
         <Component {...pageProps} />
       </Layout>
@@ -74,7 +76,9 @@ function AppContent({ Component, pageProps }: AppProps) {
 export default function App(props: AppProps) {
   return (
     <AuthProvider>
-      <AppContent {...props} />
+      <ThemeProvider>
+        <AppContent {...props} />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

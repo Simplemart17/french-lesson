@@ -1,30 +1,48 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { Conversation } from '@/services/api/conversationApiService';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { getUserId } from '@/utils/auth';
 
-// Mock conversation contexts for new conversations
-const conversationContexts: Record<string, string> = {
-  restaurant: 'You are ordering food at a French restaurant',
-  shopping: 'You are shopping for clothes in a French store',
-  travel: 'You are asking for directions in a French city',
-  doctor: 'You are explaining symptoms to a French doctor',
-  smalltalk: 'You are having a casual conversation in French'
-};
+interface ConversationTemplateRow {
+  id: string;
+  title: string;
+  initial_message: string;
+  level: string;
+}
 
-// Mock assistant messages for new conversations
-const initialMessages: Record<string, string> = {
-  restaurant: 'Bonjour ! Bienvenue au restaurant. Que voulez-vous commander aujourd\'hui ?',
-  shopping: 'Bonjour ! Puis-je vous aider à trouver quelque chose aujourd\'hui ?',
-  travel: 'Bonjour ! Vous semblez perdu. Puis-je vous aider à trouver votre chemin ?',
-  doctor: 'Bonjour ! Qu\'est-ce qui vous amène aujourd\'hui ? Quels sont vos symptômes ?',
-  smalltalk: 'Bonjour ! Comment allez-vous aujourd\'hui ? Quel temps fait-il chez vous ?'
-};
+interface ConversationRow {
+  id: string;
+  title: string | null;
+  scenario: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
-export default function handler(
+interface MessageRow {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  created_at: string;
+}
+
+function mapLevelToDb(level: string): string[] {
+  switch (level) {
+    case 'beginner':
+      return ['A1', 'A2'];
+    case 'intermediate':
+      return ['B1', 'B2'];
+    case 'advanced':
+      return ['C1', 'C2'];
+    default:
+      return [level];
+  }
+}
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<Conversation>>
 ) {
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
       success: false,
@@ -35,10 +53,16 @@ export default function handler(
   }
 
   try {
-    // Get request body
-    const { topic, level } = req.body;
-    
-    // Validate input
+    const userId = await getUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Unauthorized' }
+      });
+    }
+
+    const { topic, level } = req.body as { topic?: string; level?: string };
+
     if (!topic || !level) {
       return res.status(400).json({
         success: false,
@@ -47,49 +71,81 @@ export default function handler(
         }
       });
     }
-    
-    // Determine context based on topic
-    let context = '';
-    let initialMessage = '';
-    
-    // Try to match topic with predefined contexts
-    for (const [key, value] of Object.entries(conversationContexts)) {
-      if (topic.toLowerCase().includes(key)) {
-        context = value;
-        initialMessage = initialMessages[key] || 'Bonjour ! Comment puis-je vous aider aujourd\'hui ?';
-        break;
-      }
+
+    const db = supabaseAdmin ?? supabase;
+
+    const { data: templates, error: templateError } = await db
+      .from(TABLES.CONVERSATION_TEMPLATES)
+      .select('id,title,initial_message,level')
+      .in('level', mapLevelToDb(level))
+      .order('created_at', { ascending: true })
+      .limit(50);
+
+    if (templateError) {
+      throw new Error(`Failed to load conversation templates: ${templateError.message}`);
     }
-    
-    // If no match found, use a generic context
-    if (!context) {
-      context = `You are having a conversation in French about ${topic}`;
-      initialMessage = 'Bonjour ! Comment puis-je vous aider aujourd\'hui ?';
+
+    const normalizedTopic = topic.toLowerCase();
+    const selectedTemplate = ((templates || []) as ConversationTemplateRow[]).find((template) =>
+      template.title.toLowerCase().includes(normalizedTopic) || normalizedTopic.includes(template.title.toLowerCase())
+    ) || ((templates || [])[0] as ConversationTemplateRow | undefined);
+
+    const conversationTitle = selectedTemplate?.title || topic;
+    const initialMessage = selectedTemplate?.initial_message || 'Bonjour ! Pratiquons le francais ensemble.';
+
+    const { data: conversationRow, error: conversationError } = await db
+      .from(TABLES.CONVERSATIONS)
+      .insert({
+        user_id: userId,
+        title: conversationTitle,
+        scenario: topic,
+        language: 'fr'
+      })
+      .select('id,title,scenario,created_at,updated_at')
+      .single();
+
+    if (conversationError || !conversationRow) {
+      throw new Error(`Failed to create conversation: ${conversationError?.message || 'Unknown error'}`);
     }
-    
-    // Create a new conversation
-    const now = new Date().toISOString();
-    const conversation: Conversation = {
-      id: `conv-${Date.now()}`,
-      topic,
+
+    const { data: messageRow, error: messageError } = await db
+      .from(TABLES.MESSAGES)
+      .insert({
+        conversation_id: conversationRow.id,
+        role: 'assistant',
+        content: initialMessage
+      })
+      .select('id,role,content,created_at')
+      .single();
+
+    if (messageError || !messageRow) {
+      throw new Error(`Failed to create initial message: ${messageError?.message || 'Unknown error'}`);
+    }
+
+    const typedConversation = conversationRow as ConversationRow;
+    const typedMessage = messageRow as MessageRow;
+
+    const response: Conversation = {
+      id: typedConversation.id,
+      topic: typedConversation.scenario || typedConversation.title || topic,
       level,
       messages: [
         {
-          id: `msg-${Date.now()}`,
-          conversationId: `conv-${Date.now()}`,
-          role: 'assistant',
-          content: initialMessage,
-          createdAt: now
+          id: typedMessage.id,
+          conversationId: typedConversation.id,
+          role: typedMessage.role,
+          content: typedMessage.content,
+          createdAt: typedMessage.created_at
         }
       ],
-      createdAt: now,
-      updatedAt: now
+      createdAt: typedConversation.created_at,
+      updatedAt: typedConversation.updated_at
     };
-    
-    // Return success response
+
     return res.status(200).json({
       success: true,
-      data: conversation
+      data: response,
+      conversation: response
     });
   } catch (error) {
     console.error('Error starting conversation:', error);

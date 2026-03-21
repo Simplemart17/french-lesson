@@ -1,76 +1,28 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { Conversation } from '@/services/api/conversationApiService';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { getUserId } from '@/utils/auth';
 
-// Mock conversation history (same as in history.ts)
-const mockConversationHistory: Conversation[] = [
-  {
-    id: 'conv-1',
-    topic: 'At the Restaurant',
-    level: 'beginner',
-    messages: [
-      {
-        id: 'msg-1',
-        conversationId: 'conv-1',
-        role: 'assistant',
-        content: 'Bonjour ! Bienvenue au restaurant. Que voulez-vous commander aujourd\'hui ?',
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'msg-2',
-        conversationId: 'conv-1',
-        role: 'user',
-        content: 'Je voudrais une salade, s\'il vous plaît.',
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 1000).toISOString()
-      },
-      {
-        id: 'msg-3',
-        conversationId: 'conv-1',
-        role: 'assistant',
-        content: 'Très bien. Et comme boisson ?',
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 2000).toISOString()
-      }
-    ],
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 2000).toISOString()
-  },
-  {
-    id: 'conv-2',
-    topic: 'Asking for Directions',
-    level: 'beginner',
-    messages: [
-      {
-        id: 'msg-4',
-        conversationId: 'conv-2',
-        role: 'assistant',
-        content: 'Bonjour ! Vous semblez perdu. Puis-je vous aider à trouver votre chemin ?',
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'msg-5',
-        conversationId: 'conv-2',
-        role: 'user',
-        content: 'Oui, s\'il vous plaît. Où est la gare ?',
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000 + 1000).toISOString()
-      },
-      {
-        id: 'msg-6',
-        conversationId: 'conv-2',
-        role: 'assistant',
-        content: 'La gare est tout droit, puis tournez à gauche au feu rouge. C\'est à environ 10 minutes à pied.',
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000 + 2000).toISOString()
-      }
-    ],
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000 + 2000).toISOString()
-  }
-];
+interface ConversationRow {
+  id: string;
+  title: string | null;
+  scenario: string | null;
+  created_at: string;
+  updated_at: string;
+  messages?: Array<{
+    id: string;
+    conversation_id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    created_at: string;
+  }>;
+}
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<Conversation>>
 ) {
-  // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({
       success: false,
@@ -81,14 +33,48 @@ export default function handler(
   }
 
   try {
-    // Get the conversation ID from the URL
+    const db = supabaseAdmin ?? supabase;
+    const userId = await getUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          message: 'Unauthorized'
+        }
+      });
+    }
+
     const { id } = req.query;
-    
-    // Find the conversation by ID
-    const conversation = mockConversationHistory.find(conv => conv.id === id);
-    
-    // If conversation not found, return 404
-    if (!conversation) {
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Invalid conversation ID'
+        }
+      });
+    }
+
+    const { data, error } = await db
+      .from(TABLES.CONVERSATIONS)
+      .select(`
+        id,
+        title,
+        scenario,
+        created_at,
+        updated_at,
+        messages:${TABLES.MESSAGES}(
+          id,
+          conversation_id,
+          role,
+          content,
+          created_at
+        )
+      `)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
       return res.status(404).json({
         success: false,
         error: {
@@ -96,11 +82,31 @@ export default function handler(
         }
       });
     }
-    
-    // Return the conversation
+
+    const row = data as ConversationRow;
+    const messages = (row.messages || [])
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      .map((message) => ({
+        id: message.id,
+        conversationId: message.conversation_id,
+        role: message.role,
+        content: message.content,
+        createdAt: message.created_at
+      }));
+
+    const conversation: Conversation = {
+      id: row.id,
+      topic: row.scenario || row.title || 'General Conversation',
+      level: 'beginner',
+      messages,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    };
+
     return res.status(200).json({
       success: true,
-      data: conversation
+      data: conversation,
+      conversation
     });
   } catch (error) {
     console.error('Error in conversation API:', error);

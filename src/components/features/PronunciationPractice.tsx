@@ -30,7 +30,6 @@ const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const [showTranslation, setShowTranslation] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognitionInterface | null>(null);
-  // const _audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Evaluate pronunciation using string similarity
   const evaluatePronunciation = useCallback((userTranscript: string) => {

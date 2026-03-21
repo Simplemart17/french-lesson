@@ -1,19 +1,28 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonSection } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
+import { supabase, TABLES } from '@/lib/supabase';
+
+interface LessonSectionRow {
+  id: string;
+  lesson_id: string;
+  title: string;
+  type: LessonSection['type'];
+  content: string | null;
+  order_index: number;
+}
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<LessonSection[]>>
 ) {
-  // Only allow GET for this endpoint
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
   }
 
   try {
     const { id } = req.query;
-    
+
     if (!id || typeof id !== 'string') {
       return res.status(400).json({
         success: false,
@@ -22,51 +31,29 @@ async function handler(
         }
       });
     }
-    
-    const lessonId = id;
-    
-    // Mock lesson sections data
-    const mockSections: LessonSection[] = [
-      {
-        id: `section-${lessonId}-1`,
-        lessonId,
-        title: 'Introduction',
-        type: 'text',
-        content: 'Welcome to this French lesson! In this section, we will learn basic French greetings and expressions.',
-        order: 1
-      },
-      {
-        id: `section-${lessonId}-2`,
-        lessonId,
-        title: 'Vocabulary',
-        type: 'text',
-        content: 'Key vocabulary words for this lesson: bonjour (hello), au revoir (goodbye), merci (thank you), s\'il vous plaît (please).',
-        order: 2
-      },
-      {
-        id: `section-${lessonId}-3`,
-        lessonId,
-        title: 'Practice Exercise',
-        type: 'exercise',
-        content: 'Complete the following exercises to practice what you\'ve learned.',
-        order: 3
-      },
-      {
-        id: `section-${lessonId}-4`,
-        lessonId,
-        title: 'Audio Practice',
-        type: 'audio',
-        content: 'Listen to the pronunciation and repeat.',
-        audioUrl: '/audio/lesson-pronunciation.mp3',
-        order: 4
-      }
-    ];
 
-    const formattedSections = mockSections;
-    
+    const { data, error } = await supabase
+      .from(TABLES.LESSON_SECTIONS)
+      .select('id,lesson_id,title,type,content,order_index')
+      .eq('lesson_id', id)
+      .order('order_index', { ascending: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch lesson sections: ${error.message}`);
+    }
+
+    const sections: LessonSection[] = ((data || []) as LessonSectionRow[]).map((section) => ({
+      id: section.id,
+      lessonId: section.lesson_id,
+      title: section.title,
+      type: section.type,
+      content: section.content || undefined,
+      order: section.order_index
+    }));
+
     return res.status(200).json({
       success: true,
-      data: formattedSections
+      data: sections
     });
   } catch (error) {
     console.error('Error fetching lesson sections:', error);

@@ -102,8 +102,6 @@ const DictationExercise = ({
   };
   
   const getHint = () => {
-    setShowHint(true);
-    
     // For beginners, show the first letter of each word
     // For intermediate, show the number of letters in each word
     // For advanced, just show the number of words

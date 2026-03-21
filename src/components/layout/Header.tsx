@@ -127,7 +127,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`bg-white sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md py-2' : 'py-4'}`}>
+    <header className={`bg-white dark:bg-gray-800 dark:border-gray-700 sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md py-2' : 'py-4'}`}>
       <div className="container px-4 mx-auto">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group">
@@ -168,7 +168,7 @@ const Header = () => {
                 </button>
 
                 {activeDropdown === group.name && (
-                  <div className="absolute z-50 py-1 mt-1 overflow-hidden bg-white border border-gray-100 rounded-lg shadow-lg w-52 animate-fadeIn">
+                  <div className="absolute z-50 py-1 mt-1 overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-lg w-52 animate-fadeIn">
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
                     {group.items.map((item) => (
                       <Link
@@ -208,7 +208,7 @@ const Header = () => {
                   </button>
 
                   {profileMenuOpen && (
-                    <div className="absolute right-0 z-10 w-56 py-1 mt-2 overflow-hidden bg-white border border-gray-100 rounded-lg shadow-lg">
+                    <div className="absolute right-0 z-10 w-56 py-1 mt-2 overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-lg">
                       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-medium text-gray-900">{user?.name}</p>

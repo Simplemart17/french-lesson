@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { getUserId } from '@/utils/auth';
 import { supabase, TABLES } from '../../../lib/supabase';
+import { getOrCreateUserProfile } from '@/utils/userProfile';
 
 interface SkillProgress {
   name: string;
@@ -74,20 +75,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    // Get user data
-    const { data: user, error: userError } = await supabase
-      .from(TABLES.USERS)
-      .select('points, streak_days, level')
-      .eq('id', userId)
-      .single();
-
+    const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
-      if (userError?.code === 'PGRST116') {
-        return res.status(404).json({
-          success: false,
-          error: { message: 'User not found' }
-        });
-      }
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to fetch user profile' }
+      });
     }
 
     // Get lesson progress for activity log
@@ -198,7 +191,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 15);
 
-    // Generate daily progress from activity log
+    // Generate daily progress from activity log, ensuring at least the last 7 days are present
     const dailyProgressMap = activityLog.reduce((acc: Record<string, DailyProgress>, activity) => {
       if (!acc[activity.date]) {
         acc[activity.date] = {
@@ -214,14 +207,29 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return acc;
     }, {});
 
+    // Ensure the last 7 days are always present (fill gaps with 0 values)
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      if (!dailyProgressMap[dateStr]) {
+        dailyProgressMap[dateStr] = {
+          date: dateStr,
+          xp: 0,
+          minutes: 0
+        };
+      }
+    }
+
     const dailyProgress = Object.values(dailyProgressMap).sort((a, b) =>
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
     // Calculate totals
-    const totalXP = user?.points;
+    const totalXP = user?.points || 0;
     const totalStudyTime = activityLog.reduce((sum, activity) => sum + activity.duration, 0);
-    const currentStreak = user?.streak_days;
+    const currentStreak = user?.streak_days || 0;
 
     // Calculate level based on XP
     const userLevel = Math.floor(totalXP / 500) + 1;

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -19,62 +20,64 @@ export default function LessonPage() {
   const [progress, setProgress] = useState<{ completed: boolean; score: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch lesson data
-  useEffect(() => {
+  // Fetch lesson data - extracted as useCallback so it can be called after content generation
+  const fetchLessonData = useCallback(async () => {
     if (id && typeof id === 'string') {
       setIsLoading(true);
       setError(null);
 
-      const lessonId = parseInt(id, 10);
-      if (isNaN(lessonId)) {
-        setError('Invalid lesson ID');
-        setIsLoading(false);
-        return;
-      }
+      try {
+        const data = await lessonService.getLesson(id);
 
-      // Fetch lesson data from API
-      lessonService.getLesson(lessonId)
-        .then(data => {
-          if (data) {
-            setLesson(data);
+        if (data) {
+          setLesson(data);
 
-            // Fetch progress if authenticated
-            if (isAuthenticated) {
-              return lessonService.getLessonProgress(lessonId);
+          if (isAuthenticated) {
+            const progressData = await lessonService.getLessonProgress(id);
+
+            if (progressData && progressData.lessonId === id) {
+              setProgress({
+                completed: progressData.completed,
+                score: progressData.score || 0
+              });
+            } else {
+              setProgress(null);
             }
-          } else {
-            setError('Lesson not found');
           }
-          return null;
-        })
-        .then(progressData => {
-          if (progressData) {
-            setProgress({
-              completed: progressData.completed,
-              score: progressData.score
-            });
-          }
-          setIsLoading(false);
-        })
-        .catch(err => {
-          console.error('Error fetching lesson:', err);
-          setError('Failed to load lesson. Please try again later.');
-          setIsLoading(false);
-        });
+        } else {
+          setError('Lesson not found');
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error fetching lesson:', err);
+        setError('Failed to load lesson. Please try again later.');
+        setIsLoading(false);
+      }
     }
   }, [id, isAuthenticated]);
+
+  // Fetch lesson data
+  useEffect(() => {
+    fetchLessonData();
+  }, [fetchLessonData]);
+
+  // Called when InteractiveLesson generates content
+  const handleContentGenerated = useCallback(() => {
+    if (id && typeof id === 'string') {
+      lessonService.invalidateLesson(id);
+      fetchLessonData();
+    }
+  }, [id, fetchLessonData]);
 
   // Handle lesson completion
   const handleLessonComplete = async (score: number) => {
     if (!id || !lesson || !isAuthenticated) return;
 
-    const lessonId = parseInt(id as string, 10);
-    if (isNaN(lessonId)) return;
-
     try {
       // Update lesson progress
       const updatedProgress = await lessonService.updateLessonProgress(
-        lessonId,
+        id as string,
         true, // completed
         score
       );
@@ -84,9 +87,7 @@ export default function LessonPage() {
           completed: updatedProgress.completed,
           score: updatedProgress.score
         });
-
-        // Show success message
-        console.log('Progress saved successfully:', updatedProgress);
+        void updatedProgress;
       }
     } catch (err) {
       console.error('Error updating lesson progress:', err);
@@ -94,15 +95,12 @@ export default function LessonPage() {
   };
 
   // Handle exercise submission
-  const handleSubmitAnswers = async (answers: Record<number, string | string[]>) => {
+  const handleSubmitAnswers = async (answers: Record<string, string | string[]>) => {
     if (!id || !lesson || !isAuthenticated) return null;
-
-    const lessonId = parseInt(id as string, 10);
-    if (isNaN(lessonId)) return null;
 
     try {
       // Submit answers to API
-      const result = await lessonService.submitLessonAnswers(lessonId, answers);
+      const result = await lessonService.submitLessonAnswers(id as string, answers);
       return result;
     } catch (err) {
       console.error('Error submitting answers:', err);
@@ -113,30 +111,34 @@ export default function LessonPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
-      </div>
+      <ProtectedRoute>
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
+        </div>
+      </ProtectedRoute>
     );
   }
 
   // Error state
   if (error || !lesson) {
     return (
-      <div className="max-w-4xl px-4 py-8 mx-auto">
-        <Card className="p-8 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-gray-800">
-            {error || 'Lesson Not Found'}
-          </h1>
-          <p className="mb-6 text-gray-600">
-            Sorry, the lesson you&apos;re looking for doesn&apos;t exist or has been removed.
-          </p>
-          <Link href="/lessons">
-            <Button>
-              Back to Lessons
-            </Button>
-          </Link>
-        </Card>
-      </div>
+      <ProtectedRoute>
+        <div className="max-w-4xl px-4 py-8 mx-auto">
+          <Card className="p-8 text-center">
+            <h1 className="mb-4 text-2xl font-bold text-gray-800">
+              {error || 'Lesson Not Found'}
+            </h1>
+            <p className="mb-6 text-gray-600">
+              Sorry, the lesson you&apos;re looking for doesn&apos;t exist or has been removed.
+            </p>
+            <Link href="/lessons">
+              <Button>
+                Back to Lessons
+              </Button>
+            </Link>
+          </Card>
+        </div>
+      </ProtectedRoute>
     );
   }
 
@@ -159,8 +161,9 @@ export default function LessonPage() {
       content: section.content || '',
       audioUrl: section.audioUrl,
       videoUrl: section.videoUrl,
-      exercise: section.exercises && section.exercises.length > 0
+      exercise: section.exercises && section.exercises.length === 1
         ? {
+            id: section.exercises[0].id,
             type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(section.exercises[0].type)
               ? section.exercises[0].type
               : 'multiple-choice') as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'true-false' | 'reorder',
@@ -169,12 +172,24 @@ export default function LessonPage() {
             correctAnswer: section.exercises[0].correctAnswer,
             explanation: section.exercises[0].explanation
           }
+        : undefined,
+      exercises: section.exercises && section.exercises.length > 1
+        ? section.exercises.map(exercise => ({
+            id: exercise.id,
+            type: (['multiple-choice', 'fill-in-blank', 'matching', 'translation', 'true-false', 'reorder'].includes(exercise.type)
+              ? exercise.type
+              : 'multiple-choice') as 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'true-false' | 'reorder',
+            question: exercise.question,
+            options: exercise.options || [],
+            correctAnswer: exercise.correctAnswer,
+            explanation: exercise.explanation
+          }))
         : undefined
     })) || []
   };
 
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>{lesson.title} | French Tutor AI</title>
         <meta name="description" content={lesson.description} />
@@ -201,7 +216,7 @@ export default function LessonPage() {
                 {lesson.duration} min
               </div>
               {progress?.completed && (
-                <div className="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                <div className="px-3 py-1 text-sm font-medium text-green-800 bg-green-100 rounded-full">
                   Completed ({progress.score}%)
                 </div>
               )}
@@ -254,8 +269,9 @@ export default function LessonPage() {
           onComplete={handleLessonComplete}
           onSubmitAnswers={handleSubmitAnswers}
           initialProgress={progress}
+          onContentGenerated={handleContentGenerated}
         />
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

@@ -4,11 +4,11 @@ import { API_ENDPOINTS } from './apiConfig';
 
 // Define the speaking exercise type
 interface SpeakingExercise {
-  id: number;
+  id: string;
   prompt: string;
   translation: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business';
+  category?: 'greetings' | 'travel' | 'dining' | 'everyday' | 'business' | 'shopping';
 }
 
 // Define the speaking feedback type
@@ -54,7 +54,7 @@ export const speakingApiService = {
   /**
    * Get a specific speaking exercise by ID
    */
-  getExercise: async (id: number): Promise<SpeakingExercise | null> => {
+  getExercise: async (id: number | string): Promise<SpeakingExercise | null> => {
     try {
       const response = await apiClient.get<ApiResponse<SpeakingExercise>>(
         API_ENDPOINTS.SPEAKING.ITEM(id)
@@ -75,23 +75,17 @@ export const speakingApiService = {
    * Evaluate speaking exercise
    */
   evaluateSpeaking: async (
-    exerciseId: number,
-    audioBlob: Blob,
+    exerciseId: number | string,
+    _audioBlob: Blob,
     transcript: string
   ): Promise<SpeakingFeedback> => {
     try {
-      // Create form data for file upload
-      const formData = new FormData();
-      formData.append('exerciseId', exerciseId.toString());
-      formData.append('audio', audioBlob);
-      formData.append('transcript', transcript);
-
       const response = await apiClient.request<ApiResponse<SpeakingFeedback>>({
         method: 'POST',
         url: API_ENDPOINTS.SPEAKING.CHECK,
-        data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data'
+        data: {
+          exerciseId: exerciseId.toString(),
+          transcript
         }
       });
 

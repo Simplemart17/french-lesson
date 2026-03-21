@@ -9,3 +9,4 @@ node_modules
 supabase/.temp
 supabase/config.toml
 tsconfig.tsbuildinfo
+.playwright-mcp

@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import conversationApiService from '@/services/api/conversationApiService';
+import translationService from '@/services/translationService';
 
-// Define the SpeechRecognition types
 interface SpeechRecognitionErrorEvent extends Event {
   error: string;
 }
@@ -39,7 +40,6 @@ interface SpeechRecognition extends EventTarget {
   onend: () => void;
 }
 
-// Define the window with SpeechRecognition
 interface WindowWithSpeechRecognition {
   SpeechRecognition?: new () => SpeechRecognition;
   webkitSpeechRecognition?: new () => SpeechRecognition;
@@ -79,8 +79,8 @@ const ConversationPractice = ({
   onComplete
 }: ConversationPracticeProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -93,9 +93,10 @@ const ConversationPractice = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Text-to-speech function
   const speakText = useCallback((text: string) => {
     if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech first
+      speechSynthesis.cancel();
       setIsSpeaking(true);
 
       const utterance = new SpeechSynthesisUtterance(text);
@@ -110,102 +111,120 @@ const ConversationPractice = ({
         setIsSpeaking(false);
       };
 
-      speechSynthesis.speak(utterance);
+      // Safety timeout: if speech doesn't end in 15 seconds, force reset
+      const timeout = setTimeout(() => {
+        setIsSpeaking(false);
+        speechSynthesis.cancel();
+      }, 15000);
+
+      utterance.onend = () => {
+        clearTimeout(timeout);
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = () => {
+        clearTimeout(timeout);
+        setIsSpeaking(false);
+      };
+
+      try {
+        speechSynthesis.speak(utterance);
+      } catch {
+        clearTimeout(timeout);
+        setIsSpeaking(false);
+      }
     }
   }, [language]);
 
-  // Mock translation function (in a real app, this would call an API)
-  const translateToEnglish = useCallback((text: string): string => {
-    // This is a very simple mock translation - in a real app, use a translation API
-    const translations: Record<string, string> = {
-      'Bonjour! Comment allez-vous aujourd\'hui?': 'Hello! How are you today?',
-      'Comment allez-vous': 'How are you',
-      'Je vais bien, merci': 'I am well, thank you',
-      'Qu\'est-ce que vous aimez faire pendant votre temps libre?': 'What do you like to do in your free time?',
-      'temps libre': 'free time',
-      'C\'est intéressant! Moi, j\'aime lire et voyager. Avez-vous déjà visité la France?': 'That\'s interesting! I like reading and traveling. Have you ever visited France?',
-      'Je comprends. Parlons d\'autre chose. Quel temps fait-il aujourd\'hui?': 'I understand. Let\'s talk about something else. How is the weather today?',
-      'C\'était une conversation agréable! Au revoir et à bientôt!': 'It was a pleasant conversation! Goodbye and see you soon!',
-      'Je ne suis pas sûr de comprendre. Pouvez-vous répéter d\'une autre façon?': 'I\'m not sure I understand. Can you repeat that in another way?',
-      'Je suis désolé, je ne sais pas comment répondre à cela.': 'I\'m sorry, I don\'t know how to respond to that.',
-    };
-
-    // Try to find an exact match
-    if (translations[text]) {
-      return translations[text];
+  const translateToEnglish = useCallback(async (text: string): Promise<string> => {
+    try {
+      const result = await translationService.translateText(text, 'fr', 'en');
+      return result.translatedText;
+    } catch {
+      return '';
     }
-
-    // Try to find partial matches
-    for (const [french, english] of Object.entries(translations)) {
-      if (text.includes(french)) {
-        return english;
-      }
-    }
-
-    // Default response if no translation is found
-    return 'Translation not available';
   }, []);
 
-  // Generate bot response
-  const generateBotResponse = useCallback((userInput: string) => {
+  const createAssistantMessage = useCallback(async (content: string): Promise<Message> => {
+    const translation = await translateToEnglish(content);
+    return {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content,
+      timestamp: new Date(),
+      translation: translation || undefined,
+      showTranslation: false
+    };
+  }, [translateToEnglish]);
+
+  const initializeConversation = useCallback(async (): Promise<string | null> => {
+    try {
+      const result = await conversationApiService.startConversation({
+        topic: scenario.title,
+        level: scenario.difficulty
+      });
+
+      const conversation = result.data as {
+        id?: string;
+        messages?: Array<{ id: string; role: 'assistant' | 'user'; content: string; createdAt?: string }>;
+      } | undefined;
+
+      const newConversationId = conversation?.id || null;
+      setConversationId(newConversationId);
+
+      const initialFromApi = conversation?.messages?.find((item) => item.role === 'assistant')?.content;
+      const initialContent = initialFromApi || scenario.initialMessage;
+      const assistantMessage = await createAssistantMessage(initialContent);
+      setMessages([assistantMessage]);
+
+      setTimeout(() => speakText(initialContent), 200);
+      return newConversationId;
+    } catch {
+      const assistantMessage = await createAssistantMessage(scenario.initialMessage);
+      setMessages([assistantMessage]);
+      setConversationId(null);
+      return null;
+    }
+  }, [createAssistantMessage, scenario, speakText]);
+
+  const generateBotResponse = useCallback(async (userInput: string) => {
     setIsTyping(true);
 
-    // In a real app, this would call an API
-    setTimeout(() => {
-      // Find a matching response or use a default
-      let botReply = '';
-
-      if (scenario.possibleResponses) {
-        // Try to find a matching response based on keywords
-        const matchingResponse = scenario.possibleResponses.find(response =>
-          userInput.toLowerCase().includes(response.userInput.toLowerCase())
-        );
-
-        if (matchingResponse) {
-          botReply = matchingResponse.botReply;
-        } else {
-          // Default responses based on conversation context
-          const lastBotMessage = [...messages].reverse().find(m => m.role === 'assistant')?.content;
-
-          if (lastBotMessage?.includes('Comment allez-vous')) {
-            botReply = "C'est bien! Qu'est-ce que vous aimez faire pendant votre temps libre?";
-          } else if (lastBotMessage?.includes('temps libre')) {
-            botReply = "C'est intéressant! Moi, j'aime lire et voyager. Avez-vous déjà visité la France?";
-          } else if (userInput.toLowerCase().includes('oui') || userInput.toLowerCase().includes('non')) {
-            botReply = "Je comprends. Parlons d'autre chose. Quel temps fait-il aujourd'hui?";
-          } else if (messages.length > 6) {
-            botReply = "C'était une conversation agréable! Au revoir et à bientôt!";
-            setConversationEnded(true);
-          } else {
-            botReply = "Je ne suis pas sûr de comprendre. Pouvez-vous répéter d'une autre façon?";
-          }
-        }
-      } else {
-        botReply = "Je suis désolé, je ne sais pas comment répondre à cela.";
+    try {
+      let activeConversationId = conversationId;
+      if (!activeConversationId) {
+        activeConversationId = await initializeConversation();
       }
 
-      // Add bot message
-      const botMessage: Message = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: botReply,
-        timestamp: new Date(),
-        translation: translateToEnglish(botReply),
-        showTranslation: false
-      };
+      if (!activeConversationId) {
+        const fallback = await createAssistantMessage('Je suis désolé, je ne peux pas répondre pour le moment.');
+        setMessages((prev) => [...prev, fallback]);
+        return;
+      }
 
-      setMessages(prev => [...prev, botMessage]);
-      setIsTyping(false);
+      const response = await conversationApiService.sendMessage({
+        conversationId: activeConversationId,
+        content: userInput
+      });
 
-      // Speak the bot's response
+      const data = response.data as { id?: string; content?: string; createdAt?: string } | undefined;
+      const botReply = data?.content || 'Je suis désolé, je ne sais pas comment répondre à cela.';
+
+      const botMessage = await createAssistantMessage(botReply);
+      botMessage.id = data?.id || botMessage.id;
+      botMessage.timestamp = data?.createdAt ? new Date(data.createdAt) : botMessage.timestamp;
+
+      setMessages((prev) => [...prev, botMessage]);
       speakText(botReply);
+    } catch {
+      const fallback = await createAssistantMessage('Je suis désolé, je ne peux pas répondre pour le moment.');
+      setMessages((prev) => [...prev, fallback]);
+    } finally {
+      setIsTyping(false);
+    }
+  }, [conversationId, createAssistantMessage, initializeConversation, speakText]);
 
-    }, 1500);
-  }, [scenario, messages, speakText, translateToEnglish]);
-
-  // Define functions that will be used in useEffects
   const sendMessage = useCallback((text: string) => {
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -213,14 +232,11 @@ const ConversationPractice = ({
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputText('');
-
-    // Generate bot response
     generateBotResponse(text);
   }, [generateBotResponse]);
 
-  // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const windowWithSpeech = window as unknown as WindowWithSpeechRecognition;
@@ -234,22 +250,21 @@ const ConversationPractice = ({
 
         recognition.onresult = (event) => {
           let finalTranscript = '';
-          let interimTranscript = '';
+          let interim = '';
 
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
               finalTranscript += event.results[i][0].transcript;
             } else {
-              interimTranscript += event.results[i][0].transcript;
+              interim += event.results[i][0].transcript;
             }
           }
 
-          if (finalTranscript) {
-            setTranscript(finalTranscript);
-          }
+          setInterimTranscript(interim);
 
-          if (interimTranscript) {
-            setInterimTranscript(interimTranscript);
+          if (finalTranscript.trim()) {
+            sendMessage(finalTranscript.trim());
+            setInterimTranscript('');
           }
         };
 
@@ -260,12 +275,6 @@ const ConversationPractice = ({
 
         recognition.onend = () => {
           setIsListening(false);
-
-          // If we have a final transcript, send it as a message
-          if (transcript) {
-            sendMessage(transcript);
-            setTranscript('');
-          }
         };
 
         recognitionRef.current = recognition;
@@ -279,49 +288,33 @@ const ConversationPractice = ({
         recognitionRef.current.abort();
       }
     };
-  }, [language, transcript, sendMessage, translateToEnglish]);
+  }, [language, sendMessage]);
 
-  // Add initial message from the bot
   useEffect(() => {
-    if (scenario) {
-      const initialMessage: Message = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: scenario.initialMessage,
-        timestamp: new Date(),
-        translation: translateToEnglish(scenario.initialMessage),
-        showTranslation: false
-      };
+    setConversationEnded(false);
+    setError('');
+    setInterimTranscript('');
+    setInputText('');
+    setMessages([]);
+    setConversationId(null);
+    initializeConversation();
+  }, [initializeConversation]);
 
-      setMessages([initialMessage]);
-
-      // Simulate typing effect for the initial message
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        speakText(scenario.initialMessage);
-      }, 1000);
-    }
-  }, [scenario, speakText, translateToEnglish]);
-
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const startListening = () => {
     setError('');
-    setTranscript('');
     setInterimTranscript('');
 
     if (recognitionRef.current) {
       try {
         setIsListening(true);
         recognitionRef.current.start();
-      } catch (err) {
+      } catch {
         setError('Error starting speech recognition. Please try again.');
         setIsListening(false);
-        console.error('Speech recognition error:', err);
       }
     } else {
       setError('Speech recognition is not supported in this browser.');
@@ -342,8 +335,8 @@ const ConversationPractice = ({
   };
 
   const toggleTranslation = (messageId: string) => {
-    setMessages(prev =>
-      prev.map(message =>
+    setMessages((prev) =>
+      prev.map((message) =>
         message.id === messageId
           ? { ...message, showTranslation: !message.showTranslation }
           : message
@@ -482,12 +475,12 @@ const ConversationPractice = ({
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Type your message in French..."
                     className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    disabled={isListening || isSpeaking || isTyping}
+                    disabled={isListening || isTyping}
                   />
                   <button
                     type="submit"
                     className="absolute text-gray-500 transform -translate-y-1/2 right-2 top-1/2 hover:text-primary-600"
-                    disabled={!inputText.trim() || isListening || isSpeaking || isTyping}
+                    disabled={!inputText.trim() || isListening || isTyping}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

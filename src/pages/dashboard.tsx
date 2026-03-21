@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { apiClient, ApiResponse } from '@/services/api';
+import { BookOpen, Languages, PenTool, MessageCircle, Mic, ClipboardCheck } from 'lucide-react';
 
 interface DashboardData {
   user: {
@@ -49,7 +50,7 @@ export default function DashboardPage() {
   const { user, isInitialized } = useAuth();
   const [greeting, setGreeting] = useState('');
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -126,9 +127,7 @@ export default function DashboardPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="flex justify-center py-12">
-            <LoadingState message="Loading your dashboard..." size="large" />
-          </div>
+          <DashboardSkeleton />
         )}
 
         {/* Error State */}
@@ -186,6 +185,33 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-gray-600">{dashboardData.user.points} XP earned</p>
+              </div>
+            </div>
+
+            {/* Quick Access */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-gray-800">Quick Access</h2>
+              <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  { icon: BookOpen, title: 'Lessons', description: 'Browse and continue your French lessons', href: '/lessons', color: 'text-blue-600', bg: 'bg-blue-100' },
+                  { icon: Languages, title: 'Vocabulary', description: 'Build and review your French vocabulary', href: '/vocabulary', color: 'text-green-600', bg: 'bg-green-100' },
+                  { icon: PenTool, title: 'Grammar', description: 'Practice French grammar rules and exercises', href: '/grammar', color: 'text-purple-600', bg: 'bg-purple-100' },
+                  { icon: MessageCircle, title: 'Conversation', description: 'Practice conversational French with AI', href: '/practice', color: 'text-orange-600', bg: 'bg-orange-100' },
+                  { icon: Mic, title: 'Speaking Practice', description: 'Improve your pronunciation and speaking', href: '/speaking', color: 'text-red-600', bg: 'bg-red-100' },
+                  { icon: ClipboardCheck, title: 'Exam Practice', description: 'Prepare for French proficiency exams', href: '/exam-practice', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+                ].map((item) => (
+                  <Link key={item.title} href={item.href}>
+                    <div className="flex items-start p-4 transition-all duration-200 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-md">
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${item.bg} ${item.color} flex-shrink-0`}>
+                        <item.icon className="w-5 h-5" />
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-lg font-medium text-gray-800">{item.title}</h3>
+                        <p className="mt-1 text-sm text-gray-600">{item.description}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
 

@@ -1,6 +1,6 @@
 import type { NextApiResponse } from 'next';
 import { authMiddleware } from '../../../utils/authMiddleware';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { AuthenticatedRequest } from '@/types/api';
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
@@ -17,7 +17,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // GET request to retrieve assessments
   if (req.method === 'GET') {
     try {
-      const { data: assessments, error } = await supabase
+      const db = supabaseAdmin ?? supabase;
+      const { data: assessments, error } = await db
         .from(TABLES.EXAM_RESULTS)
         .select('*')
         .eq('user_id', userId)
@@ -29,7 +30,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
-        data: assessments || []
+        data: assessments || [],
+        assessments: assessments || []
       });
     } catch (error) {
       console.error('Error fetching assessments:', error);
@@ -52,20 +54,24 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
       }
 
-      // Create new assessment using the ExamResult model
-      const defaultTotalQuestions = totalQuestions || 10;
+      const db = supabaseAdmin ?? supabase;
+      const numericScore = Number(score);
+      const maxScore = Number(totalQuestions || 100);
+      const percentage = maxScore > 0
+        ? Math.max(0, Math.min(100, (numericScore / maxScore) * 100))
+        : 0;
 
-      const { data: assessment, error: createError } = await supabase
+      const { data: assessment, error: createError } = await db
         .from(TABLES.EXAM_RESULTS)
         .insert({
-          userId,
-          examType: level, // Map level to examType
-          score,
-          totalQuestions: defaultTotalQuestions,
-          correctAnswers: Math.round((score / 100) * defaultTotalQuestions), // Calculate from score
-          timeSpent: timeSpent || 0,
-          completedAt: new Date().toISOString(),
-          answers: details || {}
+          user_id: userId,
+          exam_type: examId,
+          module: section,
+          level,
+          score: numericScore,
+          max_score: maxScore,
+          percentage,
+          completed_at: new Date().toISOString()
         })
         .select()
         .single();
@@ -75,12 +81,12 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Check if this is the user's best score by finding previous results for this exam
-      const { data: previousResults, error: previousError } = await supabase
+      const { data: previousResults, error: previousError } = await db
         .from(TABLES.EXAM_RESULTS)
         .select('*')
-        .eq('userId', userId)
-        .eq('examType', level)
-        .order('score', { ascending: false })
+        .eq('user_id', userId)
+        .eq('exam_type', examId)
+        .order('percentage', { ascending: false })
         .limit(1);
 
       if (previousError) {
@@ -88,11 +94,16 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       const isNewHighScore = !previousResults || previousResults.length === 0 ||
-                             (previousResults.length > 0 && assessment.score > previousResults[0].score);
+                             (previousResults.length > 0 && assessment.percentage > previousResults[0].percentage);
 
       return res.status(201).json({
         success: true,
-        data: assessment,
+        data: {
+          assessment,
+          details: details || {},
+          timeSpent: timeSpent || 0
+        },
+        assessment,
         isNewHighScore
       });
     } catch (error) {

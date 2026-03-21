@@ -17,7 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       .from(TABLES.LESSONS)
       .select(`
         *,
-        sections:${TABLES.LESSON_SECTIONS}(count)
+        sections:${TABLES.LESSON_SECTIONS}(id)
       `)
       .order('id', { ascending: true });
 
@@ -35,7 +35,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
     if (!lessons) {
       return res.status(200).json({
         success: true,
-        data: []
+        data: [],
+        lessons: []
       });
     }
 
@@ -66,7 +67,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
     // Return filtered lessons
     return res.status(200).json({
       success: true,
-      data: processedLessons
+      data: processedLessons,
+      lessons: processedLessons
     });
   } catch (error) {
     console.error('Error fetching lessons:', error);

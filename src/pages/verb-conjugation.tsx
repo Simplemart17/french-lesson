@@ -202,8 +202,8 @@ export default function VerbConjugationPage() {
     : null;
   
   const handleExerciseComplete = (score: number) => {
-    // In a real app, this would save progress to the user's profile
-    console.log(`Exercise completed with score: ${score}%`);
+    // In a real app, this would save progress to the user's profile.
+    void score;
     
     // After a short delay, select a new exercise
     setTimeout(() => {

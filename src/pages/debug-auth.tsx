@@ -21,13 +21,12 @@ export default function DebugAuthPage() {
     // Check Supabase session
     const checkSupabaseSession = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         setSupabaseSession(session);
 
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
         setSupabaseUser(user);
 
-        console.log('Supabase session check:', { session, user, sessionError, userError });
       } catch (error) {
         console.error('Error checking Supabase session:', error);
       }
@@ -54,6 +53,10 @@ export default function DebugAuthPage() {
       console.error('Logout failed:', err);
     }
   };
+
+  if (process.env.NODE_ENV === 'production') {
+    return <div className="p-8 text-center text-gray-500">Not available in production.</div>;
+  }
 
   return (
     <>

@@ -40,10 +40,10 @@ interface ResourceItem {
   id: string;
   title: string;
   description: string;
-  type: 'lesson' | 'exercise' | 'article';
+  type: 'lesson' | 'exercise' | 'video' | 'article';
   level: string;
   imageUrl?: string;
-  link: string;
+  link?: string;
 }
 
 export default function ProfilePage() {
@@ -87,9 +87,9 @@ export default function ProfilePage() {
             email: userData.email,
             level: (userData.level as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
             learningGoals: userData.learningGoals || [],
-            interests: ['Culture', 'Food & Cuisine', 'Travel', 'Movies & TV'], // Default interests until we have an API
-            studyTime: '30min-1hour', // Default value
-            targetExam: 'tcf' // Default value
+            interests: userData.interests || [],
+            studyTime: (userData.studyTime as UserProfileData['studyTime']) || 'less-than-30min',
+            targetExam: (userData.targetExam as UserProfileData['targetExam']) || 'none'
           });
         } else {
           setError('Failed to load user profile data');
@@ -108,6 +108,8 @@ export default function ProfilePage() {
   // Fetch language skills from API
   useEffect(() => {
     const fetchLanguageSkills = async () => {
+      if (!isAuthenticated) return;
+
       try {
         const response = await apiClient.get<ApiResponse<LanguageSkill[]>>('/user/skills');
 
@@ -120,19 +122,35 @@ export default function ProfilePage() {
     };
 
     fetchLanguageSkills();
-  }, []);
+  }, [isAuthenticated]);
 
   // Fetch resources from API
   useEffect(() => {
     const fetchRecommendedResources = async () => {
-      try {
-        const response = await apiClient.get<ApiResponse<{resources: ResourceItem[]}>>('/learning/recommended-resources');
+      if (!isAuthenticated) return;
 
-        if (response.data && response.data.success && response.data.data && response.data.data.resources) {
-          setResources(response.data.data.resources);
-        } else {
-          // No fallback needed as we'll handle empty state in the UI
-          console.log('No recommended resources available');
+      try {
+        const response = await apiClient.get<ApiResponse<Array<{
+          id: string;
+          title: string;
+          description: string;
+          type: 'lesson' | 'exercise' | 'video' | 'article';
+          level: string;
+          url?: string;
+          thumbnail?: string;
+        }>>>('/learning/recommended-resources');
+
+        if (response.data && response.data.success && Array.isArray(response.data.data)) {
+          const normalized = response.data.data.map((resource) => ({
+            id: resource.id,
+            title: resource.title,
+            description: resource.description,
+            type: resource.type,
+            level: resource.level,
+            imageUrl: resource.thumbnail,
+            link: resource.url
+          }));
+          setResources(normalized);
         }
       } catch (err) {
         console.error('Error fetching recommended resources:', err);
@@ -140,7 +158,7 @@ export default function ProfilePage() {
     };
 
     fetchRecommendedResources();
-  }, []);
+  }, [isAuthenticated]);
 
   // Handle profile save
   const handleProfileSave = async (data: UserProfileData) => {
@@ -150,7 +168,10 @@ export default function ProfilePage() {
         name: data.name,
         email: data.email,
         level: data.level,
-        learningGoals: data.learningGoals
+        learningGoals: data.learningGoals,
+        interests: data.interests,
+        studyTime: data.studyTime,
+        targetExam: data.targetExam
       });
 
       if (response.data && response.data.success && response.data.data) {

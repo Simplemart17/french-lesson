@@ -100,7 +100,6 @@ export default function ExamModulePage() {
     try {
       // Save the results to the database
       await examService.submitExamResults(results);
-      console.log('Exam results saved successfully');
     } catch (err) {
       console.error('Error saving exam results:', err);
       // We don't show an error to the user here as they've already completed the exam

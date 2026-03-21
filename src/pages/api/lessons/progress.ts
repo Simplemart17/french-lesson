@@ -2,14 +2,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonProgress } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { getUserId } from '@/utils/auth';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<LessonProgress | LessonProgress[]>>) {
+  const db = supabaseAdmin ?? supabase;
+
   // Handle GET request
   if (req.method === 'GET') {
     try {
       // Get user ID from authenticated user
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
 
       if (!userId) {
         return res.status(401).json({
@@ -20,18 +22,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
 
       // Get lessonId from query if provided
       const { lessonId } = req.query;
-      const lessonIdNum = lessonId ? parseInt(lessonId as string, 10) : undefined;
 
       // Get progress from database
-      let supabaseQuery = supabase
+      let supabaseQuery = db
         .from(TABLES.LESSON_PROGRESS)
         .select('*')
         .eq('user_id', userId)
         .order('lesson_id', { ascending: true });
 
       // Add lessonId filter if provided
-      if (lessonIdNum && !isNaN(lessonIdNum)) {
-        supabaseQuery = supabaseQuery.eq('lessonId', lessonIdNum.toString());
+      if (lessonId) {
+        supabaseQuery = supabaseQuery.eq('lesson_id', lessonId as string);
       }
 
       const { data: progress, error } = await supabaseQuery;
@@ -45,30 +46,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Format the data for the response
-      interface DatabaseProgress {
+      type DBLessonProgress = {
         id: string;
-        userId: string;
-        lessonId: string;
+        user_id: string;
+        lesson_id: string;
         completed: boolean;
         score: number;
-        startedAt: string;
-        completedAt: string | null;
-        answers: Record<string, unknown>;
-      }
-      const formattedProgress = (progress || []).map((item: DatabaseProgress) => ({
+        started_at: string;
+        completed_at?: string | null;
+        answers?: Record<string, string | string[]> | undefined;
+      };
+
+      const formattedProgress = (progress || []).map((item: DBLessonProgress) => ({
         id: item.id,
-        userId: item.userId,
-        lessonId: item.lessonId,
+        userId: item.user_id,
+        lessonId: item.lesson_id,
         completed: item.completed,
         score: item.score,
-        startedAt: item.startedAt,
-        completedAt: item.completedAt || null,
-        answers: item.answers as Record<number, string | string[]> | undefined
+        startedAt: item.started_at,
+        completedAt: item.completed_at || null,
+        answers: item.answers
       }));
 
       return res.status(200).json({
         success: true,
-        data: formattedProgress
+        data: formattedProgress,
+        progress: formattedProgress
       });
     } catch (error) {
       console.error('Error fetching lesson progress:', error);
@@ -106,7 +109,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Get user ID from authenticated user
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
 
       if (!userId) {
         return res.status(401).json({
@@ -116,9 +119,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Check if lesson exists
-      const { data: lesson, error: lessonError } = await supabase
+      const { data: lesson, error: lessonError } = await db
         .from(TABLES.LESSONS)
-        .select('*')
+        .select('id')
         .eq('id', lessonId)
         .single();
 
@@ -134,19 +137,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
 
       // Update or create progress (Supabase upsert)
       const progressData = {
-        userId,
-        lessonId,
+        user_id: userId,
+        lesson_id: lessonId,
         completed,
         score,
-        startedAt: now.toISOString(),
-        completedAt: completed ? now.toISOString() : null,
+        started_at: now.toISOString(),
+        completed_at: completed ? now.toISOString() : null,
         answers: answers || null
       };
 
-      const { data: updatedProgress, error: upsertError } = await supabase
+      const { data: updatedProgress, error: upsertError } = await db
         .from(TABLES.LESSON_PROGRESS)
         .upsert(progressData, {
-          onConflict: 'userId,lessonId'
+          onConflict: 'user_id,lesson_id'
         })
         .select()
         .single();
@@ -162,18 +165,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       // Format the data for the response
       const formattedProgress: LessonProgress = {
         id: updatedProgress.id,
-        userId: updatedProgress.userId,
-        lessonId: updatedProgress.lessonId,
+        userId: updatedProgress.user_id,
+        lessonId: updatedProgress.lesson_id,
         completed: updatedProgress.completed,
         score: updatedProgress.score,
-        startedAt: updatedProgress.startedAt,
-        completedAt: updatedProgress.completedAt || null,
+        startedAt: updatedProgress.started_at,
+        completedAt: updatedProgress.completed_at || null,
         answers: updatedProgress.answers as Record<string, string | string[]> | undefined
       };
 
       return res.status(200).json({
         success: true,
-        data: formattedProgress
+        data: formattedProgress,
+        progress: formattedProgress
       });
     } catch (error) {
       console.error('Error updating lesson progress:', error);

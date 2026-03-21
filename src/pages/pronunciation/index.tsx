@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -45,11 +46,12 @@ export default function PronunciationPage() {
   }, []);
 
   const handleResultUpdate = (result: PronunciationResult) => {
-    // We can log the result or implement result tracking in the future
-    console.log('Pronunciation result:', result);
+    // Placeholder for result tracking integration.
+    void result;
   };
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-gray-50">
       <Head>
         <title>French Pronunciation Practice</title>
@@ -168,5 +170,6 @@ export default function PronunciationPage() {
         )}
       </main>
     </div>
+    </ProtectedRoute>
   );
 }

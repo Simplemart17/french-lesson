@@ -8,7 +8,7 @@ export default async function handler(
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      data: { error: "Method not allowed" }
+      error: { message: "Method not allowed" }
     });
   }
 
@@ -18,7 +18,7 @@ export default async function handler(
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        data: { error: "Email and password are required" }
+        error: { message: "Email and password are required" }
       });
     }
 
@@ -28,7 +28,7 @@ export default async function handler(
     if (authResult.error || !authResult.user || !authResult.session) {
       return res.status(401).json({
         success: false,
-        data: { error: authResult.error || "Invalid credentials" }
+        error: { message: authResult.error || "Invalid credentials" }
       });
     }
 
@@ -46,7 +46,7 @@ export default async function handler(
     console.error("Login error:", error);
     return res.status(500).json({
       success: false,
-      data: { error: "Internal server error" }
+      error: { message: "Internal server error" }
     });
   }
 }

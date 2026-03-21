@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import ConversationPractice from '@/components/features/ConversationPractice';
@@ -145,17 +146,12 @@ export default function ConversationPage() {
     : conversationScenarios.filter(scenario => scenario.difficulty === selectedDifficulty);
   
   const handleScenarioComplete = (messages: Array<{ role: string; content: string; timestamp: Date }>) => {
-    // Convert timestamps to strings for API compatibility
-    const messagesWithStringTimestamps = messages.map(msg => ({
-      ...msg,
-      timestamp: msg.timestamp.toISOString()
-    }));
-    console.log('Conversation completed with messages:', messagesWithStringTimestamps);
-    // In a real app, this would save the conversation history and update user progress
+    // In a real app, this would save the conversation history and update user progress.
+    void messages;
   };
   
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Conversation Practice | French Tutor AI</title>
         <meta name="description" content="Practice French conversation with interactive scenarios" />
@@ -332,6 +328,6 @@ export default function ConversationPage() {
           </>
         )}
       </div>
-    </>
+    </ProtectedRoute>
   );
 }
