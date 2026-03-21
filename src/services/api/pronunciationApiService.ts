@@ -1,6 +1,6 @@
 import apiClient, { ApiResponse } from './apiClient';
 import { API_ENDPOINTS } from './apiConfig';
-import { getAuthToken } from '@/utils/authCookies';
+import { supabase } from '@/lib/supabase';
 
 // Define interfaces for pronunciation data
 export interface PronunciationExercise {
@@ -151,9 +151,9 @@ export const pronunciationApiService = {
    */
   analyzePronunciation: async (audioBlob: Blob, text: string): Promise<PronunciationResponse> => {
     try {
-      const token = getAuthToken();
+      const { data: { session } } = await supabase.auth.getSession();
 
-      if (!token) {
+      if (!session?.access_token) {
         return {
           success: false,
           error: {
@@ -169,7 +169,7 @@ export const pronunciationApiService = {
       const response = await fetch('/api/ai/pronunciation-analysis', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: formData,
       });

@@ -1,29 +1,10 @@
 /**
  * Simplified Authentication Storage
- * Uses localStorage only for simplicity and reliability
+ * Uses localStorage for user data caching only.
+ * Token management is handled by Supabase directly — apiClient reads from supabase.auth.getSession().
  */
 
-const TOKEN_KEY = 'supabase_auth_token';
 const USER_KEY = 'supabase_user_data';
-
-/**
- * Set authentication token
- */
-export const setAuthToken = (token: string): void => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(TOKEN_KEY, token);
-  }
-};
-
-/**
- * Get authentication token
- */
-export const getAuthToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-  return null;
-};
 
 /**
  * Define the user data type
@@ -71,14 +52,16 @@ export const getUserData = (): UserData | null => {
  */
 export const clearAuthCookies = (): void => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-  }
-};
 
-/**
- * Check if user is authenticated
- */
-export const isAuthenticated = (): boolean => {
-  return !!getAuthToken();
+    // Clear all Supabase internal session keys
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('sb-') || key.startsWith('supabase'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+  }
 };
