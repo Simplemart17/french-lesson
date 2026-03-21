@@ -1,10 +1,11 @@
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import WritingCorrection from '@/components/features/WritingCorrection';
 import { Card } from '@/components/ui/Card';
 
 export default function WritingPage() {
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Writing Practice | French Tutor AI</title>
         <meta name="description" content="Practice your French writing skills with AI-powered corrections" />
@@ -37,6 +38,6 @@ export default function WritingPage() {
           <WritingCorrection />
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

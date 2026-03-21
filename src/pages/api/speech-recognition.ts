@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
+import { authMiddleware } from '@/utils/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -112,3 +113,5 @@ User transcript: "${transcript}"`
     }
   }
 }
+
+export default authMiddleware(handler);

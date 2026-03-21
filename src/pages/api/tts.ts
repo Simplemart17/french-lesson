@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 // Define allowed voices
 const ALLOWED_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Allow GET (query params) and POST (JSON body) for compatibility with existing audio URLs.
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({
@@ -94,3 +94,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 }
+
+export default handler;
