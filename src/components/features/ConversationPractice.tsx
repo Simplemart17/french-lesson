@@ -95,6 +95,8 @@ const ConversationPractice = ({
 
   const speakText = useCallback((text: string) => {
     if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech first
+      speechSynthesis.cancel();
       setIsSpeaking(true);
 
       const utterance = new SpeechSynthesisUtterance(text);
@@ -109,7 +111,28 @@ const ConversationPractice = ({
         setIsSpeaking(false);
       };
 
-      speechSynthesis.speak(utterance);
+      // Safety timeout: if speech doesn't end in 15 seconds, force reset
+      const timeout = setTimeout(() => {
+        setIsSpeaking(false);
+        speechSynthesis.cancel();
+      }, 15000);
+
+      utterance.onend = () => {
+        clearTimeout(timeout);
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = () => {
+        clearTimeout(timeout);
+        setIsSpeaking(false);
+      };
+
+      try {
+        speechSynthesis.speak(utterance);
+      } catch {
+        clearTimeout(timeout);
+        setIsSpeaking(false);
+      }
     }
   }, [language]);
 
@@ -452,12 +475,12 @@ const ConversationPractice = ({
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Type your message in French..."
                     className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    disabled={isListening || isSpeaking || isTyping}
+                    disabled={isListening || isTyping}
                   />
                   <button
                     type="submit"
                     className="absolute text-gray-500 transform -translate-y-1/2 right-2 top-1/2 hover:text-primary-600"
-                    disabled={!inputText.trim() || isListening || isSpeaking || isTyping}
+                    disabled={!inputText.trim() || isListening || isTyping}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import aiService from '@/services/aiService';
+import apiClient from '@/services/api/apiClient';
+import { useAuth } from '@/context/AuthContext';
 
 interface Message {
   id: string;
@@ -22,6 +24,7 @@ interface AIChatProps {
   topic?: string;
   enableCorrections?: boolean;
   enableVocabSuggestions?: boolean;
+  existingConversationId?: string;
 }
 
 const AIChat = ({
@@ -29,27 +32,81 @@ const AIChat = ({
   language = 'fr',
   topic = 'general',
   enableCorrections = true,
-  enableVocabSuggestions = true
+  enableVocabSuggestions = true,
+  existingConversationId
 }: AIChatProps) => {
   void language;
+
+  const { user } = useAuth();
+
+  // Map CEFR level to beginner/intermediate/advanced
+  const mapCefrToLevel = (level?: string): 'beginner' | 'intermediate' | 'advanced' => {
+    if (!level) return 'beginner';
+    const l = level.toUpperCase();
+    if (l === 'A1' || l === 'A2' || l === 'beginner') return 'beginner';
+    if (l === 'B1' || l === 'B2' || l === 'intermediate') return 'intermediate';
+    if (l === 'C1' || l === 'C2' || l === 'advanced') return 'advanced';
+    return 'beginner';
+  };
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
-  const [userLevel, setUserLevel] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
+  const [conversationId, setConversationId] = useState<string | undefined>(existingConversationId);
+  const [userLevel, setUserLevel] = useState<'beginner' | 'intermediate' | 'advanced'>(mapCefrToLevel(user?.level));
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Update level when user profile changes
   useEffect(() => {
-    const initialMsg: Message = {
-      id: Date.now().toString(),
-      role: 'assistant',
-      content: initialMessage,
-      timestamp: new Date()
-    };
+    if (user?.level) {
+      setUserLevel(mapCefrToLevel(user.level));
+    }
+  }, [user?.level]);
 
-    setMessages([initialMsg]);
-  }, [initialMessage]);
+  useEffect(() => {
+    // If an existing conversation ID is provided, load its history
+    if (existingConversationId) {
+      apiClient.get<{ messages?: Array<{ id: string; role: 'user' | 'assistant'; content: string; createdAt: string }> }>(`/conversation/${existingConversationId}`)
+        .then((response) => {
+          const data = response.data;
+          if (data?.messages && data.messages.length > 0) {
+            const loadedMessages: Message[] = data.messages.map((msg) => ({
+              id: msg.id,
+              role: msg.role,
+              content: msg.content,
+              timestamp: new Date(msg.createdAt)
+            }));
+            setMessages(loadedMessages);
+            setConversationId(existingConversationId);
+            return;
+          }
+          // Fallback to initial message if no messages found
+          setMessages([{
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: initialMessage,
+            timestamp: new Date()
+          }]);
+        })
+        .catch((err) => {
+          console.error('Failed to load conversation history:', err);
+          setMessages([{
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: initialMessage,
+            timestamp: new Date()
+          }]);
+        });
+    } else {
+      const initialMsg: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: initialMessage,
+        timestamp: new Date()
+      };
+      setMessages([initialMsg]);
+    }
+  }, [initialMessage, existingConversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,10 +148,11 @@ const AIChat = ({
     setIsTyping(true);
 
     try {
-      const detectedLevel = detectUserLevel(userInput);
-      setUserLevel(detectedLevel);
+      // Use profile level if available, otherwise detect from text
+      const effectiveLevel = user?.level ? mapCefrToLevel(user.level) : detectUserLevel(userInput);
+      setUserLevel(effectiveLevel);
 
-      const tutor = await aiService.tutorChat(userInput, conversationId, detectedLevel);
+      const tutor = await aiService.tutorChat(userInput, conversationId, effectiveLevel);
       if (tutor.conversationId && tutor.conversationId !== conversationId) {
         setConversationId(tutor.conversationId);
       }
