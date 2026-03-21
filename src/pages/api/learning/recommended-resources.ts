@@ -97,6 +97,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         description: lesson.description,
         level: lesson.level,
         duration: lesson.duration,
+        url: `/lessons/${lesson.id}`,
         thumbnail: lesson.thumbnail,
       })),
       ...(grammarRules || []).map((rule) => ({
@@ -105,6 +106,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         type: "exercise" as const,
         description: rule.description,
         level: rule.level,
+        url: `/grammar`,
       })),
     ];
 

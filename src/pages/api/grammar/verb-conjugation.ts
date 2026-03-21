@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { supabase, TABLES } from '@/lib/supabase';
+import { authMiddleware } from '@/utils/authMiddleware';
 
 interface VerbConjugationExercise {
   id: string;
@@ -119,7 +120,7 @@ function toExercise(rule: GrammarRuleRow): VerbConjugationExercise {
   };
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<unknown>>
 ) {
@@ -265,3 +266,5 @@ export default async function handler(
     error: { message: 'Method not allowed' }
   });
 }
+
+export default authMiddleware(handler);

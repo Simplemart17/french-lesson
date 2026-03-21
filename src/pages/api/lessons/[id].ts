@@ -5,7 +5,7 @@ import { supabase, TABLES } from "@/lib/supabase";
 
 interface LessonExerciseRow {
   id: string;
-  section_id: string;
+  session_id: string;
   type: string;
   question: string;
   options: string[] | null;
@@ -71,15 +71,15 @@ async function handler(
       // Get user ID if authenticated
       const userId = (req as { user?: { id: string } }).user?.id;
 
-      // Note: We're retrieving the user's progress but not using it in the response yet
-      // This could be used in the future to customize the response based on user progress
+      let userProgress: { completed: boolean; score: number | null; completed_at: string | null } | null = null;
       if (userId) {
-        await supabase
+        const { data: progressData } = await supabase
           .from(TABLES.LESSON_PROGRESS)
-          .select("*")
+          .select("completed, score, completed_at")
           .eq("user_id", userId)
           .eq("lesson_id", lessonId)
           .single();
+        userProgress = progressData;
       }
 
       // Format the response
@@ -125,7 +125,7 @@ async function handler(
             exercises: (section.exercises || []).map(
               (exercise: LessonExerciseRow) => ({
                 id: exercise.id,
-                sectionId: exercise.section_id,
+                sectionId: exercise.session_id,
                 type: exercise.type,
                 question: exercise.question,
                 options: exercise.options || undefined,
@@ -139,7 +139,8 @@ async function handler(
       return res.status(200).json({
         success: true,
         data: formattedLesson,
-        lesson: formattedLesson
+        lesson: formattedLesson,
+        userProgress: userProgress || undefined
       });
     } catch (error) {
       console.error("Error fetching lesson:", error);

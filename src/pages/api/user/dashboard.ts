@@ -19,6 +19,13 @@ interface UserVocabularyRow {
   vocabulary?: { french?: string };
 }
 
+interface PracticeSessionRow {
+  id: string;
+  type: string;
+  score: number | null;
+  created_at: string;
+}
+
 interface DashboardData {
   user: {
     name: string;
@@ -35,7 +42,7 @@ interface DashboardData {
   };
   recentActivities: Array<{
     id: string;
-    type: 'lesson' | 'vocabulary' | 'pronunciation' | 'conversation';
+    type: 'lesson' | 'vocabulary' | 'pronunciation' | 'conversation' | 'chat' | 'grammar' | 'listening';
     title: string;
     description: string;
     timestamp: string;
@@ -55,6 +62,7 @@ interface DashboardData {
     currentStreak: number;
     totalPoints: number;
   };
+  warnings?: string[];
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -64,6 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     const db = supabaseAdmin ?? supabase;
+    const warnings: string[] = [];
     const userId = await getUserId(req);
     if (!userId) {
       return res.status(401).json({
@@ -71,7 +80,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         error: { message: 'User not authenticated' }
       });
     }
-    
+
     const { data: user, error: userError } = await getOrCreateUserProfile(userId);
     if (userError || !user) {
       return res.status(500).json({
@@ -93,6 +102,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (progressError) {
       console.error('Error fetching lesson progress:', progressError);
+      warnings.push('Lesson progress data may be incomplete');
     }
 
     // Get vocabulary progress
@@ -109,6 +119,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (vocabError) {
       console.error('Error fetching vocabulary progress:', vocabError);
+      warnings.push('Vocabulary progress data may be incomplete');
     }
 
     // Calculate daily progress (simplified - you might want to track actual study time)
@@ -126,6 +137,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (todayError) {
       console.error('Error fetching today progress:', todayError);
+      warnings.push('Daily progress data may be incomplete');
     }
 
     const minutesStudiedToday = ((todayProgress || []) as LessonProgressRow[]).reduce((total, progress) => {
@@ -139,9 +151,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (countError) {
       console.error('Error fetching lesson count:', countError);
+      warnings.push('Total lesson count may be inaccurate');
     }
 
-    // Build recent activities
+    // Fetch practice sessions for recent activities
+    const { data: practiceSessions, error: practiceError } = await db
+      .from(TABLES.PRACTICE_SESSIONS)
+      .select('id, type, score, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (practiceError) {
+      console.error('Error fetching practice sessions:', practiceError);
+      warnings.push('Practice session data may be incomplete');
+    }
+
+    const activityTypeLabels: Record<string, string> = {
+      chat: 'AI Tutor Chat',
+      conversation: 'Conversation Practice',
+      grammar: 'Grammar Check',
+      pronunciation: 'Pronunciation Practice',
+      listening: 'Listening Exercise',
+      vocabulary: 'Vocabulary Practice'
+    };
+
+    // Build recent activities from all sources
     const recentActivities = [
       ...((lessonProgress || []) as LessonProgressRow[]).slice(0, 5).map((progress) => ({
         id: `lesson-${progress.id}`,
@@ -157,6 +192,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         title: `Learned new word: ${vocab.vocabulary?.french || 'Unknown Word'}`,
         description: 'Added to vocabulary',
         timestamp: vocab.last_practiced || new Date().toISOString()
+      })),
+      ...((practiceSessions || []) as PracticeSessionRow[]).map((session) => ({
+        id: `practice-${session.id}`,
+        type: (session.type || 'conversation') as 'conversation' | 'chat' | 'grammar' | 'pronunciation' | 'listening',
+        title: activityTypeLabels[session.type] || 'Practice Session',
+        description: session.score != null ? `Score: ${session.score}%` : 'Completed',
+        timestamp: session.created_at,
+        score: session.score || undefined
       }))
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
@@ -184,6 +227,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (nextLessonError) {
       console.error('Error fetching next lesson:', nextLessonError);
+      warnings.push('Lesson recommendations may be incomplete');
     }
 
     const nextLesson = nextLessons?.[0];
@@ -207,6 +251,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (vocabReviewError) {
       console.error('Error fetching vocabulary to review:', vocabReviewError);
+      warnings.push('Vocabulary review recommendations may be incomplete');
     }
 
     if ((vocabularyToReview || 0) > 0) {
@@ -250,13 +295,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         vocabularyLearned: (vocabularyProgress || []).length,
         currentStreak: user.streak_days,
         totalPoints: user.points
-      }
+      },
+      ...(warnings.length > 0 ? { warnings } : {})
     };
 
     return res.status(200).json({
       success: true,
       data: dashboardData,
-      dashboard: dashboardData
+      dashboard: dashboardData,
+      ...(warnings.length > 0 ? { warnings } : {})
     });
 
   } catch (error) {

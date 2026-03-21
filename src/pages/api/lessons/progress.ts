@@ -2,9 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse, LessonProgress } from '@/types/api';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { getUserId } from '@/utils/auth';
-import { supabase, TABLES } from '@/lib/supabase';
+import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<LessonProgress | LessonProgress[]>>) {
+  const db = supabaseAdmin ?? supabase;
+
   // Handle GET request
   if (req.method === 'GET') {
     try {
@@ -22,7 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       const { lessonId } = req.query;
 
       // Get progress from database
-      let supabaseQuery = supabase
+      let supabaseQuery = db
         .from(TABLES.LESSON_PROGRESS)
         .select('*')
         .eq('user_id', userId)
@@ -117,7 +119,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
       }
 
       // Check if lesson exists
-      const { data: lesson, error: lessonError } = await supabase
+      const { data: lesson, error: lessonError } = await db
         .from(TABLES.LESSONS)
         .select('id')
         .eq('id', lessonId)
@@ -144,7 +146,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse<Les
         answers: answers || null
       };
 
-      const { data: updatedProgress, error: upsertError } = await supabase
+      const { data: updatedProgress, error: upsertError } = await db
         .from(TABLES.LESSON_PROGRESS)
         .upsert(progressData, {
           onConflict: 'user_id,lesson_id'

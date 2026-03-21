@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { supabase, TABLES } from '@/lib/supabase';
+import { authMiddleware } from '@/utils/authMiddleware';
 
 interface GrammarExercise {
   id: number;
@@ -56,7 +57,7 @@ function toExercise(rule: GrammarRuleRow, idx: number): GrammarExercise {
   };
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse<GrammarExercise>>
 ) {
@@ -117,3 +118,5 @@ export default async function handler(
     });
   }
 }
+
+export default authMiddleware(handler);
