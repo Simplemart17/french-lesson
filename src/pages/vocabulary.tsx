@@ -1,8 +1,9 @@
 import Head from 'next/head';
 import { useState, useEffect, useCallback } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
-import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import { VocabularySkeleton } from '@/components/ui/Skeleton';
 import SpacedRepetition, { VocabularyWord } from '@/components/features/SpacedRepetition';
 import VocabularyQuiz, { QuizResult } from '@/components/features/VocabularyQuiz';
 import vocabularyService from '@/services/vocabularyService';
@@ -224,7 +225,7 @@ export default function VocabularyPage() {
   };
 
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Vocabulary Trainer | French Tutor AI</title>
         <meta name="description" content="Learn and practice French vocabulary with flashcards and quizzes" />
@@ -260,9 +261,7 @@ export default function VocabularyPage() {
 
         {/* Loading and Error States */}
         {isLoading && (
-          <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
-            <LoadingState message="Loading vocabulary..." size="medium" />
-          </div>
+          <VocabularySkeleton />
         )}
 
         {error && !isLoading && (
@@ -472,9 +471,7 @@ export default function VocabularyPage() {
         {studyMode === 'flashcards' && (
           <div className="mb-12">
             {isLoading ? (
-              <div className="p-6 bg-white rounded-lg shadow-lg">
-                <LoadingState message="Loading flashcards..." size="medium" />
-              </div>
+              <VocabularySkeleton />
             ) : filteredVocabulary.length > 0 ? (
               <div className="overflow-hidden bg-white rounded-lg shadow-lg">
                 <div className="p-6 text-center">
@@ -524,9 +521,7 @@ export default function VocabularyPage() {
         {studyMode === 'quiz' && (
           <div className="mb-12">
             {isLoading ? (
-              <div className="p-6 bg-white rounded-lg shadow-lg">
-                <LoadingState message="Loading quiz..." size="medium" />
-              </div>
+              <VocabularySkeleton />
             ) : filteredVocabulary.length >= 4 ? (
               <VocabularyQuiz
                 words={filteredVocabulary}
@@ -625,6 +620,6 @@ export default function VocabularyPage() {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

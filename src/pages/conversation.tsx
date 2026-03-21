@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import ConversationPractice from '@/components/features/ConversationPractice';
@@ -150,7 +151,7 @@ export default function ConversationPage() {
   };
   
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Conversation Practice | French Tutor AI</title>
         <meta name="description" content="Practice French conversation with interactive scenarios" />
@@ -327,6 +328,6 @@ export default function ConversationPage() {
           </>
         )}
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

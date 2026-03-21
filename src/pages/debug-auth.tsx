@@ -54,6 +54,10 @@ export default function DebugAuthPage() {
     }
   };
 
+  if (process.env.NODE_ENV === 'production') {
+    return <div className="p-8 text-center text-gray-500">Not available in production.</div>;
+  }
+
   return (
     <>
       <Head>
