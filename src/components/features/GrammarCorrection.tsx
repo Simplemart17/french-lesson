@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
+import aiService from '@/services/aiService';
 
 interface GrammarCorrectionProps {
   initialText?: string;
@@ -25,7 +26,7 @@ const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({
   const [showCorrected, setShowCorrected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check grammar
+  // Check grammar using AI service
   const checkGrammar = async () => {
     if (!text.trim()) {
       setError('Please enter some text to check.');
@@ -34,89 +35,29 @@ const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({
 
     setIsChecking(true);
     setError(null);
-    
+
     try {
-      // In a real app, this would call an API endpoint
-      // For now, we'll simulate some corrections
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate grammar checking with some common French errors
-      const simulatedCorrections: CorrectionResult[] = [];
-      
-      // Check for common errors
-      if (text.includes('je suis allé au France')) {
-        simulatedCorrections.push({
-          original: 'je suis allé au France',
-          corrected: 'je suis allé en France',
-          explanation: 'France is feminine, so use "en France" instead of "au France".',
-          severity: 'error'
-        });
-      }
-      
-      if (text.includes('j\'ai mangé un pomme')) {
-        simulatedCorrections.push({
-          original: 'j\'ai mangé un pomme',
-          corrected: 'j\'ai mangé une pomme',
-          explanation: '"Pomme" is feminine, so use "une pomme" instead of "un pomme".',
-          severity: 'error'
-        });
-      }
-      
-      if (text.includes('je suis fatigué') && text.toLowerCase().includes('je suis une femme')) {
-        simulatedCorrections.push({
-          original: 'je suis fatigué',
-          corrected: 'je suis fatiguée',
-          explanation: 'Add an "e" at the end of "fatigué" when a woman is speaking.',
-          severity: 'error'
-        });
-      }
-      
-      if (text.includes('j\'ai visité Paris hier soir')) {
-        simulatedCorrections.push({
-          original: 'j\'ai visité Paris hier soir',
-          corrected: 'j\'ai visité Paris hier soir',
-          explanation: 'This sentence is correct! Good job using the passé composé correctly.',
-          severity: 'suggestion'
-        });
-      }
-      
-      // If no specific errors found, add some general feedback
-      if (simulatedCorrections.length === 0) {
-        // Look for basic verb conjugation errors
-        if (text.includes('je va')) {
-          simulatedCorrections.push({
-            original: 'je va',
-            corrected: 'je vais',
-            explanation: 'The correct conjugation of "aller" with "je" is "je vais".',
-            severity: 'error'
-          });
-        }
-        
-        if (text.includes('tu as mangé') && !text.includes('?')) {
-          simulatedCorrections.push({
-            original: 'tu as mangé',
-            corrected: 'tu as mangé ?',
-            explanation: 'If this is a question, add a question mark at the end.',
-            severity: 'warning'
-          });
-        }
-      }
-      
-      // If still no corrections, provide a generic response
-      if (simulatedCorrections.length === 0) {
-        setError('No specific grammar issues found. For more detailed feedback, try adding more text or using more complex sentences.');
-      } else {
-        setCorrections(simulatedCorrections);
-        
-        // Create corrected text
+      const result = await aiService.checkWriting(text);
+
+      if (result.corrections && result.corrections.length > 0) {
+        const mappedCorrections: CorrectionResult[] = result.corrections.map(c => ({
+          original: c.original,
+          corrected: c.corrected,
+          explanation: c.explanation,
+          severity: 'error' as const
+        }));
+
+        setCorrections(mappedCorrections);
+
+        // Create corrected text by applying all corrections
         let newText = text;
-        simulatedCorrections.forEach(correction => {
-          if (correction.severity === 'error') {
-            newText = newText.replace(correction.original, correction.corrected);
-          }
+        mappedCorrections.forEach(correction => {
+          newText = newText.replace(correction.original, correction.corrected);
         });
-        
         setCorrectedText(newText);
+      } else {
+        setCorrections([]);
+        setError(result.feedback || 'No grammar issues found. Your text looks good!');
       }
     } catch (err) {
       console.error('Error checking grammar:', err);

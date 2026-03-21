@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/Button';
@@ -18,6 +18,7 @@ export interface LessonSection {
 }
 
 export interface Exercise {
+  id?: string;
   type: 'multiple-choice' | 'fill-in-blank' | 'matching' | 'translation' | 'reorder' | 'true-false';
   question: string;
   options?: string[];
@@ -61,13 +62,15 @@ interface InteractiveLessonProps {
   onComplete?: (score: number) => void;
   onSubmitAnswers?: (answers: Record<string, string | string[]>) => Promise<SubmissionResult | null>;
   initialProgress?: { completed: boolean; score: number } | null;
+  onContentGenerated?: () => void;
 }
 
 const InteractiveLesson = ({
   lesson,
   onComplete,
   onSubmitAnswers,
-  initialProgress
+  initialProgress,
+  onContentGenerated
 }: InteractiveLessonProps) => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -78,6 +81,92 @@ const InteractiveLesson = ({
   const [score, setScore] = useState(initialProgress?.score || 0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [, setSubmitting] = useState(false);
+
+  const [autoGenerationFailed, setAutoGenerationFailed] = useState(false);
+  const autoGenerationTriggered = useRef(false);
+
+  const hasNoSections = !lesson.sections || lesson.sections.length === 0;
+
+  // Auto-trigger content generation when lesson has no sections
+  useEffect(() => {
+    if (hasNoSections && !isGenerating && !autoGenerationTriggered.current && !autoGenerationFailed) {
+      autoGenerationTriggered.current = true;
+      const generateContent = async () => {
+        setIsGenerating(true);
+        try {
+          await apiClient.post('/lessons/generate-content', {
+            lessonId: lesson.id,
+          });
+          if (onContentGenerated) {
+            onContentGenerated();
+          } else {
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error('Error auto-generating content:', error);
+          setAutoGenerationFailed(true);
+        } finally {
+          setIsGenerating(false);
+        }
+      };
+      generateContent();
+    }
+  }, [hasNoSections, isGenerating, autoGenerationFailed, lesson.id, onContentGenerated]);
+
+  // Guard against empty sections array
+  if (hasNoSections) {
+    return (
+      <Card className="p-8 text-center">
+        {isGenerating ? (
+          <>
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
+            </div>
+            <h2 className="mb-4 text-xl font-semibold text-gray-800">Generating Lesson Content...</h2>
+            <p className="mb-2 text-gray-600">Please wait while we create the lesson content for you.</p>
+            <div className="w-full max-w-xs mx-auto mt-4">
+              <div className="h-2 overflow-hidden bg-gray-200 rounded-full">
+                <div className="h-full rounded-full bg-primary-500 animate-pulse" style={{ width: '60%' }}></div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="mb-4 text-xl font-semibold text-gray-800">No Sections Available</h2>
+            <p className="mb-6 text-gray-600">
+              {autoGenerationFailed
+                ? 'Automatic content generation failed. Please try again manually.'
+                : 'This lesson doesn\'t have any content yet.'}
+            </p>
+            <Button
+              onClick={async () => {
+                setIsGenerating(true);
+                setAutoGenerationFailed(false);
+                try {
+                  await apiClient.post('/lessons/generate-content', {
+                    lessonId: lesson.id,
+                  });
+                  if (onContentGenerated) {
+                    onContentGenerated();
+                  } else {
+                    window.location.reload();
+                  }
+                } catch (error) {
+                  console.error('Error generating content:', error);
+                  setAutoGenerationFailed(true);
+                } finally {
+                  setIsGenerating(false);
+                }
+              }}
+              disabled={isGenerating}
+            >
+              Generate Lesson Content
+            </Button>
+          </>
+        )}
+      </Card>
+    );
+  }
 
   const currentSection = lesson.sections[currentSectionIndex];
   const totalSections = lesson.sections.length;
@@ -120,7 +209,14 @@ const InteractiveLesson = ({
 
   const getCurrentExerciseId = (): string => {
     if (currentSection.type === 'practice' && currentSection.exercises && currentSection.exercises.length > 0) {
+      const exercise = currentSection.exercises[currentExerciseIndex];
+      if (exercise?.id) {
+        return exercise.id;
+      }
       return `${currentSection.id}-exercise-${currentExerciseIndex}`;
+    }
+    if (currentSection.exercise?.id) {
+      return currentSection.exercise.id;
     }
     return currentSection.id;
   };
