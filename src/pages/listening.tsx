@@ -10,6 +10,14 @@ import ListeningComprehension from '@/components/exercises/ListeningComprehensio
 import { useAuth } from '@/context/AuthContext';
 import { listeningService } from '@/services';
 
+/** Returns true when the value is a usable, non-empty key (not null/undefined/NaN/""). */
+function isValidId(id: unknown): id is string | number {
+  if (id == null) return false;
+  if (typeof id === 'number') return !Number.isNaN(id);
+  if (typeof id === 'string') return id !== '';
+  return false;
+}
+
 // NOTE: exerciseType initial state is set to 'dictation' below so exercises show immediately
 
 // Sample dictation exercises
@@ -225,9 +233,9 @@ export default function ListeningPage() {
           setListeningExercises([...fallbackDictation, ...fallbackComprehension]);
         } else {
           // Convert the exercises to match the expected interface
-          const convertedExercises = exercises.map(exercise => ({
+          const convertedExercises = exercises.map((exercise, idx) => ({
             ...exercise,
-            id: String(exercise.id),
+            id: isValidId(exercise.id) ? String(exercise.id) : `api-exercise-${idx}`,
             questions: exercise.questions?.map(q => ({
               id: q.id,
               text: q.text || '',
@@ -407,7 +415,7 @@ export default function ListeningPage() {
 
           <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
             {paginatedExercises.map((exercise, index) => (
-              <Card key={exercise.id ?? `exercise-${index}`} className="h-full transition-shadow hover:shadow-lg">
+              <Card key={isValidId(exercise.id) ? exercise.id : `exercise-${indexOfFirstExercise + index}`} className="h-full transition-shadow hover:shadow-lg">
                 <div className="flex flex-col h-full p-6">
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-xl font-semibold text-gray-800">{exercise.title}</h3>

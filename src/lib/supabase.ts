@@ -70,6 +70,9 @@ export type Database = {
           completed_lessons: number;
           last_active: string;
           daily_goal: number;
+          interests: string[];
+          study_time: string;
+          target_exam: string;
           notifications: boolean;
           theme: string;
           ai_correction_enabled: boolean;

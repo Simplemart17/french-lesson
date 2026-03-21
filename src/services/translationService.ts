@@ -6,6 +6,7 @@
  */
 
 import axios from 'axios';
+import apiClient from '@/services/api/apiClient';
 
 // Types
 export type LanguageCode = 'en' | 'fr' | 'auto';
@@ -64,7 +65,7 @@ export const translateText = async (
 
   // Use internal AI-powered translation
   try {
-    const response = await axios.post('/api/ai/translate', {
+    const response = await apiClient.post<{ success: boolean; data?: TranslationResult } & TranslationResult>('/ai/translate', {
       text,
       sourceLanguage,
       targetLanguage,
@@ -73,7 +74,7 @@ export const translateText = async (
     if (response.data.success && response.data.data) {
       return response.data.data;
     }
-    return response.data;
+    return response.data as TranslationResult;
   } catch (error: unknown) {
     console.error('AI translation error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Translation failed';

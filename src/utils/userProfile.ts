@@ -9,6 +9,9 @@ interface DbUserProfile {
   streak_days: number;
   joined_at: string;
   learning_goals: string[];
+  interests: string[];
+  study_time: string;
+  target_exam: string;
   completed_lessons: number;
   last_active: string;
   daily_goal: number;
@@ -71,6 +74,9 @@ export async function getOrCreateUserProfile(userId: string): Promise<UserProfil
       streak_days: 0,
       joined_at: now,
       learning_goals: [],
+      interests: [],
+      study_time: 'less-than-30min',
+      target_exam: 'none',
       completed_lessons: 0,
       last_active: now,
       daily_goal: 15,

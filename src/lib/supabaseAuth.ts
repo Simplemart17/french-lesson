@@ -32,6 +32,9 @@ export interface MapUser {
   streak_days: number;
   joined_at: string;
   learning_goals: string[];
+  interests: string[];
+  study_time: string;
+  target_exam: string;
   completed_lessons: number;
   last_active: string;
   daily_goal: number;
@@ -101,6 +104,9 @@ export const supabaseAuth = {
           streakDays: 0,
           joinedAt: new Date().toISOString(),
           learningGoals: [],
+          interests: [],
+          studyTime: 'less-than-30min',
+          targetExam: 'none',
           completedLessons: 0,
           lastActive: new Date().toISOString(),
           preferences: {
@@ -380,6 +386,9 @@ export const supabaseAuth = {
       streakDays: dbUser.streak_days,
       joinedAt: dbUser.joined_at,
       learningGoals: dbUser.learning_goals,
+      interests: dbUser.interests || [],
+      studyTime: dbUser.study_time || 'less-than-30min',
+      targetExam: dbUser.target_exam || 'none',
       completedLessons: dbUser.completed_lessons,
       lastActive: dbUser.last_active,
       preferences: {

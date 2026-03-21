@@ -10,6 +10,9 @@ export interface User {
   streakDays: number;
   joinedAt: string;
   learningGoals: string[];
+  interests: string[];
+  studyTime: string;
+  targetExam: string;
   completedLessons: number;
   lastActive: string;
   preferences: {

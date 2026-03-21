@@ -87,9 +87,9 @@ export default function ProfilePage() {
             email: userData.email,
             level: (userData.level as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
             learningGoals: userData.learningGoals || [],
-            interests: ['Culture', 'Food & Cuisine', 'Travel', 'Movies & TV'], // Default interests until we have an API
-            studyTime: '30min-1hour', // Default value
-            targetExam: 'tcf' // Default value
+            interests: userData.interests || [],
+            studyTime: (userData.studyTime as UserProfileData['studyTime']) || 'less-than-30min',
+            targetExam: (userData.targetExam as UserProfileData['targetExam']) || 'none'
           });
         } else {
           setError('Failed to load user profile data');
@@ -168,7 +168,10 @@ export default function ProfilePage() {
         name: data.name,
         email: data.email,
         level: data.level,
-        learningGoals: data.learningGoals
+        learningGoals: data.learningGoals,
+        interests: data.interests,
+        studyTime: data.studyTime,
+        targetExam: data.targetExam
       });
 
       if (response.data && response.data.success && response.data.data) {

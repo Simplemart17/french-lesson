@@ -42,7 +42,7 @@ export default function SettingsPage() {
     level: 'A1' as string
   });
 
-  // Hydrate profile from auth context
+  // Hydrate profile and preferences from auth context
   useEffect(() => {
     if (user) {
       const hydrated = {
@@ -52,6 +52,16 @@ export default function SettingsPage() {
       };
       setProfile(hydrated);
       setFormData(hydrated);
+
+      // Load saved preferences from user profile
+      if (user.preferences) {
+        setPreferences(prev => ({
+          ...prev,
+          dailyGoal: user.preferences.dailyGoal ?? prev.dailyGoal,
+          emailNotifications: user.preferences.notifications ?? prev.emailNotifications,
+          theme: user.preferences.theme ?? prev.theme,
+        }));
+      }
     }
   }, [user]);
 
