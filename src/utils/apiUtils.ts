@@ -75,5 +75,5 @@ export const getApiUrl = () => {
   // In production, use relative URLs since frontend and API are on the same origin.
   // Using NEXT_PUBLIC_VERCEL_URL causes CORS issues when the access domain differs
   // from the deployment URL (e.g., custom domains or preview URLs).
-  return '';
+  return '/api';
 };
