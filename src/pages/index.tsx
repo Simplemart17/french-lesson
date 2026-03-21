@@ -43,7 +43,7 @@ export default function Home() {
       <Head>
         <title>French Tutor AI</title>
         <meta name="description" content="Learn French with AI-powered tools" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </Head>
 
       {/* Hero Section with Background */}

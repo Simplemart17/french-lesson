@@ -109,6 +109,24 @@ export default function LoginPage() {
     }
   };
 
+  // Guard: show loading/redirect message instead of flashing the form
+  if (isAuthenticated && isInitialized && !isLoading) {
+    return (
+      <>
+        <Head>
+          <title>Login | French Tutor AI</title>
+          <meta name="description" content="Log in to your French Tutor AI account" />
+        </Head>
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-4 border-t-2 border-b-2 rounded-full animate-spin border-primary-600"></div>
+            <p className="text-gray-600">You are already logged in. Redirecting...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -206,8 +224,8 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full"
-              isLoading={isLoading || isSubmitting}
-              disabled={isLoading || isSubmitting}
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Logging in...' : 'Log In'}
             </Button>

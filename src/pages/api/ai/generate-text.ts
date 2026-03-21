@@ -8,23 +8,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const { prompt } = req.body;
+    const { prompt, max_tokens: requestedMaxTokens } = req.body;
 
     if (!prompt) {
-      return res.status(400).json({ 
-        success: false, 
-        error: { message: 'Prompt is required' } 
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Prompt is required' }
       });
     }
 
     const openai = getOpenAIClient();
+
+    // Allow callers to request higher token limits (e.g. lesson generation needs ~4000)
+    const maxTokens = Math.min(requestedMaxTokens || 4096, 8192);
 
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that generates text based on user prompts. The response should be in Markdown format."
+          content: "You are a helpful assistant that generates text based on user prompts. When asked to produce JSON, return ONLY valid JSON with no markdown fences or extra text."
         },
         {
           role: "user",
@@ -32,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       ],
       temperature: 0.7,
-      max_tokens: 1000
+      max_tokens: maxTokens
     });
 
     const text = response.choices[0].message.content || '';

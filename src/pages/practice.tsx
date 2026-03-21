@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useState, useEffect, useCallback } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import VoiceInput from '@/components/features/VoiceInput';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -45,7 +46,15 @@ export default function PracticePage() {
       });
 
       const allPhrases: PracticeExercise[] = [];
-      (response.data?.items || []).forEach((exercise: PronunciationExercise) => {
+      // apiClient wraps response as { data: responseBody }, and API returns { data: { items } }
+      // So items may be at response.data.items (typed) or response.data.data.items (runtime)
+      const responseData = response.data as unknown as Record<string, unknown>;
+      const exerciseList = (
+        (responseData?.data as Record<string, unknown>)?.items ||
+        (responseData as Record<string, unknown>)?.items ||
+        []
+      ) as PronunciationExercise[];
+      exerciseList.forEach((exercise: PronunciationExercise) => {
         exercise.phrases.forEach((phrase: PronunciationPhrase) => {
           allPhrases.push({
             id: phrase.id,
@@ -163,7 +172,7 @@ export default function PracticePage() {
   // Loading state
   if (isLoading) {
     return (
-      <>
+      <ProtectedRoute>
         <Head>
           <title>Speaking Practice | French Tutor AI</title>
           <meta name="description" content="Practice your French speaking skills with AI-powered feedback" />
@@ -175,14 +184,14 @@ export default function PracticePage() {
           </div>
           <LoadingState />
         </div>
-      </>
+      </ProtectedRoute>
     );
   }
 
   // Error state
   if (error || exercises.length === 0) {
     return (
-      <>
+      <ProtectedRoute>
         <Head>
           <title>Speaking Practice | French Tutor AI</title>
           <meta name="description" content="Practice your French speaking skills with AI-powered feedback" />
@@ -191,17 +200,17 @@ export default function PracticePage() {
           <div className="mb-8">
             <h1 className="mb-4 text-3xl font-bold text-gray-800">Speaking Practice</h1>
             <ErrorMessage
-              message={error || 'No pronunciation exercises available for this difficulty level.'} 
+              message={error || 'No pronunciation exercises available for this difficulty level.'}
               retry={fetchExercises}
             />
           </div>
         </div>
-      </>
+      </ProtectedRoute>
     );
   }
   
   return (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>Speaking Practice | French Tutor AI</title>
         <meta name="description" content="Practice your French speaking skills with AI-powered feedback" />
@@ -430,6 +439,6 @@ export default function PracticePage() {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }
