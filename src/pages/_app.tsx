@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Toaster } from 'sonner';
 import { prefetchCommonData, prefetchPageData } from '@/utils/prefetch';
+import { Analytics } from '@vercel/analytics/next';
 
 
 // AppContent component to use hooks inside the AuthProvider
@@ -78,6 +79,7 @@ export default function App(props: AppProps) {
     <AuthProvider>
       <ThemeProvider>
         <AppContent {...props} />
+        <Analytics />
       </ThemeProvider>
     </AuthProvider>
   );
