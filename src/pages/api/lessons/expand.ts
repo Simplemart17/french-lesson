@@ -2,9 +2,10 @@ import type { NextApiResponse } from 'next';
 import { getOpenAIClient, safeJSONParse } from '@/utils/openaiClient';
 import { authMiddleware } from '@/utils/authMiddleware';
 import { AuthenticatedRequest } from '@/types/api';
-import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getOrCreateUserProfile } from '@/utils/userProfile';
 import { isCefrLevel } from '@/lib/curriculum';
+import { checkRateLimit } from '@/utils/rateLimit';
 
 const MAX_LESSONS_PER_LEVEL = 40;
 const LESSONS_PER_EXPANSION = 6;
@@ -26,10 +27,27 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       return res.status(401).json({ success: false, error: { message: 'User not authenticated' } });
     }
 
+    // Curriculum expansion is a paid model call plus a privileged write
+    if (!checkRateLimit(`expand:${userId}`, 5, 60 * 60 * 1000)) {
+      return res.status(429).json({
+        success: false,
+        error: { message: 'You are expanding your curriculum very quickly — take a short break and try again.' }
+      });
+    }
+
+    // The lessons INSERT requires the service-role client (RLS allows public
+    // read only); fail explicitly instead of a confusing RLS 500
+    if (!supabaseAdmin) {
+      return res.status(503).json({
+        success: false,
+        error: { message: 'Curriculum expansion is not available: server is missing its service credentials.' }
+      });
+    }
+
     const { data: user } = await getOrCreateUserProfile(userId);
     const level = isCefrLevel(user?.level) ? user!.level : 'A1';
 
-    const db = supabaseAdmin ?? supabase;
+    const db = supabaseAdmin;
 
     const { data: lessonRows, error: lessonError } = await db
       .from(TABLES.LESSONS)

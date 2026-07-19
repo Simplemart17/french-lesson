@@ -6,6 +6,7 @@ import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
 import { getOrCreateUserProfile } from '@/utils/userProfile';
 import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
 import { isCefrLevel } from '@/lib/curriculum';
+import { checkRateLimit } from '@/utils/rateLimit';
 
 const DRILLABLE_AREAS = ['grammar', 'vocabulary', 'listening', 'conversation', 'pronunciation', 'reading', 'writing'];
 
@@ -30,6 +31,14 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: { message: 'Method not allowed' } });
+  }
+
+  // Each drill is a paid model call: bound per-user generation bursts
+  if (!checkRateLimit(`weak-points:${userId}`, 15, 60 * 60 * 1000)) {
+    return res.status(429).json({
+      success: false,
+      error: { message: 'You are generating drills very quickly — take a short break and try again.' }
+    });
   }
 
   try {

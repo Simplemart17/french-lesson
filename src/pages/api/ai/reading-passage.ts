@@ -4,6 +4,7 @@ import { authMiddleware } from '@/utils/authMiddleware';
 import { AuthenticatedRequest } from '@/types/api';
 import { getOrCreateUserProfile } from '@/utils/userProfile';
 import { isCefrLevel } from '@/lib/curriculum';
+import { checkRateLimit } from '@/utils/rateLimit';
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -14,6 +15,14 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ success: false, error: { message: 'User not authenticated' } });
+    }
+
+    // Each passage is a paid model call: bound per-user generation bursts
+    if (!checkRateLimit(`reading:${userId}`, 15, 60 * 60 * 1000)) {
+      return res.status(429).json({
+        success: false,
+        error: { message: 'You are generating passages very quickly — take a short break and try again.' }
+      });
     }
 
     const { topic } = req.body as { topic?: string };
