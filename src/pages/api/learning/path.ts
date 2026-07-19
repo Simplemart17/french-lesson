@@ -8,7 +8,9 @@ import {
   CHECKPOINT_TOPIC,
   LESSON_PASS_SCORE,
   LEVEL_COMPLETION_RATIO,
+  PRODUCTION_GATED_LEVELS,
   isCefrLevel,
+  levelAtLeast,
   nextLevelOf
 } from '@/lib/curriculum';
 
@@ -98,21 +100,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   const nextLevel = nextLevelOf(level);
 
   // From B1 upward, advancing also requires passing AI-assessed production
-  // skills (speaking and writing) — recognition-only checkpoints can't
-  // certify upper levels.
-  const productionRequired = ['B1', 'B2', 'C1'].includes(level);
+  // skills (speaking and writing) AT OR ABOVE the current level —
+  // recognition-only checkpoints can't certify upper levels, and a pass
+  // earned at a lower level must not satisfy a higher gate.
+  const productionRequired = (PRODUCTION_GATED_LEVELS as readonly string[]).includes(level);
   let speakingPassed = true;
   let writingPassed = true;
   if (productionRequired) {
     const { data: productionRows } = await db
       .from(TABLES.EXAM_RESULTS)
-      .select('module, percentage')
+      .select('module, percentage, level')
       .eq('user_id', userId)
       .in('module', ['speaking', 'writing'])
       .gte('percentage', CHECKPOINT_PASS_SCORE)
-      .limit(50);
+      .limit(100);
     const passedModules = new Set(
-      ((productionRows || []) as Array<{ module: string }>).map((row) => row.module)
+      ((productionRows || []) as Array<{ module: string; level: string | null }>)
+        .filter((row) => levelAtLeast(row.level, level))
+        .map((row) => row.module)
     );
     speakingPassed = passedModules.has('speaking');
     writingPassed = passedModules.has('writing');

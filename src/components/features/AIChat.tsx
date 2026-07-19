@@ -5,6 +5,7 @@ import aiService from '@/services/aiService';
 import apiClient from '@/services/api/apiClient';
 import assessmentApiService from '@/services/api/assessmentApiService';
 import { useAuth } from '@/context/AuthContext';
+import { useRecorder } from '@/hooks/useRecorder';
 
 interface Message {
   id: string;
@@ -55,13 +56,19 @@ const AIChat = ({
   const [isTyping, setIsTyping] = useState(false);
   const [conversationId, setConversationId] = useState<string | undefined>(existingConversationId);
   const [userLevel, setUserLevel] = useState<'beginner' | 'intermediate' | 'advanced'>(mapCefrToLevel(user?.level));
-  const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<BlobPart[]>([]);
   const playbackRef = useRef<HTMLAudioElement | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      playbackRef.current?.pause();
+    };
+  }, []);
 
   // Update level when user profile changes
   useEffect(() => {
@@ -217,53 +224,26 @@ const AIChat = ({
     generateResponse(text);
   };
 
-  // Voice input: record, transcribe with Whisper, then send as a normal message
-  const toggleRecording = async () => {
-    if (isRecording) {
-      mediaRecorderRef.current?.stop();
-      setIsRecording(false);
-      return;
-    }
-
-    if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) return;
-
+  // Voice input: record (leak-safe via useRecorder), transcribe with Whisper,
+  // then send as a normal message
+  const { isRecording, toggle: toggleRecording } = useRecorder(async (blob) => {
+    setIsTranscribing(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-      audioChunksRef.current = [];
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) audioChunksRef.current.push(event.data);
-      };
-
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
-        setIsTranscribing(true);
-        try {
-          const transcript = (await assessmentApiService.transcribe(blob))?.trim();
-          if (transcript) {
-            const userMessage: Message = {
-              id: Date.now().toString(),
-              role: 'user',
-              content: transcript,
-              timestamp: new Date()
-            };
-            setMessages((prev) => [...prev, userMessage]);
-            generateResponse(transcript);
-          }
-        } finally {
-          setIsTranscribing(false);
-        }
-      };
-
-      recorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error('Microphone access error:', err);
+      const transcript = (await assessmentApiService.transcribe(blob))?.trim();
+      if (transcript && mountedRef.current) {
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          role: 'user',
+          content: transcript,
+          timestamp: new Date()
+        };
+        setMessages((prev) => [...prev, userMessage]);
+        generateResponse(transcript);
+      }
+    } finally {
+      if (mountedRef.current) setIsTranscribing(false);
     }
-  };
+  });
 
   // Read an assistant reply aloud with the TTS voice
   const toggleSpeak = (message: Message) => {

@@ -262,6 +262,7 @@ export default function ExamPracticePage() {
   const [speakingRecordings, setSpeakingRecordings] = useState<Record<string, Blob>>({});
   const [assessments, setAssessments] = useState<Record<string, WritingAssessment | SpeakingAssessment>>({});
   const [isAssessing, setIsAssessing] = useState(false);
+  const [assessmentError, setAssessmentError] = useState<string | null>(null);
   const [sampleRecording, setSampleRecording] = useState<Blob | null>(null);
   const [sampleAssessment, setSampleAssessment] = useState<SpeakingAssessment | null>(null);
   const [isAssessingSample, setIsAssessingSample] = useState(false);
@@ -356,6 +357,7 @@ export default function ExamPracticePage() {
     setShowModuleResults(false);
     setSpeakingRecordings({});
     setAssessments({});
+    setAssessmentError(null);
     // Guard against non-numeric duration: NaN would freeze the countdown
     setTimeLeft(Number.isFinite(mod.duration) && mod.duration > 0 ? mod.duration * 60 : null);
   };
@@ -371,28 +373,78 @@ export default function ExamPracticePage() {
     return { correct, total: mcQuestions.length };
   };
 
-  const handleSubmitModule = async () => {
-    if (!selectedModule || showModuleResults) return;
-    setShowModuleResults(true);
-
-    const level = levelForDifficulty(selectedModule.difficulty);
+  const persistResult = (score: number) => {
+    if (!selectedModule) return;
     const elapsed = timeLeft !== null
       ? Math.max(0, selectedModule.duration * 60 - timeLeft)
       : selectedModule.duration * 60;
+    examService.submitExamResults(
+      {
+        moduleId: selectedModule.id,
+        score,
+        totalQuestions: selectedModule.questions?.length || 0,
+        answers: (selectedModule.questions || []).map(q => moduleAnswers[q.id] ?? ''),
+        timeSpent: elapsed,
+        completedAt: new Date()
+      },
+      { section: selectedModule.section, level: levelForDifficulty(selectedModule.difficulty) }
+    ).catch(() => { /* the service stores results locally on failure */ });
+  };
 
-    const persistResult = (score: number) => {
-      examService.submitExamResults(
-        {
-          moduleId: selectedModule.id,
-          score,
-          totalQuestions: selectedModule.questions?.length || 0,
-          answers: (selectedModule.questions || []).map(q => moduleAnswers[q.id] ?? ''),
-          timeSpent: elapsed,
-          completedAt: new Date()
-        },
-        { section: selectedModule.section, level }
-      ).catch(() => { /* the service stores results locally on failure */ });
-    };
+  // Assess written/spoken answers with AI. A failed API call is NOT the same
+  // as an unanswered question: on any failure nothing is persisted and the
+  // learner can retry without losing their answers.
+  const runProductionAssessment = async () => {
+    if (!selectedModule) return;
+    const level = levelForDifficulty(selectedModule.difficulty);
+    const productionQuestions = (selectedModule.questions || []).filter(q => q.type !== 'multiple-choice');
+
+    setIsAssessing(true);
+    setAssessmentError(null);
+    try {
+      const results = await Promise.all(
+        productionQuestions.map(async (question) => {
+          if (question.type === 'written') {
+            const text = ((moduleAnswers[question.id] as string) || '').trim();
+            if (!text) return { id: question.id, status: 'empty' as const, assessment: null };
+            const assessment = await assessmentApiService.assessWriting(text, question.text, level);
+            return { id: question.id, status: assessment ? ('ok' as const) : ('failed' as const), assessment };
+          }
+          const recording = speakingRecordings[question.id];
+          if (!recording) return { id: question.id, status: 'empty' as const, assessment: null };
+          const assessment = await assessmentApiService.assessSpeaking(recording, question.text, level);
+          return { id: question.id, status: assessment ? ('ok' as const) : ('failed' as const), assessment };
+        })
+      );
+
+      const succeeded = results.filter((r) => r.status === 'ok' && r.assessment);
+      const failedCount = results.filter((r) => r.status === 'failed').length;
+
+      if (succeeded.length > 0) {
+        setAssessments(Object.fromEntries(succeeded.map((r) => [r.id, r.assessment!])));
+      }
+
+      if (failedCount > 0) {
+        setAssessmentError(
+          `${failedCount} of your responses could not be assessed. Nothing was saved — please try again.`
+        );
+        return;
+      }
+
+      if (succeeded.length > 0) {
+        const average = Math.round(
+          succeeded.reduce((sum, r) => sum + r.assessment!.overallScore, 0) / succeeded.length
+        );
+        persistResult(average);
+      }
+    } finally {
+      setIsAssessing(false);
+    }
+  };
+
+  const handleSubmitModule = async () => {
+    if (!selectedModule || showModuleResults) return;
+    setShowModuleResults(true);
 
     const { correct, total } = getModuleScore();
     if (total > 0) {
@@ -400,37 +452,7 @@ export default function ExamPracticePage() {
       return;
     }
 
-    // Production module (writing/speaking): assess each response with AI,
-    // then persist the averaged score
-    const productionQuestions = (selectedModule.questions || []).filter(q => q.type !== 'multiple-choice');
-    setIsAssessing(true);
-    try {
-      const results = await Promise.all(
-        productionQuestions.map(async (question) => {
-          if (question.type === 'written') {
-            const text = ((moduleAnswers[question.id] as string) || '').trim();
-            if (!text) return null;
-            const assessment = await assessmentApiService.assessWriting(text, question.text, level);
-            return assessment ? { id: question.id, assessment } : null;
-          }
-          const recording = speakingRecordings[question.id];
-          if (!recording) return null;
-          const assessment = await assessmentApiService.assessSpeaking(recording, question.text, level);
-          return assessment ? { id: question.id, assessment } : null;
-        })
-      );
-
-      const scored = results.flatMap((r) => (r ? [r] : []));
-      if (scored.length > 0) {
-        setAssessments(Object.fromEntries(scored.map((r) => [r.id, r.assessment])));
-        const average = Math.round(
-          scored.reduce((sum, r) => sum + r.assessment.overallScore, 0) / scored.length
-        );
-        persistResult(average);
-      }
-    } finally {
-      setIsAssessing(false);
-    }
+    await runProductionAssessment();
   };
 
   const handleAssessSample = async () => {
@@ -626,6 +648,16 @@ export default function ExamPracticePage() {
                       </p>
                     );
                   }
+                  if (assessmentError) {
+                    return (
+                      <div>
+                        <p className="mb-4 text-lg text-red-600">{assessmentError}</p>
+                        <Button onClick={() => runProductionAssessment()}>
+                          Try Assessing Again
+                        </Button>
+                      </div>
+                    );
+                  }
                   const assessed = (selectedModule.questions || [])
                     .map((q, index) => ({ question: q, index, assessment: assessments[q.id] }))
                     .filter((entry) => entry.assessment);
@@ -639,11 +671,18 @@ export default function ExamPracticePage() {
                   const average = Math.round(
                     assessed.reduce((sum, entry) => sum + entry.assessment.overallScore, 0) / assessed.length
                   );
+                  const hasSpeaking = assessed.some(({ assessment }) => 'transcript' in assessment);
                   return (
                     <div className="text-left">
-                      <p className="mb-4 text-lg text-center text-gray-700">
+                      <p className="mb-1 text-lg text-center text-gray-700">
                         Overall score: <span className="font-bold text-indigo-600">{average}%</span>
                       </p>
+                      {hasSpeaking && (
+                        <p className="mb-4 text-xs text-center text-gray-500">
+                          Speaking is scored from your transcript (content, fluency, accuracy) —
+                          pronunciation itself is assessed separately in Pronunciation practice.
+                        </p>
+                      )}
                       <div className="space-y-4">
                         {assessed.map(({ question, index, assessment }) => (
                           <div key={question.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
@@ -992,6 +1031,10 @@ export default function ExamPracticePage() {
                       What we heard: “{sampleAssessment.transcript}”
                     </p>
                     <p className="text-sm text-gray-700">{sampleAssessment.feedback}</p>
+                    <p className="mt-2 text-xs text-gray-500">
+                      Scored from your transcript — pronunciation itself is assessed separately
+                      in Pronunciation practice.
+                    </p>
                   </div>
                 )}
                 

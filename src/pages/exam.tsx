@@ -94,6 +94,11 @@ export default function ExamPage() {
   const [modules, setModules] = useState<ApiModuleDetail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // A report from a previous attempt must never survive an exam change
+  useEffect(() => {
+    setExamResults(null);
+  }, [selectedExamType]);
+
   useEffect(() => {
     const loadModules = async () => {
       setIsLoading(true);
@@ -222,6 +227,7 @@ export default function ExamPage() {
                 questions={selectedExam.questions}
                 timeLimit={selectedExam.duration}
                 onComplete={handleExamComplete}
+                onRestart={() => setExamResults(null)}
                 examType={selectedExam.id as 'TCF' | 'TEF' | 'practice'}
               />
 

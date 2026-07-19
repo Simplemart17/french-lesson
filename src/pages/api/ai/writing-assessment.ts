@@ -4,6 +4,9 @@ import { authMiddleware } from '../../../utils/authMiddleware';
 import { AuthenticatedRequest } from '@/types/api';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
+import { normalizeAssessment } from '@/utils/assessment';
+
+const CRITERIA = ['grammar', 'vocabulary', 'coherence', 'taskAchievement'];
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -58,20 +61,29 @@ Judge task achievement against the requested format and word count. If the text 
       response_format: { type: 'json_object' }
     });
 
-    const assessment = safeJSONParse(response.choices[0].message.content || '{}');
-    const overallScore = typeof assessment.overallScore === 'number' ? assessment.overallScore : 0;
+    // Validate/clamp the model output before it reaches the client or DB —
+    // unusable output fails loudly instead of persisting fabricated zeros
+    const assessment = normalizeAssessment(
+      safeJSONParse(response.choices[0].message.content || '{}'),
+      CRITERIA
+    );
+    if (!assessment) {
+      return res.status(502).json({
+        success: false,
+        error: { message: 'The examiner could not produce a valid assessment. Please try again.' }
+      });
+    }
 
     const userId = req.user?.id;
     if (userId) {
       const db = supabaseAdmin ?? supabase;
-      await recordActivity(db as never, userId, 'writing', overallScore, { task, level });
+      await recordActivity(db as never, userId, 'writing', assessment.overallScore, { task, level });
       await updateUserXpAndStreak(db as never, userId, 10);
     }
 
     return res.status(200).json({
       success: true,
-      data: assessment,
-      ...assessment
+      data: assessment
     });
   } catch (error) {
     console.error('Writing assessment error:', error);

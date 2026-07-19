@@ -8,6 +8,7 @@ import pronunciationApiService, {
   PronunciationPhrase,
   PronunciationResponse
 } from '@/services/api/pronunciationApiService';
+import { useRecorder } from '@/hooks/useRecorder';
 
 type ShadowingStep = 'listen' | 'record' | 'result';
 
@@ -17,13 +18,29 @@ export default function ShadowingPage() {
   const [step, setStep] = useState<ShadowingStep>('listen');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<PronunciationResponse['data'] | null>(null);
 
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<BlobPart[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const phraseRef = useRef<PronunciationPhrase | null>(null);
+
+  // Leak-safe recording: the hook releases the microphone on unmount
+  const { isRecording, toggle: toggleRecording } = useRecorder(async (blob) => {
+    const currentPhrase = phraseRef.current;
+    if (!currentPhrase) return;
+    setIsAnalyzing(true);
+    try {
+      const response = await pronunciationApiService.analyzePronunciation(blob, currentPhrase.text);
+      if (response.success && response.data) {
+        setResult(response.data);
+        setStep('result');
+      } else {
+        setError(response.error?.message || 'Analysis failed. Please try again.');
+      }
+    } finally {
+      setIsAnalyzing(false);
+    }
+  });
 
   useEffect(() => {
     const loadPhrases = async () => {
@@ -47,6 +64,7 @@ export default function ShadowingPage() {
   }, []);
 
   const phrase = phrases[phraseIndex] || null;
+  phraseRef.current = phrase;
 
   const playModel = useCallback(() => {
     if (!phrase) return;
@@ -56,48 +74,6 @@ export default function ShadowingPage() {
     void audio.play();
     setStep('record');
   }, [phrase]);
-
-  const toggleRecording = async () => {
-    if (isRecording) {
-      mediaRecorderRef.current?.stop();
-      setIsRecording(false);
-      return;
-    }
-    if (!phrase || typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) return;
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-      chunksRef.current = [];
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) chunksRef.current.push(event.data);
-      };
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' });
-        setIsAnalyzing(true);
-        try {
-          const response = await pronunciationApiService.analyzePronunciation(blob, phrase.text);
-          if (response.success && response.data) {
-            setResult(response.data);
-            setStep('result');
-          } else {
-            setError(response.error?.message || 'Analysis failed. Please try again.');
-          }
-        } finally {
-          setIsAnalyzing(false);
-        }
-      };
-
-      recorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error('Microphone access error:', err);
-      setError("Impossible d'accéder au microphone. Vérifiez les autorisations.");
-    }
-  };
 
   const nextPhrase = () => {
     setPhraseIndex((i) => (i + 1) % phrases.length);

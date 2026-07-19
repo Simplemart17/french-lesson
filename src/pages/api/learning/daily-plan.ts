@@ -95,8 +95,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     }
 
-    // Compose the plan within the user's daily-goal minutes
+    // Compose the plan within the user's daily-goal minutes. The drill slot is
+    // reserved up front when a weak area exists so a long lesson can't starve
+    // the most personalized item, and `remaining` never goes negative.
     const items: PlanItem[] = [];
+    const drill = weakestType ? DRILL_LINKS[weakestType] : null;
+    const DRILL_MINUTES = 5;
     let remaining = dailyGoal;
 
     if (dueReviews > 0) {
@@ -108,11 +112,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         minutes,
         href: '/vocabulary'
       });
-      remaining -= minutes;
+      remaining = Math.max(0, remaining - minutes);
     }
 
     if (nextLesson && remaining > 0) {
-      const minutes = Math.min(nextLesson.duration || 15, Math.max(remaining, 5));
+      const lessonBudget = drill ? Math.max(remaining - DRILL_MINUTES, 5) : Math.max(remaining, 5);
+      const minutes = Math.min(nextLesson.duration || 15, lessonBudget);
       items.push({
         type: 'lesson',
         title: nextLesson.title,
@@ -120,16 +125,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         minutes,
         href: `/lessons/${nextLesson.id}`
       });
-      remaining -= minutes;
+      remaining = Math.max(0, remaining - minutes);
     }
 
-    const drill = weakestType ? DRILL_LINKS[weakestType] : null;
-    if (drill && remaining > 0) {
+    if (drill) {
       items.push({
         type: 'drill',
         title: drill.title,
         description: `Recent scores suggest ${weakestType} needs attention`,
-        minutes: Math.min(10, remaining),
+        minutes: Math.max(Math.min(10, remaining), DRILL_MINUTES),
         href: drill.href
       });
     } else if (items.length === 0) {
