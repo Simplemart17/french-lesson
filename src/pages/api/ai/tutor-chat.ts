@@ -81,8 +81,13 @@ async function getLearnerContext(db: typeof supabase, userId: string, fallbackLe
   return context;
 }
 
+// Escape ilike wildcards so a flagged phrase containing % or _ matches literally
+const escapeIlike = (value: string) => value.replace(/[%_]/g, '\\$&');
+
 // Upsert tutor-flagged words into vocabulary + the learner's SRS deck.
 // Existing deck entries are left untouched so review stages are preserved.
+// Words are processed in parallel so the chat reply is delayed by at most
+// one word's worth of round trips, not the sum of all of them.
 async function saveEncounteredVocabulary(
   db: typeof supabase,
   userId: string,
@@ -90,15 +95,15 @@ async function saveEncounteredVocabulary(
   words: Array<{ french?: string; english?: string; example?: string }>
 ): Promise<void> {
   try {
-    for (const word of words) {
+    await Promise.all(words.map(async (word) => {
       const french = word.french?.trim();
       const english = word.english?.trim();
-      if (!french || !english) continue;
+      if (!french || !english) return;
 
       const { data: existing } = await db
         .from(TABLES.VOCABULARY)
         .select('id')
-        .ilike('french', french)
+        .ilike('french', escapeIlike(french))
         .maybeSingle();
 
       let vocabularyId = existing?.id as string | undefined;
@@ -116,7 +121,7 @@ async function saveEncounteredVocabulary(
           .single();
         vocabularyId = inserted?.id as string | undefined;
       }
-      if (!vocabularyId) continue;
+      if (!vocabularyId) return;
 
       await db
         .from(TABLES.USER_VOCABULARY)
@@ -130,7 +135,7 @@ async function saveEncounteredVocabulary(
           },
           { onConflict: 'user_id,vocabulary_id', ignoreDuplicates: true }
         );
-    }
+    }));
   } catch (err) {
     console.error('Failed to save encountered vocabulary:', err);
   }
