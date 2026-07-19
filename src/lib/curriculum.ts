@@ -24,8 +24,23 @@ export const LESSON_PASS_SCORE = 50;
 /** Share of a level's regular lessons that must be passed to advance. */
 export const LEVEL_COMPLETION_RATIO = 0.8;
 
+/**
+ * Levels whose advancement additionally requires passing AI-assessed
+ * production skills (speaking + writing) at or above the current level.
+ */
+export const PRODUCTION_GATED_LEVELS: readonly CefrLevel[] = ['B1', 'B2', 'C1'];
+
 export function isCefrLevel(value: string | null | undefined): value is CefrLevel {
   return Boolean(value && (CEFR_LEVELS as readonly string[]).includes(value));
+}
+
+/** True when `candidate` is a valid CEFR level at or above `reference`. */
+export function levelAtLeast(candidate: string | null | undefined, reference: string): boolean {
+  if (!isCefrLevel(candidate) || !isCefrLevel(reference)) return false;
+  return (
+    (CEFR_LEVELS as readonly string[]).indexOf(candidate) >=
+    (CEFR_LEVELS as readonly string[]).indexOf(reference)
+  );
 }
 
 export function nextLevelOf(level: string): CefrLevel | null {
