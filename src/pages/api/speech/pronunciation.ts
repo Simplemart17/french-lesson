@@ -1,5 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { isAuthenticated } from '@/utils/auth';
+import { createAudioTranscription } from '@/utils/openaiClient';
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb' // base64-encoded audio payloads
+    }
+  }
+};
 
 function normalizeText(value: string): string {
   return value
@@ -78,7 +87,20 @@ export default async function handler(
       return sendError(400, 'Audio data and reference text are required');
     }
 
-    const recognizedText = transcript || text;
+    // Never fall back to the expected text: scoring the reference against
+    // itself would always yield 100%. If the client sent no transcript,
+    // transcribe the audio with Whisper.
+    let recognizedText = (transcript || '').trim();
+    if (!recognizedText) {
+      try {
+        const base64 = audioData.replace(/^data:audio\/[a-z0-9.+-]+;base64,/i, '');
+        recognizedText = (await createAudioTranscription(Buffer.from(base64, 'base64'))).trim();
+      } catch (transcriptionError) {
+        console.error('Whisper transcription failed:', transcriptionError);
+        return sendError(502, 'Could not transcribe the audio. Please try again.');
+      }
+    }
+
     const overallScore = similarityScore(recognizedText, text);
 
     const expectedWords = normalizeText(text).split(' ').filter(Boolean);

@@ -1,51 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { speechRecognitionService } from '../services';
 import { SpeechRecognitionResponse } from '../services/api/speechRecognitionApiService';
-
-// Define SpeechRecognition type for browser compatibility
-interface SpeechRecognition extends EventTarget {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  maxAlternatives: number;
-  start(): void;
-  stop(): void;
-  abort(): void;
-  onstart: (event: Event) => void;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onerror: (event: SpeechRecognitionErrorEvent) => void;
-  onend: (event: Event) => void;
-}
-
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionResultList {
-  readonly length: number;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  readonly length: number;
-  [index: number]: SpeechRecognitionAlternative;
-  isFinal: boolean;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-  message: string;
-}
-
-type SpeechRecognitionType = {
-  new(): SpeechRecognition;
-  prototype: SpeechRecognition;
-}
+import pronunciationApiService from '../services/api/pronunciationApiService';
 
 interface SpeechRecognitionProps {
   referenceText: string;
@@ -71,9 +26,10 @@ const SpeechRecognition: React.FC<SpeechRecognitionProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  // Check if speech recognition is supported
+  // Recording needs MediaRecorder + microphone access; transcription happens
+  // server-side with Whisper, so no browser speech API is required.
   useEffect(() => {
-    if (!speechRecognitionService.isSpeechRecognitionSupported()) {
+    if (typeof window === 'undefined' || typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
       setIsSupported(false);
     }
   }, []);
@@ -100,11 +56,9 @@ const SpeechRecognition: React.FC<SpeechRecognitionProps> = ({
       
       // Handle recording stop
       mediaRecorderRef.current.onstop = () => {
-        // Create audio blob from chunks
+        // Create audio blob from chunks and send it for Whisper-based analysis
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        
-        // Start speech recognition
-        recognizeSpeech(audioBlob);
+        analyzePronunciation(audioBlob);
       };
       
       // Start recording
@@ -128,82 +82,37 @@ const SpeechRecognition: React.FC<SpeechRecognitionProps> = ({
     }
   };
 
-  // Recognize speech function
-  const recognizeSpeech = async (audioBlob: Blob): Promise<void> => {
+  // Send the recorded audio to the Whisper + GPT analysis pipeline, so the
+  // score is derived from what the learner actually said.
+  const analyzePronunciation = async (audioBlob: Blob): Promise<void> => {
     try {
-      // Create a new instance of SpeechRecognition
-      const SpeechRecognition = (window.SpeechRecognition || 
-        window.webkitSpeechRecognition) as unknown as SpeechRecognitionType;
-      const recognition = new SpeechRecognition();
-      
-      // Configure recognition
-      recognition.lang = 'fr-FR'; // Set language to French
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      
-      // Create audio element and set source
-      const audio = new Audio(URL.createObjectURL(audioBlob));
-      
-      // Handle recognition results
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setTranscript(transcript);
-        
-        // Send to server for analysis
-        analyzePronunciation(transcript, audioBlob);
-      };
-      
-      // Handle recognition errors
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        setError(`Speech recognition error: ${event.error}`);
-        setIsProcessing(false);
-        
-        // If we couldn't recognize speech, still try to analyze with empty transcript
-        // This allows the OpenAI model to provide feedback even without transcript
-        analyzePronunciation('', audioBlob);
-      };
-      
-      // Start recognition
-      recognition.start();
-      
-      // Play the audio
-      audio.play();
-    } catch (err) {
-      console.error('Error recognizing speech:', err);
-      setError('Speech recognition failed. Please try again.');
-      setIsProcessing(false);
-    }
-  };
+      const result = await pronunciationApiService.analyzePronunciation(audioBlob, referenceText);
 
-  // Analyze pronunciation function
-  const analyzePronunciation = async (transcript: string, audioBlob: Blob): Promise<void> => {
-    try {
-      // Use the speech recognition service to analyze pronunciation
-      const result = await speechRecognitionService.analyzePronunciation(
-        transcript,
-        referenceText,
-        audioBlob
-      );
-      
-      // Call the callback with results
+      if (!result.success || !result.data) {
+        setError(result.error?.message || 'Failed to analyze pronunciation. Please try again.');
+        return;
+      }
+
+      const { transcript: heardText, feedback } = result.data;
+      setTranscript(heardText);
+
       if (onResult) {
-        onResult(result);
+        const wordScores = feedback.wordScores || [];
+        onResult({
+          score: feedback.overallScore,
+          feedback: feedback.recommendations?.[0] || 'Analysis complete.',
+          errors: wordScores
+            .filter((w) => w.score < 70)
+            .map((w) => ({ word: w.word, suggestion: w.word, explanation: w.feedback })),
+          strengths: wordScores
+            .filter((w) => w.score >= 85)
+            .map((w) => `"${w.word}" was pronounced well`),
+          areas_for_improvement: feedback.recommendations || []
+        });
       }
     } catch (err) {
       console.error('Error analyzing pronunciation:', err);
       setError('Failed to analyze pronunciation. Please try again.');
-      
-      // Provide basic feedback even on error
-      if (onResult) {
-        onResult({
-          score: 0,
-          feedback: 'Unable to analyze pronunciation at this time.',
-          errors: [],
-          strengths: [],
-          areas_for_improvement: ['Please try again later.']
-        });
-      }
     } finally {
       setIsProcessing(false);
     }
