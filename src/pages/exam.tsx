@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import ExamSimulation, { ExamResult } from '@/components/features/ExamSimulation';
 import examApiService from '@/services/api/examApiService';
 import { toast } from 'sonner';
+import { cefrForScore } from '@/lib/curriculum';
 import { useAuth } from '@/context/AuthContext';
 
 interface SimulationQuestion {
@@ -14,7 +15,7 @@ interface SimulationQuestion {
   options?: string[];
   correctAnswer: string | string[];
   explanation: string;
-  category: 'comprehension' | 'grammar' | 'vocabulary';
+  category: 'listening' | 'reading' | 'writing' | 'speaking';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
@@ -56,10 +57,10 @@ function mapDifficulty(level: string): 'beginner' | 'intermediate' | 'advanced' 
   return 'advanced';
 }
 
-function mapCategory(section: ApiModuleSummary['section']): 'comprehension' | 'grammar' | 'vocabulary' {
-  if (section === 'listening' || section === 'reading') return 'comprehension';
-  if (section === 'writing') return 'grammar';
-  return 'vocabulary';
+// Use the module's canonical section as the category so results are stored
+// and aggregated under one taxonomy (listening/reading/writing/speaking).
+function mapCategory(section: ApiModuleSummary['section']): 'listening' | 'reading' | 'writing' | 'speaking' {
+  return section;
 }
 
 function mapQuestion(module: ApiModuleSummary, question: ApiQuestion): SimulationQuestion {
@@ -89,7 +90,7 @@ function mapQuestion(module: ApiModuleSummary, question: ApiQuestion): Simulatio
 export default function ExamPage() {
   const { isAuthenticated, user } = useAuth();
   const [selectedExamType, setSelectedExamType] = useState<string | null>(null);
-  const [, setExamResults] = useState<ExamResult | null>(null);
+  const [examResults, setExamResults] = useState<ExamResult | null>(null);
   const [modules, setModules] = useState<ApiModuleDetail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -223,6 +224,39 @@ export default function ExamPage() {
                 onComplete={handleExamComplete}
                 examType={selectedExam.id as 'TCF' | 'TEF' | 'practice'}
               />
+
+              {examResults && (
+                <div className="p-6 mt-8 bg-white rounded-lg shadow-md">
+                  <h2 className="mb-1 text-xl font-bold text-gray-800">CEFR Estimate Report</h2>
+                  <p className="mb-4 text-sm text-gray-500">
+                    Indicative only — certified levels also require assessed speaking and writing.
+                  </p>
+                  <div className="p-4 mb-4 text-center rounded-lg bg-indigo-50">
+                    <p className="text-sm text-gray-600">Overall estimate</p>
+                    <p className="text-3xl font-bold text-indigo-700">
+                      {cefrForScore(examResults.totalQuestions > 0
+                        ? (examResults.correctAnswers / examResults.totalQuestions) * 100
+                        : 0)}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {examResults.correctAnswers}/{examResults.totalQuestions} correct
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    {Object.entries(examResults.categoryScores)
+                      .filter(([, v]) => v.total > 0)
+                      .map(([category, v]) => (
+                        <div key={category} className="p-3 text-center border border-gray-100 rounded-lg bg-gray-50">
+                          <p className="text-xs text-gray-500 capitalize">{category}</p>
+                          <p className="text-lg font-bold text-gray-800">
+                            {cefrForScore((v.correct / v.total) * 100)}
+                          </p>
+                          <p className="text-xs text-gray-500">{v.correct}/{v.total}</p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="p-6 mb-12 bg-white rounded-lg shadow-md">

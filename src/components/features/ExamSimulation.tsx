@@ -8,7 +8,7 @@ interface ExamQuestion {
   options?: string[];
   correctAnswer: string | string[];
   explanation: string;
-  category: 'comprehension' | 'grammar' | 'vocabulary';
+  category: 'listening' | 'reading' | 'writing' | 'speaking' | 'comprehension' | 'grammar' | 'vocabulary';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
