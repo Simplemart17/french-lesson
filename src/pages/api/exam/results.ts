@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { isCefrLevel } from '@/lib/curriculum';
+import { toStoredSeconds } from '@/utils/apiUtils';
 import { ApiResponse, ExamResult } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 
@@ -12,6 +14,7 @@ interface ExamResultRow {
   max_score: number;
   percentage: number;
   level: string | null;
+  time_spent: number | null;
   completed_at: string;
 }
 
@@ -20,11 +23,11 @@ function mapRowToResult(row: ExamResultRow): ExamResult {
     userId: row.user_id,
     examId: row.exam_type,
     section: row.module,
-    level: row.level || 'A1',
+    level: row.level || '',
     score: Number(row.percentage || 0),
     details: [],
     completedAt: row.completed_at,
-    timeSpent: 0
+    timeSpent: Number(row.time_spent || 0)
   };
 }
 
@@ -59,7 +62,7 @@ export default async function handler(
 
       let query = db
         .from(TABLES.EXAM_RESULTS)
-        .select('id,user_id,exam_type,module,score,max_score,percentage,level,completed_at')
+        .select('id,user_id,exam_type,module,score,max_score,percentage,level,time_spent,completed_at')
         .eq('user_id', userId)
         .order('completed_at', { ascending: false });
 
@@ -119,14 +122,16 @@ export default async function handler(
         timeSpent?: number;
       };
 
-      if (!examId || !section || !level || score === undefined) {
+      if (!examId || !section || score === undefined) {
         return res.status(400).json({
           success: false,
           error: {
-            message: 'Missing required fields: examId, section, level, and score are required'
+            message: 'Missing required fields: examId, section, and score are required'
           }
         });
       }
+
+      const normalizedLevel = level && isCefrLevel(level) ? level : null;
 
       const numericScore = Number(score);
       const numericMaxScore = Number(maxScore || 100);
@@ -141,10 +146,11 @@ export default async function handler(
           score: numericScore,
           max_score: numericMaxScore,
           percentage,
-          level,
+          level: normalizedLevel,
+          time_spent: toStoredSeconds(timeSpent),
           completed_at: new Date().toISOString()
         })
-        .select('id,user_id,exam_type,module,score,max_score,percentage,level,completed_at')
+        .select('id,user_id,exam_type,module,score,max_score,percentage,level,time_spent,completed_at')
         .single();
 
       if (error || !saved) {

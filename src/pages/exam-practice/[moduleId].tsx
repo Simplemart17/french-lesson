@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { examService } from '@/services/index';
+import { difficultyForLevel } from '@/lib/curriculum';
 
 // Define the exam section type
 type ExamSection = 'listening' | 'reading' | 'writing' | 'speaking';
@@ -17,6 +18,7 @@ interface ExamModuleData {
   description: string;
   duration: number; // in minutes
   section: ExamSection;
+  level?: string;
   difficulty?: 'easy' | 'medium' | 'hard'; // Make difficulty optional to match API response
   questions: ExamQuestionData[];
 }
@@ -73,9 +75,9 @@ export default function ExamModulePage() {
               description: data.description,
               duration: data.duration,
               section: data.section as ExamSection,
+              level: data.level,
               questions: convertedQuestions,
-              difficulty: (data.level === 'A1' || data.level === 'A2') ? 'easy' :
-                          (data.level === 'B1' || data.level === 'B2') ? 'medium' : 'hard'
+              difficulty: difficultyForLevel(data.level)
             };
             setModuleData(moduleData);
           } else {
@@ -99,7 +101,10 @@ export default function ExamModulePage() {
 
     try {
       // Save the results to the database
-      await examService.submitExamResults(results);
+      await examService.submitExamResults(results, {
+        section: moduleData?.section,
+        level: moduleData?.level
+      });
     } catch (err) {
       console.error('Error saving exam results:', err);
       // We don't show an error to the user here as they've already completed the exam

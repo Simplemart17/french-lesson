@@ -221,26 +221,24 @@ class ExamService {
   }
 
   /**
-   * Submit exam results
+   * Submit exam results.
+   * POST /api/exam/results requires examId, section, level and score, so callers
+   * should pass the module's section/level via context; sensible defaults apply.
    */
-  async submitExamResults(results: ExamResults): Promise<boolean> {
+  async submitExamResults(
+    results: ExamResults,
+    context?: { section?: string; level?: string; examType?: string }
+  ): Promise<boolean> {
     try {
-      // Convert ExamResults to ExamResult format expected by API
-      const examResult = {
-        id: `${results.moduleId}-${Date.now()}`,
-        moduleId: results.moduleId,
+      const response = await examApiService.submitExamResults({
+        examId: context?.examType || results.moduleId,
+        section: context?.section || 'mixed',
+        // No fabricated default: when the level is unknown the server stores null
+        level: context?.level,
         score: results.score,
-        totalQuestions: results.totalQuestions,
-        correctAnswers: Math.round((results.score / 100) * results.totalQuestions),
-        timeSpent: results.timeSpent,
-        completedAt: results.completedAt.toISOString(),
-        answers: results.answers.map((answer, index) => ({
-          questionId: `q${index + 1}`,
-          answer: answer.toString()
-        }))
-      };
-
-      const response = await examApiService.submitExamResults(examResult);
+        maxScore: 100,
+        timeSpent: results.timeSpent
+      });
       return response && response.success === true;
     } catch (error) {
       console.error('Error submitting exam results:', error);

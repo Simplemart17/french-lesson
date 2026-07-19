@@ -68,6 +68,17 @@ export const validateBody = <T extends Record<string, unknown>>(
   return data as T;
 };
 
+/**
+ * Sanitize a client-supplied duration for storage: whole seconds or null.
+ * Shared by every route writing exam_results.time_spent so all writers
+ * agree on rounding/null semantics.
+ */
+export const toStoredSeconds = (value: unknown): number | null => {
+  if (value === null || value === undefined || value === '') return null;
+  const seconds = Number(value);
+  return Number.isFinite(seconds) ? Math.round(seconds) : null;
+};
+
 export const getApiUrl = () => {
   if (process.env.NODE_ENV === "development") {
     return process.env.NEXT_PUBLIC_API_URL;

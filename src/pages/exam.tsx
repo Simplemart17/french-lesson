@@ -3,6 +3,8 @@ import Head from 'next/head';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import ExamSimulation, { ExamResult } from '@/components/features/ExamSimulation';
+import examApiService from '@/services/api/examApiService';
+import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 
 interface SimulationQuestion {
@@ -85,7 +87,7 @@ function mapQuestion(module: ApiModuleSummary, question: ApiQuestion): Simulatio
 }
 
 export default function ExamPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [selectedExamType, setSelectedExamType] = useState<string | null>(null);
   const [, setExamResults] = useState<ExamResult | null>(null);
   const [modules, setModules] = useState<ApiModuleDetail[]>([]);
@@ -160,8 +162,39 @@ export default function ExamPage() {
 
   const selectedExam = examTypes.find((exam) => exam.id === selectedExamType);
 
-  const handleExamComplete = (results: ExamResult) => {
+  const handleExamComplete = async (results: ExamResult) => {
     setExamResults(results);
+
+    // Persist one result row per section so per-section analytics work
+    const examId = selectedExamType || 'practice';
+    const learnerLevel = user?.level;
+    const categoryEntries = Object.entries(results.categoryScores).filter(([, v]) => v.total > 0);
+    const submissions = categoryEntries.length > 0
+      ? categoryEntries.map(([category, v]) => ({
+          examId,
+          section: category,
+          level: learnerLevel,
+          score: Math.round((v.correct / v.total) * 100),
+          maxScore: 100,
+          timeSpent: results.timeSpent
+        }))
+      : [{
+          examId,
+          section: 'mixed',
+          level: learnerLevel,
+          score: results.totalQuestions > 0 ? Math.round((results.correctAnswers / results.totalQuestions) * 100) : 0,
+          maxScore: 100,
+          timeSpent: results.timeSpent
+        }];
+
+    const { failed, total } = await examApiService.submitSectionResults(submissions);
+    if (failed > 0) {
+      toast.error(
+        failed === total
+          ? 'Your exam results could not be saved. Check your connection and retake or contact support.'
+          : `${failed} of ${total} section results could not be saved.`
+      );
+    }
   };
 
   return (

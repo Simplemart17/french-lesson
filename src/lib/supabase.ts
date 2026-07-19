@@ -240,6 +240,7 @@ export type Database = {
           max_score: number;
           percentage: number;
           level: string | null;
+          time_spent: number | null;
           completed_at: string;
           created_at: string;
         };

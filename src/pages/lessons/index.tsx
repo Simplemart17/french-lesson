@@ -8,6 +8,7 @@ import LoadingState from '@/components/ui/LoadingState';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { useAuth } from '@/context/AuthContext';
 import lessonService from '@/services/lessonService';
+import LearningPath from '@/components/features/LearningPath';
 
 // Sample lesson data
 const lessonCategories = [
@@ -233,6 +234,8 @@ export default function LessonsPage() {
             Browse our comprehensive collection of French lessons designed for all proficiency levels.
           </p>
         </div>
+
+        {isAuthenticated && <LearningPath />}
 
         {isAuthenticated && (
           <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3">

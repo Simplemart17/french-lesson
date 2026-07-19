@@ -165,7 +165,7 @@ async function generateExercises(vocabularyItems: VocabularyItem[], count: numbe
     ];
     
     const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
+      model: "gpt-4o",
       messages,
       temperature: 0.7,
       response_format: { type: "json_object" }

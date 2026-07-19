@@ -17,12 +17,25 @@ interface SkillProgress {
 }
 
 interface ActivityLog {
-  id: number;
+  id: string;
   date: string;
   activity: string;
   duration: number; // in minutes
   xpEarned: number;
   category?: 'speaking' | 'listening' | 'reading' | 'writing' | 'vocabulary' | 'grammar';
+}
+
+function buildSkillAssessment(skills: SkillProgress[]): string {
+  const practiced = skills.filter((s) => s.level > 0);
+  if (practiced.length === 0) {
+    return 'No skill data yet. Complete lessons and practice sessions and your strengths and weaknesses will appear here.';
+  }
+  const sorted = [...skills].sort((a, b) => b.level - a.level);
+  const strongest = sorted.slice(0, 2).filter((s) => s.level > 0).map((s) => s.name);
+  const weakest = sorted.slice(-2).filter((s) => !strongest.includes(s.name)).map((s) => s.name);
+  const strongText = strongest.length ? `Your strongest ${strongest.length > 1 ? 'skills are' : 'skill is'} ${strongest.join(' and ')}.` : '';
+  const weakText = weakest.length ? ` Consider focusing more on ${weakest.join(' and ')} to achieve a more balanced skill set.` : '';
+  return `${strongText}${weakText}`.trim();
 }
 
 interface DailyProgress {
@@ -386,9 +399,7 @@ export default function ProgressPage() {
 
                 <div className="p-4 mt-6 border border-gray-100 rounded-lg bg-gray-50">
                   <h4 className="mb-2 font-medium text-gray-800">Skill Assessment</h4>
-                  <p className="text-gray-600">
-                    Your strongest skills are in Listening and Pronunciation. Consider focusing more on Writing and Conversation to achieve a more balanced skill set.
-                  </p>
+                  <p className="text-gray-600">{buildSkillAssessment(skillProgress)}</p>
                 </div>
               </Card>
             </div>

@@ -7,6 +7,8 @@ import AudioRecorder from '@/components/exam/AudioRecorder';
 import DifficultyFilter from '@/components/exam/DifficultyFilter';
 import ProgressTracker from '@/components/exam/ProgressTracker';
 import { examService } from '@/services';
+import { formatTime } from '@/utils/time';
+import { levelForDifficulty } from '@/lib/curriculum';
 
 type ExamType = 'tcf' | 'tef';
 type ExamSection = 'listening' | 'reading' | 'writing' | 'speaking';
@@ -18,6 +20,7 @@ interface ExamQuestion {
   correctAnswer?: number;
   type: 'multiple-choice' | 'written' | 'speaking';
   prompt?: string;
+  audioText?: string; // French script rendered as TTS audio for listening questions
 }
 
 interface ExamModule {
@@ -42,10 +45,10 @@ const fallbackExamModules: Record<ExamType, ExamModule[]> = {
       section: 'listening',
       difficulty: 'easy',
       questions: [
-        { id: 'tcf-l1-q1', text: "Ecoutez le dialogue. Que propose la femme?", options: ["De prendre un cafe", "D'aller au cinema", "De visiter un musee", "De faire les courses"], correctAnswer: 0, type: 'multiple-choice' },
-        { id: 'tcf-l1-q2', text: "Ecoutez l'annonce. A quelle heure part le train pour Lyon?", options: ["14h30", "14h45", "15h00", "15h30"], correctAnswer: 1, type: 'multiple-choice' },
-        { id: 'tcf-l1-q3', text: "Ecoutez la conversation. Ou se passe cette scene?", options: ["Dans un restaurant", "Dans une pharmacie", "A la poste", "Au supermarche"], correctAnswer: 0, type: 'multiple-choice' },
-        { id: 'tcf-l1-q4', text: "Quel est le probleme de l'homme?", options: ["Il a perdu ses cles", "Il est en retard", "Il a mal a la tete", "Il a faim"], correctAnswer: 1, type: 'multiple-choice' },
+        { id: 'tcf-l1-q1', text: "Ecoutez le dialogue. Que propose la femme?", options: ["De prendre un cafe", "D'aller au cinema", "De visiter un musee", "De faire les courses"], correctAnswer: 0, type: 'multiple-choice', audioText: "La femme dit : Tu as un peu de temps cet après-midi ? On pourrait prendre un café ensemble au nouveau salon près de la gare. L'homme répond : Bonne idée, je finis le travail à quinze heures, on se retrouve là-bas." },
+        { id: 'tcf-l1-q2', text: "Ecoutez l'annonce. A quelle heure part le train pour Lyon?", options: ["14h30", "14h45", "15h00", "15h30"], correctAnswer: 1, type: 'multiple-choice', audioText: "Votre attention s'il vous plaît. Le train T G V à destination de Lyon partira à quatorze heures quarante-cinq, voie numéro trois. Nous rappelons aux voyageurs que le compostage des billets est obligatoire. Bon voyage." },
+        { id: 'tcf-l1-q3', text: "Ecoutez la conversation. Ou se passe cette scene?", options: ["Dans un restaurant", "Dans une pharmacie", "A la poste", "Au supermarche"], correctAnswer: 0, type: 'multiple-choice', audioText: "Le serveur demande : Bonsoir, vous avez choisi ? La femme répond : Oui, je vais prendre le menu du jour avec le poisson, s'il vous plaît. Le serveur dit : Très bon choix. Et comme boisson ? La femme répond : Une carafe d'eau, merci." },
+        { id: 'tcf-l1-q4', text: "Quel est le probleme de l'homme?", options: ["Il a perdu ses cles", "Il est en retard", "Il a mal a la tete", "Il a faim"], correctAnswer: 1, type: 'multiple-choice', audioText: "L'homme dit : Oh non, regarde l'heure ! Ma réunion commence dans dix minutes et je suis encore loin du bureau. La femme répond : Prends le métro, c'est plus rapide à cette heure-ci." },
       ]
     },
     {
@@ -56,7 +59,7 @@ const fallbackExamModules: Record<ExamType, ExamModule[]> = {
       section: 'listening',
       difficulty: 'hard',
       questions: [
-        { id: 'tcf-l2-q1', text: "D'apres le reportage, quel est le sujet principal?", options: ["L'economie francaise", "Le changement climatique", "Les elections municipales", "La reforme de l'education"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tcf-l2-q1', text: "D'apres le reportage, quel est le sujet principal?", options: ["L'economie francaise", "Le changement climatique", "Les elections municipales", "La reforme de l'education"], correctAnswer: 2, type: 'multiple-choice', audioText: "À trois semaines des élections municipales, la campagne s'intensifie dans tout le pays. Les candidats multiplient les réunions publiques et présentent leurs programmes aux habitants. Interrogé ce matin, un candidat a proposé d'investir massivement dans la recherche et l'innovation locales afin de créer des emplois durables dans la commune. Selon les premiers sondages, les électeurs se montrent confiants, et la participation s'annonce en hausse, un signe encourageant pour la démocratie locale." },
         { id: 'tcf-l2-q2', text: "Selon l'intervenant, quelle solution est proposee?", options: ["Augmenter les impots", "Reduire les depenses", "Investir dans la recherche", "Changer la loi"], correctAnswer: 2, type: 'multiple-choice' },
         { id: 'tcf-l2-q3', text: "Quel est le ton general de ce reportage?", options: ["Optimiste", "Pessimiste", "Neutre", "Ironique"], correctAnswer: 0, type: 'multiple-choice' },
       ]
@@ -149,10 +152,10 @@ const fallbackExamModules: Record<ExamType, ExamModule[]> = {
       section: 'listening',
       difficulty: 'easy',
       questions: [
-        { id: 'tef-l1-q1', text: "Ecoutez l'annonce. A quelle heure ferme le magasin?", options: ["18h00", "19h00", "19h30", "20h00"], correctAnswer: 2, type: 'multiple-choice' },
-        { id: 'tef-l1-q2', text: "Que demande le client au serveur?", options: ["L'addition", "Le menu", "Un verre d'eau", "Une table pour deux"], correctAnswer: 1, type: 'multiple-choice' },
-        { id: 'tef-l1-q3', text: "Ou va la femme apres le travail?", options: ["Chez elle", "Au gymnase", "Au supermarche", "Chez le medecin"], correctAnswer: 2, type: 'multiple-choice' },
-        { id: 'tef-l1-q4', text: "Pourquoi l'homme telephone-t-il?", options: ["Pour prendre rendez-vous", "Pour annuler une reservation", "Pour se plaindre", "Pour commander un produit"], correctAnswer: 0, type: 'multiple-choice' },
+        { id: 'tef-l1-q1', text: "Ecoutez l'annonce. A quelle heure ferme le magasin?", options: ["18h00", "19h00", "19h30", "20h00"], correctAnswer: 2, type: 'multiple-choice', audioText: "Chers clients, votre magasin ferme ses portes dans quinze minutes. Il est dix-neuf heures quinze ; le magasin fermera à dix-neuf heures trente précises. Merci de vous diriger dès maintenant vers les caisses. Nous vous remercions de votre visite et vous souhaitons une bonne soirée." },
+        { id: 'tef-l1-q2', text: "Que demande le client au serveur?", options: ["L'addition", "Le menu", "Un verre d'eau", "Une table pour deux"], correctAnswer: 1, type: 'multiple-choice', audioText: "Le client dit : Excusez-moi, monsieur ! Pourrions-nous avoir le menu, s'il vous plaît ? Le serveur répond : Bien sûr, je vous l'apporte tout de suite. Aujourd'hui, nous avons aussi des suggestions du chef." },
+        { id: 'tef-l1-q3', text: "Ou va la femme apres le travail?", options: ["Chez elle", "Au gymnase", "Au supermarche", "Chez le medecin"], correctAnswer: 2, type: 'multiple-choice', audioText: "L'homme demande : Tu rentres directement à la maison après le travail ce soir ? La femme répond : Non, je dois d'abord passer au supermarché, il ne reste plus rien dans le frigo. Je rentrerai vers dix-neuf heures." },
+        { id: 'tef-l1-q4', text: "Pourquoi l'homme telephone-t-il?", options: ["Pour prendre rendez-vous", "Pour annuler une reservation", "Pour se plaindre", "Pour commander un produit"], correctAnswer: 0, type: 'multiple-choice', audioText: "L'homme dit : Bonjour madame, je vous appelle pour prendre rendez-vous avec le docteur Martin, si possible cette semaine. La secrétaire répond : Oui, il reste une place jeudi à dix heures. Cela vous convient ? L'homme dit : Parfait, jeudi à dix heures, merci beaucoup." },
       ]
     },
     {
@@ -163,7 +166,7 @@ const fallbackExamModules: Record<ExamType, ExamModule[]> = {
       section: 'listening',
       difficulty: 'hard',
       questions: [
-        { id: 'tef-l2-q1', text: "Quel est le theme principal de cette interview?", options: ["La politique internationale", "L'environnement", "L'education numerique", "La sante publique"], correctAnswer: 2, type: 'multiple-choice' },
+        { id: 'tef-l2-q1', text: "Quel est le theme principal de cette interview?", options: ["La politique internationale", "L'environnement", "L'education numerique", "La sante publique"], correctAnswer: 2, type: 'multiple-choice', audioText: "La journaliste annonce : Nous recevons aujourd'hui un spécialiste de l'éducation numérique à l'école. L'intervenant explique : Le numérique offre des possibilités pédagogiques réelles, mais je reste critique : sans formation sérieuse des enseignants, les tablettes et les logiciels ne servent à rien. Je ne dis pas qu'il faut tout arrêter, au contraire ; je propose d'avancer étape par étape, en évaluant chaque dispositif. Regardez la comparaison internationale : la Finlande et la Corée du Sud ont réussi leur transition parce qu'elles ont d'abord investi dans la pédagogie, pas dans le matériel." },
         { id: 'tef-l2-q2', text: "Quelle est la position de l'intervenant?", options: ["Favorable sans reserve", "Critique mais constructif", "Totalement oppose", "Indifferent"], correctAnswer: 1, type: 'multiple-choice' },
         { id: 'tef-l2-q3', text: "Quel exemple l'intervenant utilise-t-il pour illustrer son propos?", options: ["Une etude scientifique", "Une experience personnelle", "Un cas historique", "Une comparaison internationale"], correctAnswer: 3, type: 'multiple-choice' },
       ]
@@ -258,6 +261,7 @@ export default function ExamPracticePage() {
   const [selectedModule, setSelectedModule] = useState<ExamModule | null>(null);
   const [moduleAnswers, setModuleAnswers] = useState<Record<string, number | string>>({});
   const [showModuleResults, setShowModuleResults] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [examProgress, setExamProgress] = useState({
     overall: 0,
     listening: 0,
@@ -342,14 +346,12 @@ export default function ExamPracticePage() {
     setSelectedModule(mod);
     setModuleAnswers({});
     setShowModuleResults(false);
+    // Guard against non-numeric duration: NaN would freeze the countdown
+    setTimeLeft(Number.isFinite(mod.duration) && mod.duration > 0 ? mod.duration * 60 : null);
   };
 
   const handleModuleAnswer = (questionId: string, answer: number | string) => {
     setModuleAnswers(prev => ({ ...prev, [questionId]: answer }));
-  };
-
-  const handleSubmitModule = () => {
-    setShowModuleResults(true);
   };
 
   const getModuleScore = () => {
@@ -358,6 +360,47 @@ export default function ExamPracticePage() {
     const correct = mcQuestions.filter(q => moduleAnswers[q.id] === q.correctAnswer).length;
     return { correct, total: mcQuestions.length };
   };
+
+  const handleSubmitModule = () => {
+    if (!selectedModule || showModuleResults) return;
+    setShowModuleResults(true);
+
+    // Persist graded (multiple-choice) attempts; written/speaking modules are
+    // recorded locally until AI scoring exists for them.
+    const { correct, total } = getModuleScore();
+    if (total === 0) return;
+
+    const elapsed = timeLeft !== null
+      ? Math.max(0, selectedModule.duration * 60 - timeLeft)
+      : selectedModule.duration * 60;
+
+    examService.submitExamResults(
+      {
+        moduleId: selectedModule.id,
+        score: Math.round((correct / total) * 100),
+        totalQuestions: selectedModule.questions?.length || 0,
+        answers: (selectedModule.questions || []).map(q => moduleAnswers[q.id] ?? ''),
+        timeSpent: elapsed,
+        completedAt: new Date()
+      },
+      {
+        section: selectedModule.section,
+        level: levelForDifficulty(selectedModule.difficulty)
+      }
+    ).catch(() => { /* the service stores results locally on failure */ });
+  };
+
+  // Countdown while a module is in progress; auto-submit when time runs out
+  useEffect(() => {
+    if (!selectedModule || showModuleResults || timeLeft === null) return;
+    if (timeLeft <= 0) {
+      handleSubmitModule();
+      return;
+    }
+    const timer = setTimeout(() => setTimeLeft(s => (s === null ? null : s - 1)), 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft, showModuleResults, selectedModule]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -403,6 +446,11 @@ export default function ExamPracticePage() {
                 <span className="px-3 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full">
                   {selectedModule.duration} min
                 </span>
+                {!showModuleResults && timeLeft !== null && (
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${timeLeft <= 60 ? 'bg-red-100 text-red-800' : 'bg-indigo-100 text-indigo-800'}`}>
+                    Temps restant : {formatTime(timeLeft)}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -415,6 +463,19 @@ export default function ExamPracticePage() {
                     </span>
                     <h3 className="text-lg font-medium text-gray-800">{question.text}</h3>
                   </div>
+
+                  {question.audioText && (
+                    <div className="mb-4 ml-11">
+                      <audio
+                        controls
+                        preload="none"
+                        src={`/api/tts?text=${encodeURIComponent(question.audioText)}&voice=nova`}
+                        className="w-full max-w-md"
+                      >
+                        Votre navigateur ne supporte pas la lecture audio.
+                      </audio>
+                    </div>
+                  )}
 
                   {question.type === 'multiple-choice' && question.options && (
                     <div className="ml-11 space-y-2">
@@ -815,11 +876,20 @@ export default function ExamPracticePage() {
 
           <div className="flex flex-col justify-center gap-4 mt-8 sm:flex-row">
             {filteredModules.length > 0 ? (
-              <Link href={`/exam-practice/${filteredModules[0].id}`}>
-                <Button size="lg">
+              // Fallback modules carry inline questions and their synthetic ids
+              // don't exist in the DB, so start them locally; DB-backed modules
+              // deep-link to the module page which fetches their questions.
+              filteredModules[0].questions?.length ? (
+                <Button size="lg" onClick={() => handleSelectModule(filteredModules[0])}>
                   Take Full Practice Test
                 </Button>
-              </Link>
+              ) : (
+                <Link href={`/exam-practice/${filteredModules[0].id}`}>
+                  <Button size="lg">
+                    Take Full Practice Test
+                  </Button>
+                </Link>
+              )
             ) : (
               <Button size="lg" disabled>
                 No Practice Tests Available

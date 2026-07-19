@@ -17,7 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const input = req.method === 'GET' ? req.query : req.body;
     const text = typeof input.text === 'string' ? input.text : '';
-    const voice = typeof input.voice === 'string' ? input.voice : 'alloy';
+    const voice = typeof input.voice === 'string' ? input.voice : (process.env.DEFAULT_TTS_VOICE || 'alloy');
 
     // Validate input
     if (!text || typeof text !== 'string') {
@@ -61,10 +61,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Convert to buffer
     const buffer = Buffer.from(await mp3.arrayBuffer());
 
-    // Set response headers
+    // A truncated/empty clip must not be cached and replayed to every learner
+    if (buffer.length < 100) {
+      console.error(`TTS returned a suspiciously small buffer (${buffer.length} bytes)`);
+      return res.status(502).json({
+        success: false,
+        error: { message: 'Text-to-speech returned invalid audio. Please try again.' },
+        legacyError: 'Text-to-speech returned invalid audio. Please try again.'
+      });
+    }
+
+    // Set response headers. The same text+voice always produces equivalent audio,
+    // so let the CDN and browser cache GET responses instead of re-billing OpenAI.
+    // Bounded lifetimes (1 day browser / 7 days CDN, no immutable) so a transient
+    // bad clip ages out rather than being pinned for a month.
     res.setHeader('Content-Type', 'audio/mpeg');
     res.setHeader('Content-Length', buffer.length);
-    
+    if (req.method === 'GET') {
+      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800');
+    }
+
     // Send the audio data
     res.send(buffer);
   } catch (error: unknown) {
