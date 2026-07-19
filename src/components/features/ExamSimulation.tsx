@@ -16,6 +16,7 @@ interface ExamSimulationProps {
   questions: ExamQuestion[];
   timeLimit?: number; // in minutes
   onComplete?: (results: ExamResult) => void;
+  onRestart?: () => void;
   examType?: 'TCF' | 'TEF' | 'practice';
 }
 
@@ -36,6 +37,7 @@ const ExamSimulation: React.FC<ExamSimulationProps> = ({
   questions,
   timeLimit = 30,
   onComplete,
+  onRestart,
   examType = 'practice'
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -170,6 +172,8 @@ const ExamSimulation: React.FC<ExamSimulationProps> = ({
     setIsTimerRunning(false);
     setExamStartTime(null);
     setShowExplanation(false);
+    // Let the parent clear anything derived from the previous attempt
+    onRestart?.();
   };
 
   // Get current question
