@@ -96,10 +96,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     checkpoint && checkpoint.completed && Number(checkpoint.score ?? 0) >= CHECKPOINT_PASS_SCORE
   );
   const nextLevel = nextLevelOf(level);
+
+  // From B1 upward, advancing also requires passing AI-assessed production
+  // skills (speaking and writing) — recognition-only checkpoints can't
+  // certify upper levels.
+  const productionRequired = ['B1', 'B2', 'C1'].includes(level);
+  let speakingPassed = true;
+  let writingPassed = true;
+  if (productionRequired) {
+    const { data: productionRows } = await db
+      .from(TABLES.EXAM_RESULTS)
+      .select('module, percentage')
+      .eq('user_id', userId)
+      .in('module', ['speaking', 'writing'])
+      .gte('percentage', CHECKPOINT_PASS_SCORE)
+      .limit(50);
+    const passedModules = new Set(
+      ((productionRows || []) as Array<{ module: string }>).map((row) => row.module)
+    );
+    speakingPassed = passedModules.has('speaking');
+    writingPassed = passedModules.has('writing');
+  }
+
   // Advance when the level checkpoint is passed and most regular lessons are done
   const canAdvance = Boolean(
     nextLevel &&
     checkpointPassed &&
+    speakingPassed &&
+    writingPassed &&
     regularLessons.length > 0 &&
     regularCompleted >= Math.ceil(regularLessons.length * LEVEL_COMPLETION_RATIO)
   );
@@ -116,6 +140,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         progressPercent: pathLessons.length > 0 ? Math.round((completedCount / pathLessons.length) * 100) : 0,
         nextLesson,
         checkpointPassed,
+        productionRequired,
+        speakingPassed,
+        writingPassed,
         canAdvance
       }
     });

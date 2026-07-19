@@ -25,6 +25,9 @@ interface LearningPathData {
   progressPercent: number;
   nextLesson: PathLesson | null;
   checkpointPassed: boolean;
+  productionRequired?: boolean;
+  speakingPassed?: boolean;
+  writingPassed?: boolean;
   canAdvance: boolean;
 }
 
@@ -32,6 +35,7 @@ export default function LearningPath() {
   const [path, setPath] = useState<LearningPathData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdvancing, setIsAdvancing] = useState(false);
+  const [isExpanding, setIsExpanding] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const fetchPath = useCallback(async () => {
@@ -50,6 +54,23 @@ export default function LearningPath() {
   useEffect(() => {
     fetchPath();
   }, [fetchPath]);
+
+  const handleExpand = async () => {
+    setIsExpanding(true);
+    setMessage(null);
+    try {
+      const response = await apiClient.post<ApiResponse<{ lessons: unknown[] }>>('/lessons/expand', {});
+      if (response.data?.success && response.data.data) {
+        setMessage(`${response.data.data.lessons.length} new lessons added to your path!`);
+        await fetchPath();
+      }
+    } catch (err) {
+      console.error('Error expanding curriculum:', err);
+      setMessage('Complete more of your current lessons before generating new ones.');
+    } finally {
+      setIsExpanding(false);
+    }
+  };
 
   const handleAdvance = async () => {
     setIsAdvancing(true);
@@ -111,8 +132,26 @@ export default function LearningPath() {
               </Button>
             </Link>
           ) : null}
+          {path.progressPercent >= 60 && path.totalLessons < 40 && (
+            <Button
+              onClick={handleExpand}
+              disabled={isExpanding}
+              className="bg-white/20 text-white hover:bg-white/30"
+            >
+              {isExpanding ? 'Generating…' : '✨ Generate more lessons'}
+            </Button>
+          )}
           {!path.checkpointPassed && path.nextLesson?.isCheckpoint && (
             <p className="text-xs opacity-80">Pass the checkpoint to unlock {path.nextLevel}.</p>
+          )}
+          {path.productionRequired && (!path.speakingPassed || !path.writingPassed) && (
+            <p className="text-xs opacity-80">
+              {path.nextLevel} also requires passing
+              {!path.speakingPassed && ' a speaking assessment'}
+              {!path.speakingPassed && !path.writingPassed && ' and'}
+              {!path.writingPassed && ' a writing assessment'}
+              {' '}(Exam Practice → Expression orale/écrite).
+            </p>
           )}
         </div>
       </div>
