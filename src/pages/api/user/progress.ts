@@ -81,6 +81,9 @@ const SESSION_LABELS: Record<string, { activity: string; category: ActivityLog['
   listening: { activity: 'Listening practice', category: 'listening' },
   vocabulary: { activity: 'Vocabulary practice', category: 'vocabulary' },
   exam_prep: { activity: 'Exam practice', category: 'reading' },
+  speaking: { activity: 'Speaking assessment', category: 'speaking' },
+  writing: { activity: 'Writing assessment', category: 'writing' },
+  reading: { activity: 'Reading practice', category: 'reading' },
 };
 
 // Honest skill estimate: 0 with no activity, grows with practice volume,
@@ -190,10 +193,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     };
 
     const pronunciationSessions = sessionsOfType(['pronunciation']);
-    const conversationSessions = sessionsOfType(['chat', 'conversation']);
+    const conversationSessions = sessionsOfType(['chat', 'conversation', 'speaking']);
     const listeningSessions = sessionsOfType(['listening']);
     const grammarSessions = sessionsOfType(['grammar']);
     const vocabularySessions = sessionsOfType(['vocabulary']);
+    const writingSessions = sessionsOfType(['writing']);
+    const readingSessions = sessionsOfType(['reading']);
     const completedLessons = lessonProgress.filter((p) => p.completed);
 
     const skillProgress: SkillProgress[] = [
@@ -216,14 +221,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         name: 'Reading',
         level: skillLevel(
           completedLessonsByTopic('reading'),
-          0,
-          avgScore(completedLessons.filter((p) => p.lesson?.topics?.includes('reading')))
+          readingSessions.length,
+          avgScore([
+            ...completedLessons.filter((p) => p.lesson?.topics?.includes('reading')),
+            ...readingSessions
+          ])
         ),
         category: 'reading'
       },
       {
         name: 'Writing',
-        level: skillLevel(completedLessonsByTopic('writing'), 0, null),
+        level: skillLevel(completedLessonsByTopic('writing'), writingSessions.length, avgScore(writingSessions)),
         category: 'writing'
       },
       {

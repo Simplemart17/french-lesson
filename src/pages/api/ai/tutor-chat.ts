@@ -81,6 +81,61 @@ async function getLearnerContext(db: typeof supabase, userId: string, fallbackLe
   return context;
 }
 
+// Upsert tutor-flagged words into vocabulary + the learner's SRS deck.
+// Existing deck entries are left untouched so review stages are preserved.
+async function saveEncounteredVocabulary(
+  db: typeof supabase,
+  userId: string,
+  level: string,
+  words: Array<{ french?: string; english?: string; example?: string }>
+): Promise<void> {
+  try {
+    for (const word of words) {
+      const french = word.french?.trim();
+      const english = word.english?.trim();
+      if (!french || !english) continue;
+
+      const { data: existing } = await db
+        .from(TABLES.VOCABULARY)
+        .select('id')
+        .ilike('french', french)
+        .maybeSingle();
+
+      let vocabularyId = existing?.id as string | undefined;
+      if (!vocabularyId) {
+        const { data: inserted } = await db
+          .from(TABLES.VOCABULARY)
+          .insert({
+            french,
+            english,
+            example: word.example?.trim() || null,
+            level,
+            category: 'conversation'
+          })
+          .select('id')
+          .single();
+        vocabularyId = inserted?.id as string | undefined;
+      }
+      if (!vocabularyId) continue;
+
+      await db
+        .from(TABLES.USER_VOCABULARY)
+        .upsert(
+          {
+            user_id: userId,
+            vocabulary_id: vocabularyId,
+            learned: false,
+            next_review_date: new Date().toISOString(),
+            repetition_stage: 0
+          },
+          { onConflict: 'user_id,vocabulary_id', ignoreDuplicates: true }
+        );
+    }
+  } catch (err) {
+    console.error('Failed to save encountered vocabulary:', err);
+  }
+}
+
 async function getOrCreateConversation(db: typeof supabase, userId: string, conversationId: string | undefined, message: string): Promise<ConversationRow> {
   if (conversationId) {
     const { data, error } = await db
@@ -196,7 +251,11 @@ Keep responses focused and educational.
 
 If you find any corrections to make in the user's French, include them at the very end of your response in the following format (after your normal response text):
 <!-- CORRECTIONS_JSON: [{"original": "what the user wrote", "correction": "the correct form", "explanation": "brief explanation"}] -->
-Only include this delimiter if there are actual corrections. Do not mention this format to the user.`
+Only include this delimiter if there are actual corrections. Do not mention this format to the user.
+
+Additionally, if this exchange used up to 3 French words or short phrases the learner may not know yet (from your reply or their corrections), append:
+<!-- VOCAB_JSON: [{"french": "the word", "english": "translation", "example": "a short example sentence"}] -->
+Only genuinely useful vocabulary at or slightly above the learner's level; omit the delimiter when there is nothing worth saving. Do not mention this format to the user.`
       },
       ...messageHistory.slice(-10).map((item) => ({
         role: (item.role === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
@@ -229,6 +288,21 @@ Only include this delimiter if there are actual corrections. Do not mention this
         }
       } catch (e) {
         console.error('Failed to parse corrections JSON from AI response:', e);
+      }
+    }
+
+    // Extract vocabulary the tutor flagged and feed it into the learner's SRS deck
+    const vocabDelimiterRegex = /<!-- VOCAB_JSON:\s*([\s\S]*?)\s*-->/;
+    const vocabMatch = vocabDelimiterRegex.exec(cleanResponse);
+    if (vocabMatch) {
+      cleanResponse = cleanResponse.replace(vocabDelimiterRegex, '').trim();
+      try {
+        const words = JSON.parse(vocabMatch[1]) as Array<{ french?: string; english?: string; example?: string }>;
+        if (Array.isArray(words)) {
+          await saveEncounteredVocabulary(db, userId, learner.level, words.slice(0, 3));
+        }
+      } catch (e) {
+        console.error('Failed to parse vocab JSON from AI response:', e);
       }
     }
 
