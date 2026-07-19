@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Head from 'next/head';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
@@ -32,7 +32,7 @@ const normalizeWord = (word: string) =>
 
 export default function ReadingPage() {
   const [passage, setPassage] = useState<ReadingPassage | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<GlossaryEntry | null>(null);
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -58,10 +58,6 @@ export default function ReadingPage() {
       setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    loadPassage();
-  }, [loadPassage]);
 
   const glossaryMap = useMemo(() => {
     const map = new Map<string, GlossaryEntry>();
@@ -105,6 +101,16 @@ export default function ReadingPage() {
             the comprehension questions.
           </p>
         </div>
+
+        {/* Generation is a paid AI call, so it starts on explicit action, not on mount */}
+        {!passage && !isLoading && !error && (
+          <div className="p-8 text-center bg-white rounded-lg shadow-md">
+            <p className="mb-4 text-gray-700">
+              Each passage is written fresh for your level.
+            </p>
+            <Button size="lg" onClick={loadPassage}>Write My Passage</Button>
+          </div>
+        )}
 
         {isLoading && <LoadingState message="Writing a passage for your level..." size="large" />}
         {error && !isLoading && <ErrorMessage message={error} type="error" retryAction={loadPassage} />}

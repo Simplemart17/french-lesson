@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import Head from 'next/head';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
@@ -26,7 +26,7 @@ export default function WeakPointsPage() {
   const [drill, setDrill] = useState<DrillData | null>(null);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadDrill = useCallback(async () => {
@@ -48,10 +48,6 @@ export default function WeakPointsPage() {
       setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    loadDrill();
-  }, [loadDrill]);
 
   const handleSubmit = async () => {
     if (!drill || submitted) return;
@@ -87,6 +83,16 @@ export default function WeakPointsPage() {
             A short drill generated from the areas where you&apos;ve been scoring lowest.
           </p>
         </div>
+
+        {/* Generation is a paid AI call, so it starts on explicit action, not on mount */}
+        {!drill && !isLoading && !error && (
+          <div className="p-8 text-center bg-white rounded-lg shadow-md">
+            <p className="mb-4 text-gray-700">
+              Ready? Your drill is generated fresh from your recent results.
+            </p>
+            <Button size="lg" onClick={loadDrill}>Build My Drill</Button>
+          </div>
+        )}
 
         {isLoading && <LoadingState message="Building your personalized drill..." size="large" />}
 
