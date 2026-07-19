@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { getOpenAIClient, createAudioTranscription, safeJSONParse } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
 import { AuthenticatedRequest } from '@/types/api';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { recordActivity, updateUserXpAndStreak } from '@/utils/progressTracker';
+import { parseMultipartForm, formField, formFile } from '@/utils/multipart';
+import { normalizeAssessment } from '@/utils/assessment';
 import fs from 'fs';
-import formidable from 'formidable';
-import os from 'os';
 
 export const config = {
   api: {
@@ -14,22 +14,7 @@ export const config = {
   },
 };
 
-const parseForm = async (req: NextApiRequest) => {
-  return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-    const form = formidable({
-      uploadDir: os.tmpdir(),
-      keepExtensions: true,
-    });
-
-    form.parse(req, (err, fields, files) => {
-      if (err) return reject(err);
-      resolve({ fields, files });
-    });
-  });
-};
-
-const field = (value: string | string[] | undefined): string =>
-  (Array.isArray(value) ? value[0] : value) || '';
+const CRITERIA = ['fluency', 'accuracy', 'range', 'coherence', 'taskAchievement'];
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -39,17 +24,17 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const tempFiles: string[] = [];
 
   try {
-    const { fields, files } = await parseForm(req);
+    const { fields, files } = await parseMultipartForm(req);
 
-    const task = field(fields.task);
-    const level = field(fields.level) || 'B1';
+    const task = formField(fields.task);
+    const level = formField(fields.level) || 'B1';
 
     if (!task) {
       return res.status(400).json({ success: false, error: { message: 'Task prompt is required' } });
     }
 
-    const audioFile = Array.isArray(files.audio) ? files.audio[0] : files.audio;
-    if (!audioFile || !audioFile.filepath) {
+    const audioFile = formFile(files.audio);
+    if (!audioFile) {
       return res.status(400).json({ success: false, error: { message: 'Audio file is required' } });
     }
     tempFiles.push(audioFile.filepath);
@@ -98,23 +83,30 @@ Base fluency on sentence length/connector use visible in the transcript (you can
       response_format: { type: 'json_object' }
     });
 
-    const assessment = safeJSONParse(response.choices[0].message.content || '{}');
-    const overallScore = typeof assessment.overallScore === 'number' ? assessment.overallScore : 0;
+    // Validate/clamp the model output before it reaches the client or DB —
+    // unusable output fails loudly instead of persisting fabricated zeros
+    const assessment = normalizeAssessment(
+      safeJSONParse(response.choices[0].message.content || '{}'),
+      CRITERIA
+    );
+    if (!assessment) {
+      return res.status(502).json({
+        success: false,
+        error: { message: 'The examiner could not produce a valid assessment. Please try again.' }
+      });
+    }
 
     // Track the attempt (non-blocking)
     const userId = req.user?.id;
     if (userId) {
       const db = supabaseAdmin ?? supabase;
-      await recordActivity(db as never, userId, 'speaking', overallScore, { task, level });
+      await recordActivity(db as never, userId, 'speaking', assessment.overallScore, { task, level });
       await updateUserXpAndStreak(db as never, userId, 10);
     }
 
-    const payload = { transcript, ...assessment };
-
     return res.status(200).json({
       success: true,
-      data: payload,
-      ...payload
+      data: { transcript, ...assessment }
     });
   } catch (error) {
     console.error('Speaking assessment error:', error);
