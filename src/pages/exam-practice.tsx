@@ -9,6 +9,10 @@ import ProgressTracker from '@/components/exam/ProgressTracker';
 import { examService } from '@/services';
 import { formatTime } from '@/utils/time';
 import { levelForDifficulty } from '@/lib/curriculum';
+import assessmentApiService, {
+  SpeakingAssessment,
+  WritingAssessment
+} from '@/services/api/assessmentApiService';
 
 type ExamType = 'tcf' | 'tef';
 type ExamSection = 'listening' | 'reading' | 'writing' | 'speaking';
@@ -255,8 +259,12 @@ export default function ExamPracticePage() {
   const [selectedExam, setSelectedExam] = useState<ExamType>('tcf');
   const [selectedSection, setSelectedSection] = useState<ExamSection | 'all'>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
-  const [, setAudioBlob] = useState<Blob | null>(null);
-  const [, setAudioUrl] = useState<string>('');
+  const [speakingRecordings, setSpeakingRecordings] = useState<Record<string, Blob>>({});
+  const [assessments, setAssessments] = useState<Record<string, WritingAssessment | SpeakingAssessment>>({});
+  const [isAssessing, setIsAssessing] = useState(false);
+  const [sampleRecording, setSampleRecording] = useState<Blob | null>(null);
+  const [sampleAssessment, setSampleAssessment] = useState<SpeakingAssessment | null>(null);
+  const [isAssessingSample, setIsAssessingSample] = useState(false);
   const [examModules, setExamModules] = useState<ExamModule[]>([]);
   const [selectedModule, setSelectedModule] = useState<ExamModule | null>(null);
   const [moduleAnswers, setModuleAnswers] = useState<Record<string, number | string>>({});
@@ -346,6 +354,8 @@ export default function ExamPracticePage() {
     setSelectedModule(mod);
     setModuleAnswers({});
     setShowModuleResults(false);
+    setSpeakingRecordings({});
+    setAssessments({});
     // Guard against non-numeric duration: NaN would freeze the countdown
     setTimeLeft(Number.isFinite(mod.duration) && mod.duration > 0 ? mod.duration * 60 : null);
   };
@@ -361,33 +371,80 @@ export default function ExamPracticePage() {
     return { correct, total: mcQuestions.length };
   };
 
-  const handleSubmitModule = () => {
+  const handleSubmitModule = async () => {
     if (!selectedModule || showModuleResults) return;
     setShowModuleResults(true);
 
-    // Persist graded (multiple-choice) attempts; written/speaking modules are
-    // recorded locally until AI scoring exists for them.
-    const { correct, total } = getModuleScore();
-    if (total === 0) return;
-
+    const level = levelForDifficulty(selectedModule.difficulty);
     const elapsed = timeLeft !== null
       ? Math.max(0, selectedModule.duration * 60 - timeLeft)
       : selectedModule.duration * 60;
 
-    examService.submitExamResults(
-      {
-        moduleId: selectedModule.id,
-        score: Math.round((correct / total) * 100),
-        totalQuestions: selectedModule.questions?.length || 0,
-        answers: (selectedModule.questions || []).map(q => moduleAnswers[q.id] ?? ''),
-        timeSpent: elapsed,
-        completedAt: new Date()
-      },
-      {
-        section: selectedModule.section,
-        level: levelForDifficulty(selectedModule.difficulty)
+    const persistResult = (score: number) => {
+      examService.submitExamResults(
+        {
+          moduleId: selectedModule.id,
+          score,
+          totalQuestions: selectedModule.questions?.length || 0,
+          answers: (selectedModule.questions || []).map(q => moduleAnswers[q.id] ?? ''),
+          timeSpent: elapsed,
+          completedAt: new Date()
+        },
+        { section: selectedModule.section, level }
+      ).catch(() => { /* the service stores results locally on failure */ });
+    };
+
+    const { correct, total } = getModuleScore();
+    if (total > 0) {
+      persistResult(Math.round((correct / total) * 100));
+      return;
+    }
+
+    // Production module (writing/speaking): assess each response with AI,
+    // then persist the averaged score
+    const productionQuestions = (selectedModule.questions || []).filter(q => q.type !== 'multiple-choice');
+    setIsAssessing(true);
+    try {
+      const results = await Promise.all(
+        productionQuestions.map(async (question) => {
+          if (question.type === 'written') {
+            const text = ((moduleAnswers[question.id] as string) || '').trim();
+            if (!text) return null;
+            const assessment = await assessmentApiService.assessWriting(text, question.text, level);
+            return assessment ? { id: question.id, assessment } : null;
+          }
+          const recording = speakingRecordings[question.id];
+          if (!recording) return null;
+          const assessment = await assessmentApiService.assessSpeaking(recording, question.text, level);
+          return assessment ? { id: question.id, assessment } : null;
+        })
+      );
+
+      const scored = results.flatMap((r) => (r ? [r] : []));
+      if (scored.length > 0) {
+        setAssessments(Object.fromEntries(scored.map((r) => [r.id, r.assessment])));
+        const average = Math.round(
+          scored.reduce((sum, r) => sum + r.assessment.overallScore, 0) / scored.length
+        );
+        persistResult(average);
       }
-    ).catch(() => { /* the service stores results locally on failure */ });
+    } finally {
+      setIsAssessing(false);
+    }
+  };
+
+  const handleAssessSample = async () => {
+    if (!sampleRecording || isAssessingSample) return;
+    setIsAssessingSample(true);
+    try {
+      const task = selectedExam === 'tcf'
+        ? 'Présentez-vous et parlez de vos loisirs et de vos intérêts (1-2 minutes).'
+        : "Choisissez un sujet d'actualité qui vous intéresse et présentez votre opinion (2-3 minutes).";
+      const assessment = await assessmentApiService.assessSpeaking(sampleRecording, task);
+      setSampleAssessment(assessment);
+    } finally {
+      setIsAssessingSample(false);
+    }
   };
 
   // Countdown while a module is in progress; auto-submit when time runs out
@@ -529,8 +586,7 @@ export default function ExamPracticePage() {
                       <AudioRecorder
                         maxDuration={180}
                         onRecordingComplete={(blob, url) => {
-                          setAudioBlob(blob);
-                          setAudioUrl(url);
+                          setSpeakingRecordings(prev => ({ ...prev, [question.id]: blob }));
                           handleModuleAnswer(question.id, url);
                         }}
                       />
@@ -551,24 +607,80 @@ export default function ExamPracticePage() {
                 <h2 className="mb-2 text-xl font-bold text-gray-800">Results</h2>
                 {(() => {
                   const { correct, total } = getModuleScore();
-                  return total > 0 ? (
-                    <>
+                  if (total > 0) {
+                    return (
+                      <>
+                        <p className="text-lg text-gray-700">
+                          You scored <span className="font-bold text-indigo-600">{correct}</span> out of <span className="font-bold">{total}</span> on multiple choice questions.
+                        </p>
+                        <p className="mt-2 text-gray-600">
+                          {correct / total >= 0.8 ? 'Excellent work!' : correct / total >= 0.5 ? 'Good effort! Keep practicing.' : 'Keep studying and try again.'}
+                        </p>
+                      </>
+                    );
+                  }
+                  if (isAssessing) {
+                    return (
                       <p className="text-lg text-gray-700">
-                        You scored <span className="font-bold text-indigo-600">{correct}</span> out of <span className="font-bold">{total}</span> on multiple choice questions.
+                        Your examiner is reviewing your responses… this takes a few seconds.
                       </p>
-                      <p className="mt-2 text-gray-600">
-                        {correct / total >= 0.8 ? 'Excellent work!' : correct / total >= 0.5 ? 'Good effort! Keep practicing.' : 'Keep studying and try again.'}
+                    );
+                  }
+                  const assessed = (selectedModule.questions || [])
+                    .map((q, index) => ({ question: q, index, assessment: assessments[q.id] }))
+                    .filter((entry) => entry.assessment);
+                  if (assessed.length === 0) {
+                    return (
+                      <p className="text-lg text-gray-700">
+                        No responses to assess — write or record an answer before submitting.
                       </p>
-                    </>
-                  ) : (
-                    <p className="text-lg text-gray-700">Your written and speaking responses have been recorded.</p>
+                    );
+                  }
+                  const average = Math.round(
+                    assessed.reduce((sum, entry) => sum + entry.assessment.overallScore, 0) / assessed.length
+                  );
+                  return (
+                    <div className="text-left">
+                      <p className="mb-4 text-lg text-center text-gray-700">
+                        Overall score: <span className="font-bold text-indigo-600">{average}%</span>
+                      </p>
+                      <div className="space-y-4">
+                        {assessed.map(({ question, index, assessment }) => (
+                          <div key={question.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-gray-800">Question {index + 1}</span>
+                              <span className="px-2 py-1 text-xs font-bold text-indigo-800 bg-indigo-100 rounded-full">
+                                {assessment.overallScore}% · est. {assessment.cefrEstimate}
+                              </span>
+                            </div>
+                            {'transcript' in assessment && (
+                              <p className="mb-2 text-sm italic text-gray-600">
+                                What we heard: “{assessment.transcript}”
+                              </p>
+                            )}
+                            <p className="text-sm text-gray-700">{assessment.feedback}</p>
+                            {assessment.corrections?.length > 0 && (
+                              <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                                {assessment.corrections.slice(0, 5).map((c, i) => (
+                                  <li key={i}>
+                                    <span className="text-red-600 line-through">{c.original}</span>{' '}
+                                    → <span className="font-medium text-green-700">{c.corrected}</span>
+                                    {c.explanation ? ` — ${c.explanation}` : ''}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   );
                 })()}
                 <div className="flex justify-center gap-4 mt-6">
                   <Button variant="outline" onClick={() => setSelectedModule(null)}>
                     Back to Modules
                   </Button>
-                  <Button onClick={() => { setModuleAnswers({}); setShowModuleResults(false); }}>
+                  <Button onClick={() => handleSelectModule(selectedModule)}>
                     Retry
                   </Button>
                 </div>
@@ -852,13 +964,36 @@ export default function ExamPracticePage() {
                     "Choisissez un sujet d'actualité qui vous intéresse et présentez votre opinion (2-3 minutes)."}
                 </p>
                 
-                <AudioRecorder 
+                <AudioRecorder
                   maxDuration={120}
-                  onRecordingComplete={(blob, url) => {
-                    setAudioBlob(blob);
-                    setAudioUrl(url);
+                  onRecordingComplete={(blob) => {
+                    setSampleRecording(blob);
+                    setSampleAssessment(null);
                   }}
                 />
+
+                {sampleRecording && !sampleAssessment && (
+                  <div className="mt-4 text-center">
+                    <Button
+                      onClick={handleAssessSample}
+                      disabled={isAssessingSample}
+                    >
+                      {isAssessingSample ? 'Assessing…' : 'Get AI Feedback'}
+                    </Button>
+                  </div>
+                )}
+
+                {sampleAssessment && (
+                  <div className="p-4 mt-4 border border-indigo-100 rounded-lg bg-indigo-50">
+                    <p className="mb-1 font-medium text-indigo-900">
+                      Score: {sampleAssessment.overallScore}% · estimated {sampleAssessment.cefrEstimate}
+                    </p>
+                    <p className="mb-2 text-sm italic text-gray-600">
+                      What we heard: “{sampleAssessment.transcript}”
+                    </p>
+                    <p className="text-sm text-gray-700">{sampleAssessment.feedback}</p>
+                  </div>
+                )}
                 
                 {/* Speaking Tips */}
                 <div className="p-4 mt-4 rounded-lg bg-blue-50">

@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import DailyPlan from '@/components/features/DailyPlan';
 import { apiClient, ApiResponse } from '@/services/api';
 import { BookOpen, Languages, PenTool, MessageCircle, Mic, ClipboardCheck } from 'lucide-react';
 
@@ -124,6 +125,8 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+
+        <DailyPlan />
 
         {/* Loading State */}
         {isLoading && (

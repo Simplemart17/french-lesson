@@ -44,8 +44,9 @@ deployed on Vercel. What blocked the vision:
       grammar rules, conversation templates, pronunciation exercises.
 - [x] `order_index` on lessons + a learning-path API: "your level, your next lesson,
       what unlocks the next level".
-- [ ] Expand seed depth per level (target: 25–40 lessons per level; seed ships the spine —
-      AI generation fills sections/exercises on demand and persists them).
+- [x] Self-expanding curriculum: `/api/lessons/expand` generates new lesson rows for the
+      learner's level (capped at 40/level, gated on 60% completion), surfaced as a
+      "Generate more lessons" action on the learning path.
 - [x] Level-completion gates: `/api/learning/path` advances the user's CEFR level when
       ≥80% of the level's lessons are done and the checkpoint lesson is passed (≥60%).
 
@@ -56,11 +57,16 @@ deployed on Vercel. What blocked the vision:
 - [x] Spaced repetition scheduling: expanding review intervals (1→120 days) via
       `user_vocabulary.next_review_date` / `repetition_stage`; the vocabulary page's
       review mode and the dashboard's due-count consume it.
-- [ ] Weak-point targeting: aggregate error categories from grammar/writing/pronunciation
-      feedback into a per-user model; generate targeted drills from it.
-- [ ] Adaptive difficulty: exercise generation reads recent accuracy and adjusts.
-- [ ] Daily study plan on the dashboard: review queue + next lesson + one skill exercise,
-      sized to the user's `daily_goal` minutes.
+- [x] Weak-point targeting: `/api/practice/weak-points` finds the learner's lowest-scoring
+      areas from practice/exam history and generates targeted drills (`/practice/weak-points`).
+- [x] Adaptive difficulty: drill generation reads recent accuracy and pitches slightly
+      easier or harder accordingly.
+- [x] Daily study plan on the dashboard: review queue + next lesson + weakest-skill drill,
+      sized to `daily_goal` minutes, with a streak-at-risk nudge.
+- [x] Voice tutor: microphone input (Whisper-transcribed) and spoken replies (TTS) in the
+      tutor chat — a real conversation partner.
+- [x] Vocabulary inflow: words the tutor flags in conversation are added to the learner's
+      SRS deck automatically.
 
 ## Phase 4 — Exam mastery (TCF/TEF)
 
@@ -68,27 +74,35 @@ deployed on Vercel. What blocked the vision:
 - [x] Persist graded exam attempts (module practice and simulations, one row per
       section); per-section progress shows on the exam-practice page. Writing/speaking
       modules persist once AI scoring (below) exists.
-- [ ] Unify the exam-results section taxonomy: simulations store category names
-      (comprehension/grammar/vocabulary) while module practice stores TCF sections
-      (listening/reading/writing/speaking) in `exam_results.module`.
-- [ ] AI-scored expression écrite (rubric-based CEFR scoring of writing tasks).
-- [ ] AI-scored expression orale (Whisper transcription + rubric scoring of recordings).
-- [ ] Full-length timed mock exams with CEFR-equivalent score reports.
+- [x] Unified exam-results section taxonomy: simulations now aggregate and store results
+      under the canonical listening/reading/writing/speaking sections.
+- [x] AI-scored expression écrite: `/api/ai/writing-assessment` scores essays against a
+      CEFR rubric with corrections; exam writing modules persist the averaged score.
+- [x] AI-scored expression orale: `/api/ai/speaking-assessment` (Whisper + rubric) scores
+      recordings; exam speaking modules persist the averaged score, and passing both
+      production skills gates advancement from B1 upward.
+- [x] Timed simulations now end with a CEFR-equivalent estimate report (overall +
+      per-section).
 
 ## Phase 5 — Method breadth ("all necessary methods")
 
-- [ ] Dictation exercises at every level (TTS audio → typed transcription, auto-scored).
-- [ ] Graded reading passages with tap-to-translate and comprehension questions.
-- [ ] Shadowing mode: hear a phrase, record an imitation, Whisper-score the match.
+- [x] Graded reading (`/reading`): AI-written passages at the learner's level with
+      tap-to-translate glossaries and scored comprehension questions.
+- [x] Shadowing mode (`/pronunciation/shadowing`): hear a phrase, record an imitation,
+      Whisper-score the match.
+- [x] Streak/goal mechanics tied to the daily plan (streak-at-risk nudge on the dashboard).
+- [ ] Dictation exercises at every level (basic dictation exists on the listening page;
+      needs level coverage and SRS integration).
 - [ ] Verb-conjugation trainer backed by SRS.
-- [ ] Streak/goal mechanics tied to the daily plan (already have `points`/`streak_days`).
+- [ ] Email/push practice reminders (needs a provider decision).
 
 ## Platform hygiene
 
 - [x] Modernize OpenAI models (`gpt-4-turbo`/`gpt-4` → `gpt-4o` / `gpt-4o-mini`).
 - [x] Cache TTS audio (deterministic cache headers so the CDN/browser stops re-billing).
-- [ ] Unit/integration tests for the API layer.
-- [ ] Error monitoring (Sentry) on API routes.
+- [x] Unit tests for the core logic helpers (curriculum, sanitizers, formatting) via vitest.
+- [ ] Integration tests for the API layer.
+- [ ] Error monitoring (Sentry) on API routes — needs a DSN decision.
 
 Checked items were completed in the July 2026 improvement pass on `ft-app-improvement`.
 Unchecked items are the follow-up backlog, in priority order within each phase.

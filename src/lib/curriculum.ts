@@ -48,3 +48,17 @@ export function levelForDifficulty(difficulty: string): CefrLevel {
   if (difficulty === 'medium') return 'B1';
   return 'C1';
 }
+
+/**
+ * Rough CEFR-equivalent estimate for a percentage score on level-mixed exam
+ * content. Indicative only — real certification requires assessed production
+ * skills, which is why level gates also demand speaking/writing passes.
+ */
+export function cefrForScore(percentage: number): CefrLevel {
+  if (percentage >= 90) return 'C2';
+  if (percentage >= 80) return 'C1';
+  if (percentage >= 65) return 'B2';
+  if (percentage >= 50) return 'B1';
+  if (percentage >= 35) return 'A2';
+  return 'A1';
+}

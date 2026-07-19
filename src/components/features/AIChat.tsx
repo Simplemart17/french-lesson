@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import aiService from '@/services/aiService';
 import apiClient from '@/services/api/apiClient';
+import assessmentApiService from '@/services/api/assessmentApiService';
 import { useAuth } from '@/context/AuthContext';
 
 interface Message {
@@ -54,7 +55,13 @@ const AIChat = ({
   const [isTyping, setIsTyping] = useState(false);
   const [conversationId, setConversationId] = useState<string | undefined>(existingConversationId);
   const [userLevel, setUserLevel] = useState<'beginner' | 'intermediate' | 'advanced'>(mapCefrToLevel(user?.level));
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
+  const playbackRef = useRef<HTMLAudioElement | null>(null);
 
   // Update level when user profile changes
   useEffect(() => {
@@ -210,6 +217,71 @@ const AIChat = ({
     generateResponse(text);
   };
 
+  // Voice input: record, transcribe with Whisper, then send as a normal message
+  const toggleRecording = async () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunksRef.current.push(event.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
+        setIsTranscribing(true);
+        try {
+          const transcript = (await assessmentApiService.transcribe(blob))?.trim();
+          if (transcript) {
+            const userMessage: Message = {
+              id: Date.now().toString(),
+              role: 'user',
+              content: transcript,
+              timestamp: new Date()
+            };
+            setMessages((prev) => [...prev, userMessage]);
+            generateResponse(transcript);
+          }
+        } finally {
+          setIsTranscribing(false);
+        }
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Microphone access error:', err);
+    }
+  };
+
+  // Read an assistant reply aloud with the TTS voice
+  const toggleSpeak = (message: Message) => {
+    if (playingMessageId === message.id) {
+      playbackRef.current?.pause();
+      playbackRef.current = null;
+      setPlayingMessageId(null);
+      return;
+    }
+    playbackRef.current?.pause();
+    const audio = new Audio(`/api/tts?text=${encodeURIComponent(message.content)}&voice=nova`);
+    playbackRef.current = audio;
+    setPlayingMessageId(message.id);
+    audio.onended = () => setPlayingMessageId(null);
+    audio.onerror = () => setPlayingMessageId(null);
+    void audio.play();
+  };
+
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <div className="p-4 border-b border-gray-200 bg-gray-50">
@@ -232,6 +304,16 @@ const AIChat = ({
               }`}
             >
               <p className="whitespace-pre-line">{message.content}</p>
+
+              {message.role === 'assistant' && (
+                <button
+                  type="button"
+                  onClick={() => toggleSpeak(message)}
+                  className="mt-1 text-xs text-primary-600 hover:text-primary-800"
+                >
+                  {playingMessageId === message.id ? '◼ Stop' : '🔊 Écouter'}
+                </button>
+              )}
 
               {message.role === 'assistant' && message.corrections && message.corrections.length > 0 && (
                 <div className="pt-2 mt-2 border-t border-gray-200">
@@ -287,10 +369,19 @@ const AIChat = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type your message in French..."
+            placeholder={isTranscribing ? 'Transcription en cours…' : 'Type or speak your message in French...'}
             className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-            disabled={isTyping}
+            disabled={isTyping || isTranscribing}
           />
+          <Button
+            type="button"
+            variant={isRecording ? 'destructive' : 'outline'}
+            onClick={toggleRecording}
+            disabled={isTyping || isTranscribing}
+            title={isRecording ? 'Stop recording' : 'Speak your message'}
+          >
+            {isRecording ? '◼' : '🎤'}
+          </Button>
           <Button
             type="submit"
             disabled={!inputText.trim() || isTyping}
@@ -300,7 +391,7 @@ const AIChat = ({
         </form>
 
         <div className="mt-3 text-xs text-gray-500">
-          <p>Tip: Try to write in French as much as possible to practice your skills.</p>
+          <p>Tip: Use the microphone to practice speaking — your speech is transcribed and the tutor replies. Tap Écouter to hear replies aloud.</p>
         </div>
       </div>
     </Card>
