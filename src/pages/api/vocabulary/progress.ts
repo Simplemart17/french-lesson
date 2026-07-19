@@ -134,7 +134,22 @@ export default async function handler(
       }
 
       const now = new Date().toISOString();
-      const defaultNextReview = learned ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null;
+
+      // Spaced repetition: each successful review advances the stage and pushes
+      // the next review further out; a failed review resets to stage 0 (tomorrow).
+      const REVIEW_INTERVALS_DAYS = [1, 2, 4, 7, 14, 30, 60, 120];
+
+      const { data: existingRow } = await db
+        .from(TABLES.USER_VOCABULARY)
+        .select('repetition_stage')
+        .eq('user_id', userId)
+        .eq('vocabulary_id', vocabularyItem.id)
+        .maybeSingle();
+
+      const currentStage = (existingRow?.repetition_stage as number | undefined) ?? 0;
+      const newStage = learned ? Math.min(currentStage + 1, REVIEW_INTERVALS_DAYS.length) : 0;
+      const intervalDays = REVIEW_INTERVALS_DAYS[Math.min(Math.max(newStage - 1, 0), REVIEW_INTERVALS_DAYS.length - 1)];
+      const scheduledNextReview = new Date(Date.now() + intervalDays * 24 * 60 * 60 * 1000).toISOString();
 
       const { error: upsertError } = await db
         .from(TABLES.USER_VOCABULARY)
@@ -144,8 +159,8 @@ export default async function handler(
             vocabulary_id: vocabularyItem.id,
             learned: learned ?? false,
             last_practiced: lastPracticed || now,
-            next_review_date: nextReview || defaultNextReview,
-            repetition_stage: learned ? 1 : 0
+            next_review_date: nextReview || scheduledNextReview,
+            repetition_stage: newStage
           },
           { onConflict: 'user_id,vocabulary_id' }
         );

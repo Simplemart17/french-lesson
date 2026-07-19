@@ -22,15 +22,63 @@ interface MessageRow {
 
 function levelInstructions(level: string): string {
   switch (level) {
+    case 'A1':
     case 'beginner':
-      return 'Use simple, everyday vocabulary and basic grammar structures. Keep sentences short and clear.';
+      return 'The learner is a beginner (A1). Use very simple French: present tense, short sentences, high-frequency vocabulary. Always add an English translation in parentheses after each French sentence.';
+    case 'A2':
+      return 'The learner is elementary (A2). Use simple French with common past and future tenses. Translate only difficult phrases into English in parentheses.';
+    case 'B1':
     case 'intermediate':
-      return 'Use mixed vocabulary and moderate grammar complexity. Add short explanations for corrections.';
+      return 'The learner is intermediate (B1). Use natural French of moderate complexity. Explain corrections in simple French; use English only when the learner is clearly stuck.';
+    case 'B2':
+      return 'The learner is upper-intermediate (B2). Use natural, idiomatic French throughout and explain corrections in French. Introduce nuanced vocabulary and connectors.';
+    case 'C1':
     case 'advanced':
-      return 'Use sophisticated vocabulary and natural idioms, while still being educational.';
+      return 'The learner is advanced (C1). Use sophisticated French with idioms and register nuance. Challenge the learner, point out anglicisms and subtle errors, and vary registers.';
+    case 'C2':
+      return 'The learner is at mastery level (C2). Converse entirely in rich, native-level French — irony, wordplay, literary references welcome. Focus corrections on the finest nuances of style and register.';
     default:
       return 'Use simple, everyday vocabulary and basic grammar structures.';
   }
+}
+
+interface LearnerContext {
+  level: string;
+  goals: string[];
+  weakAreas: string[];
+}
+
+// Pull the learner's real profile and recent weak spots so the tutor adapts
+async function getLearnerContext(db: typeof supabase, userId: string, fallbackLevel: string): Promise<LearnerContext> {
+  const context: LearnerContext = { level: fallbackLevel, goals: [], weakAreas: [] };
+  try {
+    const [profileResult, sessionsResult, examsResult] = await Promise.all([
+      db.from(TABLES.USERS).select('level, learning_goals').eq('id', userId).single(),
+      db.from(TABLES.PRACTICE_SESSIONS).select('type, score').eq('user_id', userId)
+        .order('created_at', { ascending: false }).limit(15),
+      db.from(TABLES.EXAM_RESULTS).select('module, percentage').eq('user_id', userId)
+        .order('completed_at', { ascending: false }).limit(5)
+    ]);
+
+    if (profileResult.data?.level) {
+      context.level = profileResult.data.level as string;
+    }
+    if (Array.isArray(profileResult.data?.learning_goals)) {
+      context.goals = (profileResult.data.learning_goals as string[]).slice(0, 5);
+    }
+
+    const weak = new Set<string>();
+    for (const session of (sessionsResult.data || []) as Array<{ type: string; score: number | null }>) {
+      if (typeof session.score === 'number' && session.score < 60) weak.add(session.type);
+    }
+    for (const exam of (examsResult.data || []) as Array<{ module: string; percentage: number | null }>) {
+      if (typeof exam.percentage === 'number' && exam.percentage < 60) weak.add(exam.module);
+    }
+    context.weakAreas = Array.from(weak).slice(0, 5);
+  } catch (err) {
+    console.error('Failed to load learner context (using defaults):', err);
+  }
+  return context;
 }
 
 async function getOrCreateConversation(db: typeof supabase, userId: string, conversationId: string | undefined, message: string): Promise<ConversationRow> {
@@ -110,17 +158,26 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       throw new Error(`Failed to save user message: ${saveUserMessageError.message}`);
     }
 
-    const { data: historyRows, error: historyError } = await db
-      .from(TABLES.MESSAGES)
-      .select('id,conversation_id,role,content,created_at')
-      .eq('conversation_id', conversation.id)
-      .order('created_at', { ascending: true });
+    const [historyResult, learner] = await Promise.all([
+      db
+        .from(TABLES.MESSAGES)
+        .select('id,conversation_id,role,content,created_at')
+        .eq('conversation_id', conversation.id)
+        .order('created_at', { ascending: true }),
+      getLearnerContext(db, userId, level)
+    ]);
 
-    if (historyError) {
-      throw new Error(`Failed to fetch conversation history: ${historyError.message}`);
+    if (historyResult.error) {
+      throw new Error(`Failed to fetch conversation history: ${historyResult.error.message}`);
     }
 
-    const messageHistory = (historyRows || []) as MessageRow[];
+    const messageHistory = (historyResult.data || []) as MessageRow[];
+    const learnerNotes = [
+      learner.goals.length > 0 ? `The learner's stated goals: ${learner.goals.join(', ')}.` : '',
+      learner.weakAreas.length > 0
+        ? `Recent weak areas to gently work into the conversation: ${learner.weakAreas.join(', ')}.`
+        : ''
+    ].filter(Boolean).join('\n');
 
     const openai = getOpenAIClient();
 
@@ -129,7 +186,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         role: 'system',
         content: `You are a friendly and helpful French language tutor.
 
-${levelInstructions(level)}
+${levelInstructions(learner.level)}
+${learnerNotes}
 
 For grammar or vocabulary mistakes in the user's French, provide gentle corrections.
 If the user writes in English, respond in both French and English.

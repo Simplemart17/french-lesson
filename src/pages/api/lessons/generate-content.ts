@@ -18,7 +18,7 @@ async function generateTextDirect(prompt: string, responseFormat: 'markdown' | '
       : "You are a helpful assistant that generates French lesson content. Return content in Markdown format only. Do NOT wrap the content in JSON. Do NOT include metadata fields like lesson_title or section_type. Just output the lesson content directly as Markdown text.";
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: prompt }
