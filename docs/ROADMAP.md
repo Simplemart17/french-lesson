@@ -96,6 +96,36 @@ deployed on Vercel. What blocked the vision:
 - [ ] Verb-conjugation trainer backed by SRS.
 - [ ] Email/push practice reminders (needs a provider decision).
 
+## Phase 6 — The last mile to C1/C2
+
+The app is a legitimate standalone tutor through B2. What separates it from
+"solely this app, all the way to C2" is live speech and authentic input — the
+two things C-levels are defined by. In impact order:
+
+- [ ] **Real-time speech-to-speech conversation.** Replace the turn-based
+      record→transcribe→reply loop with a live voice conversation mode
+      (OpenAI Realtime API): the tutor speaks and listens continuously,
+      interrupts and can be interrupted, and adapts register mid-stream.
+      This is the single biggest unlock for C-level oral proficiency —
+      real-time comprehension under pressure cannot be trained turn-based.
+- [ ] **Authentic-material comprehension.** At B2+ supplement generated
+      passages with curated authentic input — French podcasts, press
+      articles, and video — with AI-generated comprehension questions and
+      glossaries layered on top. C-levels are defined by handling
+      unadapted native material; generated text alone cannot certify that.
+- [ ] **Multi-voice, variable-speed listening.** Rotate TTS voices, add a
+      speed control (0.75×–1.25×), and generate multi-speaker dialogues so
+      the ear trains on variety rather than one clean studio voice.
+      Longer-term: real recorded audio for C-level listening exams.
+- [ ] **Calibrate the rubric scores.** Compare a sample of the app's
+      speaking/writing CEFR estimates against real TCF/TEF outcomes (or a
+      certified examiner's ratings) and adjust the rubric prompts and gate
+      thresholds. Until then, estimates stay honestly labeled as indicative.
+- [ ] **Retention infrastructure.** Practice reminders (email/push — the
+      provider decision above) so the daily plan reaches learners who
+      didn't open the app; solo-learning attrition is the practical killer
+      above B1.
+
 ## Platform hygiene
 
 - [x] Modernize OpenAI models (`gpt-4-turbo`/`gpt-4` → `gpt-4o` / `gpt-4o-mini`).
