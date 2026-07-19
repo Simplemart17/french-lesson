@@ -37,6 +37,17 @@ interface ExamResult {
   answers: ExamAnswer[];
 }
 
+// Shape POST /api/exam/results validates: examId, section, score required
+export interface ExamResultSubmission {
+  examId: string;
+  section: string;
+  level?: string;
+  score: number;
+  maxScore?: number;
+  timeSpent?: number;
+  details?: Array<{ questionIndex: number; correct: boolean; userAnswer: string | string[] }>;
+}
+
 interface ExamSubmissionResult {
   score: number;
   totalQuestions: number;
@@ -105,7 +116,7 @@ export const examApiService = {
     timeSpent: number
   ): Promise<ExamSubmissionResult> => {
     try {
-      const response = await apiClient.post<ApiResponse<ExamSubmissionResult>>('/exam/submit', {
+      const response = await apiClient.post<ApiResponse<ExamSubmissionResult>>('/exam/modules', {
         moduleId,
         answers,
         timeSpent
@@ -147,11 +158,11 @@ export const examApiService = {
    */
   getExamQuestions: async (moduleId: string): Promise<{ success: boolean; data: ExamQuestion[] }> => {
     try {
-      const response = await apiClient.get<ApiResponse<ExamQuestion[]>>(`/exam/modules/${moduleId}/questions`);
+      const response = await apiClient.get<ApiResponse<ExamModule>>(`/exam/modules?id=${moduleId}`);
 
       return {
         success: response.data.success,
-        data: response.data.data || []
+        data: response.data.data?.questions || []
       };
     } catch (error) {
       console.error(`Error fetching exam questions for module ${moduleId}:`, error);
@@ -165,7 +176,7 @@ export const examApiService = {
   /**
    * Submit exam results
    */
-  submitExamResults: async (results: ExamResult): Promise<{ success: boolean; data?: ExamResult; error?: string }> => {
+  submitExamResults: async (results: ExamResultSubmission): Promise<{ success: boolean; data?: ExamResult; error?: string }> => {
     try {
       const response = await apiClient.post<ApiResponse<ExamResult>>('/exam/results', results);
 
@@ -180,6 +191,22 @@ export const examApiService = {
         error: 'Failed to submit exam results'
       };
     }
+  },
+
+  /**
+   * Submit several per-section results concurrently and report how many failed,
+   * so callers can surface partial-save errors to the user.
+   */
+  submitSectionResults: async (
+    submissions: ExamResultSubmission[]
+  ): Promise<{ failed: number; total: number }> => {
+    const outcomes = await Promise.allSettled(
+      submissions.map((submission) => examApiService.submitExamResults(submission))
+    );
+    const failed = outcomes.filter(
+      (outcome) => outcome.status === 'rejected' || !outcome.value?.success
+    ).length;
+    return { failed, total: submissions.length };
   }
 };
 
