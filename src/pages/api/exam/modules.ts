@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiResponse } from '@/types/api';
 import { isAuthenticated, getUserId } from '@/utils/auth';
 import { supabase, supabaseAdmin, TABLES } from '@/lib/supabase';
+import { EXAM_TOPICS, difficultyForLevel } from '@/lib/curriculum';
+import { toStoredSeconds } from '@/utils/apiUtils';
 
 interface LessonExerciseRow {
   id: string;
@@ -48,12 +50,6 @@ interface ExamModule {
   examType: 'tcf' | 'tef';
   level: string;
   questions?: ExamQuestion[];
-}
-
-function mapDifficulty(level: string): 'easy' | 'medium' | 'hard' {
-  if (level === 'A1' || level === 'A2') return 'easy';
-  if (level === 'B1' || level === 'B2') return 'medium';
-  return 'hard';
 }
 
 function inferSection(sections: LessonSectionRow[] = []): 'listening' | 'reading' | 'writing' | 'speaking' {
@@ -127,7 +123,7 @@ function mapLessonToModule(lesson: LessonRow, includeQuestions: boolean): ExamMo
     description: lesson.description,
     duration: lesson.duration,
     section,
-    difficulty: mapDifficulty(lesson.level),
+    difficulty: difficultyForLevel(lesson.level),
     examType: inferExamType(lesson.topics),
     level: lesson.level,
     questions: includeQuestions ? questions : undefined
@@ -181,6 +177,9 @@ export default async function handler(
             )
           )
         `)
+        // Only lessons explicitly tagged as exam content are exam modules;
+        // without this, every seeded curriculum lesson would surface here.
+        .overlaps('topics', EXAM_TOPICS)
         .order('created_at', { ascending: true });
 
       if (id && typeof id === 'string') {
@@ -193,7 +192,12 @@ export default async function handler(
         throw new Error(`Failed to fetch exam modules: ${error.message}`);
       }
 
-      const lessons = (data || []) as LessonRow[];
+      // A lesson only counts as an exam module once it has real content;
+      // seeded checkpoints have no exercises until AI generation runs, and
+      // surfacing them empty would displace the client-side fallback modules.
+      const lessons = ((data || []) as LessonRow[]).filter((lesson) =>
+        (lesson.sections || []).some((section) => (section.exercises || []).length > 0)
+      );
       const includeQuestions = !!id;
       let modules = lessons.map((lesson) => mapLessonToModule(lesson, includeQuestions));
 
@@ -275,10 +279,11 @@ export default async function handler(
         });
       }
 
-      const { moduleId, answers, examType = 'practice' } = req.body as {
+      const { moduleId, answers, examType = 'practice', timeSpent } = req.body as {
         moduleId?: string;
         examType?: string;
         answers?: Array<{ questionId: string; answer: string | string[] }>;
+        timeSpent?: number;
       };
 
       if (!moduleId || !Array.isArray(answers)) {
@@ -377,6 +382,7 @@ export default async function handler(
           max_score: totalCount,
           percentage,
           level: examModule.level,
+          time_spent: toStoredSeconds(timeSpent),
           completed_at: new Date().toISOString()
         });
 
