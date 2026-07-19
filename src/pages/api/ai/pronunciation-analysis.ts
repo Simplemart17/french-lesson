@@ -78,7 +78,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     
     // Generate feedback using GPT
     const feedbackResponse = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
@@ -111,7 +111,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
       feedback = JSON.parse(feedbackResponse.choices[0].message.content || '{}');
     } catch {
-      feedback = { overall: 'Could not parse detailed feedback', suggestions: [], score: similarityScore };
+      // Fallback must match the PronunciationResponse feedback shape consumers read
+      feedback = {
+        overallScore: similarityScore,
+        wordScores: [],
+        problemSounds: [],
+        recommendations: ['Could not generate detailed feedback. Please try again.']
+      };
     }
     
     const payload = {
