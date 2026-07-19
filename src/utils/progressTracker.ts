@@ -8,7 +8,7 @@ type SupabaseClient = {
   };
 };
 
-type ActivityType = 'lesson' | 'chat' | 'conversation' | 'grammar' | 'pronunciation' | 'listening' | 'vocabulary';
+type ActivityType = 'lesson' | 'chat' | 'conversation' | 'grammar' | 'pronunciation' | 'listening' | 'vocabulary' | 'speaking' | 'writing' | 'reading';
 
 /**
  * Record a practice activity in the practice_sessions table.
