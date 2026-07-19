@@ -19,16 +19,19 @@ export async function recordActivity(
   userId: string,
   type: ActivityType,
   score?: number,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
+  durationMinutes?: number
 ): Promise<void> {
   try {
+    // practice_sessions has no metadata column; details go in the items JSONB
     await db
       .from(TABLES.PRACTICE_SESSIONS)
       .insert({
         user_id: userId,
         type,
         score: score ?? null,
-        metadata: metadata ?? null,
+        items: metadata ?? null,
+        duration: durationMinutes ?? null,
         created_at: new Date().toISOString()
       })
       .select()
