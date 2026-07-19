@@ -1,30 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getOpenAIClient, createAudioTranscription } from '../../../utils/openaiClient';
 import { authMiddleware } from '../../../utils/authMiddleware';
+import { parseMultipartForm, formField, formFile } from '@/utils/multipart';
 import fs from 'fs';
-import formidable from 'formidable';
-import os from 'os';
 
 // Configure Next.js API route to handle file uploads
 export const config = {
   api: {
     bodyParser: false, // Disable the default body parser
   },
-};
-
-// Helper to parse the form data with formidable
-const parseForm = async (req: NextApiRequest) => {
-  return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-    const form = formidable({
-      uploadDir: os.tmpdir(),
-      keepExtensions: true,
-    });
-
-    form.parse(req, (err, fields, files) => {
-      if (err) return reject(err);
-      resolve({ fields, files });
-    });
-  });
 };
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -37,32 +21,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     // Parse the form data
-    const { fields, files } = await parseForm(req);
-    
-    // Extract the expected text from the form fields
-    const expectedText = Array.isArray(fields.text) 
-      ? fields.text[0] 
-      : fields.text || '';
-    
+    const { fields, files } = await parseMultipartForm(req);
+
+    const expectedText = formField(fields.text);
     if (!expectedText) {
-      return res.status(400).json({ 
-        success: false, 
-        error: { message: 'Expected text is required' } 
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Expected text is required' }
       });
     }
-    
-    // Get the audio file
-    const audioFile = Array.isArray(files.audio) 
-      ? files.audio[0] 
-      : files.audio;
-      
-    if (!audioFile || !audioFile.filepath) {
-      return res.status(400).json({ 
-        success: false, 
-        error: { message: 'Audio file is required' } 
+
+    const audioFile = formFile(files.audio);
+    if (!audioFile) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Audio file is required' }
       });
     }
-    
+
     // Add the file path to the cleanup list
     tempFiles.push(audioFile.filepath);
     

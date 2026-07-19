@@ -1,28 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createAudioTranscription } from '@/utils/openaiClient';
 import { authMiddleware } from '@/utils/authMiddleware';
+import { parseMultipartForm, formFile } from '@/utils/multipart';
 import fs from 'fs';
-import formidable from 'formidable';
-import os from 'os';
 
 export const config = {
   api: {
     bodyParser: false, // multipart audio upload
   },
-};
-
-const parseForm = async (req: NextApiRequest) => {
-  return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-    const form = formidable({
-      uploadDir: os.tmpdir(),
-      keepExtensions: true,
-    });
-
-    form.parse(req, (err, fields, files) => {
-      if (err) return reject(err);
-      resolve({ fields, files });
-    });
-  });
 };
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -33,10 +18,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   const tempFiles: string[] = [];
 
   try {
-    const { files } = await parseForm(req);
-    const audioFile = Array.isArray(files.audio) ? files.audio[0] : files.audio;
+    const { files } = await parseMultipartForm(req);
+    const audioFile = formFile(files.audio);
 
-    if (!audioFile || !audioFile.filepath) {
+    if (!audioFile) {
       return res.status(400).json({ success: false, error: { message: 'Audio file is required' } });
     }
     tempFiles.push(audioFile.filepath);
